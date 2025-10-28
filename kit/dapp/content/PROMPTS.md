@@ -8,15 +8,19 @@ Based on the following:
 
 Write out the content for the following section:
 
-- @kit/dapp/content/docs/user-guides
+- @kit/dapp/content/docs/developer-guides
 
 Guidelines:
 
 - Ensure your content is in line with the already written sections (or adjust
   them where needed)
 - Verify that you are not hallucinating features, verify with packages in @kit
+- Be very precise in your wording, locations of files and code snippets,
+  developers will use this and should be able to use the docs as is
+
 - A higher level background story can be found in
-  https://github.com/settlemint/book-of-dalp (investigate via octocode mcp)
+  <https://github.com/settlemint/book-of-dalp> (investigate via octocode mcp)
+
 - Add clear placeholders for where screenshots should be included, do this by
   creating and setting one placeholder image (put it in the repo) and describing
   the content in the image caption
@@ -43,7 +47,7 @@ Verify that:
   content to the right audience and move information you would be deleting to
   the right section.
 - A higher level background story can be found in
-  https://github.com/settlemint/book-of-dalp (investigate via octocode mcp)
+  <https://github.com/settlemint/book-of-dalp> (investigate via octocode mcp)
 - Did we liberally use mermaid charts to improve understanding and break up
   code, but did not go overboard with useless charts?
 
@@ -53,7 +57,7 @@ and detailed plan for improvements.
 # TODO's
 
 - When we are referencing code, make sure we have direct links to Github in
-  https://github.com/settlemint/asset-tokenization-kit add this directive to
+  <https://github.com/settlemint/asset-tokenization-kit> add this directive to
   kit/dapp/content/AGENTS.md as well
 - the rendinging mermaid placeholder is very in your face, make it hidden while
   rendering
@@ -78,6 +82,11 @@ and detailed plan for improvements.
 - add to the top level agents file that for any action, the documentation in
   kit/dapp/content/docs needs to be validated, updated, extended and improved
   based on the changes in this changeset, pr, task. this is required!
+- we have an extensive observability stack with dashboards in the helm charts,
+  we should use this as a selling point and leverage what it brings throughout
+  the docs, for troubleshooting, verification of correct operation, etc. There
+  will be many places where having this stack can offer benefits for the
+  readers. add this directive to kit/dapp/content/AGENTS.md as well
 
 # FAQ
 

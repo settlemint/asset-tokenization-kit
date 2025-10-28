@@ -1,16 +1,997 @@
 ---
 title: API reference
 description:
-  A comprehensive reference of all public API endpoints or RPC procedures
-pageTitle: API reference documentation
-tags: [reference, API, endpoints, RPC, parameters]
+  A comprehensive reference of all public API endpoints and RPC procedures
+pageTitle: Complete API reference documentation
+tags: [reference, api, endpoints, rpc, orpc]
 ---
 
-_Content to be added: Comprehensive API endpoint documentation_
+This is a comprehensive reference for all API endpoints in the Asset
+Tokenization Kit. The API is built with ORPC (Open Remote Procedure Call) and
+provides type-safe, contract-first procedures for all platform operations.
 
-## Categories (Planned)
+## API organization
 
-- Assets API
-- Investor API
-- Transaction API
-- Compliance API
+The API is organized into logical namespaces:
+
+- **account** - Wallet and account search operations
+- **actions** - Time-bound executable tasks
+- **exchangeRates** - Currency conversion rate management
+- **fixedYieldSchedule** - Yield schedule operations for bonds
+- **settings** - User preferences and platform configuration
+- **system** - SMART protocol infrastructure
+- **token** - Token lifecycle and operations
+- **user** - User profiles and KYC
+
+All endpoints follow REST-like conventions for HTTP methods and paths while
+providing RPC-style type safety.
+
+## Base URL
+
+**Development**: `http://localhost:3000/api/rpc`  
+**Production**: `https://yourdomain.com/api/rpc`
+
+The client automatically handles URL resolution based on environment.
+
+## Authentication
+
+Most endpoints require authentication via session cookies. The auth middleware
+checks for valid sessions and provides user context.
+
+**Authentication levels**:
+
+- **Public** - No authentication required
+- **Authenticated** - Valid session cookie required
+- **Onboarded** - Completed KYC and wallet connection required
+- **Token-scoped** - Token-specific permissions required
+
+## Account namespace
+
+Account operations for wallet management and search.
+
+### `account.search`
+
+Search for accounts by wallet address or other criteria.
+
+**Method**: `GET`  
+**Path**: `/account/search`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  query: string;           // Search term
+  limit?: number;          // Max results (default: 10)
+}
+```
+
+**Output**:
+
+```typescript
+Array<{
+  address: `0x${string}`; // Wallet address
+  identity?: {
+    country: string; // ISO country code
+    verified: boolean;
+  };
+}>;
+```
+
+**Example**:
+
+```typescript
+const accounts = await orpc.account.search.query({
+  input: { query: "0x123", limit: 5 },
+});
+```
+
+## Actions namespace
+
+Time-bound executable tasks that users can perform on assets.
+
+### `actions.list`
+
+List actions available to the authenticated user.
+
+**Method**: `GET`  
+**Path**: `/actions/list`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  status?: 'PENDING' | 'ACTIVE' | 'EXECUTED' | 'EXPIRED';
+  targetAddresses?: Array<`0x${string}`>;
+  requiredRoles?: string[];
+  first?: number;          // Page size (default: 20)
+  skip?: number;           // Offset
+}
+```
+
+**Output**:
+
+```typescript
+{
+  data: Array<{
+    id: string;
+    name: string;
+    status: "PENDING" | "ACTIVE" | "EXECUTED" | "EXPIRED";
+    activeAt: string; // Unix timestamp
+    expiresAt: string; // Unix timestamp
+    targetAddress: `0x${string}`;
+    requiredRoles: string[];
+    metadata?: Record<string, unknown>;
+  }>;
+  total: number;
+}
+```
+
+**Example**:
+
+```typescript
+const { data: actions } = await orpc.actions.list.query({
+  input: { status: "ACTIVE", first: 10 },
+});
+```
+
+## Exchange Rates namespace
+
+Currency conversion rate management with external provider sync.
+
+### `exchangeRates.read`
+
+Get current exchange rate between two currencies.
+
+**Method**: `GET`  
+**Path**: `/exchange-rates/:baseCurrency/:quoteCurrency`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  baseCurrency: string; // e.g., 'USD'
+  quoteCurrency: string; // e.g., 'EUR'
+}
+```
+
+**Output**:
+
+```typescript
+{
+  baseCurrency: string;
+  quoteCurrency: string;
+  rate: number;
+  effectiveAt: Date;
+} | null
+```
+
+### `exchangeRates.list`
+
+List all available exchange rates.
+
+**Method**: `GET`  
+**Path**: `/exchange-rates`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  baseCurrency?: string;   // Filter by base currency
+  offset?: number;
+  limit?: number;
+}
+```
+
+**Output**:
+
+```typescript
+{
+  items: Array<{
+    baseCurrency: string;
+    quoteCurrency: string;
+    rate: number;
+    effectiveAt: Date;
+  }>;
+  total: number;
+}
+```
+
+### `exchangeRates.sync`
+
+Synchronize rates with external providers.
+
+**Method**: `POST`  
+**Path**: `/exchange-rates/sync`  
+**Auth**: Authenticated (admin)  
+**Input**:
+
+```typescript
+{
+  baseCurrency?: string;   // Sync specific currency or all
+}
+```
+
+**Output**:
+
+```typescript
+{
+  success: boolean;
+  ratesUpdated: number;
+  syncedAt: Date;
+}
+```
+
+### `exchangeRates.update`
+
+Manually update an exchange rate.
+
+**Method**: `PUT`  
+**Path**: `/exchange-rates/:baseCurrency/:quoteCurrency`  
+**Auth**: Authenticated (admin)
+
+### `exchangeRates.delete`
+
+Delete a manual exchange rate.
+
+**Method**: `DELETE`  
+**Path**: `/exchange-rates/:baseCurrency/:quoteCurrency`  
+**Auth**: Authenticated (admin)
+
+### `exchangeRates.history`
+
+Get historical rates for a currency pair.
+
+**Method**: `GET`  
+**Path**: `/exchange-rates/:baseCurrency/:quoteCurrency/history`  
+**Auth**: Authenticated
+
+## System namespace
+
+SMART protocol system infrastructure operations.
+
+### `system.list`
+
+List all deployed SMART systems.
+
+**Method**: `GET`  
+**Path**: `/systems`  
+**Auth**: Public  
+**Input**:
+
+```typescript
+{
+  orderBy?: string;
+  orderDirection?: 'asc' | 'desc';
+}
+```
+
+**Output**:
+
+```typescript
+Array<{
+  id: `0x${string}`;
+  deployedAt: Date;
+  identityRegistry: `0x${string}`;
+  compliance: `0x${string}`;
+  tokenFactoryRegistry: `0x${string}`;
+}>;
+```
+
+### `system.create`
+
+Deploy a new SMART system with all registries.
+
+**Method**: `POST`  
+**Path**: `/systems`  
+**Auth**: Onboarded  
+**Input**:
+
+```typescript
+{
+  // System deploys with default configuration
+}
+```
+
+**Output**:
+
+```typescript
+{
+  id: `0x${string}`;
+  transactionHash: `0x${string}`;
+  identityRegistry: `0x${string}`;
+  compliance: `0x${string}`;
+  tokenFactoryRegistry: `0x${string}`;
+}
+```
+
+### `system.read`
+
+Get details of a specific SMART system.
+
+**Method**: `GET`  
+**Path**: `/systems/:id`  
+**Auth**: Public  
+**Input**:
+
+```typescript
+{
+  id: "default" | `0x${string}`; // 'default' for dApp system
+}
+```
+
+**Output**:
+
+```typescript
+{
+  id: `0x${string}`;
+  identityRegistry: `0x${string}`;
+  compliance: `0x${string}`;
+  tokenFactories: Array<{
+    address: `0x${string}`;
+    typeId: "bond" | "equity" | "fund" | "stablecoin" | "deposit";
+  }>;
+}
+```
+
+### System sub-namespaces
+
+- **system.identity** - Identity creation and registration
+- **system.compliance** - Compliance module management
+- **system.claimTopics** - Topic scheme registry
+- **system.trustedIssuers** - Trusted issuer management
+- **system.stats** - System-wide statistics
+- **system.accessManager** - Access control operations
+- **system.factory** - Token factory operations
+
+## Token namespace
+
+Comprehensive token lifecycle management and operations.
+
+### Query operations
+
+#### `token.list`
+
+List tokens with filtering and pagination.
+
+**Method**: `GET`  
+**Path**: `/tokens`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  typeId?: 'bond' | 'equity' | 'fund' | 'stablecoin' | 'deposit';
+  status?: 'active' | 'paused';
+  ownerId?: string;         // Filter by owner
+  offset?: number;
+  limit?: number;
+  orderBy?: 'createdAt' | 'name' | 'totalSupply';
+  orderDirection?: 'asc' | 'desc';
+}
+```
+
+**Output**:
+
+```typescript
+{
+  items: Array<{
+    id: `0x${string}`;
+    name: string;
+    symbol: string;
+    decimals: number;
+    typeId: "bond" | "equity" | "fund" | "stablecoin" | "deposit";
+    totalSupply: string; // BigInt serialized
+    paused: boolean;
+    owner: `0x${string}`;
+    createdAt: Date;
+  }>;
+  total: number;
+}
+```
+
+#### `token.read`
+
+Get detailed token information.
+
+**Method**: `GET`  
+**Path**: `/tokens/:id`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  id: `0x${string}`; // Token address
+}
+```
+
+**Output**:
+
+```typescript
+{
+  id: `0x${string}`;
+  name: string;
+  symbol: string;
+  decimals: number;
+  typeId: 'bond' | 'equity' | 'fund' | 'stablecoin' | 'deposit';
+  totalSupply: string;
+  cap?: string;
+  paused: boolean;
+  owner: `0x${string}`;
+  compliance: `0x${string}`;
+  identityRegistry: `0x${string}`;
+  balance?: string;         // Current user's balance
+  createdAt: Date;
+
+  // Type-specific fields
+  maturityDate?: Date;      // Bonds only
+  faceValue?: string;       // Bonds only
+  denominationAsset?: `0x${string}`;  // Bonds only
+}
+```
+
+#### `token.search`
+
+Search tokens by name or symbol.
+
+**Method**: `GET`  
+**Path**: `/tokens/search`  
+**Auth**: Authenticated
+
+#### `token.holders`
+
+List token holders and their balances.
+
+**Method**: `GET`  
+**Path**: `/tokens/:id/holders`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  tokenId: `0x${string}`;
+  limit?: number;
+  offset?: number;
+  orderBy?: 'balance' | 'address';
+  orderDirection?: 'asc' | 'desc';
+}
+```
+
+**Output**:
+
+```typescript
+{
+  items: Array<{
+    address: `0x${string}`;
+    balance: string;
+    percentage: number; // % of total supply
+  }>;
+  total: number;
+}
+```
+
+#### `token.events`
+
+Get token event history.
+
+**Method**: `GET`  
+**Path**: `/tokens/:id/events`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  tokenId: `0x${string}`;
+  eventType?: 'Transfer' | 'Mint' | 'Burn' | 'Pause' | 'Unpause';
+  first?: number;
+  skip?: number;
+}
+```
+
+**Output**:
+
+```typescript
+{
+  data: Array<{
+    id: string;
+    type: string;
+    from?: `0x${string}`;
+    to?: `0x${string}`;
+    value?: string;
+    timestamp: string;
+    transactionHash: `0x${string}`;
+  }>;
+  total: number;
+}
+```
+
+#### `token.compliance`
+
+Get token compliance module configuration.
+
+**Method**: `GET`  
+**Path**: `/tokens/:id/compliance`  
+**Auth**: Authenticated
+
+### Mutation operations
+
+#### `token.create`
+
+Deploy a new token contract.
+
+**Method**: `POST`  
+**Path**: `/tokens`  
+**Auth**: Onboarded  
+**Input**:
+
+```typescript
+{
+  name: string;
+  symbol: string;
+  decimals: number;
+  typeId: 'bond' | 'equity' | 'fund' | 'stablecoin' | 'deposit';
+  initialSupply: string;
+  cap?: string;
+
+  // Bond-specific
+  maturityDate?: Date;
+  faceValue?: string;
+  denominationAsset?: `0x${string}`;
+
+  // Compliance configuration
+  complianceModules?: Array<{
+    moduleAddress: `0x${string}`;
+    params: string;         // ABI-encoded parameters
+  }>;
+}
+```
+
+**Output**:
+
+```typescript
+{
+  transactionHash: `0x${string}`;
+  tokenAddress: `0x${string}`;
+  message: string;
+}
+```
+
+#### `token.mint`
+
+Mint new tokens to an address.
+
+**Method**: `POST`  
+**Path**: `/tokens/:id/mint`  
+**Auth**: Onboarded + Token role (SUPPLY_MANAGEMENT_ROLE)  
+**Input**:
+
+```typescript
+{
+  tokenId: `0x${string}`;
+  to: `0x${string}`;
+  amount: string;
+}
+```
+
+**Output**:
+
+```typescript
+{
+  transactionHash: `0x${string}`;
+  message: string;
+}
+```
+
+#### `token.burn`
+
+Burn tokens from an address.
+
+**Method**: `POST`  
+**Path**: `/tokens/:id/burn`  
+**Auth**: Onboarded + Token role (SUPPLY_MANAGEMENT_ROLE)
+
+#### `token.transfer`
+
+Transfer tokens to another address.
+
+**Method**: `POST`  
+**Path**: `/tokens/:id/transfer`  
+**Auth**: Onboarded  
+**Input**:
+
+```typescript
+{
+  tokenId: `0x${string}`;
+  to: `0x${string}`;
+  amount: string;
+}
+```
+
+**Output**:
+
+```typescript
+{
+  transactionHash: `0x${string}`;
+  message: string;
+}
+```
+
+#### `token.pause` / `token.unpause`
+
+Pause or unpause token transfers.
+
+**Auth**: Onboarded + Token role (EMERGENCY_ROLE)
+
+#### `token.freezeAddress`
+
+Freeze all tokens for a specific address.
+
+**Auth**: Onboarded + Token role (CUSTODIAN_ROLE)
+
+#### `token.freezePartial` / `token.unfreezePartial`
+
+Freeze or unfreeze specific amounts.
+
+**Auth**: Onboarded + Token role (CUSTODIAN_ROLE)
+
+#### `token.redeem`
+
+Redeem tokens (bonds at maturity).
+
+**Method**: `POST`  
+**Path**: `/tokens/:id/redeem`  
+**Auth**: Onboarded  
+**Input**:
+
+```typescript
+{
+  tokenId: `0x${string}`;
+  amount: string;
+}
+```
+
+#### `token.mature`
+
+Mark a bond as matured (bonds only).
+
+**Auth**: Onboarded + Token role (GOVERNANCE_ROLE)
+
+#### `token.setCap`
+
+Update token supply cap.
+
+**Auth**: Onboarded + Token role (SUPPLY_MANAGEMENT_ROLE)
+
+#### `token.addComplianceModule` / `token.removeComplianceModule`
+
+Manage compliance modules.
+
+**Auth**: Onboarded + Token role (GOVERNANCE_ROLE)
+
+#### `token.setYieldSchedule`
+
+Attach yield schedule to token.
+
+**Auth**: Onboarded + Token role (GOVERNANCE_ROLE)
+
+#### `token.grantRole` / `token.revokeRole`
+
+Manage token access control roles.
+
+**Auth**: Onboarded + Token role (DEFAULT_ADMIN_ROLE)
+
+### Statistics operations
+
+#### `token.statsTotalSupply`
+
+Get total supply over time.
+
+**Method**: `GET`  
+**Path**: `/tokens/:id/stats/total-supply`  
+**Auth**: Authenticated
+
+#### `token.statsSupplyChanges`
+
+Get mint and burn history.
+
+**Method**: `GET`  
+**Path**: `/tokens/:id/stats/supply-changes`  
+**Auth**: Authenticated
+
+#### `token.statsVolume`
+
+Get transfer volume statistics.
+
+**Method**: `GET`  
+**Path**: `/tokens/:id/stats/volume`  
+**Auth**: Authenticated
+
+#### `token.statsWalletDistribution`
+
+Get holder distribution metrics.
+
+**Method**: `GET`  
+**Path**: `/tokens/:id/stats/wallet-distribution`  
+**Auth**: Authenticated
+
+#### `token.statsBondStatus`
+
+Get bond maturity status (bonds only).
+
+**Method**: `GET`  
+**Path**: `/tokens/:id/stats/bond-status`  
+**Auth**: Authenticated
+
+#### `token.statsYieldDistribution`
+
+Get yield payment history.
+
+**Method**: `GET`  
+**Path**: `/tokens/:id/stats/yield-distribution`  
+**Auth**: Authenticated
+
+#### `token.statsYieldCoverage`
+
+Get yield schedule coverage metrics.
+
+**Method**: `GET`  
+**Path**: `/tokens/:id/stats/yield-coverage`  
+**Auth**: Authenticated
+
+## User namespace
+
+User profile management and KYC operations.
+
+### `user.me`
+
+Get current authenticated user profile.
+
+**Method**: `GET`  
+**Path**: `/user/me`  
+**Auth**: Authenticated  
+**Output**:
+
+```typescript
+{
+  id: string;
+  email: string;
+  name?: string;
+  walletAddress?: `0x${string}`;
+  role: 'admin' | 'user';
+  kycStatus: 'pending' | 'approved' | 'rejected' | 'not_started';
+  createdAt: Date;
+}
+```
+
+### `user.list`
+
+List all users (admin only).
+
+**Method**: `GET`  
+**Path**: `/user/list`  
+**Auth**: Authenticated (admin)  
+**Input**:
+
+```typescript
+{
+  offset?: number;
+  limit?: number;
+  kycStatus?: 'pending' | 'approved' | 'rejected';
+  orderBy?: 'createdAt' | 'name';
+  orderDirection?: 'asc' | 'desc';
+}
+```
+
+### `user.read`
+
+Get specific user by ID or wallet.
+
+**Method**: `GET`  
+**Path**: `/user/read`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  id?: string;              // User ID
+  walletAddress?: `0x${string}`;  // Or wallet address
+}
+```
+
+### `user.search`
+
+Search users by name or wallet.
+
+**Method**: `GET`  
+**Path**: `/user/search`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  query: string;
+  limit?: number;
+}
+```
+
+### `user.stats`
+
+Get user statistics and metrics.
+
+**Method**: `GET`  
+**Path**: `/user/stats`  
+**Auth**: Authenticated (admin)  
+**Output**:
+
+```typescript
+{
+  totalUsers: number;
+  kycPending: number;
+  kycApproved: number;
+  kycRejected: number;
+  recentSignups: number; // Last 30 days
+}
+```
+
+### `user.assets`
+
+Get all token balances for a user.
+
+**Method**: `GET`  
+**Path**: `/user/assets`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  walletAddress: `0x${string}`;
+}
+```
+
+**Output**:
+
+```typescript
+Array<{
+  tokenAddress: `0x${string}`;
+  tokenName: string;
+  tokenSymbol: string;
+  balance: string;
+  decimals: number;
+}>;
+```
+
+### `user.events`
+
+Get recent blockchain events for a user.
+
+**Method**: `GET`  
+**Path**: `/user/events`  
+**Auth**: Authenticated  
+**Input**:
+
+```typescript
+{
+  walletAddress?: `0x${string}`;
+  limit?: number;
+  eventTypes?: string[];
+}
+```
+
+### User sub-namespaces
+
+- **user.kyc** - KYC submission and verification
+- **user.createWallet** - Wallet creation and linking
+
+## Settings namespace
+
+Platform configuration and theming.
+
+### `settings.theme.get`
+
+Get current theme configuration.
+
+**Method**: `GET`  
+**Path**: `/settings/theme`  
+**Auth**: Authenticated
+
+### `settings.theme.update`
+
+Update theme configuration.
+
+**Method**: `PUT`  
+**Path**: `/settings/theme`  
+**Auth**: Authenticated (admin)
+
+### `settings.theme.uploadLogo`
+
+Upload platform logo.
+
+**Method**: `POST`  
+**Path**: `/settings/theme/logo`  
+**Auth**: Authenticated (admin)
+
+## Fixed Yield Schedule namespace
+
+Yield schedule management for bonds.
+
+### `fixedYieldSchedule.create`
+
+Create a new yield schedule.
+
+**Method**: `POST`  
+**Path**: `/fixed-yield-schedule`  
+**Auth**: Onboarded
+
+### `fixedYieldSchedule.read`
+
+Get yield schedule details.
+
+**Method**: `GET`  
+**Path**: `/fixed-yield-schedule/:id`  
+**Auth**: Authenticated
+
+### `fixedYieldSchedule.claim`
+
+Claim yield distribution.
+
+**Method**: `POST`  
+**Path**: `/fixed-yield-schedule/:id/claim`  
+**Auth**: Onboarded
+
+### `fixedYieldSchedule.topUp`
+
+Add funds to yield schedule.
+
+**Method**: `POST`  
+**Path**: `/fixed-yield-schedule/:id/top-up`  
+**Auth**: Onboarded
+
+### `fixedYieldSchedule.withdraw`
+
+Withdraw excess funds.
+
+**Method**: `POST`  
+**Path**: `/fixed-yield-schedule/:id/withdraw`  
+**Auth**: Onboarded
+
+## Error responses
+
+All endpoints return standardized errors:
+
+```typescript
+{
+  error: {
+    code: 'UNAUTHORIZED' | 'FORBIDDEN' | 'NOT_FOUND' | 'BAD_REQUEST' | 'INTERNAL_ERROR';
+    message: string;
+    details?: unknown;      // Validation errors, etc.
+  }
+}
+```
+
+**Common error codes**:
+
+- `UNAUTHORIZED` (401) - Authentication required or session expired
+- `FORBIDDEN` (403) - Insufficient permissions
+- `NOT_FOUND` (404) - Resource does not exist
+- `BAD_REQUEST` (400) - Invalid input or validation error
+- `INTERNAL_ERROR` (500) - Unexpected server error
+
+## Rate limiting
+
+Currently no rate limiting is enforced. Production deployments should implement
+appropriate rate limiting at the reverse proxy or API gateway level.
+
+## Next steps
+
+- **Review data models**: See
+  [Data Model Reference](/developer-guides/data-model-reference) for schema
+  details
+- **Check contract details**: Review
+  [Contract Reference](/developer-guides/contract-reference) for blockchain
+  interactions
+- **Study usage patterns**: Read [Using the API](/developer-guides/using-api)
+  for integration examples
+- **Explore route code**: Check `kit/dapp/src/orpc/routes/` for implementation
+  details
+
+For smart contract interfaces and on-chain operations, continue to
+[Contract Reference](/developer-guides/contract-reference).

@@ -1,16 +1,995 @@
 ---
 title: Deployment guide
-description: Step-by-step guide for developers/DevOps to deploy the ATK
-pageTitle: Deployment guide - Installing ATK in a new environment
-tags: [how-to, deployment, installation, helm, ops]
+description:
+  Deploy the Asset Tokenization Kit to Kubernetes using Helm charts, including
+  production configuration and CI/CD integration
 ---
 
-## Steps (Planned)
+This guide covers deploying the Asset Tokenization Kit to Kubernetes
+environments using the included Helm charts. The kit provides a comprehensive
+umbrella chart that orchestrates all required infrastructure components.
 
-1. Prepare Infrastructure
-2. Database and Dependencies
-3. Configure Values
-4. Deploy using Helm
-5. Post-Deployment Checks
-6. Initial Setup
-7. Upgrades
+## Overview
+
+The deployment architecture consists of:
+
+- **Blockchain network** (Hyperledger Besu validators and RPC nodes)
+- **RPC gateway** (ERPC for load balancing and caching)
+- **Indexing layer** (TheGraph node and Blockscout explorer)
+- **Application layer** (DApp frontend, Portal IAM, Hasura GraphQL)
+- **Support services** (PostgreSQL, Redis, MinIO, NGINX Ingress)
+- **Observability stack** (Grafana, Loki, VictoriaMetrics, Tempo)
+
+<Mermaid>
+{`
+graph TB
+    subgraph "Ingress Layer"
+        NGINX[NGINX Ingress]
+    end
+
+    subgraph "Application Layer"
+        DAPP[DApp Frontend]
+        PORTAL[Portal IAM]
+        HASURA[Hasura GraphQL]
+    end
+
+    subgraph "Blockchain Layer"
+        ERPC[ERPC Gateway]
+        VALIDATORS[Besu Validators]
+        RPC[Besu RPC Nodes]
+    end
+
+    subgraph "Indexing Layer"
+        GRAPH[TheGraph Node]
+        BLOCKSCOUT[Blockscout Explorer]
+    end
+
+    subgraph "Data Layer"
+        PG[(PostgreSQL)]
+        REDIS[(Redis)]
+        MINIO[(MinIO)]
+    end
+
+    subgraph "Observability"
+        GRAFANA[Grafana]
+        LOKI[Loki]
+        VM[VictoriaMetrics]
+    end
+
+    NGINX --&gt; DAPP
+    NGINX --&gt; PORTAL
+    NGINX --&gt; HASURA
+    NGINX --&gt; ERPC
+    NGINX --&gt; GRAPH
+    NGINX --&gt; BLOCKSCOUT
+
+    DAPP --&gt; HASURA
+    DAPP --&gt; PORTAL
+    DAPP --&gt; ERPC
+
+    ERPC --&gt; VALIDATORS
+    ERPC --&gt; RPC
+
+    GRAPH --&gt; ERPC
+    GRAPH --&gt; PG
+    BLOCKSCOUT --&gt; ERPC
+    BLOCKSCOUT --&gt; PG
+
+    HASURA --&gt; PG
+    HASURA --&gt; REDIS
+    PORTAL --&gt; PG
+    PORTAL --&gt; REDIS
+
+    DAPP --&gt; MINIO
+
+    GRAFANA --&gt; VM
+    GRAFANA --&gt; LOKI
+
+`}
+
+</Mermaid>
+
+## Helm chart structure
+
+The Asset Tokenization Kit uses an umbrella chart architecture located in
+`kit/charts/atk/`:
+
+### Chart dependencies
+
+The main chart (`kit/charts/atk/Chart.yaml`) orchestrates 11 dependent
+subcharts:
+
+```yaml
+dependencies:
+  - name: support # Infrastructure (NGINX, Redis, PostgreSQL, MinIO)
+  - name: observability # Metrics, logs, traces (Grafana, Loki, VictoriaMetrics)
+  - name: network # Blockchain network (Besu nodes)
+  - name: erpc # RPC gateway with caching
+  - name: ipfs # IPFS cluster for distributed storage
+  - name: blockscout # Blockchain explorer
+  - name: graph-node # TheGraph indexing protocol
+  - name: portal # Identity and access management
+  - name: hasura # GraphQL engine for database
+  - name: txsigner # Transaction signing service
+  - name: dapp # Frontend application
+```
+
+Each subchart can be enabled/disabled via the `enabled` flag in `values.yaml`.
+
+### Directory layout
+
+```
+kit/charts/atk/
+├── Chart.yaml              # Chart metadata and dependencies
+├── values.yaml             # Default configuration values
+├── values-openshift.yaml   # OpenShift-specific overrides
+├── templates/              # Kubernetes resource templates
+│   ├── _helpers.tpl        # Template helpers
+│   ├── _common-helpers.tpl # Shared helper functions
+│   └── image-pull-secrets.yaml
+└── charts/                 # Subchart definitions
+    ├── support/
+    ├── network/
+    ├── erpc/
+    ├── graph-node/
+    ├── hasura/
+    ├── txsigner/
+    └── dapp/
+```
+
+## Prerequisites
+
+Before deploying, ensure you have:
+
+1. **Kubernetes cluster** (v1.27+)
+   - Minimum 8 CPU cores, 32GB RAM for full deployment
+   - Storage provisioner with dynamic PVC support
+   - LoadBalancer or Ingress controller support
+
+2. **Required tools**:
+   - `kubectl` (v1.27+)
+   - `helm` (v3.13+)
+   - `bun` (for chart documentation generation)
+
+3. **Container registry access**:
+   - GitHub Container Registry (`ghcr.io`)
+   - Docker Hub (`docker.io`)
+   - Kubernetes Registry (`registry.k8s.io`)
+
+4. **DNS configuration**:
+   - Wildcard DNS or individual records for each service hostname
+   - Default hostnames use `.k8s.orb.local` (customize for your environment)
+
+## Installation steps
+
+### 1. Build chart dependencies
+
+Navigate to the charts directory and update dependencies:
+
+```bash
+cd kit/charts/atk
+helm dependency update
+```
+
+This downloads all subchart dependencies into the `charts/` directory.
+
+### 2. Configure values
+
+Create a custom `values.yaml` file for your environment. Start by copying the
+default:
+
+```bash
+cp values.yaml values-production.yaml
+```
+
+### 3. Customize configuration
+
+Edit `values-production.yaml` to match your environment:
+
+#### Update hostnames
+
+Replace all `.k8s.orb.local` hostnames with your domain:
+
+```yaml
+# DApp frontend
+dapp:
+  ingress:
+    hosts:
+      - host: dapp.example.com
+
+# RPC endpoint
+erpc:
+  ingress:
+    hostname: rpc.example.com
+
+# Blockchain explorer
+blockscout:
+  blockscout:
+    ingress:
+      hostname: explorer.example.com
+
+# Graph Node
+graph-node:
+  ingress:
+    hostname: graph.example.com
+
+# Hasura GraphQL
+hasura:
+  ingress:
+    hostName: hasura.example.com
+
+# Portal IAM
+portal:
+  ingress:
+    hostname: portal.example.com
+
+# Observability (Grafana)
+observability:
+  grafana:
+    ingress:
+      hosts:
+        - grafana.example.com
+```
+
+#### Update authentication URLs
+
+The DApp requires the `BETTER_AUTH_URL` to match the ingress hostname:
+
+```yaml
+dapp:
+  secretEnv:
+    BETTER_AUTH_URL: "https://dapp.example.com"
+```
+
+#### Update database and storage passwords
+
+**CRITICAL**: Change all default passwords before production deployment:
+
+```yaml
+global:
+  datastores:
+    default:
+      redis:
+        password: "YOUR_REDIS_PASSWORD"
+      postgresql:
+        password: "YOUR_PG_PASSWORD"
+
+    portal:
+      postgresql:
+        password: "YOUR_PORTAL_DB_PASSWORD"
+
+    txsigner:
+      postgresql:
+        password: "YOUR_TXSIGNER_DB_PASSWORD"
+
+    graphNode:
+      postgresql:
+        password: "YOUR_GRAPH_DB_PASSWORD"
+
+    blockscout:
+      postgresql:
+        password: "YOUR_BLOCKSCOUT_DB_PASSWORD"
+
+    hasura:
+      postgresql:
+        password: "YOUR_HASURA_DB_PASSWORD"
+
+# Redis auth
+support:
+  redis:
+    auth:
+      password: "YOUR_REDIS_PASSWORD"
+
+# Grafana admin credentials
+observability:
+  grafana:
+    adminUser: admin
+    adminPassword: "YOUR_GRAFANA_PASSWORD"
+```
+
+#### Update transaction signer mnemonic
+
+**CRITICAL**: Generate a new mnemonic for production:
+
+```yaml
+txsigner:
+  config:
+    mnemonic: "YOUR_PRODUCTION_MNEMONIC_HERE"
+    derivationPath: "m/44'/60'/0'/0/0"
+```
+
+Use a secure mnemonic generator or BIP39 tool. **Never commit this to version
+control.**
+
+#### Configure resource limits
+
+Adjust resource requests and limits based on your cluster capacity:
+
+```yaml
+# Example: Scale down for development
+network:
+  network-nodes:
+    validatorReplicaCount: 1
+    rpcReplicaCount: 1
+    resources:
+      requests:
+        cpu: "60m"
+        memory: "512Mi"
+      limits:
+        cpu: "360m"
+        memory: "1024Mi"
+
+# Example: Scale up for production
+dapp:
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "2048Mi"
+    limits:
+      cpu: "4000m"
+      memory: "4096Mi"
+```
+
+See the [Resource summary](#resource-summary) section for default allocations.
+
+#### Configure storage sizes
+
+Adjust persistent volume sizes for your data retention requirements:
+
+```yaml
+# Blockchain data
+network:
+  network-nodes:
+    persistence:
+      size: 100Gi  # Scale based on expected chain growth
+
+# Metrics retention
+observability:
+  victoria-metrics-single:
+    server:
+      persistentVolume:
+        size: 50Gi
+
+# Log retention
+observability:
+  loki:
+    singleBinary:
+      persistence:
+        size: 50Gi
+```
+
+### 4. Deploy the chart
+
+Install the chart with your custom values:
+
+```bash
+helm install atk . \
+  --namespace atk \
+  --create-namespace \
+  --values values-production.yaml \
+  --timeout 20m
+```
+
+Or upgrade an existing deployment:
+
+```bash
+helm upgrade atk . \
+  --namespace atk \
+  --values values-production.yaml \
+  --timeout 20m
+```
+
+### 5. Verify deployment
+
+Check pod status:
+
+```bash
+kubectl get pods -n atk
+```
+
+All pods should reach `Running` or `Completed` state. The deployment includes:
+
+- **Init jobs**: `network-bootstrapper` (generates genesis file)
+- **StatefulSets**: Besu nodes, Graph Node, PostgreSQL, Redis
+- **Deployments**: DApp, Portal, Hasura, ERPC, Blockscout
+- **DaemonSets**: Node exporters, log collectors
+
+Check service endpoints:
+
+```bash
+kubectl get ingress -n atk
+```
+
+Verify each ingress has an external address assigned.
+
+### 6. Access applications
+
+Once deployed, access the services via configured hostnames:
+
+- **DApp**: `https://dapp.example.com`
+- **Blockchain Explorer**: `https://explorer.example.com`
+- **Grafana Dashboards**: `https://grafana.example.com`
+- **Hasura Console**: `https://hasura.example.com/console`
+- **RPC Endpoint**: `https://rpc.example.com`
+
+## Configuration reference
+
+### Global settings
+
+All subcharts inherit global configuration:
+
+```yaml
+global:
+  # Blockchain network identity
+  chainId: "53771311147"
+  chainName: "ATK"
+
+  # Labels applied to all resources
+  labels:
+    environment: production
+    team: platform
+
+  # Centralized datastore configuration
+  datastores:
+    # Shared default settings
+    default:
+      redis:
+        host: "redis"
+        port: 6379
+        username: "default"
+        password: "atk"
+      postgresql:
+        host: "postgresql"
+        port: 5432
+        username: "postgres"
+        password: "atk"
+
+    # Service-specific overrides
+    portal:
+      postgresql:
+        database: "portal"
+        username: "portal"
+      redis:
+        db: 4
+
+    hasura:
+      redis:
+        cacheDb: 2
+        rateLimitDb: 3
+```
+
+### Network configuration
+
+Control blockchain network topology:
+
+```yaml
+network:
+  enabled: true
+
+  network-bootstrapper:
+    settings:
+      validators: 1 # Number of validator identities to generate
+
+  network-nodes:
+    validatorReplicaCount: 1 # Validator pods (consensus)
+    rpcReplicaCount: 1 # RPC pods (queries)
+
+    persistence:
+      size: 20Gi # Per-node storage
+
+    resources:
+      requests:
+        cpu: "60m"
+        memory: "512Mi"
+      limits:
+        cpu: "360m"
+        memory: "1024Mi"
+```
+
+### ERPC gateway configuration
+
+Configure RPC load balancing and caching:
+
+```yaml
+erpc:
+  enabled: true
+
+  ingress:
+    enabled: true
+    ingressClassName: "atk-nginx"
+    hostname: rpc.k8s.orb.local
+
+  resources:
+    requests:
+      cpu: "60m"
+      memory: "256Mi"
+    limits:
+      cpu: "360m"
+      memory: "512Mi"
+```
+
+ERPC caches responses in Redis databases configured in `global.datastores.erpc`.
+
+### DApp configuration
+
+Frontend application settings:
+
+```yaml
+dapp:
+  enabled: true
+
+  image:
+    repository: ghcr.io/settlemint/asset-tokenization-kit
+    # tag: defaults to chart appVersion
+
+  ingress:
+    enabled: true
+    hosts:
+      - host: dapp.k8s.orb.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+  # Environment variables (stored as secrets)
+  secretEnv:
+    BETTER_AUTH_URL: "https://dapp.k8s.orb.local"
+    SETTLEMINT_BLOCKSCOUT_UI_ENDPOINT: "https://explorer.k8s.orb.local/"
+    SETTLEMINT_MINIO_ENDPOINT: "http://minio:9000"
+    SETTLEMINT_MINIO_ACCESS_KEY: "console"
+    SETTLEMINT_MINIO_SECRET_KEY: "console123"
+
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "1024Mi"
+    limits:
+      cpu: "3000m"
+      memory: "2048Mi"
+```
+
+### Selective component deployment
+
+Disable components not required for your environment:
+
+```yaml
+# Minimal deployment (no observability, no IPFS)
+observability:
+  enabled: false
+
+ipfs:
+  enabled: false
+
+# Keep core services
+network:
+  enabled: true
+erpc:
+  enabled: true
+graph-node:
+  enabled: true
+hasura:
+  enabled: true
+dapp:
+  enabled: true
+support:
+  enabled: true
+```
+
+## Production best practices
+
+### Security hardening
+
+1. **Use secrets management**
+
+   Replace inline secrets with Kubernetes Secret references:
+
+   ```yaml
+   global:
+     datastores:
+       default:
+         postgresql:
+           existingSecret: "atk-postgres-secret"
+           existingSecretKeys:
+             password: password
+   ```
+
+   Create the secret separately:
+
+   ```bash
+   kubectl create secret generic atk-postgres-secret \
+     --from-literal=password='YOUR_SECURE_PASSWORD' \
+     -n atk
+   ```
+
+2. **Enable TLS termination**
+
+   Configure ingress with TLS certificates:
+
+   ```yaml
+   dapp:
+     ingress:
+       enabled: true
+       ingressClassName: "nginx"
+       tls:
+         - secretName: dapp-tls
+           hosts:
+             - dapp.example.com
+       hosts:
+         - host: dapp.example.com
+   ```
+
+3. **Network policies**
+
+   Enable NetworkPolicy resources to restrict pod-to-pod traffic:
+
+   ```yaml
+   # Many subcharts include networkPolicy settings
+   erpc:
+     networkPolicy:
+       enabled: true
+       ingress:
+         - from:
+             - podSelector:
+                 matchLabels:
+                   app: dapp
+   ```
+
+4. **Pod security standards**
+
+   Set securityContext for restricted PSS compliance:
+
+   ```yaml
+   dapp:
+     podSecurityContext:
+       runAsNonRoot: true
+       runAsUser: 1001
+       fsGroup: 1001
+       seccompProfile:
+         type: RuntimeDefault
+
+     securityContext:
+       allowPrivilegeEscalation: false
+       capabilities:
+         drop:
+           - ALL
+   ```
+
+### High availability
+
+1. **Increase replicas**
+
+   ```yaml
+   # Multiple RPC nodes for redundancy
+   network:
+     network-nodes:
+       rpcReplicaCount: 3
+
+   # DApp horizontal scaling
+   dapp:
+     replicaCount: 3
+
+   # PostgreSQL replication (requires external operator)
+   support:
+     postgresql:
+       architecture: replication
+       replicaCount: 3
+   ```
+
+2. **Pod disruption budgets**
+
+   Most subcharts include PodDisruptionBudget resources enabled by default.
+
+3. **Spread across nodes**
+
+   Use pod anti-affinity:
+
+   ```yaml
+   dapp:
+     affinity:
+       podAntiAffinity:
+         preferredDuringSchedulingIgnoredDuringExecution:
+           - weight: 100
+             podAffinityTerm:
+               labelSelector:
+                 matchLabels:
+                   app.kubernetes.io/name: dapp
+               topologyKey: kubernetes.io/hostname
+   ```
+
+### Monitoring and observability
+
+The observability stack is enabled by default. Access Grafana at the configured
+hostname to view:
+
+- **Infrastructure metrics**: CPU, memory, disk, network (VictoriaMetrics + Node
+  Exporter)
+- **Application logs**: Aggregated logs from all pods (Loki)
+- **Distributed tracing**: Request traces (Tempo)
+- **Custom dashboards**: Pre-configured dashboards for Besu, PostgreSQL, Redis
+
+Configure alerting in Grafana to receive notifications on critical events.
+
+### Backup and disaster recovery
+
+1. **Database backups**
+
+   Use Velero or a PostgreSQL backup operator:
+
+   ```bash
+   # Example: Velero backup
+   velero backup create atk-daily \
+     --include-namespaces atk \
+     --storage-location default \
+     --snapshot-volumes
+   ```
+
+2. **Blockchain data snapshots**
+
+   Besu data is stored in PersistentVolumes. Snapshot volumes periodically:
+
+   ```bash
+   # List PVCs for blockchain nodes
+   kubectl get pvc -n atk | grep besu
+
+   # Create volume snapshots via CSI driver
+   kubectl create -f besu-snapshot.yaml
+   ```
+
+3. **Configuration backups**
+
+   Store Helm values files in version control and backup:
+
+   ```bash
+   helm get values atk -n atk > atk-values-backup.yaml
+   ```
+
+## Resource summary
+
+Default resource allocations with full stack enabled:
+
+| Component                             | Replicas | Request CPU      | Limit CPU         | Request Memory       | Limit Memory          | Storage           |
+| ------------------------------------- | -------- | ---------------- | ----------------- | -------------------- | --------------------- | ----------------- |
+| network.network-nodes                 | 2        | 60m (total 120m) | 360m (total 720m) | 512Mi (total 1024Mi) | 1024Mi (total 2048Mi) | 20Gi (total 40Gi) |
+| erpc                                  | 1        | 60m              | 360m              | 256Mi                | 512Mi                 | -                 |
+| blockscout.blockscout                 | 1        | 100m             | 600m              | 640Mi                | 1280Mi                | -                 |
+| blockscout.frontend                   | 1        | 60m              | 360m              | 320Mi                | 640Mi                 | -                 |
+| graph-node                            | 1        | 60m              | 360m              | 512Mi                | 1024Mi                | -                 |
+| hasura                                | 1        | 80m              | 480m              | 384Mi                | 768Mi                 | -                 |
+| portal                                | 1        | 60m              | 360m              | 256Mi                | 512Mi                 | -                 |
+| txsigner                              | 1        | 60m              | 360m              | 192Mi                | 384Mi                 | -                 |
+| dapp                                  | 1        | 100m             | 3000m             | 1024Mi               | 2048Mi                | -                 |
+| support.ingress-nginx                 | 1        | 120m             | 720m              | 256Mi                | 512Mi                 | -                 |
+| support.redis                         | 1        | 40m              | 240m              | 64Mi                 | 128Mi                 | 1Gi               |
+| support.postgresql                    | 1        | -                | -                 | -                    | -                     | -                 |
+| support.minio                         | 1        | 50m              | 300m              | 256Mi                | 512Mi                 | -                 |
+| observability.grafana                 | 1        | 60m              | 360m              | 256Mi                | 512Mi                 | -                 |
+| observability.loki                    | 1        | 200m             | 1200m             | 512Mi                | 1024Mi                | 10Gi              |
+| observability.victoria-metrics-single | 1        | 60m              | 360m              | 256Mi                | 512Mi                 | 10Gi              |
+| observability.alloy                   | 1        | 120m             | 720m              | 512Mi                | 1024Mi                | -                 |
+| **Totals**                            | -        | **1.45 cores**   | **10.7 cores**    | **6.2Gi**            | **12.9Gi**            | **61Gi**          |
+
+These totals represent the minimum cluster capacity required. Add overhead for
+system components (kube-system, DNS, etc.).
+
+## CI/CD integration
+
+The kit includes GitHub Actions workflows for automated deployment.
+
+### QA workflow
+
+The `.github/workflows/qa.yml` workflow performs:
+
+1. **Artifact generation** (`bun run artifacts`):
+   - Compiles smart contracts
+   - Generates ABIs and TypeScript bindings
+   - Creates genesis allocation file
+
+2. **Backend services startup** (`bun dev:up`):
+   - Launches Docker Compose stack
+   - Starts local PostgreSQL, Redis, Besu node
+
+3. **Test execution** (`bunx turbo run ci:gha`):
+   - Unit tests (Vitest, Foundry)
+   - Integration tests (contract interactions)
+   - E2E tests (Playwright)
+   - Linting and type checking
+
+4. **Chart testing** (conditional):
+   - Helm chart linting (`ct lint`)
+   - Deployment to ephemeral Kubernetes cluster (`ct install`)
+   - Validates all resources reach ready state
+
+5. **Docker image builds**:
+   - DApp image: `Dockerfile.dapp`
+   - Contract artifacts: `Dockerfile.contracts`
+   - Pushed to GitHub Container Registry
+
+### Deployment workflow
+
+For production deployments, extend the QA workflow:
+
+```yaml
+# .github/workflows/deploy-production.yml
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig
+          export KUBECONFIG=kubeconfig
+
+      - name: Deploy with Helm
+        working-directory: kit/charts/atk
+        run: |
+          helm upgrade atk . \
+            --install \
+            --namespace atk \
+            --create-namespace \
+            --values values-production.yaml \
+            --set dapp.image.tag=${{ github.ref_name }} \
+            --timeout 20m \
+            --wait
+```
+
+### GitOps approach
+
+For declarative deployments, use ArgoCD or Flux:
+
+**ArgoCD Application manifest**:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: atk
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-org/asset-tokenization-kit
+    targetRevision: main
+    path: kit/charts/atk
+    helm:
+      valueFiles:
+        - values-production.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: atk
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+```
+
+## Troubleshooting
+
+### Pod crashes or restarts
+
+1. **Check pod logs**:
+
+   ```bash
+   kubectl logs -n atk <pod-name> --previous
+   ```
+
+2. **Describe pod for events**:
+
+   ```bash
+   kubectl describe pod -n atk <pod-name>
+   ```
+
+3. **Common issues**:
+   - **Database connection errors**: Verify PostgreSQL is running and
+     credentials match
+   - **RPC connection errors**: Check ERPC and Besu node status
+   - **OOM kills**: Increase memory limits in `values.yaml`
+
+### Ingress not accessible
+
+1. **Verify ingress controller**:
+
+   ```bash
+   kubectl get pods -n atk -l app.kubernetes.io/name=ingress-nginx
+   ```
+
+2. **Check ingress resources**:
+
+   ```bash
+   kubectl get ingress -n atk
+   ```
+
+   Ensure each ingress has an `ADDRESS` assigned.
+
+3. **DNS resolution**:
+
+   ```bash
+   nslookup dapp.example.com
+   ```
+
+   Verify DNS points to ingress controller LoadBalancer IP.
+
+### Database migration failures
+
+The DApp includes a post-install job that runs Drizzle migrations. If it fails:
+
+1. **Check job logs**:
+
+   ```bash
+   kubectl logs -n atk job/dapp-migrations
+   ```
+
+2. **Manually run migrations**:
+
+   ```bash
+   kubectl exec -n atk deployment/dapp -- bun run db:migrate
+   ```
+
+### Genesis file regeneration
+
+If you modify smart contract deployments, regenerate genesis allocations:
+
+```bash
+# Locally
+bun run artifacts
+
+# The network-bootstrapper job automatically compiles genesis.json
+# Restart Besu nodes to pick up changes:
+kubectl rollout restart statefulset/besu-validator -n atk
+kubectl rollout restart statefulset/besu-rpc -n atk
+```
+
+### Helm upgrade failures
+
+If `helm upgrade` fails mid-deployment:
+
+1. **Check release status**:
+
+   ```bash
+   helm status atk -n atk
+   ```
+
+2. **Rollback to previous version**:
+
+   ```bash
+   helm rollback atk -n atk
+   ```
+
+3. **Force upgrade** (use cautiously):
+
+   ```bash
+   helm upgrade atk . --namespace atk --force
+   ```
+
+## Uninstallation
+
+To completely remove the deployment:
+
+```bash
+# Uninstall Helm release
+helm uninstall atk -n atk
+
+# Delete namespace (removes all resources)
+kubectl delete namespace atk
+```
+
+**Warning**: This deletes all data including blockchain state, databases, and
+logs. Backup critical data before uninstalling.
+
+## Next steps
+
+- Review [Testing and QA](./testing-qa) for running tests against deployed
+  environments
+- See [Development FAQ](./dev-faq) for common deployment issues
+- Explore [Code Structure](./code-structure) to understand the monorepo layout
+- Consult [Contract Reference](./contract-reference) for smart contract
+  interfaces

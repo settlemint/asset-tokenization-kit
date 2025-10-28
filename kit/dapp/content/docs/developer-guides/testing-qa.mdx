@@ -1,16 +1,987 @@
 ---
-title: Testing guide
+title: Testing and QA
 description:
-  Guide for running tests and ensuring quality when customizing or deploying ATK
-pageTitle: Testing and quality assurance
-tags: [how-to, testing, QA, CI, E2E]
+  Comprehensive guide to running tests, ensuring code quality, and writing new
+  tests for the Asset Tokenization Kit
 ---
 
-## Subsections (Planned)
+This guide covers the testing infrastructure across the Asset Tokenization Kit
+monorepo, including unit tests, smart contract tests, E2E tests, and continuous
+integration practices.
 
-- Unit Tests
-- Smart Contract Tests
-- End-to-End Tests
-- Writing New Tests
-- Continuous Integration
-- Linting and Code Style
+## Testing architecture
+
+The kit employs a multi-layered testing strategy:
+
+<Mermaid>
+{`
+graph TD
+    A[Test Strategy] --&gt; B[Unit Tests]
+    A --&gt; C[Contract Tests]
+    A --&gt; D[E2E Tests]
+    A --&gt; E[Linting &amp; Formatting]
+
+    B --&gt; B1[DApp - Vitest]
+    B --&gt; B2[Subgraph - Matchstick]
+
+    C --&gt; C1[Foundry Tests]
+    C --&gt; C2[Hardhat Tests]
+
+    D --&gt; D1[Playwright UI Tests]
+    D --&gt; D2[API Tests]
+
+    E --&gt; E1[ESLint/Solhint]
+    E --&gt; E2[Prettier]
+    E --&gt; E3[TypeScript]
+
+`}
+
+</Mermaid>
+
+### Test locations
+
+```
+kit/
+├── contracts/
+│   └── test/          # Foundry smart contract tests
+├── dapp/
+│   └── test/          # Vitest unit tests for frontend
+├── subgraph/
+│   └── test/          # Matchstick subgraph tests
+└── e2e/
+    ├── ui-tests/      # Playwright browser automation tests
+    └── test-data/     # Shared test fixtures
+```
+
+## Running tests
+
+### All tests (full CI suite)
+
+Run the complete test suite across all packages:
+
+```bash
+# From repository root
+bun run ci
+```
+
+This executes:
+
+1. Format checking (Prettier)
+2. TypeScript compilation
+3. Code generation (contract types, subgraph schemas)
+4. Linting (ESLint, Solhint)
+5. Type checking
+6. Unit tests (all packages)
+7. Build verification
+
+For faster iteration during development:
+
+```bash
+# Skip integration tests
+bun run ci:base
+```
+
+### Unit tests (DApp)
+
+The DApp uses **Vitest** for unit testing React components, utilities, and
+business logic.
+
+#### Run all unit tests
+
+```bash
+cd kit/dapp
+bun run test:unit
+```
+
+#### Run with UI mode
+
+Vitest UI provides an interactive test runner:
+
+```bash
+bun run test:unit:ui
+```
+
+Opens browser at `http://localhost:51204/__vitest__/` with:
+
+- Test file tree
+- Real-time test execution
+- Coverage visualization
+- Source code viewer
+
+#### Run specific test file
+
+```bash
+bun run test:unit -- path/to/file.test.ts
+```
+
+#### Watch mode
+
+Auto-rerun tests on file changes:
+
+```bash
+bun run test:unit:watch
+```
+
+#### Coverage report
+
+Generate code coverage metrics:
+
+```bash
+bun run test:unit:coverage
+```
+
+View coverage report at `kit/dapp/coverage/index.html`:
+
+- Line coverage
+- Branch coverage
+- Function coverage
+- Uncovered lines highlighted
+
+### Smart contract tests
+
+The contracts package uses **Foundry** for Solidity testing with gas tracking
+and fuzzing.
+
+#### Run all contract tests
+
+```bash
+cd kit/contracts
+bun run test
+```
+
+Or via Turbo from root:
+
+```bash
+bunx turbo run test --filter=contracts
+```
+
+#### Run specific test contract
+
+```bash
+forge test --match-contract BondTokenTest
+```
+
+#### Run specific test function
+
+```bash
+forge test --match-test test_IssueBond
+```
+
+#### Gas report
+
+Generate gas usage report:
+
+```bash
+forge test --gas-report
+```
+
+Shows gas consumption per function call:
+
+```
+| Function        | min  | avg   | max   | calls |
+|-----------------|------|-------|-------|-------|
+| issueBond       | 2431 | 42341 | 82251 | 12    |
+| transfer        | 1234 | 23456 | 45678 | 24    |
+```
+
+#### Coverage report
+
+Generate contract coverage:
+
+```bash
+bun run test:ci
+```
+
+Creates LCOV report at `kit/contracts/coverage/lcov.info`. View with coverage
+tools or upload to Coveralls.
+
+#### Fuzzing
+
+Foundry automatically fuzzes test inputs. Customize fuzz runs:
+
+```solidity
+// In test contract
+function testFuzz_Transfer(uint256 amount) public {
+    vm.assume(amount > 0 && amount <= maxSupply);
+    // Test logic
+}
+```
+
+Adjust fuzz runs in `foundry.toml`:
+
+```toml
+[fuzz]
+runs = 256
+max_test_rejects = 65536
+```
+
+### Subgraph tests
+
+The subgraph uses **Matchstick** (AssemblyScript testing framework).
+
+#### Run all subgraph tests
+
+```bash
+cd kit/subgraph
+bun run test
+```
+
+#### Run specific test file
+
+```bash
+graph test test/bond-token.test.ts
+```
+
+#### Debug mode
+
+```bash
+graph test --debug
+```
+
+### End-to-end tests
+
+The E2E suite uses **Playwright** for full-stack integration testing across UI
+and API.
+
+#### Prerequisites
+
+Start the full development environment before running E2E tests:
+
+```bash
+# From repository root
+bun run dev:up
+bun run artifacts
+```
+
+Wait for all services to be healthy:
+
+- PostgreSQL (port 5432)
+- Redis (port 6379)
+- Besu node (port 8545)
+- DApp (port 3000)
+- Hasura (port 8080)
+
+#### Run all UI tests
+
+```bash
+cd kit/e2e
+bun run test:ui
+```
+
+#### Run UI tests with browser visible
+
+```bash
+bun run test:ui:headed
+```
+
+#### Run specific test file
+
+```bash
+bun run test:ui -- ui-tests/bond-token.spec.ts
+```
+
+#### Run API tests
+
+```bash
+bun run test:api
+```
+
+API tests validate GraphQL endpoints, ORPC procedures, and backend logic without
+browser interaction.
+
+#### Debug mode
+
+```bash
+bun run test:ui:debug
+```
+
+Opens Playwright Inspector for step-by-step debugging:
+
+- Set breakpoints
+- Inspect DOM snapshots
+- View network requests
+- Console logs
+
+#### Playwright UI mode
+
+Interactive test runner:
+
+```bash
+bun run test:ui:ui-mode
+```
+
+Features:
+
+- Watch mode with auto-rerun
+- Time travel debugging
+- Trace viewer
+- Visual test picker
+
+### Test project structure (E2E)
+
+Playwright tests are organized into dependent projects (see
+`kit/e2e/playwright.ui.config.ts`):
+
+1. **setup**: Complete onboarding flow (runs first)
+2. **transfer-users**: Create test users for transfers
+3. **ui-tests**: Main UI test suite (depends on setup)
+4. **stablecoin-tests**: Stablecoin validation
+5. **deposit-tests**: Deposit product tests
+6. **equity-tests**: Equity token tests
+7. **fund-tests**: Investment fund tests
+8. **bond-tests**: Bond issuance tests
+9. **cleanup**: Global teardown (runs last)
+
+Run specific project:
+
+```bash
+bun run test:ui --project=bond-tests
+```
+
+## Writing new tests
+
+### Unit tests (DApp)
+
+Create test files adjacent to source files with `.test.ts` extension:
+
+```
+src/
+├── components/
+│   ├── bond-form.tsx
+│   └── bond-form.test.tsx
+```
+
+#### Example: Component test
+
+```typescript
+// kit/dapp/src/components/bond-form.test.tsx
+import { render, screen, waitFor } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import { describe, it, expect, vi } from 'vitest';
+import { BondForm } from './bond-form';
+
+describe('BondForm', () => {
+  it('submits bond creation with valid inputs', async () => {
+    const onSubmit = vi.fn();
+    const user = userEvent.setup();
+
+    render(&lt;BondForm onSubmit={onSubmit} /&gt;);
+
+    // Fill form
+    await user.type(screen.getByLabelText(/name/i), 'Corporate Bond 2024');
+    await user.type(screen.getByLabelText(/symbol/i), 'CORP24');
+    await user.type(screen.getByLabelText(/face value/i), '1000');
+
+    // Submit
+    await user.click(screen.getByRole('button', { name: /create/i }));
+
+    // Verify
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith({
+        name: 'Corporate Bond 2024',
+        symbol: 'CORP24',
+        faceValue: 1000,
+      });
+    });
+  });
+
+  it('displays validation errors for invalid inputs', async () => {
+    render(&lt;BondForm onSubmit={vi.fn()} /&gt;);
+
+    // Submit empty form
+    await userEvent.click(screen.getByRole('button', { name: /create/i }));
+
+    // Check errors
+    expect(screen.getByText(/name is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/symbol is required/i)).toBeInTheDocument();
+  });
+});
+```
+
+#### Example: Utility test
+
+```typescript
+// kit/dapp/src/lib/format-currency.test.ts
+import { describe, it, expect } from "vitest";
+import { formatCurrency } from "./format-currency";
+
+describe("formatCurrency", () => {
+  it("formats USD amounts with commas", () => {
+    expect(formatCurrency(1234567.89, "USD")).toBe("$1,234,567.89");
+  });
+
+  it("handles zero values", () => {
+    expect(formatCurrency(0, "USD")).toBe("$0.00");
+  });
+
+  it("supports different currencies", () => {
+    expect(formatCurrency(1000, "EUR")).toBe("€1,000.00");
+    expect(formatCurrency(1000, "GBP")).toBe("£1,000.00");
+  });
+});
+```
+
+### Smart contract tests
+
+Create test contracts in `kit/contracts/test/` following the pattern
+`ContractName.t.sol`:
+
+```
+test/
+├── BondToken.t.sol
+├── EquityToken.t.sol
+└── fixtures/
+    └── TestHelpers.sol
+```
+
+#### Example: Foundry test
+
+```solidity
+// kit/contracts/test/BondToken.t.sol
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+import "forge-std/Test.sol";
+import "../contracts/BondToken.sol";
+
+contract BondTokenTest is Test {
+    BondToken public bond;
+    address public issuer = address(1);
+    address public investor = address(2);
+
+    function setUp() public {
+        vm.startPrank(issuer);
+        bond = new BondToken(
+            "Corporate Bond",
+            "CORP",
+            1000e18, // face value
+            5,       // coupon rate (5%)
+            365 days // maturity
+        );
+        vm.stopPrank();
+    }
+
+    function test_IssueBond() public {
+        vm.prank(issuer);
+        bond.issue(investor, 10);
+
+        assertEq(bond.balanceOf(investor), 10);
+        assertEq(bond.totalSupply(), 10);
+    }
+
+    function test_RevertWhen_NonIssuerIssues() public {
+        vm.prank(investor);
+        vm.expectRevert("Only issuer can issue bonds");
+        bond.issue(investor, 10);
+    }
+
+    function testFuzz_Transfer(uint256 amount) public {
+        vm.assume(amount > 0 && amount <= 1000);
+
+        // Issue bonds
+        vm.prank(issuer);
+        bond.issue(investor, amount);
+
+        // Transfer
+        vm.prank(investor);
+        bond.transfer(address(3), amount / 2);
+
+        assertEq(bond.balanceOf(investor), amount - (amount / 2));
+        assertEq(bond.balanceOf(address(3)), amount / 2);
+    }
+}
+```
+
+#### Test helpers
+
+Use Foundry cheatcodes:
+
+- `vm.prank(address)`: Set msg.sender for next call
+- `vm.startPrank(address)`: Set msg.sender until stopPrank
+- `vm.expectRevert(string)`: Expect next call to revert
+- `vm.warp(timestamp)`: Set block.timestamp
+- `vm.roll(blockNumber)`: Set block.number
+- `vm.deal(address, amount)`: Set ETH balance
+
+### E2E tests
+
+Create test files in `kit/e2e/ui-tests/` with `.spec.ts` extension.
+
+#### Example: Playwright test
+
+```typescript
+// kit/e2e/ui-tests/bond-issuance.spec.ts
+import { test, expect } from "@playwright/test";
+import { loginAs } from "../utils/auth-helpers";
+import { createBond } from "../utils/bond-helpers";
+
+test.describe("Bond Issuance", () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAs(page, "issuer@example.com");
+  });
+
+  test("creates new bond with valid parameters", async ({ page }) => {
+    await page.goto("/bonds/new");
+
+    // Fill form
+    await page.getByLabel("Bond Name").fill("Green Bond 2024");
+    await page.getByLabel("Symbol").fill("GREEN24");
+    await page.getByLabel("Face Value").fill("1000");
+    await page.getByLabel("Coupon Rate (%)").fill("4.5");
+    await page.getByLabel("Maturity Date").fill("2029-12-31");
+
+    // Submit
+    await page.getByRole("button", { name: /create bond/i }).click();
+
+    // Verify success
+    await expect(page.getByText(/bond created successfully/i)).toBeVisible();
+
+    // Check bond appears in list
+    await page.goto("/bonds");
+    await expect(page.getByText("Green Bond 2024")).toBeVisible();
+  });
+
+  test("validates required fields", async ({ page }) => {
+    await page.goto("/bonds/new");
+
+    // Submit without filling
+    await page.getByRole("button", { name: /create bond/i }).click();
+
+    // Check validation messages
+    await expect(page.getByText(/name is required/i)).toBeVisible();
+    await expect(page.getByText(/symbol is required/i)).toBeVisible();
+  });
+
+  test("displays bond details after creation", async ({ page }) => {
+    const bond = await createBond(page, {
+      name: "Test Bond",
+      symbol: "TEST",
+      faceValue: 1000,
+      couponRate: 5,
+      maturityDate: "2030-01-01",
+    });
+
+    await page.goto(`/bonds/${bond.id}`);
+
+    await expect(
+      page.getByRole("heading", { name: "Test Bond" })
+    ).toBeVisible();
+    await expect(page.getByText("$1,000.00")).toBeVisible();
+    await expect(page.getByText("5%")).toBeVisible();
+  });
+});
+```
+
+#### Using test fixtures
+
+Create reusable test data:
+
+```typescript
+// kit/e2e/test-data/bonds.ts
+export const SAMPLE_BONDS = {
+  corporateBond: {
+    name: "Corporate Bond 2024",
+    symbol: "CORP24",
+    faceValue: 1000,
+    couponRate: 4.5,
+    maturityDate: "2029-12-31",
+  },
+  governmentBond: {
+    name: "Treasury Bond",
+    symbol: "TREAS",
+    faceValue: 5000,
+    couponRate: 3.0,
+    maturityDate: "2034-06-30",
+  },
+};
+```
+
+Use in tests:
+
+```typescript
+import { SAMPLE_BONDS } from "../test-data/bonds";
+
+test("creates corporate bond", async ({ page }) => {
+  await createBond(page, SAMPLE_BONDS.corporateBond);
+  // ...
+});
+```
+
+## Linting and code quality
+
+### Run all linters
+
+```bash
+bun run lint
+```
+
+This runs:
+
+- **ESLint** for TypeScript/JavaScript
+- **Solhint** for Solidity
+- **Prettier** (check mode)
+
+### Solidity linting
+
+```bash
+cd kit/contracts
+bun run lint
+```
+
+Enforces rules from `.solhint.json`:
+
+- Best practices
+- Security patterns
+- Gas optimization
+- Naming conventions
+
+Fix auto-fixable issues:
+
+```bash
+solhint --fix contracts/**/*.sol
+```
+
+### TypeScript/JavaScript linting
+
+```bash
+cd kit/dapp
+bun run lint
+```
+
+ESLint configuration in `eslint.config.ts` enforces:
+
+- React best practices
+- Accessibility rules (jsx-a11y)
+- TypeScript strict rules
+- Import order
+
+Fix auto-fixable issues:
+
+```bash
+bun run lint:fix
+```
+
+### Formatting
+
+Check formatting without modifying files:
+
+```bash
+bun run format:check
+```
+
+Auto-format all files:
+
+```bash
+bun run format
+```
+
+Prettier configuration (`.prettierrc`):
+
+- 2-space indentation
+- Single quotes
+- Trailing commas (ES5)
+- 80-character line width
+
+### Type checking
+
+Run TypeScript compiler in check mode:
+
+```bash
+bun run typecheck
+```
+
+Or per package:
+
+```bash
+bunx turbo run typecheck --filter=dapp
+bunx turbo run typecheck --filter=contracts
+```
+
+## Continuous integration
+
+The GitHub Actions workflow (`.github/workflows/qa.yml`) runs on every pull
+request and push to main.
+
+### CI pipeline stages
+
+1. **Setup**:
+   - Checkout repository
+   - Install Bun and dependencies
+   - Configure Docker and databases
+
+2. **Artifact generation**:
+   - Compile smart contracts (Forge + Hardhat)
+   - Generate TypeScript types from ABIs
+   - Create genesis allocations
+
+3. **Quality checks**:
+   - Format verification (Prettier)
+   - Linting (ESLint, Solhint)
+   - Type checking (TypeScript)
+
+4. **Test execution**:
+   - Unit tests (Vitest, Foundry)
+   - Subgraph tests (Matchstick)
+   - E2E tests (Playwright)
+
+5. **Chart testing** (conditional):
+   - Helm chart linting
+   - Deploy to ephemeral K8s cluster
+   - Validate all resources
+
+6. **Build verification**:
+   - Build DApp bundle
+   - Build Docker images
+   - Push to container registry
+
+### Running CI locally
+
+Reproduce CI environment:
+
+```bash
+# Full CI suite
+bun run ci
+
+# Faster subset
+bun run ci:base
+```
+
+### Test coverage reporting
+
+Coverage is uploaded to Coveralls on main branch:
+
+```bash
+# Generate coverage for all packages
+bunx turbo run test:ci --concurrency=100%
+```
+
+View coverage at:
+`https://coveralls.io/github/settlemint/asset-tokenization-kit`
+
+## Test best practices
+
+### Unit tests
+
+1. **Test behavior, not implementation**
+
+   ```typescript
+   // Good: Tests behavior
+   expect(screen.getByText("Bond created")).toBeVisible();
+
+   // Bad: Tests implementation detail
+   expect(component.state.bondCreated).toBe(true);
+   ```
+
+2. **Use meaningful test names**
+
+   ```typescript
+   // Good
+   test('displays error when face value is negative', ...);
+
+   // Bad
+   test('test1', ...);
+   ```
+
+3. **Arrange-Act-Assert pattern**
+
+   ```typescript
+   test('submits form', async () => {
+     // Arrange
+     const onSubmit = vi.fn();
+     render(&lt;Form onSubmit={onSubmit} /&gt;);
+
+     // Act
+     await userEvent.click(screen.getByRole('button'));
+
+     // Assert
+     expect(onSubmit).toHaveBeenCalled();
+   });
+   ```
+
+4. **Avoid testing library internals**
+
+   Don't test React Query, TanStack Router, or third-party libraries. Test your
+   code's integration with them.
+
+### Contract tests
+
+1. **Test edge cases and boundaries**
+
+   ```solidity
+   function test_TransferZeroAmount() public {
+       vm.expectRevert("Cannot transfer zero");
+       bond.transfer(address(1), 0);
+   }
+
+   function test_TransferMaxAmount() public {
+       bond.transfer(address(1), type(uint256).max);
+   }
+   ```
+
+2. **Use fuzz testing for input validation**
+
+   ```solidity
+   function testFuzz_ValidCouponRate(uint8 rate) public {
+       vm.assume(rate <= 100); // Valid rates: 0-100%
+       bond.setCouponRate(rate);
+       assertEq(bond.couponRate(), rate);
+   }
+   ```
+
+3. **Test access control**
+
+   ```solidity
+   function test_OnlyIssuerCanIssue() public {
+       vm.prank(attacker);
+       vm.expectRevert("Not authorized");
+       bond.issue(investor, 100);
+   }
+   ```
+
+4. **Test events**
+
+   ```solidity
+   function test_EmitsBondIssuedEvent() public {
+       vm.expectEmit(true, true, true, true);
+       emit BondIssued(investor, 100, block.timestamp);
+
+       bond.issue(investor, 100);
+   }
+   ```
+
+### E2E tests
+
+1. **Use page object model for reusability**
+
+   ```typescript
+   class BondPage {
+     constructor(private page: Page) {}
+
+     async createBond(data: BondData) {
+       await this.page.getByLabel("Name").fill(data.name);
+       await this.page.getByLabel("Symbol").fill(data.symbol);
+       await this.page.getByRole("button", { name: /create/i }).click();
+     }
+   }
+   ```
+
+2. **Wait for state, not timers**
+
+   ```typescript
+   // Good
+   await page.waitForURL("/bonds/123");
+
+   // Bad
+   await page.waitForTimeout(3000);
+   ```
+
+3. **Clean up test data**
+
+   ```typescript
+   test.afterEach(async ({ page }) => {
+     await cleanupTestBonds(page);
+   });
+   ```
+
+4. **Use auto-retry for flaky operations**
+
+   ```typescript
+   await expect
+     .poll(async () => {
+       const balance = await getBalance(address);
+       return balance;
+     })
+     .toBeGreaterThan(0);
+   ```
+
+## Debugging test failures
+
+### Unit test failures
+
+1. **Check test output**:
+
+   ```bash
+   bun run test:unit 2>&1 | tee test-output.log
+   ```
+
+2. **Run in UI mode**:
+
+   ```bash
+   bun run test:unit:ui
+   ```
+
+   Inspect component state, re-run individual tests.
+
+3. **Check coverage gaps**:
+
+   ```bash
+   bun run test:unit:coverage
+   ```
+
+   Uncovered lines may indicate missing test cases.
+
+### Contract test failures
+
+1. **Verbose output**:
+
+   ```bash
+   forge test -vvvv
+   ```
+
+   Shows:
+   - Stack traces
+   - Gas usage
+   - Storage changes
+   - Event logs
+
+2. **Debug specific test**:
+
+   ```bash
+   forge test --debug test_TransferFails
+   ```
+
+   Opens interactive debugger.
+
+3. **Gas snapshot**:
+
+   ```bash
+   forge snapshot
+   ```
+
+   Compare gas changes between runs.
+
+### E2E test failures
+
+1. **View trace files**:
+
+   Playwright saves traces on failure in `kit/e2e/test-results/`:
+
+   ```bash
+   npx playwright show-trace test-results/bond-issuance/trace.zip
+   ```
+
+2. **Take screenshots**:
+
+   ```typescript
+   await page.screenshot({ path: "debug.png", fullPage: true });
+   ```
+
+3. **Enable verbose logging**:
+
+   ```bash
+   DEBUG=pw:api bun run test:ui
+   ```
+
+4. **Slow down execution**:
+
+   ```typescript
+   test.use({ launchOptions: { slowMo: 500 } });
+   ```
+
+## Next steps
+
+- Review [Deployment Guide](./deployment-guide) for deploying to production
+  environments
+- See [Development FAQ](./dev-faq) for common testing issues
+- Explore [Code Structure](./code-structure) to understand test organization
+- Consult [API Reference](./api-reference) for testing API procedures

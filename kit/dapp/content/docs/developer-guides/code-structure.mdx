@@ -1,14 +1,569 @@
 ---
 title: Code structure
 description:
-  Explanation of the repository's structure and guidance on navigating the code
+  Complete reference for navigating the Asset Tokenization Kit monorepo
+  architecture and code organization
 pageTitle: Understanding the codebase structure
-tags: [reference, codebase, structure, modules]
+tags: [reference, monorepo, architecture, turborepo, organization]
 ---
 
-## Subsections (Planned)
+The Asset Tokenization Kit uses a Turborepo monorepo to manage multiple
+interconnected packages. This reference explains the directory structure, key
+modules, file conventions, and how packages depend on each other.
 
-- Monorepo Layout
-- Key Modules
-- Important Files
-- Code Conventions
+## Monorepo overview
+
+The repository is organized as a Bun workspace with Turborepo orchestrating
+builds, tests, and deployments across packages:
+
+```
+asset-tokenization-kit/
+├── kit/              # Main application packages
+│   ├── contracts/    # Smart contracts (Solidity)
+│   ├── dapp/        # Web application (TanStack Start)
+│   ├── subgraph/    # Blockchain indexer (TheGraph)
+│   ├── charts/      # Kubernetes deployment (Helm)
+│   └── e2e/         # End-to-end tests (Playwright)
+├── packages/         # Shared libraries
+│   ├── config/      # Shared configuration utilities
+│   └── zod/         # Shared Zod schemas
+├── tools/           # Build and development tooling
+│   ├── eslint-config/
+│   ├── i18n/
+│   └── typescript-config/
+├── .github/         # CI/CD workflows and actions
+├── docker-compose.yml
+├── package.json     # Root workspace configuration
+└── turbo.json       # Turborepo pipeline definition
+```
+
+### Package dependencies
+
+<Mermaid
+  chart={`graph TB
+    A[dapp] -->|ABIs, types| B[contracts]
+    C[subgraph] -->|ABIs, events| B
+    D[e2e] -->|UI testing| A
+    A -->|imports| E[packages/config]
+    A -->|imports| F[packages/zod]
+    C -->|imports| E
+    
+    style A fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style B fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style C fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style D fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style E fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style F fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+`}
+/>
+
+Packages use workspace protocol for internal dependencies:
+
+```json
+{
+  "dependencies": {
+    "@atk/config": "workspace:*",
+    "@atk/zod": "workspace:*",
+    "contracts": "workspace:*"
+  }
+}
+```
+
+## Package deep-dive
+
+### kit/contracts
+
+Smart contract package using Foundry (primary) and Hardhat (deployment).
+
+**Directory structure:**
+
+```
+contracts/
+├── contracts/              # Solidity source code
+│   ├── system/            # Core platform contracts
+│   │   ├── ATKSystemImplementation.sol
+│   │   ├── access-manager/
+│   │   ├── identity-registry/
+│   │   ├── tokens/factory/
+│   │   └── topic-scheme-registry/
+│   ├── smart/             # SMART Protocol (ERC-3643)
+│   │   ├── interface/
+│   │   ├── modules/       # Compliance modules
+│   │   └── extensions/
+│   ├── assets/            # Token implementations
+│   │   ├── bond/
+│   │   ├── deposit/
+│   │   ├── equity/
+│   │   ├── fund/
+│   │   └── stable-coin/
+│   ├── addons/            # Optional features
+│   │   ├── airdrop/
+│   │   ├── vault/
+│   │   ├── xvp/
+│   │   └── yield/
+│   ├── onchainid/         # Identity contracts
+│   └── vendor/            # Third-party contracts
+├── test/                  # Foundry tests
+├── scripts/               # Deployment and admin scripts
+│   └── hardhat/
+│       ├── main.ts        # Main deployment orchestrator
+│       ├── actions/       # On-chain actions
+│       ├── assets/        # Asset deployment helpers
+│       ├── constants/
+│       ├── entities/
+│       ├── services/
+│       └── utils/
+├── ignition/              # Hardhat Ignition modules
+│   └── modules/
+│       └── onboarding/
+├── .generated/            # Build outputs (gitignored)
+│   ├── artifacts/         # Compiled contracts
+│   ├── genesis.json       # Pre-deployed contract state
+│   └── portal/            # ABIs for Portal integration
+├── foundry.toml
+├── hardhat.config.ts
+└── package.json
+```
+
+**Key files:**
+
+- `contracts/system/ATKSystemImplementation.sol` - Main system contract
+  coordinating all components
+- `contracts/assets/*/ATK*FactoryImplementation.sol` - Token factory patterns
+- `scripts/hardhat/main.ts` - Entry point for deployment scripts
+- `foundry.toml` - Foundry configuration (compiler version, optimizer settings)
+- `hardhat.config.ts` - Hardhat network and plugin configuration
+
+**Build outputs:**
+
+- `bun run compile:forge` generates `.generated/artifacts/`
+- `bun run artifacts:genesis` generates `.generated/genesis.json`
+- `bun run artifacts:abi` generates `.generated/portal/` ABIs
+
+### kit/dapp
+
+Modern web application built with TanStack Start (React meta-framework).
+
+**Directory structure:**
+
+```
+dapp/
+├── src/                   # Application source code
+│   ├── routes/           # File-based routing (TanStack Router)
+│   │   ├── __root.tsx   # Root layout with providers
+│   │   ├── _private/    # Protected routes (requires auth)
+│   │   │   ├── _onboarded/
+│   │   │   │   └── _sidebar/
+│   │   │   │       ├── token/         # Token management pages
+│   │   │   │       ├── participants/  # User/entity management
+│   │   │   │       ├── platform-settings/
+│   │   │   │       └── account/       # Profile and wallet
+│   │   │   └── onboarding/
+│   │   ├── api/         # API routes
+│   │   │   ├── rpc.$.ts  # ORPC handler
+│   │   │   └── auth/     # Better Auth routes
+│   │   ├── docs/        # Documentation integration
+│   │   └── auth.tsx     # Authentication pages
+│   ├── components/       # React components
+│   │   └── ui/          # shadcn/ui components (do not edit manually)
+│   ├── orpc/            # Backend API implementation
+│   │   ├── routes/      # API routers organized by domain
+│   │   │   ├── system/
+│   │   │   ├── account/
+│   │   │   ├── actions/
+│   │   │   └── exchange-rates/
+│   │   └── helpers/     # Shared backend utilities
+│   ├── hooks/           # React hooks
+│   ├── lib/             # Core libraries
+│   │   ├── auth/        # Better Auth configuration
+│   │   ├── db/          # Drizzle ORM setup
+│   │   │   ├── index.ts
+│   │   │   ├── schema.ts
+│   │   │   └── schemas/ # Table definitions
+│   │   │       ├── auth.ts
+│   │   │       ├── kyc.ts
+│   │   │       ├── settings.ts
+│   │   │       └── exchange-rates.ts
+│   │   ├── compliance/  # Compliance encoding utilities
+│   │   ├── constants/
+│   │   ├── fragments/   # GraphQL fragments for TheGraph
+│   │   ├── i18n/        # Internationalization
+│   │   ├── observability/
+│   │   ├── strategies/  # Business logic patterns
+│   │   └── utils/       # General utilities
+│   ├── providers/       # React context providers
+│   ├── styles/          # Global CSS
+│   └── types/           # TypeScript type definitions
+├── content/             # Documentation content (MDX)
+│   └── docs/
+├── drizzle/             # Database migrations
+├── locales/             # Translation files (i18n)
+├── public/              # Static assets
+├── test/                # Test setup and utilities
+│   ├── setup/
+│   ├── mocks/
+│   └── fixtures/
+├── .source/             # Fumadocs configuration
+├── drizzle.config.ts    # Drizzle Kit configuration
+├── package.json
+├── server.ts            # Production server entry
+├── vite.config.ts       # Vite bundler configuration
+└── vitest.config.ts     # Test runner configuration
+```
+
+**Key files:**
+
+- `src/routes/__root.tsx` - Root layout with theme provider, auth, query client
+- `src/orpc/routes/*/` - API implementation organized by domain
+- `src/lib/db/schemas/` - Database table schemas (Drizzle ORM)
+- `src/lib/auth/index.ts` - Authentication configuration (Better Auth)
+- `drizzle.config.ts` - Database connection and migration settings
+- `vitest.config.ts` - Test configuration with unit and integration projects
+
+**Build outputs:**
+
+- `bun run build` generates `.nitro/` (production build)
+- `bun run db:generate` generates `drizzle/` migration files
+
+### kit/subgraph
+
+TheGraph indexing protocol for blockchain data.
+
+**Directory structure:**
+
+```
+subgraph/
+├── src/                  # TypeScript mapping handlers
+│   ├── system.ts        # System contract event handlers
+│   ├── bond.ts          # Bond asset event handlers
+│   ├── deposit.ts
+│   ├── equity.ts
+│   ├── fund.ts
+│   ├── stable-coin.ts
+│   ├── identity-registry.ts
+│   ├── claim-topics-registry.ts
+│   ├── trusted-issuers-registry.ts
+│   ├── compliance.ts
+│   ├── fixed-yield-schedule.ts
+│   └── utils/           # Shared utilities
+├── schema.graphql       # GraphQL schema definition
+├── subgraph.yaml        # Subgraph manifest
+├── .generated/          # Build outputs (gitignored)
+└── package.json
+```
+
+**Key files:**
+
+- `schema.graphql` - Defines entities: `Token`, `Transfer`, `Identity`, `Claim`,
+  etc.
+- `subgraph.yaml` - Manifest linking contracts to event handlers
+- `src/*.ts` - Event handler mappings transforming blockchain events to entities
+
+**Build outputs:**
+
+- `bun run codegen` generates `.generated/schema.ts` and entity types
+- Deployed subgraph accessible at
+  `http://localhost:8000/subgraphs/name/atk/graphql`
+
+### kit/charts
+
+Helm charts for Kubernetes deployment.
+
+**Directory structure:**
+
+```
+charts/
+├── atk/                 # Main umbrella chart
+│   ├── charts/         # Sub-charts
+│   │   ├── erpc/       # Ethereum RPC proxy
+│   │   ├── graph-node/ # TheGraph indexer
+│   │   ├── support/    # MinIO object storage
+│   │   └── txsigner/   # Transaction signing service
+│   ├── templates/      # Kubernetes manifests
+│   ├── values.yaml     # Default values
+│   └── Chart.yaml
+└── tools/              # Chart generation scripts
+```
+
+**Usage:**
+
+- Deploy to Kubernetes: `helm install atk ./kit/charts/atk`
+- Override values: `helm install atk ./kit/charts/atk -f custom-values.yaml`
+
+### kit/e2e
+
+Playwright end-to-end test suite.
+
+**Directory structure:**
+
+```
+e2e/
+├── ui-tests/            # UI workflow tests
+│   ├── 01-auth.spec.ts
+│   ├── 02-onboarding.spec.ts
+│   ├── 03-token-deployment.spec.ts
+│   └── ...
+├── pages/               # Page Object Models
+├── test-data/           # Test fixtures
+├── utils/               # Test utilities
+├── playwright.ui.config.ts
+└── package.json
+```
+
+**Run tests:**
+
+```bash
+bun run test:e2e:ui          # Headless
+bun run test:e2e:ui:debug    # UI mode
+```
+
+## Shared packages
+
+### packages/config
+
+Configuration utilities shared across packages.
+
+```typescript
+// Usage in kit/dapp
+import { getSomeConfig } from "@atk/config";
+```
+
+### packages/zod
+
+Zod schema definitions for validation and type inference.
+
+```typescript
+// Usage across packages
+import { AssetTypeSchema } from "@atk/zod";
+```
+
+## File naming conventions
+
+### TypeScript/React files
+
+- **Components**: PascalCase (`TokenList.tsx`)
+- **Utilities**: kebab-case (`format-currency.ts`)
+- **Hooks**: kebab-case with `use-` prefix (`use-auth.ts`)
+- **Tests**: Same name as file + `.test.ts` or `.spec.ts`
+  - Unit tests: `*.test.ts` (Vitest)
+  - Integration tests: `*.spec.ts` (Vitest with real services)
+  - E2E tests: `*.spec.ts` (Playwright)
+
+### Solidity files
+
+- **Contracts**: PascalCase (`ATKBondImplementation.sol`)
+- **Interfaces**: PascalCase with `I` prefix (`IATKBond.sol`)
+- **Libraries**: PascalCase (`ComplianceUtils.sol`)
+- **Tests**: PascalCase + `.t.sol` or `.s.sol`
+  - Unit tests: `*.t.sol`
+  - Integration tests: `*.s.sol`
+
+### Configuration files
+
+- **Root-level**: kebab-case (`turbo.json`, `docker-compose.yml`)
+- **TypeScript config**: PascalCase or kebab-case (`tsconfig.json`,
+  `vite.config.ts`)
+
+## Import path aliases
+
+The dApp uses TypeScript path aliases for clean imports:
+
+```typescript
+// Configured in tsconfig.json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@test/*": ["./test/*"],
+      "@locales/*": ["./locales/*"]
+    }
+  }
+}
+```
+
+**Usage:**
+
+```typescript
+// Instead of: import { cn } from "../../../lib/cn";
+import { cn } from "@/lib/cn";
+
+// Instead of: import { testUser } from "../../test/fixtures/users";
+import { testUser } from "@test/fixtures/users";
+```
+
+## Code organization patterns
+
+### Feature-based organization (dApp)
+
+Related files are grouped by feature, not file type:
+
+```
+src/routes/_private/_onboarded/_sidebar/token/
+├── $factoryAddress/
+│   ├── $tokenAddress/
+│   │   ├── index.tsx         # Token details page
+│   │   ├── holders.tsx       # Token holders tab
+│   │   ├── compliance.tsx    # Compliance tab
+│   │   ├── yield.tsx         # Yield tab
+│   │   └── actions.tsx       # Corporate actions tab
+│   └── index.tsx
+```
+
+### Domain-driven organization (ORPC API)
+
+API routes are organized by business domain:
+
+```
+src/orpc/routes/
+├── system/              # System-level operations
+├── account/             # User account management
+├── actions/             # Corporate actions
+├── exchange-rates/      # Currency exchange rates
+└── common/             # Shared schemas
+```
+
+Each domain contains:
+
+- `*.contract.ts` - ORPC contract definition (type-safe API spec)
+- `*.router.ts` - Route implementation
+- `*.schema.ts` - Zod validation schemas
+- `*.test.ts` - Unit tests
+- `*.spec.ts` - Integration tests
+
+### Layer separation (smart contracts)
+
+Contracts follow a layered architecture:
+
+1. **System layer** (`contracts/system/`) - Core platform infrastructure
+2. **SMART layer** (`contracts/smart/`) - ERC-3643 compliance framework
+3. **Asset layer** (`contracts/assets/`) - Token implementations
+4. **Addon layer** (`contracts/addons/`) - Optional features
+
+Dependencies flow downward: Assets depend on SMART, SMART depends on System.
+
+## Build and development scripts
+
+### Root package.json
+
+Commands that orchestrate across all packages:
+
+```json
+{
+  "scripts": {
+    "dev": "turbo dev watch db:studio",
+    "dev:up": "docker compose up -d",
+    "dev:reset": "bash tools/dev-reset.sh",
+    "build": "turbo build",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "format": "turbo format",
+    "artifacts": "turbo run artifacts",
+    "ci": "turbo run ci"
+  }
+}
+```
+
+### Package-specific scripts
+
+Each package has its own build pipeline:
+
+**kit/contracts/package.json:**
+
+```json
+{
+  "scripts": {
+    "compile:forge": "settlemint scs foundry build",
+    "compile:hardhat": "settlemint scs hardhat build",
+    "test": "settlemint scs foundry test",
+    "artifacts:genesis": "bun run tools/artifacts-genesis.ts",
+    "artifacts:abi": "bun run tools/artifacts-abi.ts"
+  }
+}
+```
+
+**kit/dapp/package.json:**
+
+```json
+{
+  "scripts": {
+    "dev": "bun --bun vite dev",
+    "build": "bun --bun vite build",
+    "test:unit": "vitest run --project unit",
+    "test:integration": "vitest run --project integration",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  }
+}
+```
+
+## Turborepo pipeline
+
+The `turbo.json` defines task dependencies and caching:
+
+```json
+{
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".nitro/**"]
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "artifacts": {
+      "dependsOn": ["compile", "codegen"],
+      "outputs": [".generated/**"]
+    }
+  }
+}
+```
+
+**Pipeline execution:**
+
+- `turbo run build` - Builds packages in dependency order
+- `turbo run test --filter=dapp` - Runs tests only for dApp package
+- `turbo run artifacts --force` - Ignores cache, regenerates all artifacts
+
+## Generated files and gitignore
+
+The following directories are generated during build and excluded from Git:
+
+```
+.generated/         # All build artifacts
+.nitro/            # dApp production build
+.turbo/            # Turborepo cache
+node_modules/      # Dependencies
+dist/              # Package build outputs
+drizzle/           # Database migrations (tracked)
+coverage/          # Test coverage reports
+.eslintcache       # ESLint cache
+```
+
+**Note:** `drizzle/` migrations are tracked in Git to ensure schema consistency
+across environments.
+
+## Environment-specific configuration
+
+### Development (local)
+
+- Uses `docker-compose.yml` for services
+- Environment variables in `.env.local` (gitignored)
+- Hot module replacement enabled
+- Source maps included
+
+### Production (Kubernetes)
+
+- Uses Helm charts in `kit/charts/`
+- Environment variables from Kubernetes secrets
+- Optimized builds with minification
+- Source maps excluded
+
+## Next steps
+
+- **Extend smart contracts**:
+  [Extending contracts](/developer-guides/extending-contracts)
+- **Build API endpoints**: [Using the API](/developer-guides/using-api)
+- **Deploy to production**:
+  [Deployment guide](/developer-guides/deployment-guide)
+- **Run tests**: [Testing and QA](/developer-guides/testing-qa)

@@ -1,14 +1,786 @@
 ---
 title: Contract reference
 description:
-  Technical reference for the smart contracts with ABI and function descriptions
-pageTitle: SMART contract reference (ABI and functions)
-tags: [reference, smart-contracts, ABI, functions]
+  Technical reference for smart contract interfaces with function signatures and
+  events
+pageTitle: SMART contract interface reference
+tags: [reference, smart-contracts, interfaces, solidity]
 ---
 
-## Subsections (Planned)
+This reference documents the key smart contract interfaces in the Asset
+Tokenization Kit. These interfaces define the public API for interacting with
+tokens, compliance modules, identities, and system components on-chain.
 
-- Core Contracts List
-- ABI/Function Tables
-- Inheritance and Interfaces
-- Constants and Config
+## Contract architecture overview
+
+The ATK contract layer is organized hierarchically:
+
+```
+IATKToken (Unified Token Interface)
+├── ISMART (ERC-3643 Security Token)
+│   ├── IERC20 (Standard token operations)
+│   ├── IERC20Metadata (name, symbol, decimals)
+│   └── Compliance & Identity integration
+└── ISMARTTokenAccessManaged (Role-based access control)
+
+Asset-Specific Extensions
+├── ISMARTBurnable
+├── ISMARTPausable
+├── ISMARTCustodian
+├── ISMARTRedeemable
+├── ISMARTYield
+├── ISMARTCapped
+└── ISMARTHistoricalBalances
+```
+
+All contract source code is in `kit/contracts/contracts/`. Interface files
+follow the `I*.sol` naming convention.
+
+## Core token interfaces
+
+### IATKToken
+
+**Location**: `kit/contracts/contracts/system/tokens/IATKToken.sol:1-30`
+
+Unified interface combining SMART token standard with access management. All ATK
+tokens implement this interface.
+
+**Inherits from**:
+
+- `ISMART` - ERC-3643 security token standard
+- `ISMARTTokenAccessManaged` - Role-based access control
+
+**Purpose**: Provides a single import for all token functionality, ensuring
+consistent API across bond, equity, fund, stablecoin, and deposit
+implementations.
+
+**Example usage**:
+
+```solidity
+import { IATKToken } from "@contracts/system/tokens/IATKToken.sol";
+
+function checkBalance(IATKToken token, address holder) external view returns (uint256) {
+    return token.balanceOf(holder);
+}
+```
+
+### ISMART
+
+**Location**: `kit/contracts/contracts/smart/interface/ISMART.sol:1-400`
+
+Core ERC-3643 security token interface with compliance and identity integration.
+
+**Key functions**:
+
+#### Token operations
+
+```solidity
+// Standard ERC20 (inherited)
+function transfer(address to, uint256 amount) external returns (bool);
+function approve(address spender, uint256 amount) external returns (bool);
+function transferFrom(address from, address to, uint256 amount) external returns (bool);
+function balanceOf(address account) external view returns (uint256);
+function totalSupply() external view returns (uint256);
+
+// SMART-specific
+function mint(address to, uint256 amount) external;
+function batchMint(address[] calldata toList, uint256[] calldata amounts) external;
+function batchTransfer(address[] calldata toList, uint256[] calldata amounts) external;
+function recoverERC20(address token, address to, uint256 amount) external;
+```
+
+#### Compliance management
+
+```solidity
+function setCompliance(address compliance) external;
+function setIdentityRegistry(address identityRegistry) external;
+function addComplianceModule(address module, bytes calldata params) external;
+function removeComplianceModule(address module) external;
+function setParametersForComplianceModule(address module, bytes calldata params) external;
+```
+
+#### View functions
+
+```solidity
+function compliance() external view returns (ISMARTCompliance);
+function identityRegistry() external view returns (ISMARTIdentityRegistry);
+function onchainID() external view returns (address);
+function name() external view returns (string memory);
+function symbol() external view returns (string memory);
+function decimals() external view returns (uint8);
+```
+
+**Key events**:
+
+```solidity
+event IdentityRegistryAdded(address indexed sender, address indexed identityRegistry);
+event ComplianceAdded(address indexed sender, address indexed compliance);
+event ComplianceModuleAdded(address indexed sender, address indexed module, bytes params);
+event ComplianceModuleRemoved(address indexed sender, address indexed module);
+event Verified(address indexed sender, address indexed from, address indexed to, uint256 amount);
+```
+
+**Custom errors**:
+
+```solidity
+error InvalidDecimals(uint8 decimals);
+error MintNotCompliant();
+error TransferNotCompliant();
+error DuplicateModule(address module);
+error ModuleNotFound();
+error InsufficientTokenBalance();
+error LengthMismatch();
+error ZeroAddressNotAllowed();
+```
+
+### Asset-specific interfaces
+
+#### IATKBond
+
+**Location**: `kit/contracts/contracts/assets/bond/IATKBond.sol:1-150`
+
+Bond-specific interface extending IATKToken with maturity and redemption
+features.
+
+**Additional interfaces**: ISMARTCustodian, ISMARTPausable, ISMARTBurnable,
+ISMARTRedeemable, ISMARTHistoricalBalances, ISMARTCapped, ISMARTYield
+
+**Bond-specific functions**:
+
+```solidity
+// Initialization
+struct BondInitParams {
+    uint256 maturityDate;
+    uint256 faceValue;
+    address denominationAsset;
+}
+
+function initialize(
+    string memory name,
+    string memory symbol,
+    uint8 decimals,
+    uint256 cap,
+    BondInitParams memory bondParams,
+    SMARTComplianceModuleParamPair[] memory initialModulePairs,
+    address identityRegistry,
+    address compliance,
+    address accessManager
+) external;
+
+// Bond lifecycle
+function mature() external;                           // Mark bond as matured
+function isMatured() external view returns (bool);
+
+// Bond properties
+function maturityDate() external view returns (uint256);
+function faceValue() external view returns (uint256);
+function denominationAsset() external view returns (IERC20);
+function denominationAssetBalance() external view returns (uint256);
+function totalDenominationAssetNeeded() external view returns (uint256);
+function missingDenominationAssetAmount() external view returns (uint256);
+function withdrawableDenominationAssetAmount() external view returns (uint256);
+```
+
+**Bond events**:
+
+```solidity
+event BondMatured(uint256 indexed timestamp);
+event BondRedeemed(
+    address indexed sender,
+    address indexed holder,
+    uint256 indexed bondAmount,
+    uint256 denominationAssetAmount
+);
+```
+
+**Bond errors**:
+
+```solidity
+error BondAlreadyMatured();
+error BondNotYetMatured(uint256 currentTimestamp, uint256 maturityTimestamp);
+error BondInvalidMaturityDate();
+error InvalidDenominationAsset();
+error InvalidFaceValue();
+error InsufficientDenominationAssetBalance(uint256 currentBalance, uint256 requiredBalance);
+error InvalidRedemptionAmount();
+```
+
+## Extension interfaces
+
+### ISMARTBurnable
+
+**Location**:
+`kit/contracts/contracts/smart/extensions/burnable/ISMARTBurnable.sol:1-51`
+
+Token burning (destruction) operations.
+
+**Functions**:
+
+```solidity
+function burn(address userAddress, uint256 amount) external;
+function batchBurn(address[] calldata userAddresses, uint256[] calldata amounts) external;
+```
+
+**Events**:
+
+```solidity
+event BurnCompleted(address indexed sender, address indexed from, uint256 indexed amount);
+```
+
+**Access**: Requires `SUPPLY_MANAGEMENT_ROLE`
+
+### ISMARTPausable
+
+**Location**:
+`kit/contracts/contracts/smart/extensions/pausable/ISMARTPausable.sol:1-61`
+
+Emergency pause functionality to halt token transfers.
+
+**Functions**:
+
+```solidity
+function pause() external;
+function unpause() external;
+function paused() external view returns (bool);
+```
+
+**Events**:
+
+```solidity
+event Paused(address indexed sender);
+event Unpaused(address indexed sender);
+```
+
+**Errors**:
+
+```solidity
+error TokenPaused();
+error ExpectedPause();
+```
+
+**Access**: Requires `EMERGENCY_ROLE`
+
+### ISMARTCustodian
+
+**Location**:
+`kit/contracts/contracts/smart/extensions/custodian/ISMARTCustodian.sol:1-200`
+
+Custodial operations including freezing, forced transfers, and wallet recovery.
+
+**Functions**:
+
+```solidity
+// Freeze operations
+function setAddressFrozen(address userAddress, bool freeze) external;
+function freezePartialTokens(address userAddress, uint256 amount) external;
+function unfreezePartialTokens(address userAddress, uint256 amount) external;
+function batchSetAddressFrozen(address[] calldata userAddresses, bool[] calldata freeze) external;
+function batchFreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts) external;
+function batchUnfreezePartialTokens(address[] calldata userAddresses, uint256[] calldata amounts) external;
+
+// Forced operations
+function forcedTransfer(address from, address to, uint256 amount) external returns (bool);
+function batchForcedTransfer(
+    address[] calldata fromList,
+    address[] calldata toList,
+    uint256[] calldata amounts
+) external;
+
+// Recovery operations
+function forcedRecoverTokens(address lostWallet, address newWallet) external;
+
+// View functions
+function getFrozenTokens(address userAddress) external view returns (uint256);
+function isFrozen(address userAddress) external view returns (bool);
+```
+
+**Events**:
+
+```solidity
+event AddressFrozen(address indexed sender, address indexed userAddress, bool indexed isFrozen);
+event TokensFrozen(address indexed sender, address indexed user, uint256 indexed amount);
+event TokensUnfrozen(address indexed sender, address indexed user, uint256 indexed amount);
+event ForcedTransfer(address indexed sender, address indexed from, address indexed to, uint256 amount);
+event RecoverySuccess(
+    address indexed sender,
+    address indexed lostWallet,
+    address indexed newWallet,
+    address investorOnchainID
+);
+```
+
+**Errors**:
+
+```solidity
+error FreezeAmountExceedsAvailableBalance(uint256 available, uint256 requested);
+error InsufficientFrozenTokens(uint256 frozenBalance, uint256 requested);
+error RecipientAddressFrozen();
+error SenderAddressFrozen();
+```
+
+**Access**: Requires `CUSTODIAN_ROLE`
+
+### ISMARTRedeemable
+
+**Location**:
+`kit/contracts/contracts/smart/extensions/redeemable/ISMARTRedeemable.sol`
+
+Token redemption functionality (primarily for bonds at maturity).
+
+**Functions**:
+
+```solidity
+function redeemFor(address owner, uint256 amount) external returns (bool);
+```
+
+**Events**:
+
+```solidity
+event Redeemed(address indexed sender, address indexed owner, uint256 indexed amount);
+```
+
+### ISMARTCapped
+
+**Location**: `kit/contracts/contracts/smart/extensions/capped/ISMARTCapped.sol`
+
+Maximum supply cap management.
+
+**Functions**:
+
+```solidity
+function cap() external view returns (uint256);
+function setCap(uint256 newCap) external;
+```
+
+**Events**:
+
+```solidity
+event CapUpdated(address indexed sender, uint256 indexed oldCap, uint256 indexed newCap);
+```
+
+**Errors**:
+
+```solidity
+error CapExceeded(uint256 amount, uint256 cap);
+error InvalidCap(uint256 cap);
+```
+
+**Access**: Requires `SUPPLY_MANAGEMENT_ROLE`
+
+### ISMARTYield
+
+**Location**: `kit/contracts/contracts/smart/extensions/yield/ISMARTYield.sol`
+
+Yield distribution schedule integration.
+
+**Functions**:
+
+```solidity
+function setYieldSchedule(address schedule) external;
+function yieldSchedule() external view returns (address);
+function yieldBasisPerUnit(address holder) external view returns (uint256);
+function yieldToken() external view returns (IERC20);
+```
+
+**Events**:
+
+```solidity
+event YieldScheduleSet(address indexed sender, address indexed schedule);
+```
+
+**Access**: Requires `GOVERNANCE_ROLE`
+
+### ISMARTHistoricalBalances
+
+**Location**:
+`kit/contracts/contracts/smart/extensions/historical-balances/ISMARTHistoricalBalances.sol`
+
+Historical balance tracking at specific block numbers.
+
+**Functions**:
+
+```solidity
+function balanceOfAt(address account, uint256 blockNumber) external view returns (uint256);
+function totalSupplyAt(uint256 blockNumber) external view returns (uint256);
+```
+
+## Compliance interfaces
+
+### ISMARTComplianceModule
+
+**Location**:
+`kit/contracts/contracts/smart/interface/ISMARTComplianceModule.sol:1-150`
+
+Interface for all compliance modules that enforce transfer restrictions.
+
+**Core functions**:
+
+```solidity
+// Compliance check (view only, must revert if non-compliant)
+function canTransfer(
+    address token,
+    address from,
+    address to,
+    uint256 value,
+    bytes calldata params
+) external view;
+
+// Post-transfer hooks (can modify state)
+function transferred(
+    address token,
+    address from,
+    address to,
+    uint256 value,
+    bytes calldata params
+) external;
+
+function created(address token, address to, uint256 value, bytes calldata params) external;
+
+function destroyed(address token, address from, uint256 value, bytes calldata params) external;
+
+// Configuration
+function validateParameters(bytes calldata params) external view;
+function name() external pure returns (string memory);
+```
+
+**Errors**:
+
+```solidity
+error ComplianceCheckFailed(string reason);
+error InvalidParameters(string reason);
+```
+
+**Built-in modules** (in `kit/contracts/contracts/smart/modules/`):
+
+- `CountryAllowListComplianceModule` - Restrict to specific countries
+- `CountryBlockListComplianceModule` - Block specific countries
+- `IdentityAllowListComplianceModule` - Whitelist specific identities
+- `IdentityBlockListComplianceModule` - Blacklist specific identities
+- `AddressBlockListComplianceModule` - Block specific addresses
+- `InvestorCountComplianceModule` - Limit number of token holders
+- `TokenSupplyLimitComplianceModule` - Enforce supply caps
+- `TimeLockComplianceModule` - Time-based transfer restrictions
+- `TransferApprovalComplianceModule` - Require approval for transfers
+- `SMARTIdentityVerificationComplianceModule` - Verify identity claims
+
+### ISMARTCompliance
+
+**Location**: `kit/contracts/contracts/smart/interface/ISMARTCompliance.sol`
+
+Main compliance contract that orchestrates compliance modules.
+
+**Functions**:
+
+```solidity
+function canTransfer(address from, address to, uint256 value) external view returns (bool);
+function transferred(address from, address to, uint256 value) external;
+function created(address to, uint256 value) external;
+function destroyed(address from, uint256 value) external;
+
+function addModule(address module, bytes calldata params) external;
+function removeModule(address module) external;
+function setModuleParameters(address module, bytes calldata params) external;
+function getModules() external view returns (address[] memory);
+function isModuleBound(address module) external view returns (bool);
+```
+
+## Access control
+
+### Role definitions
+
+**Location**: `kit/contracts/contracts/assets/ATKAssetRoles.sol:1-29`
+
+All token operations are protected by role-based access control using these
+roles:
+
+```solidity
+library ATKAssetRoles {
+    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
+    bytes32 public constant GOVERNANCE_ROLE = keccak256("GOVERNANCE_ROLE");
+    bytes32 public constant SUPPLY_MANAGEMENT_ROLE = keccak256("SUPPLY_MANAGEMENT_ROLE");
+    bytes32 public constant CUSTODIAN_ROLE = keccak256("CUSTODIAN_ROLE");
+    bytes32 public constant EMERGENCY_ROLE = keccak256("EMERGENCY_ROLE");
+}
+```
+
+**Role permissions**:
+
+| Role                     | Permissions                                                                |
+| ------------------------ | -------------------------------------------------------------------------- |
+| `DEFAULT_ADMIN_ROLE`     | Grant/revoke all other roles, upgrade contracts                            |
+| `GOVERNANCE_ROLE`        | Compliance management, identity registry, yield schedules, on-chain ID     |
+| `SUPPLY_MANAGEMENT_ROLE` | Mint, burn, set cap                                                        |
+| `CUSTODIAN_ROLE`         | Freeze addresses, freeze partial tokens, forced transfers, wallet recovery |
+| `EMERGENCY_ROLE`         | Pause/unpause, recover mistaken ERC20 transfers                            |
+
+### ISMARTTokenAccessManaged
+
+**Location**:
+`kit/contracts/contracts/smart/extensions/access-managed/ISMARTTokenAccessManaged.sol`
+
+Provides role-based access control for token operations.
+
+**Functions**:
+
+```solidity
+function hasRole(bytes32 role, address account) external view returns (bool);
+function getRoleAdmin(bytes32 role) external view returns (bytes32);
+function grantRole(bytes32 role, address account) external;
+function revokeRole(bytes32 role, address account) external;
+function renounceRole(bytes32 role, address account) external;
+```
+
+## System infrastructure interfaces
+
+### IATKSystem
+
+**Location**: `kit/contracts/contracts/system/IATKSystem.sol`
+
+Main system contract coordinating identity registry, compliance, and token
+factories.
+
+**Key view functions**:
+
+```solidity
+function identityRegistry() external view returns (address);
+function compliance() external view returns (address);
+function tokenFactoryRegistry() external view returns (address);
+function identityFactory() external view returns (address);
+function trustedIssuersRegistry() external view returns (address);
+function topicSchemeRegistry() external view returns (address);
+```
+
+### IATKIdentityRegistry
+
+**Location**:
+`kit/contracts/contracts/system/identity-registry/IATKIdentityRegistry.sol`
+
+Manages verified user identities and their blockchain addresses.
+
+**Functions**:
+
+```solidity
+function registerIdentity(
+    address userAddress,
+    address identity,
+    uint16 country
+) external;
+
+function updateIdentity(address userAddress, address identity) external;
+function updateCountry(address userAddress, uint16 country) external;
+function deleteIdentity(address userAddress) external;
+
+function isVerified(address userAddress) external view returns (bool);
+function identity(address userAddress) external view returns (address);
+function investorCountry(address userAddress) external view returns (uint16);
+```
+
+### IATKIdentityFactory
+
+**Location**:
+`kit/contracts/contracts/system/identity-factory/IATKIdentityFactory.sol`
+
+Factory for creating on-chain identity contracts.
+
+**Functions**:
+
+```solidity
+function createIdentity(
+    address wallet,
+    string memory identityId
+) external returns (address);
+
+function createContractIdentity(
+    address wallet,
+    string memory identityId
+) external returns (address);
+
+function getIdentity(address wallet) external view returns (address);
+function linkWallet(address wallet, address identity) external;
+```
+
+## Deployment and factories
+
+### IATKTokenFactory
+
+**Location**:
+`kit/contracts/contracts/system/tokens/factory/IATKTokenFactory.sol`
+
+Base interface for asset-specific token factories.
+
+**Functions**:
+
+```solidity
+function createToken(
+    string memory name,
+    string memory symbol,
+    uint8 decimals,
+    address systemAddress,
+    bytes memory assetSpecificParams
+) external returns (address);
+```
+
+### Asset factory implementations
+
+Each asset type has its own factory in `kit/contracts/contracts/assets/`:
+
+- `ATKBondFactoryImplementation` - Deploy bond tokens
+- `ATKEquityFactoryImplementation` - Deploy equity tokens
+- `ATKFundFactoryImplementation` - Deploy fund tokens
+- `ATKStableCoinFactoryImplementation` - Deploy stablecoin tokens
+
+## ABI generation
+
+Contract ABIs are automatically generated during build and exported to
+`kit/contracts/.generated/artifacts/` in JSON format.
+
+**Access ABIs in TypeScript**:
+
+Generated TypeScript bindings are available in `kit/dapp/src/lib/contracts/`
+after running `bun run artifacts` in `kit/contracts/`.
+
+```typescript
+import { atkBondAbi } from "@/lib/contracts/ATKBondImplementation";
+import { viem } from "@/lib/viem";
+
+// Read contract
+const maturityDate = await viem.readContract({
+  address: bondAddress,
+  abi: atkBondAbi,
+  functionName: "maturityDate",
+});
+
+// Write contract
+const hash = await viem.writeContract({
+  address: bondAddress,
+  abi: atkBondAbi,
+  functionName: "mint",
+  args: [recipientAddress, amount],
+});
+```
+
+## Common patterns
+
+### Checking compliance before transfer
+
+```solidity
+// In a compliance module
+function canTransfer(
+    address token,
+    address from,
+    address to,
+    uint256 value,
+    bytes calldata params
+) external view override {
+    // Decode module parameters
+    uint256 dailyLimit = abi.decode(params, (uint256));
+
+    // Check compliance rule
+    uint256 transferred = dailyTransfers[from][getCurrentDay()];
+    if (transferred + value > dailyLimit) {
+        revert ComplianceCheckFailed("Daily limit exceeded");
+    }
+}
+```
+
+### Updating state after transfer
+
+```solidity
+// In a compliance module
+function transferred(
+    address token,
+    address from,
+    address to,
+    uint256 value,
+    bytes calldata params
+) external override {
+    // Update tracking state
+    uint256 currentDay = getCurrentDay();
+    dailyTransfers[from][currentDay] += value;
+}
+```
+
+### Role-protected operations
+
+```solidity
+import { ATKAssetRoles } from "@contracts/assets/ATKAssetRoles.sol";
+
+function mint(address to, uint256 amount) external {
+    // Access control check performed by modifier
+    _requireRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE);
+    _mint(to, amount);
+}
+```
+
+## Testing contracts
+
+Interact with contracts in tests using Foundry or Hardhat:
+
+**Foundry example** (`kit/contracts/test/assets/ATKBond.t.sol`):
+
+```solidity
+import { Test } from "forge-std/Test.sol";
+import { IATKBond } from "@contracts/assets/bond/IATKBond.sol";
+
+contract ATKBondTest is Test {
+    IATKBond public bond;
+
+    function testMintAndRedeem() public {
+        // Mint bonds
+        bond.mint(alice, 1000e18);
+        assertEq(bond.balanceOf(alice), 1000e18);
+
+        // Fast forward to maturity
+        vm.warp(bond.maturityDate() + 1);
+
+        // Mature bond
+        bond.mature();
+        assertTrue(bond.isMatured());
+
+        // Redeem bonds
+        vm.prank(alice);
+        bond.redeemFor(alice, 1000e18);
+        assertEq(bond.balanceOf(alice), 0);
+    }
+}
+```
+
+**Hardhat example**:
+
+```typescript
+import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
+import { expect } from "chai";
+
+describe("ATKBond", function () {
+  async function deployBondFixture() {
+    const bond = await viem.deployContract("ATKBondImplementation", [
+      forwarderAddress,
+    ]);
+    return { bond };
+  }
+
+  it("should allow minting", async function () {
+    const { bond } = await loadFixture(deployBondFixture);
+
+    await bond.write.mint([alice, 1000n * 10n ** 18n]);
+    const balance = await bond.read.balanceOf([alice]);
+
+    expect(balance).to.equal(1000n * 10n ** 18n);
+  });
+});
+```
+
+## Next steps
+
+- **Review data models**: See
+  [Data Model Reference](/developer-guides/data-model-reference) for off-chain
+  schemas
+- **Study deployment**: Check
+  [Deployment Guide](/developer-guides/deployment-guide) for production setup
+- **Extend contracts**: Read
+  [Extending Contracts](/developer-guides/extending-contracts) for customization
+- **Explore implementations**: Review actual contract code in
+  `kit/contracts/contracts/`
+
+For API integration with these contracts, refer to
+[API Reference](/developer-guides/api-reference).
