@@ -11,6 +11,7 @@ import { DocsBody, DocsPage } from "@/components/docs/page";
 import { source } from "@/lib/source";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import DOMPurify from "isomorphic-dompurify";
 import type * as PageTree from "fumadocs-core/page-tree";
 import { createClientLoader } from "fumadocs-mdx/runtime/vite";
 import defaultMdxComponents from "fumadocs-ui/mdx";
@@ -57,7 +58,6 @@ const loader = createServerFn({
     return {
       tree: source.pageTree as object,
       path: page.path,
-      url: page.url,
     };
   });
 
@@ -125,7 +125,26 @@ function transformPageTree(tree: PageTree.Folder): PageTree.Folder {
       icon: (
         <span
           dangerouslySetInnerHTML={{
-            __html: item.icon,
+            __html: DOMPurify.sanitize(item.icon, {
+              ALLOWED_TAGS: ["svg", "path", "g", "circle", "rect", "line"],
+              ALLOWED_ATTR: [
+                "viewBox",
+                "width",
+                "height",
+                "fill",
+                "stroke",
+                "d",
+                "cx",
+                "cy",
+                "r",
+                "x",
+                "y",
+                "x1",
+                "y1",
+                "x2",
+                "y2",
+              ],
+            }),
           }}
         />
       ),
