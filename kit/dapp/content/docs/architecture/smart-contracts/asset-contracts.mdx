@@ -7,19 +7,22 @@ pageTitle: Asset token contracts - Bonds, equities, funds, and more
 tags: [smart-contracts, assets, bond, equity, fund, stablecoin, deposit]
 ---
 
-ATK Assets are production-ready tokenization contracts that represent various
-real-world assets (RWAs) as compliant security tokens. Built on the SMART
-Protocol foundation, each asset type provides specific functionality optimized
-for different financial instruments while maintaining full regulatory compliance
-and interoperability.
+ATK Assets are tokenization contracts that represent real-world assets (RWAs) as
+compliant security tokens. Built on the
+[SMART Protocol](/docs/architecture/smart-contracts/smart-protocol) foundation,
+each asset type provides specific functionality for different financial
+instruments while maintaining regulatory compliance and interoperability.
 
 ## What are ATK assets?
 
 ATK Assets provide smart contract implementations for five core financial
-instrument types. Each asset type is built on the SMART Protocol foundation and
-extends it with specialized functionality for specific use cases. All assets
-share common compliance and identity management infrastructure while providing
-unique features tailored to their financial instrument type.
+instrument types. Each asset type extends the SMART Protocol with specialized
+functionality for specific use cases. All assets share common
+[compliance](/docs/architecture/smart-contracts/identity-compliance#compliance-modules)
+and
+[identity management](/docs/architecture/smart-contracts/identity-compliance#onchainid-extensions)
+infrastructure while providing unique features tailored to their financial
+instrument type.
 
 ### Design principles
 
@@ -27,7 +30,7 @@ unique features tailored to their financial instrument type.
 - **Operational flexibility** - Role-based access control and emergency
   procedures
 - **Extensibility** - Modular extension system for custom functionality
-- **Security** - Battle-tested security patterns and access controls
+- **Security** - Access controls and secure patterns
 - **Interoperability** - Full ERC-20 compatibility for ecosystem integration
 
 ## Asset types
@@ -126,38 +129,49 @@ Tokenized shares with voting rights and governance capabilities.
 
 ### Deposit tokens
 
-Collateral-backed deposit certificates with backing requirements.
+Tokenized deposit certificates implementing core compliance and custodial
+controls.
 
 **Key features:**
 
-- Collateral backing verification
-- Deposit certificate functionality
-- Time-locked deposits
-- Backing requirement enforcement
+- Identity-based deposit certificates
+- Compliance-enforced transfers
+- Custodial freeze and recovery capabilities
+- Emergency pause functionality
 
 **Extensions used:**
 
-| Extension      | Purpose                              |
-| -------------- | ------------------------------------ |
-| **Pausable**   | Emergency stop functionality         |
-| **Burnable**   | Admin token destruction              |
-| **Custodian**  | Freeze accounts and forced transfers |
-| **Collateral** | Backing requirements                 |
+| Extension     | Purpose                              |
+| ------------- | ------------------------------------ |
+| **Pausable**  | Emergency stop functionality         |
+| **Burnable**  | Admin token destruction              |
+| **Custodian** | Freeze accounts and forced transfers |
 
 **Deposit-specific features:**
 
-**Collateral management**
+The deposit token implements the standard SMART Protocol extensions without
+additional specialized features beyond the core compliance framework.
+Deposit-specific requirements such as collateral backing or time-lock periods
+can be enforced through:
 
-- **Collateral claims** - OnchainID claim-based collateral verification
-- **Topic-based backing** - Specific claim topics for collateral types
-- **Continuous verification** - Ongoing collateral validity checks
+- **Compliance modules** - Use
+  [CountryAllowList](/docs/architecture/smart-contracts/identity-compliance#country-based-restrictions)
+  or
+  [IdentityVerification](/docs/architecture/smart-contracts/identity-compliance#smart-identity-verification-compliance-module)
+  modules for eligibility
+- **Time-lock module** - Apply
+  [TimeLockComplianceModule](/docs/architecture/smart-contracts/identity-compliance#time-lock-compliance-module)
+  for holding period requirements
+- **Custom modules** - Implement collateral verification through
+  [custom compliance modules](/docs/architecture/smart-contracts/identity-compliance#compliance-modules)
+  that verify OnchainID claims
 
 **Use cases:**
 
 - Certificate of deposits
-- Collateralized deposit receipts
-- Backing-verified deposits
+- Digital deposit receipts
 - Institutional deposits
+- Bank deposit tokens
 
 ### Fund tokens
 
@@ -247,7 +261,7 @@ extensions:
 | **Pausable**       | ✅       | ✅         | ✅          | ✅       | ✅             | Emergency stop           |
 | **Burnable**       | ✅       | ✅         | ✅          | ✅       | ✅             | Admin token destruction  |
 | **Custodian**      | ✅       | ✅         | ✅          | ✅       | ✅             | Freeze & recovery        |
-| **Collateral**     | ❌       | ❌         | ✅          | ❌       | ✅             | Backing requirements     |
+| **Collateral**     | ❌       | ❌         | ❌          | ❌       | ✅             | Backing requirements     |
 | **Redeemable**     | ✅       | ❌         | ❌          | ❌       | ❌             | User burn at maturity    |
 | **Yield**          | ✅       | ❌         | ❌          | ❌       | ❌             | Dividend distribution    |
 | **Historical**     | ✅       | ❌         | ❌          | ❌       | ❌             | Balance snapshots        |
@@ -424,17 +438,16 @@ Assets use upgradeable proxies with the following safety features:
 
 ## Conclusion
 
-ATK Assets provide a comprehensive suite of compliant tokenization solutions
-built on the SMART Protocol foundation. Each asset type is optimized for
-specific use cases while maintaining:
+ATK Assets provide compliant tokenization solutions built on the SMART Protocol
+foundation. Each asset type is optimized for specific use cases while
+maintaining:
 
 - **Regulatory compliance** - Full ERC-3643 compliance with modular rules
 - **Operational flexibility** - Role-based access control and emergency
   procedures
 - **Extensibility** - Modular extension system for custom functionality
-- **Security** - Battle-tested security patterns and access controls
+- **Security** - Role-based access controls and custodian safeguards
 - **Interoperability** - Full ERC-20 compatibility for ecosystem integration
 
 The unified architecture ensures consistent behavior across all asset types
-while providing specialized functionality for different financial instruments,
-making ATK Assets suitable for enterprise-grade tokenization at scale.
+while providing specialized functionality for different financial instruments.
