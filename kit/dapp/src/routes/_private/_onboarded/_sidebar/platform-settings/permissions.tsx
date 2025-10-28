@@ -1,7 +1,7 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import { UsersPermissionsTable } from "@/components/users/users-permissions-table";
+import { UsersPermissionsTable } from "@/components/participants/users/users-permissions-table";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";

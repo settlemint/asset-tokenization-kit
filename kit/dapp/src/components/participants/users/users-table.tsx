@@ -1,20 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
-import type { ColumnDef, SortingState } from "@tanstack/react-table";
-import { Users } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-
 import { DataTable } from "@/components/data-table/data-table";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
-import { Web3Address } from "@/components/web3/web3-address";
 import { orpc } from "@/orpc/orpc-client";
 import { UserWithIdentity } from "@/orpc/routes/user/routes/user.list.schema";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
+import { Users } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 const columnHelper = createStrictColumnHelper<UserWithIdentity>();
@@ -30,8 +28,8 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
   const defaultSorting = useMemo<SortingState>(
     () => [
       {
-        id: "lastActivity",
-        desc: true,
+        id: "name",
+        desc: false,
       },
     ],
     []
@@ -50,7 +48,6 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
       email: "email",
       wallet: "wallet",
       identity: "wallet",
-      lastActivity: "lastLoginAt",
       createdAt: "createdAt",
     }),
     []
@@ -161,177 +158,127 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
   /**
    * Defines the column configuration for the users table
    */
-  const columns = useMemo(
-    () =>
-      withAutoFeatures([
-        columnHelper.accessor("name", {
-          header: t("management.table.columns.name"),
-          enableSorting: true,
-          meta: {
-            displayName: t("management.table.columns.name"),
-            type: "text",
-            emptyValue: t("management.table.fallback.unknown"),
+  const columns = useMemo(() => {
+    return withAutoFeatures([
+      columnHelper.accessor("name", {
+        header: t("management.table.columns.name"),
+        enableSorting: true,
+        meta: {
+          displayName: t("management.table.columns.name"),
+          type: "text",
+          emptyValue: t("management.table.fallback.unknown"),
+        },
+      }),
+      columnHelper.accessor("email", {
+        header: t("management.table.columns.email"),
+        enableSorting: true,
+        meta: {
+          displayName: t("management.table.columns.email"),
+          type: "text",
+          emptyValue: t("management.table.fallback.unknown"),
+        },
+      }),
+      columnHelper.accessor("wallet", {
+        header: t("management.table.columns.wallet"),
+        enableSorting: true,
+        meta: {
+          displayName: t("management.table.columns.wallet"),
+          type: "address",
+          emptyValue: t("management.table.fallback.unknown"),
+          addressOptions: {
+            size: "tiny",
+            showPrettyName: false,
+            className: "max-w-full",
           },
-        }),
-        columnHelper.accessor("email", {
-          header: t("management.table.columns.email"),
-          enableSorting: true,
-          meta: {
-            displayName: t("management.table.columns.email"),
-            type: "text",
-            emptyValue: t("management.table.fallback.unknown"),
-          },
-        }),
-        columnHelper.accessor("wallet", {
-          header: t("management.table.columns.wallet"),
-          enableSorting: true,
-          meta: {
-            displayName: t("management.table.columns.wallet"),
-            type: "address",
-            emptyValue: t("management.table.noWallet"),
-            renderCell: ({ row }) => {
-              const address = row.original.wallet;
-
-              if (!address) {
-                return (
-                  <span className="text-muted-foreground">
-                    {t("management.table.noWallet")}
-                  </span>
-                );
-              }
-
-              return (
-                <Web3Address
-                  address={address}
-                  size="tiny"
-                  showPrettyName={false}
-                  className="max-w-full"
-                />
-              );
+        },
+      }),
+      columnHelper.accessor("identity", {
+        header: t("management.table.columns.identity"),
+        enableSorting: false,
+        meta: {
+          displayName: t("management.table.columns.identity"),
+          type: "address",
+          emptyValue: t("management.table.fallback.unknown"),
+          addressOptions: {
+            size: "tiny",
+            showPrettyName: false,
+            className: "max-w-full",
+            linkOptions: {
+              to: "/participants/entities/$address",
             },
           },
-        }),
-        columnHelper.display({
-          id: "identity",
-          header: t("management.table.columns.identity"),
-          enableSorting: false,
-          cell: ({ row }) => {
-            const identityAddress = row.original.identity;
+        },
+      }),
+      columnHelper.accessor((row) => resolveUserType(row), {
+        id: "type",
+        header: t("management.table.columns.type"),
+        enableSorting: false,
+        meta: {
+          displayName: t("management.table.columns.type"),
+          type: "option",
+          options: [
+            {
+              value: "admin",
+              label: t("management.table.type.admin"),
+            },
+            {
+              value: "trustedIssuer",
+              label: t("management.table.type.trustedIssuer"),
+            },
+            {
+              value: "investor",
+              label: t("management.table.type.investor"),
+            },
+          ],
+          renderCell: ({ getValue }) => {
+            const type = getValue();
 
-            if (!identityAddress) {
+            if (typeof type !== "string" || type.length === 0) {
               return (
                 <span className="text-muted-foreground">
-                  {t("management.table.identity.none")}
+                  {t("management.table.fallback.unknown")}
                 </span>
               );
             }
 
             return (
-              <Web3Address
-                address={identityAddress}
-                size="tiny"
-                className="max-w-full"
-                showPrettyName={false}
-                linkOptions={{
-                  to: "/participants/entities/$address",
-                  params: { address: identityAddress },
-                }}
-              />
+              <Badge variant="outline">
+                {t(`management.table.type.${type}`)}
+              </Badge>
             );
           },
-          meta: {
-            displayName: t("management.table.columns.identity"),
-            type: "address",
-          },
-        }),
-        columnHelper.display({
-          id: "type",
-          header: t("management.table.columns.type"),
-          enableSorting: false,
-          cell: ({ row }) => {
-            const type = resolveUserType(row.original);
-            const label = t(`management.table.userType.${type}`);
-
-            return <Badge variant="outline">{label}</Badge>;
-          },
-          meta: {
-            displayName: t("management.table.columns.type"),
-            type: "text",
-          },
-        }),
-        columnHelper.display({
-          id: "verifications",
-          header: t("management.table.columns.verifications"),
-          enableSorting: false,
-          cell: ({ row }) => {
-            const activeClaims = row.original.claims.filter(
-              (claim) => !claim.revoked
-            );
-
-            if (activeClaims.length === 0) {
-              return (
-                <span className="text-muted-foreground">
-                  {t("management.table.verifications.none")}
-                </span>
-              );
-            }
-
-            const visibleClaims = activeClaims.slice(0, 3);
-            const extraCount = activeClaims.length - visibleClaims.length;
-
-            return (
-              <div className="flex flex-wrap gap-1">
-                {visibleClaims.map((claim) => (
-                  <Badge key={claim.id} variant="secondary" className="text-xs">
-                    {claim.name}
-                  </Badge>
-                ))}
-                {extraCount > 0 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{extraCount}
-                  </Badge>
-                )}
-              </div>
-            );
-          },
-          meta: {
-            displayName: t("management.table.columns.verifications"),
-            type: "text",
-          },
-        }),
-        columnHelper.display({
-          id: "status",
-          header: t("management.table.columns.status"),
-          enableSorting: false,
-          cell: ({ row }) => {
-            const status = resolveStatus(row.original);
-            const label = t(`management.table.status.${status}`);
-
+        },
+      }),
+      columnHelper.accessor((row) => resolveStatus(row), {
+        header: t("management.table.columns.status"),
+        enableSorting: false,
+        meta: {
+          displayName: t("management.table.columns.status"),
+          type: "option",
+          options: [
+            {
+              value: "registered",
+              label: t("management.table.status.registered"),
+            },
+            {
+              value: "pending",
+              label: t("management.table.status.pending"),
+            },
+          ],
+          renderCell: ({ getValue }) => {
+            const status = getValue();
+            const translationKey =
+              status === "registered"
+                ? "management.table.status.registered"
+                : "management.table.status.pending";
             const variant = status === "registered" ? "default" : "outline";
 
-            return <Badge variant={variant}>{label}</Badge>;
+            return <Badge variant={variant}>{t(translationKey)}</Badge>;
           },
-          meta: {
-            displayName: t("management.table.columns.status"),
-            type: "text",
-          },
-        }),
-        columnHelper.accessor("lastLoginAt", {
-          id: "lastActivity",
-          header: t("management.table.columns.lastActive"),
-          enableSorting: true,
-          meta: {
-            displayName: t("management.table.columns.lastActive"),
-            type: "date",
-            dateOptions: {
-              relative: true,
-            },
-            emptyValue: t("management.table.fallback.never"),
-          },
-        }),
-      ] as ColumnDef<UserWithIdentity>[]),
-    [resolveStatus, resolveUserType, t]
-  );
+        },
+      }),
+    ]) as ColumnDef<UserWithIdentity>[];
+  }, [resolveStatus, resolveUserType, t]);
 
   // Handle loading and error states
   if (error) {
@@ -356,11 +303,11 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
       }}
       externalState={externalState}
       urlState={{
-        enabled: false, // Disable URL state since we're managing it manually
+        enabled: true,
       }}
       advancedToolbar={{
-        enableGlobalSearch: true, // Search by name (server side)
-        enableFilters: false,
+        enableGlobalSearch: true,
+        enableFilters: true,
         enableExport: true,
         enableViewOptions: true,
         placeholder: t("management.table.search.placeholder"),

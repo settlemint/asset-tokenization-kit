@@ -16,7 +16,7 @@
   },
   "management": {
     "page": {
-      "description": "Manage users, roles, and permissions for your platform."
+      "description": "Manage participants with login credentials."
     },
     "accessDenied": {
       "title": "Access restricted",
@@ -27,51 +27,34 @@
         "name": "Name",
         "email": "Email",
         "wallet": "EOA",
-        "identity": "Identity Address",
+        "identity": "Identity address",
         "type": "Type",
-        "verifications": "Verifications",
-        "status": "Status",
-        "lastActive": "Last Activity",
-        "created": "Created",
-        "role": "Role",
-        "actions": "Actions"
+        "status": "Status"
+      },
+      "fallback": {
+        "unknown": "Unknown",
+        "none": "None"
+      },
+      "type": {
+        "admin": "Admin",
+        "investor": "Investor",
+        "trustedIssuer": "Trusted issuer"
       },
       "status": {
         "registered": "Registered",
-        "pending": "Pending",
-        "notConnected": "Not Connected",
-        "identityNeeded": "Identity needed",
-        "notRegistered": "Not Registered",
-        "pendingRegistration": "Pending registration",
-        "admin": "Admin",
-        "adminAriaLabel": "User has any admin role in the system",
-        "registeredAriaLabel": "User is registered and verified on-chain",
-        "notRegisteredAriaLabel": "User is not registered on-chain",
-        "pendingAriaLabel": "User has connected wallet but is not yet registered on-chain",
-        "notConnectedAriaLabel": "User has not connected a wallet",
-        "identityNeededAriaLabel": "User has wallet but no identity registered",
-        "pendingRegistrationAriaLabel": "User identity registration is pending"
-      },
-      "userType": {
-        "admin": "Admin",
-        "investor": "Investor",
-        "trustedIssuer": "Trusted Issuer"
+        "pending": "Pending registration"
       },
       "verifications": {
         "none": "No verifications"
       },
-      "identity": {
-        "none": "No identity"
-      },
       "actions": {
-        "viewDetails": "View Details",
-        "menu": "Actions menu",
-        "openMenu": "Open actions menu"
+        "viewDetails": "View details",
+        "menu": "Menu",
+        "openMenu": "Open menu"
       },
       "search": {
         "placeholder": "Search by name, email, or wallet..."
       },
-      "noWallet": "No wallet",
       "emptyState": {
         "title": "No users found",
         "description": "No users have been registered yet.",
@@ -80,10 +63,6 @@
       "errors": {
         "loadFailed": "Failed to load users. Please try again.",
         "navigationFailed": "Failed to navigate to user details"
-      },
-      "fallback": {
-        "never": "Never",
-        "unknown": "Unknown"
       }
     }
   },
@@ -98,7 +77,8 @@
     "table": {
       "columns": {
         "name": "Name",
-        "role": "Roles"
+        "role": "Role",
+        "lastActive": "Last active"
       },
       "errors": {
         "navigationFailed": "Failed to navigate to user details",

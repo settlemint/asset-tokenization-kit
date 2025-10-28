@@ -48,6 +48,7 @@ import type enExchangeRatesTranslations from "@/locales/en-US/exchange-rates.jso
 import type enFormTranslations from "@/locales/en-US/form.json";
 import type enFormatsTranslations from "@/locales/en-US/formats.json";
 import type enGeneralTranslations from "@/locales/en-US/general.json";
+import type enEntitiesTranslations from "@/locales/en-US/entities.json";
 import type enIdentitiesTranslations from "@/locales/en-US/identities.json";
 import type enIssuerDashboardTranslations from "@/locales/en-US/issuer-dashboard.json";
 import type enLanguageTranslations from "@/locales/en-US/language.json";
@@ -100,6 +101,7 @@ declare module "i18next" {
       blockchain: typeof enBlockchainTranslations;
       "claim-topics-issuers": typeof enClaimTopicsIssuersTranslations;
       identities: typeof enIdentitiesTranslations;
+      entities: typeof enEntitiesTranslations;
       "compliance-modules": typeof enComplianceModulesTranslations;
       common: typeof enCommonTranslations;
       "country-multiselect": typeof enCountryMultiselectTranslations;

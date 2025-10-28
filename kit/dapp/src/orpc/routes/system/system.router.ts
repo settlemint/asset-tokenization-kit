@@ -2,6 +2,7 @@ import accessManagerRouter from "@/orpc/routes/system/access-manager/access-mana
 import addonRouter from "@/orpc/routes/system/addon/addon.router";
 import claimTopicsRouter from "@/orpc/routes/system/claim-topics/claim-topics.router";
 import complianceModuleRouter from "@/orpc/routes/system/compliance-module/compliance-module.router";
+import entityRouter from "@/orpc/routes/system/entity/entity.router";
 import identityRouter from "@/orpc/routes/system/identity/identity.router";
 import statsRouter from "@/orpc/routes/system/stats/stats.router";
 import tokenFactoryRouter from "@/orpc/routes/system/token-factory/factory.router";
@@ -25,6 +26,7 @@ const routes = {
   create,
   read,
   addon: addonRouter,
+  entity: entityRouter,
   identity: identityRouter,
   compliance: complianceModuleRouter,
   claimTopics: claimTopicsRouter,

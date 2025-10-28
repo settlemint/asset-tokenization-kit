@@ -1,4 +1,4 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
+import { Address } from "@graphprotocol/graph-ts";
 import {
   ContractIdentityCreated,
   IdentityCreated,
@@ -6,18 +6,20 @@ import {
 import { fetchAccount } from "../account/fetch/account";
 import { fetchEvent } from "../event/fetch/event";
 import { fetchIdentity } from "../identity/fetch/identity";
+import { updateIdentityEntityType } from "../identity/utils/identity-classification";
 import { trackIdentityCreated } from "../stats/identity-stats";
 import { fetchIdentityFactory } from "./fetch/identity-factory";
 
 export function handleIdentityCreated(event: IdentityCreated): void {
   const identity = fetchIdentity(event.params.identity);
-  if (identity.deployedInTransaction.equals(Bytes.empty())) {
-    identity.deployedInTransaction = event.transaction.hash;
-  }
+  identity.deployedInTransaction = event.transaction.hash;
   const account = fetchAccount(event.params.wallet);
   identity.account = account.id;
   identity.isContract = false;
   identity.identityFactory = event.address;
+
+  // Re-evaluate entityType so filters recognise freshly deployed identities.
+  updateIdentityEntityType(identity);
   identity.save();
 
   const identityFactory = fetchIdentityFactory(event.address);
@@ -35,13 +37,14 @@ export function handleContractIdentityCreated(
   event: ContractIdentityCreated
 ): void {
   const identity = fetchIdentity(event.params.identity);
-  if (identity.deployedInTransaction.equals(Bytes.empty())) {
-    identity.deployedInTransaction = event.transaction.hash;
-  }
+  identity.deployedInTransaction = event.transaction.hash;
   const account = fetchAccount(event.params.contractAddress);
   identity.account = account.id;
   identity.isContract = true;
   identity.identityFactory = event.address;
+
+  // Re-evaluate entityType so filters recognise freshly deployed identities.
+  updateIdentityEntityType(identity);
   identity.save();
 
   const identityFactory = fetchIdentityFactory(event.address);

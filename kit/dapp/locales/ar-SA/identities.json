@@ -106,35 +106,11 @@
   },
   "identityTable": {
     "columns": {
-      "id": "الهوية على السلسلة",
-      "type": "النوع",
-      "entity": "الكيان",
-      "linkedEntity": "الكيان المرتبط",
-      "activeClaims": "المطالبات النشطة",
-      "revokedClaims": "المطالبات الملغاة",
-      "deployment": "معاملة النشر"
+      "type": "النوع"
     },
     "types": {
       "account": "الحساب",
       "contract": "العقد"
-    },
-    "fallback": {
-      "noAccount": "لا يوجد حساب",
-      "noContract": "لا يوجد عقد",
-      "noDeployment": "لا يوجد نشر",
-      "noEntity": "لا يوجد كيان مرتبط"
-    },
-    "search": {
-      "placeholder": "بحث عن الهويات..."
-    },
-    "emptyState": {
-      "title": "لا توجد هويات",
-      "description": "لا توجد هويات تتطابق مع الفلاتر الخاصة بك حتى الآن.",
-      "loading": "جارٍ تحميل الهويات..."
-    },
-    "errors": {
-      "loadFailed": "فشل في تحميل الهويات. يرجى المحاولة مرة أخرى.",
-      "navigationFailed": "فشل في فتح تفاصيل الهوية"
     }
   },
   "page": {
