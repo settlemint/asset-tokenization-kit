@@ -8,7 +8,6 @@ import { Mermaid } from "@/components/docs/components/mermaid";
 import * as StepsComponents from "@/components/docs/components/steps";
 import * as TabsComponents from "@/components/docs/components/tabs";
 import { DocsLayout } from "@/components/docs/docs";
-import { LLMCopyButton, ViewOptions } from "@/components/docs/open-in-dropdown";
 import { DocsBody, DocsPage } from "@/components/docs/page";
 import { source } from "@/lib/source";
 import { createFileRoute, notFound } from "@tanstack/react-router";
@@ -48,7 +47,7 @@ const clientLoader = createClientLoader(docs.doc, {
   component({ toc, frontmatter, default: MDX }) {
     const data = Route.useLoaderData();
     return (
-      <DocsPage toc={toc}>
+      <DocsPage toc={toc} path={data.path}>
         <div className="space-y-2">
           <DocsBreadcrumb includeRoot={{ url: "/docs" }} includeSeparator />
           <div className="flex items-start justify-between gap-4">
@@ -61,14 +60,6 @@ const clientLoader = createClientLoader(docs.doc, {
                   {frontmatter.description}
                 </p>
               )}
-            </div>
-            <div className="flex flex-col gap-2 shrink-0">
-              <LLMCopyButton markdownUrl={data.path} className="w-full" />
-              <ViewOptions
-                markdownUrl={`/docs/${data.path}`}
-                githubUrl={`https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/content/docs/${data.path}`}
-                className="w-full"
-              />
             </div>
           </div>
         </div>
@@ -107,7 +98,7 @@ function Page() {
 }
 
 function transformPageTree(tree: PageTree.Folder): PageTree.Folder {
-  console.log(tree);
+  console.log(222, tree);
   function transform<T extends PageTree.Item | PageTree.Separator>(item: T) {
     if (typeof item.icon !== "string") return item;
 
