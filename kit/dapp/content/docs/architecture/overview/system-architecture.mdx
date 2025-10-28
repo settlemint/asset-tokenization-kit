@@ -1,0 +1,376 @@
+---
+title: System architecture
+description:
+  High-level technical architecture of the platform, including major layers and
+  components
+pageTitle: System architecture - Layered design of the ATK platform
+tags: [architecture, overview, layers, components, concept]
+---
+
+<Callout type="info" title="Template guide">
+  This page follows The Good Docs Project
+  **[Concept](https://www.thegooddocsproject.dev/template/concept)** template.
+</Callout>
+
+## Overview
+
+The Asset Tokenization Kit implements a unified Digital Asset Lifecycle Platform
+(DALP) architecture that addresses the fragmentation plaguing traditional
+tokenization approaches. Rather than relying on disparate vendor tools cobbled
+together through manual processes, ATK provides a single control plane where
+every lifecycle event—from issuance through settlement to reporting—flows
+through orchestrated services backed by compliance-first design.
+
+This architecture eliminates the reconciliation nightmares, custody-compliance
+disconnects, and T+2 settlement delays that prevent institutional adoption. By
+embedding regulatory compliance directly into the asset path through ERC-3643
+and unifying all operations through a monorepo-based stack, ATK delivers the
+deterministic state transitions and audit-ready trails that enterprise teams
+demand.
+
+## Layered Architecture
+
+ATK follows a layered, modular architecture that separates concerns while
+maintaining tight integration between components:
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Frontend Layer"
+        UI[TanStack Start dApp<br/>React, Router, Forms]
+        Mobile[Mobile Interface<br/>Responsive Design]
+        Admin[Admin Dashboard<br/>System Management]
+    end
+
+    subgraph "API Layer"
+        ORPC[ORPC API Gateway<br/>Type-safe Procedures]
+        Auth[Better Auth<br/>Session Management]
+        Middleware[Request Middleware<br/>Validation & Security]
+    end
+
+    subgraph "Business Logic Layer"
+        AssetMgmt[Asset Management<br/>Token Operations]
+        Compliance[Compliance Engine<br/>KYC/AML Processing]
+        Identity[Identity Management<br/>OnchainID Integration]
+        Addon[Addon System<br/>Extended Functionality]
+    end
+
+    subgraph "Data Layer"
+        PostgreSQL[PostgreSQL<br/>Application Data]
+        Redis[Redis<br/>Session & Cache]
+        MinIO[MinIO<br/>File Storage]
+        Subgraph[TheGraph Subgraph<br/>Blockchain Indexing]
+    end
+
+    subgraph "Blockchain Layer"
+        ATKSystem[ATK System<br/>Core Infrastructure]
+        SMART[SMART Protocol<br/>Token Foundation]
+        Assets[Asset Contracts<br/>Bond, Equity, Fund, etc.]
+        Addons[Addon Contracts<br/>Vault, Airdrop, XvP]
+    end
+
+    subgraph "Infrastructure Layer"
+        Blockchain[Blockchain Network<br/>EVM Compatible]
+        IPFS[IPFS<br/>Decentralized Storage]
+        Portal[SettleMint Portal<br/>Blockchain Gateway]
+    end
+
+    UI --> ORPC
+    Mobile --> ORPC
+    Admin --> ORPC
+
+    ORPC --> Auth
+    ORPC --> AssetMgmt
+    ORPC --> Compliance
+    ORPC --> Identity
+    ORPC --> Addon
+
+    AssetMgmt --> PostgreSQL
+    AssetMgmt --> Redis
+    AssetMgmt --> Subgraph
+    AssetMgmt --> ATKSystem
+
+    Compliance --> Identity
+    Identity --> PostgreSQL
+
+    ATKSystem --> SMART
+    SMART --> Assets
+    Assets --> Addons
+
+    Subgraph --> Blockchain
+    ATKSystem --> Blockchain
+    Portal --> Blockchain
+
+    MinIO --> IPFS
+
+    style UI fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style ORPC fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style AssetMgmt fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style ATKSystem fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style PostgreSQL fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Blockchain fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff`}
+
+/>
+
+The architecture demonstrates clear separation of concerns with well-defined
+interfaces between layers:
+
+- **Frontend Layer** provides user interfaces for different stakeholder types
+  (issuers, investors, compliance officers, administrators)
+- **API Layer** handles request processing, authentication, and type-safe data
+  validation
+- **Business Logic Layer** implements core tokenization functionality with
+  embedded compliance
+- **Data Layer** provides persistence, caching, file storage, and blockchain
+  indexing
+- **Blockchain Layer** delivers the foundational smart contract infrastructure
+  with compliance built-in
+- **Infrastructure Layer** enables deployment across public chains, consortium
+  networks, and private EVM builds
+
+## Monorepo Structure
+
+ATK is organized as a Turborepo monorepo, enabling efficient dependency
+management, build optimization, and development workflows:
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Root Level"
+        Root[asset-tokenization-kit/]
+        Config[Configuration Files<br/>package.json, turbo.json]
+        Tools[tools/<br/>Development Utilities]
+        Packages[packages/<br/>Shared Libraries]
+    end
+
+    subgraph "Kit Directory"
+        Kit[kit/<br/>Core Application]
+
+        subgraph "Application Components"
+            Contracts[contracts/<br/>Smart Contracts]
+            DApp[dapp/<br/>Frontend Application]
+            Subgraph[subgraph/<br/>Blockchain Indexer]
+            E2E[e2e/<br/>End-to-End Tests]
+            Charts[charts/<br/>Kubernetes Deployment]
+        end
+    end
+
+    subgraph "Shared Packages"
+        ConfigPkg[config/<br/>ESLint Configuration]
+        ZodPkg[zod/<br/>Schema Validation]
+        TypeScript[typescript-config/<br/>TS Configuration]
+    end
+
+    Root --> Kit
+    Root --> Tools
+    Root --> Packages
+
+    Kit --> Contracts
+    Kit --> DApp
+    Kit --> Subgraph
+    Kit --> E2E
+    Kit --> Charts
+
+    Packages --> ConfigPkg
+    Packages --> ZodPkg
+    Packages --> TypeScript
+
+    DApp -.-> Contracts
+    Subgraph -.-> Contracts
+    E2E -.-> DApp
+
+    style Root fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Kit fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style Contracts fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style DApp fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff`}
+
+/>
+
+This structure hard-codes integration discipline the market has been missing.
+Contracts, the TanStack Start dApp, the ORPC API module, TheGraph indexer,
+end-to-end tests, and Helm charts live in one workspace. Shared packages
+eliminate ambiguity about interfaces, so lifecycle flows never drift between
+teams. Environments deploy from one Helm-defined topology, meaning policy,
+infrastructure, and product evolve together.
+
+| Component    | Dependencies                                | Purpose                                                  |
+| ------------ | ------------------------------------------- | -------------------------------------------------------- |
+| **dapp**     | contracts (ABIs, types), subgraph (GraphQL) | Frontend depends on contract types and indexed data      |
+| **subgraph** | contracts (ABIs, events)                    | Indexer requires contract interfaces for event handling  |
+| **e2e**      | dapp (testing UI/API)                       | End-to-end tests validate complete application workflows |
+| **charts**   | All components                              | Kubernetes deployment requires all application artifacts |
+
+## Technology Stack
+
+ATK leverages modern, enterprise-grade technologies optimized for performance,
+security, and developer experience:
+
+| Layer                  | Technology        | Purpose                             | Why Chosen                             |
+| ---------------------- | ----------------- | ----------------------------------- | -------------------------------------- |
+| **Package Manager**    | Bun               | Fast runtime and package manager    | Performance, native TypeScript support |
+| **Monorepo**           | Turborepo         | Build system and task orchestration | Caching, parallel execution            |
+| **Smart Contracts**    | Solidity          | Contract development                | Industry standard, EVM compatibility   |
+| **Contract Framework** | Foundry + Hardhat | Testing and deployment              | Speed (Foundry), ecosystem (Hardhat)   |
+| **Frontend**           | TanStack Start    | React framework                     | Type-safety, modern patterns           |
+| **State Management**   | TanStack Query    | Server state                        | Caching, synchronization               |
+| **Routing**            | TanStack Router   | Type-safe routing                   | Type inference, code splitting         |
+| **Forms**              | TanStack Form     | Form management                     | Validation, type-safety                |
+| **UI Components**      | Radix UI          | Accessible components               | Headless, composable                   |
+| **Styling**            | Tailwind CSS      | Utility-first CSS                   | Rapid development, consistency         |
+| **API Layer**          | ORPC              | Type-safe RPC                       | End-to-end type safety                 |
+| **Database**           | PostgreSQL        | Relational database                 | ACID compliance, reliability           |
+| **ORM**                | Drizzle ORM       | Type-safe database                  | TypeScript-first, performance          |
+| **Authentication**     | Better Auth       | Auth & sessions                     | Flexible, modern                       |
+| **Indexing**           | TheGraph          | Blockchain indexing                 | Decentralized, GraphQL                 |
+| **Storage**            | MinIO             | S3-compatible storage               | Self-hosted, compatible                |
+| **Cache**              | Redis             | In-memory store                     | Speed, pub/sub                         |
+| **Orchestration**      | Kubernetes        | Container orchestration             | Scalability, reliability               |
+
+## Core Asset Types
+
+ATK supports five primary asset classes, each optimized for specific financial
+instruments:
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Asset Ecosystem"
+        Bond[Bond Tokens<br/>Fixed-term debt<br/>• Maturity dates<br/>• Yield distribution<br/>• Redemption]
+        Equity[Equity Tokens<br/>Ownership rights<br/>• Governance voting<br/>• Dividend distribution<br/>• Shareholder privileges]
+        Fund[Fund Tokens<br/>Investment vehicles<br/>• Management fees<br/>• NAV calculation<br/>• Performance tracking]
+        Stable[StableCoin Tokens<br/>Fiat-pegged<br/>• Collateral backing<br/>• Price stability<br/>• Reserve management]
+        Deposit[Deposit Tokens<br/>Banking instruments<br/>• Collateral backed<br/>• Time-locked<br/>• Banking integration]
+    end
+
+    subgraph "Common Features"
+        Compliance[Regulatory Compliance<br/>ERC-3643 Standard<br/>• KYC/AML integration<br/>• Transfer restrictions<br/>• Identity verification]
+        Extensions[Modular Extensions<br/>SMART Protocol<br/>• Pausable operations<br/>• Custodian controls<br/>• Historical tracking]
+        Governance[Governance Systems<br/>Voting Mechanisms<br/>• Proposal creation<br/>• Vote delegation<br/>• Execution controls]
+    end
+
+    Bond --> Compliance
+    Equity --> Compliance
+    Fund --> Compliance
+    Stable --> Compliance
+    Deposit --> Compliance
+
+    Bond --> Extensions
+    Equity --> Extensions
+    Fund --> Extensions
+    Stable --> Extensions
+    Deposit --> Extensions
+
+    Equity --> Governance
+    Fund --> Governance
+
+    style Bond fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Equity fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style Fund fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Stable fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style Deposit fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff`}
+
+/>
+
+| Feature                   | Bond | Equity | Fund | StableCoin | Deposit |
+| ------------------------- | ---- | ------ | ---- | ---------- | ------- |
+| **Core Tokenization**     | ✅   | ✅     | ✅   | ✅         | ✅      |
+| **Compliance Modules**    | ✅   | ✅     | ✅   | ✅         | ✅      |
+| **Transfer Restrictions** | ✅   | ✅     | ✅   | ✅         | ✅      |
+| **Voting Rights**         | ❌   | ✅     | ✅   | ❌         | ❌      |
+| **Yield Distribution**    | ✅   | ❌     | ❌   | ❌         | ❌      |
+| **Maturity Management**   | ✅   | ❌     | ❌   | ❌         | ❌      |
+| **Collateral Backing**    | ✅   | ❌     | ❌   | ✅         | ✅      |
+| **Management Fees**       | ❌   | ❌     | ✅   | ❌         | ❌      |
+| **Redemption Rights**     | ✅   | ❌     | ❌   | ✅         | ❌      |
+
+## Why This Architecture Beats Point Tools
+
+Traditional tokenization approaches suffer from fatal fragmentation:
+
+- **Issuance wizards** without registry truth or embedded compliance create
+  rework and legal risk
+- **Compliance databases** in middleware disconnect from the asset path,
+  enabling non-compliant transfers
+- **Custody vaults** cannot see rule updates, breaking synchronization
+- **Settlement workarounds** keep cash and tokens on separate systems, forcing
+  T+2 delays
+
+ATK's unified control plane eliminates these problems:
+
+- **Templated legality**: Jurisdiction-specific templates (Reg D, Reg S, MiCA)
+  baked into smart contracts from deployment
+- **Registry truth**: Real-time ownership registry synchronized through TheGraph
+  indexers
+- **Programmable lifecycle**: All operations exposed through APIs enable
+  white-label integration
+- **Embedded compliance**: ERC-3643 enforcement in the state-transition path,
+  not as a sidecar
+- **Single control plane**: Every capability (issuance, onboarding, transfers,
+  settlement, reporting) resides on the DALP
+
+Consider a bond, feeder fund, and deposit note issued simultaneously:
+
+1. Product leads model each instrument in the web console, generating ERC-3643
+   blueprints
+2. Compliance configures country, investor-limit, and lock-up modules
+   once—policies apply everywhere
+3. Identity teams onboard investors through shared REST APIs—claims synchronize
+   across offerings
+4. Custody operations pre-stage HSM-backed wallet tiers directly in DALP custody
+   services
+5. Settlement wires cash legs via payment gateway adapters, keeping cash and
+   tokens in lockstep
+6. Corporate actions schedule through the servicing workflow engine—investors
+   and auditors see the same data
+
+Because every step references the same control plane, there is no reconciliation
+step between products. Issuance, compliance, custody, and settlement remain
+consistent across instruments and venues.
+
+## Performance Targets
+
+Each component has explicit performance requirements to ensure enterprise
+readiness:
+
+| Component           | Metric                   | Target             | Why It Matters              |
+| ------------------- | ------------------------ | ------------------ | --------------------------- |
+| **Frontend**        | Page load time           | &lt;2s             | User experience, engagement |
+| **API**             | Response time            | &lt;200ms          | Real-time operations        |
+| **Blockchain**      | Transaction confirmation | &lt;100ms          | Settlement speed            |
+| **Indexer**         | Event processing latency | &lt;5s             | Data freshness              |
+| **Database**        | Uptime                   | 99.9%              | Reliability                 |
+| **Smart Contracts** | Gas cost                 | &lt;200,000 gas/tx | Transaction economics       |
+
+## Security & Compliance First
+
+Security and compliance are architectural concerns, not bolt-ons:
+
+- **ERC-3643 Integration**: Security token standard with transfer restrictions
+  built into contract logic
+- **OnchainID Protocol**: Decentralized identity with KYC/AML claim verification
+- **Role-Based Access**: OpenZeppelin AccessManager for granular permissions
+- **Upgradeable Proxies**: Safe contract evolution without data migration
+- **Audit Trails**: Immutable event logs for regulatory reporting
+- **Multi-Signature Controls**: Bank-grade custody with approval workflows
+
+## Integration Points
+
+ATK integrates with external systems while maintaining control:
+
+- **Identity Systems**: OnchainID and third-party KYC providers plug into the
+  identity registry
+- **Banking Rails**: Core banking and payment systems connect through mediation
+  services (ISO 20022, SWIFT)
+- **Custody Providers**: Custodian APIs surface into the same business services
+  that govern transfers
+- **Storage Networks**: IPFS and MinIO for document persistence and metadata
+- **Monitoring**: OpenTelemetry integration for observability and SIEM
+  integration
+
+## What Stakeholders Get
+
+- **Institutions**: One SLA and risk profile. Lifecycle policy changes propagate
+  everywhere because the control plane owns them end-to-end.
+- **Compliance Teams**: Deterministic, pre-transfer checks and auditor-ready
+  logs rather than reconciling middleware exports.
+- **Operations Teams**: Monitor one set of metrics and alerts, rehearse
+  failovers, manage capacity using the same pipelines that drive production.
+- **Developers**: Ship features instead of glue. The API surface, smart
+  contracts, and UI stay aligned through shared types and tests.

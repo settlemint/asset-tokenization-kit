@@ -1,21 +1,11 @@
 {
   "title": "Architecture",
   "pages": [
-    "system-architecture",
-    "core-components",
-    "smart-protocol",
-    "asset-contracts",
-    "identity-compliance",
-    "addon-modules",
-    "factory-upgradeability",
-    "frontend-architecture",
-    "asset-management-ux",
-    "backend-api",
-    "database-model",
-    "blockchain-indexing",
-    "external-integrations",
-    "deployment-operations",
-    "performance-scalability",
-    "regulatory-compliance"
+    "overview",
+    "smart-contracts",
+    "application",
+    "data-indexing",
+    "integration-operations",
+    "quality-performance"
   ]
 }
