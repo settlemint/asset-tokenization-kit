@@ -133,6 +133,8 @@ The following table lists the configurable parameters of this chart and their de
 |global.datastores.erpc|object|-|ERPC-specific datastore configuration for RPC gateway caching|
 |global.datastores.erpc.redis|object|-|Redis database allocation for ERPC services|
 |global.datastores.erpc.redis.cacheDb|int|`0`|Redis database number for ERPC response caching|
+|global.datastores.erpc.redis.existingSecret|string|`""`|Name of an existing secret providing ERPC Redis settings (optional)|
+|global.datastores.erpc.redis.existingSecretKeys|object|-|Secret key mapping for ERPC Redis data|
 |global.datastores.erpc.redis.sharedStateDb|int|`1`|Redis database number for ERPC shared state storage|
 |global.datastores.graphNode|object|-|The Graph Node specific datastore configuration for blockchain indexing|
 |global.datastores.graphNode.postgresql|object|-|PostgreSQL database for The Graph indexing data|
@@ -150,6 +152,8 @@ The following table lists the configurable parameters of this chart and their de
 |global.datastores.hasura.postgresql.username|string|`"hasura"`|Database user for Hasura|
 |global.datastores.hasura.redis|object|-|Redis databases for Hasura caching and rate limiting|
 |global.datastores.hasura.redis.cacheDb|int|`2`|Redis database number for Hasura query result caching|
+|global.datastores.hasura.redis.existingSecret|string|`""`|Name of an existing secret providing Hasura Redis settings (optional)|
+|global.datastores.hasura.redis.existingSecretKeys|object|-|Secret key mapping for Hasura Redis data|
 |global.datastores.hasura.redis.rateLimitDb|int|`3`|Redis database number for Hasura API rate limiting|
 |global.datastores.portal|object|-|Portal-specific datastore configuration for identity and access management|
 |global.datastores.portal.postgresql|object|-|PostgreSQL database for Portal service|
@@ -160,6 +164,8 @@ The following table lists the configurable parameters of this chart and their de
 |global.datastores.portal.postgresql.username|string|`"portal"`|Database user for Portal with limited privileges|
 |global.datastores.portal.redis|object|-|Redis database for Portal session and caching|
 |global.datastores.portal.redis.db|int|`4`|Redis database number for Portal data|
+|global.datastores.portal.redis.existingSecret|string|`""`|Name of an existing secret providing Portal Redis settings (optional)|
+|global.datastores.portal.redis.existingSecretKeys|object|-|Secret key mapping for Portal Redis data|
 |global.datastores.txsigner|object|-|Transaction Signer specific datastore configuration|
 |global.datastores.txsigner.postgresql|object|-|PostgreSQL database for transaction signing service|
 |global.datastores.txsigner.postgresql.database|string|`"txsigner"`|Dedicated database name for transaction signer state|

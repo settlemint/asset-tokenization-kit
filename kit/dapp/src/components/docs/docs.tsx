@@ -2,6 +2,11 @@
 import { SidebarLogo } from "@/components/sidebar/sidebar-logo.tsx";
 import { ThemeToggle } from "@/components/theme/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarContent,
@@ -25,8 +30,14 @@ import Link from "fumadocs-core/link";
 import type * as PageTree from "fumadocs-core/page-tree";
 import { useSearchContext } from "fumadocs-ui/contexts/search";
 import { TreeContextProvider, useTreeContext } from "fumadocs-ui/contexts/tree";
-import { HomeIcon, SearchIcon } from "lucide-react";
-import { type ComponentProps, type ReactNode, useMemo } from "react";
+import { ChevronRight, HomeIcon, SearchIcon } from "lucide-react";
+import {
+  type ComponentProps,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export interface DocsLayoutProps {
   tree: PageTree.Root;
@@ -95,17 +106,18 @@ function SearchToggle(props: ComponentProps<"button">) {
 
 function Sidebar() {
   const { root } = useTreeContext();
-
   const children = useMemo(() => {
-    function renderItems(items: PageTree.Node[]) {
+    function renderItems(items: PageTree.Node[], depth: number = 0) {
       return items.map((item) => (
-        <SidebarItem key={item.$id} item={item}>
-          {item.type === "folder" ? renderItems(item.children) : null}
+        <SidebarItem key={item.$id} item={item} depth={depth}>
+          {item.type === "folder"
+            ? renderItems(item.children, depth + 1)
+            : null}
         </SidebarItem>
       ));
     }
 
-    return renderItems(root.children);
+    return renderItems(root.children, 0);
   }, [root]);
 
   return (
@@ -126,24 +138,40 @@ function Sidebar() {
 function SidebarItem({
   item,
   children,
+  depth = 0,
 }: {
   item: PageTree.Node;
   children: ReactNode;
+  depth?: number;
 }) {
   const pathname = usePathname();
 
-  if (item.type === "page") {
-    return (
-      <SidebarMenuSubItem>
-        <SidebarMenuSubButton asChild isActive={pathname === item.url}>
-          <Link href={item.url}>
-            {item.icon}
-            {item.name}
-          </Link>
-        </SidebarMenuSubButton>
-      </SidebarMenuSubItem>
-    );
-  }
+  // Check if the current path is within this folder
+  const isActiveFolder = useMemo(() => {
+    if (item.type !== "folder") return false;
+
+    function checkFolder(folder: PageTree.Folder): boolean {
+      // Check if folder's index matches current path
+      if (folder.index?.url === pathname) return true;
+
+      // Check all children
+      for (const child of folder.children) {
+        if (child.type === "page" && child.url === pathname) return true;
+        if (child.type === "folder" && checkFolder(child)) return true;
+      }
+      return false;
+    }
+
+    return checkFolder(item);
+  }, [item, pathname]);
+
+  const [isOpen, setIsOpen] = useState(depth === 0 || isActiveFolder);
+
+  useEffect(() => {
+    if (isActiveFolder && !isOpen) {
+      setIsOpen(true);
+    }
+  }, [isActiveFolder, isOpen]);
 
   if (item.type === "separator") {
     return (
@@ -154,25 +182,115 @@ function SidebarItem({
     );
   }
 
-  return (
-    <SidebarMenuItem>
-      <SidebarMenuButton
-        asChild
-        isActive={item.index ? pathname === item.index.url : false}
-      >
-        {item.index ? (
-          <Link href={item.index.url}>
-            {item.index.icon}
-            {item.index.name}
-          </Link>
-        ) : (
-          <span>
+  if (item.type === "page") {
+    return (
+      <SidebarMenuSubItem>
+        <SidebarMenuSubButton asChild isActive={pathname === item.url}>
+          <Link href={item.url} className="overflow-hidden">
             {item.icon}
-            {item.name}
-          </span>
-        )}
-      </SidebarMenuButton>
-      {children ? <SidebarMenuSub>{children}</SidebarMenuSub> : null}
-    </SidebarMenuItem>
+            <span className="truncate">{item.name}</span>
+          </Link>
+        </SidebarMenuSubButton>
+      </SidebarMenuSubItem>
+    );
+  }
+
+  const isFolder = item.type === "folder";
+  const hasChildren = isFolder && children;
+  const isTopLevel = depth === 0;
+
+  if (!hasChildren) {
+    if (isTopLevel) {
+      return (
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            asChild={!!item.index}
+            isActive={item.index ? pathname === item.index.url : false}
+          >
+            {item.index ? (
+              <Link href={item.index.url} className="overflow-hidden">
+                {item.index.icon}
+                <span className="truncate">{item.index.name}</span>
+              </Link>
+            ) : (
+              <span className="flex items-center gap-2 overflow-hidden">
+                {item.icon}
+                <span className="truncate">{item.name}</span>
+              </span>
+            )}
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      );
+    }
+    return (
+      <SidebarMenuSubItem>
+        <SidebarMenuSubButton
+          asChild={!!item.index}
+          isActive={item.index ? pathname === item.index.url : false}
+        >
+          {item.index ? (
+            <Link href={item.index.url} className="overflow-hidden">
+              {item.index.icon}
+              <span className="truncate">{item.index.name}</span>
+            </Link>
+          ) : (
+            <span className="flex items-center gap-2 overflow-hidden">
+              {item.icon}
+              <span className="truncate">{item.name}</span>
+            </span>
+          )}
+        </SidebarMenuSubButton>
+      </SidebarMenuSubItem>
+    );
+  }
+
+  if (isTopLevel) {
+    return (
+      <Collapsible open={isOpen} onOpenChange={setIsOpen} asChild>
+        <SidebarMenuItem>
+          <CollapsibleTrigger asChild>
+            <SidebarMenuButton
+              isActive={item.index ? pathname === item.index.url : false}
+            >
+              {item.icon}
+              <span className="truncate">{item.name}</span>
+              <ChevronRight
+                className={cn(
+                  "ml-auto transition-transform",
+                  isOpen && "rotate-90"
+                )}
+              />
+            </SidebarMenuButton>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <SidebarMenuSub>{children}</SidebarMenuSub>
+          </CollapsibleContent>
+        </SidebarMenuItem>
+      </Collapsible>
+    );
+  }
+
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} asChild>
+      <SidebarMenuSubItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuSubButton
+            isActive={item.index ? pathname === item.index.url : false}
+          >
+            {item.icon}
+            <span className="truncate">{item.name}</span>
+            <ChevronRight
+              className={cn(
+                "ml-auto transition-transform",
+                isOpen && "rotate-90"
+              )}
+            />
+          </SidebarMenuSubButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub>{children}</SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuSubItem>
+    </Collapsible>
   );
 }

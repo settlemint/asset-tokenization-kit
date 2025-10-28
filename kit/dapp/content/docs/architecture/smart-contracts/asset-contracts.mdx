@@ -1,0 +1,453 @@
+---
+title: Asset contracts
+description:
+  Describes the smart contract implementations for each supported asset class
+  and their unique features
+pageTitle: Asset token contracts - Bonds, equities, funds, and more
+tags: [smart-contracts, assets, bond, equity, fund, stablecoin, deposit]
+---
+
+ATK Assets are tokenization contracts that represent real-world assets (RWAs) as
+compliant security tokens. Built on the
+[SMART Protocol](/docs/architecture/smart-contracts/smart-protocol) foundation,
+each asset type provides specific functionality for different financial
+instruments while maintaining regulatory compliance and interoperability.
+
+## What are ATK assets?
+
+ATK Assets provide smart contract implementations for five core financial
+instrument types. Each asset type extends the SMART Protocol with specialized
+functionality for specific use cases. All assets share common
+[compliance](/docs/architecture/smart-contracts/identity-compliance#compliance-modules)
+and
+[identity management](/docs/architecture/smart-contracts/identity-compliance#onchainid-extensions)
+infrastructure while providing unique features tailored to their financial
+instrument type.
+
+### Design principles
+
+- **Regulatory compliance** - Full ERC-3643 compliance with modular rules
+- **Operational flexibility** - Role-based access control and emergency
+  procedures
+- **Extensibility** - Modular extension system for custom functionality
+- **Security** - Access controls and secure patterns
+- **Interoperability** - Full ERC-20 compatibility for ecosystem integration
+
+## Asset types
+
+ATK provides five distinct asset types, each optimized for specific financial
+use cases:
+
+### Bond tokens
+
+Fixed-term debt instruments with maturity dates and redemption features.
+
+**Key features:**
+
+- Fixed maturity date and face value
+- Denomination asset backing (collateral)
+- Yield distribution capabilities
+- Redemption at maturity
+- Historical balance tracking
+- Supply cap management
+
+**Extensions used:**
+
+| Extension               | Purpose                                  |
+| ----------------------- | ---------------------------------------- |
+| **Pausable**            | Emergency stop functionality             |
+| **Burnable**            | Admin token destruction                  |
+| **Custodian**           | Freeze accounts and forced transfers     |
+| **Redeemable**          | User-initiated token burning at maturity |
+| **Yield**               | Dividend/interest distribution           |
+| **Historical balances** | Snapshot capabilities                    |
+| **Capped**              | Maximum supply limits                    |
+
+**Bond-specific features:**
+
+**Maturity management**
+
+- **Maturity date** - Fixed timestamp when bond matures
+- **Face value** - Redemption value per token
+- **Underlying asset** - Collateral backing for redemption
+- **Maturity process** - Admin-triggered maturation after maturity date
+
+**Yield distribution**
+
+- **Yield basis** - Face value per token
+- **Yield token** - Underlying asset used for payments
+- **Schedule management** - Configurable yield distribution schedule
+
+**Redemption mechanics**
+
+- **Maturity requirement** - Only redeemable after maturation
+- **Proportional redemption** - Tokens redeemed for proportional denomination
+  assets
+
+**Use cases:**
+
+- Corporate bonds
+- Government securities
+- Asset-backed securities
+- Structured products
+
+### Equity tokens
+
+Tokenized shares with voting rights and governance capabilities.
+
+**Key features:**
+
+- Voting rights through ERC20Votes
+- Governance participation
+- Shareholder privileges
+- Dividend distribution capabilities
+
+**Extensions used:**
+
+| Extension     | Purpose                              |
+| ------------- | ------------------------------------ |
+| **Pausable**  | Emergency stop functionality         |
+| **Burnable**  | Admin token destruction              |
+| **Custodian** | Freeze accounts and forced transfers |
+| **Voting**    | Governance and voting rights         |
+
+**Equity-specific features:**
+
+**Governance rights**
+
+- **Voting power** - ERC20Votes implementation
+- **Proposal participation** - Token holders can vote on proposals
+- **Delegate support** - Vote delegation to representatives
+- **Snapshot mechanism** - Historical voting power tracking
+
+**Use cases:**
+
+- Company shares
+- Startup equity tokens
+- DAO governance tokens
+- Voting securities
+
+### Deposit tokens
+
+Tokenized deposit certificates implementing core compliance and custodial
+controls.
+
+**Key features:**
+
+- Identity-based deposit certificates
+- Compliance-enforced transfers
+- Custodial freeze and recovery capabilities
+- Emergency pause functionality
+
+**Extensions used:**
+
+| Extension     | Purpose                              |
+| ------------- | ------------------------------------ |
+| **Pausable**  | Emergency stop functionality         |
+| **Burnable**  | Admin token destruction              |
+| **Custodian** | Freeze accounts and forced transfers |
+
+**Deposit-specific features:**
+
+The deposit token implements the standard SMART Protocol extensions without
+additional specialized features beyond the core compliance framework.
+Deposit-specific requirements such as collateral backing or time-lock periods
+can be enforced through:
+
+- **Compliance modules** - Use
+  [CountryAllowList](/docs/architecture/smart-contracts/identity-compliance#country-based-restrictions)
+  or
+  [IdentityVerification](/docs/architecture/smart-contracts/identity-compliance#smart-identity-verification-compliance-module)
+  modules for eligibility
+- **Time-lock module** - Apply
+  [TimeLockComplianceModule](/docs/architecture/smart-contracts/identity-compliance#time-lock-compliance-module)
+  for holding period requirements
+- **Custom modules** - Implement collateral verification through
+  [custom compliance modules](/docs/architecture/smart-contracts/identity-compliance#compliance-modules)
+  that verify OnchainID claims
+
+**Use cases:**
+
+- Certificate of deposits
+- Digital deposit receipts
+- Institutional deposits
+- Bank deposit tokens
+
+### Fund tokens
+
+Investment fund shares with management fees and governance.
+
+**Key features:**
+
+- Management fee collection
+- Voting rights for fund decisions
+- Share class management
+- Performance tracking
+
+**Extensions used:**
+
+| Extension     | Purpose                              |
+| ------------- | ------------------------------------ |
+| **Pausable**  | Emergency stop functionality         |
+| **Burnable**  | Admin token destruction              |
+| **Custodian** | Freeze accounts and forced transfers |
+| **Voting**    | Fund governance rights               |
+
+**Fund-specific features:**
+
+**Management fees**
+
+- **Fee basis points** - Configurable management fee percentage
+- **Time-based collection** - Automatic fee calculation based on time elapsed
+- **Fee distribution** - Management fee collection mechanism
+
+**Governance integration**
+
+- **Voting rights** - Fund decision-making participation
+- **Share class management** - Different fund share categories
+- **Performance tracking** - Historical performance data
+
+**Use cases:**
+
+- Mutual funds
+- Hedge funds
+- Index funds
+- Investment trusts
+
+### StableCoin tokens
+
+Fiat-pegged tokens with collateral backing.
+
+**Key features:**
+
+- Collateral backing requirements
+- Price stability mechanisms
+- Regulatory compliance
+- Minting/burning controls
+
+**Extensions used:**
+
+| Extension      | Purpose                              |
+| -------------- | ------------------------------------ |
+| **Pausable**   | Emergency stop functionality         |
+| **Burnable**   | Admin token destruction              |
+| **Custodian**  | Freeze accounts and forced transfers |
+| **Collateral** | Backing requirements                 |
+
+**StableCoin-specific features:**
+
+**Price stability**
+
+- **Collateral backing** - Claim-based collateral verification
+- **Peg maintenance** - Mechanisms to maintain price stability
+- **Reserve management** - Underlying asset reserve tracking
+
+**Use cases:**
+
+- USD-pegged stablecoins
+- Multi-collateral stablecoins
+- Algorithmic stablecoins
+- Central bank digital currencies (CBDCs)
+
+## Extension comparison
+
+All asset types share a common foundation but use different combinations of
+extensions:
+
+| **Extension**      | **Bond** | **Equity** | **Deposit** | **Fund** | **StableCoin** | **Purpose**              |
+| ------------------ | -------- | ---------- | ----------- | -------- | -------------- | ------------------------ |
+| **SMART core**     | ✅       | ✅         | ✅          | ✅       | ✅             | Base token functionality |
+| **Access managed** | ✅       | ✅         | ✅          | ✅       | ✅             | Role-based permissions   |
+| **Pausable**       | ✅       | ✅         | ✅          | ✅       | ✅             | Emergency stop           |
+| **Burnable**       | ✅       | ✅         | ✅          | ✅       | ✅             | Admin token destruction  |
+| **Custodian**      | ✅       | ✅         | ✅          | ✅       | ✅             | Freeze & recovery        |
+| **Collateral**     | ❌       | ❌         | ❌          | ❌       | ✅             | Backing requirements     |
+| **Redeemable**     | ✅       | ❌         | ❌          | ❌       | ❌             | User burn at maturity    |
+| **Yield**          | ✅       | ❌         | ❌          | ❌       | ❌             | Dividend distribution    |
+| **Historical**     | ✅       | ❌         | ❌          | ❌       | ❌             | Balance snapshots        |
+| **Capped**         | ✅       | ❌         | ❌          | ❌       | ❌             | Supply limits            |
+| **Votes**          | ❌       | ✅         | ❌          | ✅       | ❌             | Governance rights        |
+
+## Role-based access control
+
+All ATK Assets use a unified role-based access control system with five primary
+roles that provide granular control over token operations.
+
+### Role definitions
+
+**DEFAULT_ADMIN_ROLE** (`0x00`)
+
+Role administration and management capabilities:
+
+- Grant and revoke all other roles
+- Manage role hierarchy and permissions
+- Does not grant operational permissions (must be explicitly assigned other
+  roles)
+
+**GOVERNANCE_ROLE** (`keccak256("GOVERNANCE_ROLE")`)
+
+Token governance and compliance management capabilities:
+
+- Set onchain identity contracts
+- Configure identity registry
+- Manage compliance settings
+- Add/remove compliance modules
+- Configure module parameters
+
+**SUPPLY_MANAGEMENT_ROLE** (`keccak256("SUPPLY_MANAGEMENT_ROLE")`)
+
+Token supply operations capabilities:
+
+- Mint new tokens
+- Burn existing tokens
+- Batch mint/burn operations
+- Set supply caps (Bond only)
+
+**CUSTODIAN_ROLE** (`keccak256("CUSTODIAN_ROLE")`)
+
+Custodial operations and asset protection capabilities:
+
+- Freeze/unfreeze addresses
+- Freeze/unfreeze partial token amounts
+- Execute forced transfers
+- Initiate wallet recovery
+- Batch custodial operations
+
+**EMERGENCY_ROLE** (`keccak256("EMERGENCY_ROLE")`)
+
+Emergency response and system protection capabilities:
+
+- Pause/unpause token operations
+- Recover stuck ERC20 tokens
+- Emergency system interventions
+
+### Permission matrix
+
+| **Action**               | **Role Required**      | **Bond** | **Equity** | **Deposit** | **Fund** | **StableCoin** |
+| ------------------------ | ---------------------- | -------- | ---------- | ----------- | -------- | -------------- |
+| **Governance**           |
+| Set OnchainID            | GOVERNANCE_ROLE        | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Set identity registry    | GOVERNANCE_ROLE        | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Set compliance           | GOVERNANCE_ROLE        | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Add compliance module    | GOVERNANCE_ROLE        | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Remove compliance module | GOVERNANCE_ROLE        | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Set yield schedule       | GOVERNANCE_ROLE        | ✅       | ❌         | ❌          | ❌       | ❌             |
+| Mature bond              | GOVERNANCE_ROLE        | ✅       | ❌         | ❌          | ❌       | ❌             |
+| **Supply management**    |
+| Mint tokens              | SUPPLY_MANAGEMENT_ROLE | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Burn tokens              | SUPPLY_MANAGEMENT_ROLE | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Batch mint               | SUPPLY_MANAGEMENT_ROLE | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Batch burn               | SUPPLY_MANAGEMENT_ROLE | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Set supply cap           | SUPPLY_MANAGEMENT_ROLE | ✅       | ❌         | ❌          | ❌       | ❌             |
+| **Custodial operations** |
+| Freeze address           | CUSTODIAN_ROLE         | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Freeze partial tokens    | CUSTODIAN_ROLE         | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Forced transfer          | CUSTODIAN_ROLE         | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Recover tokens           | CUSTODIAN_ROLE         | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Batch operations         | CUSTODIAN_ROLE         | ✅       | ✅         | ✅          | ✅       | ✅             |
+| **Emergency operations** |
+| Pause contract           | EMERGENCY_ROLE         | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Unpause contract         | EMERGENCY_ROLE         | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Recover ERC20            | EMERGENCY_ROLE         | ✅       | ✅         | ✅          | ✅       | ✅             |
+| **User operations**      |
+| Transfer tokens          | Token Holder           | ✅       | ✅         | ✅          | ✅       | ✅             |
+| Redeem tokens            | Token Holder           | ✅       | ❌         | ❌          | ❌       | ❌             |
+| Vote on proposals        | Token Holder           | ❌       | ✅         | ❌          | ✅       | ❌             |
+| Claim yield              | Token Holder           | ✅       | ❌         | ❌          | ❌       | ❌             |
+
+## Directory structure
+
+```
+assets/
+├── ATKAssetProxy.sol                    # Base proxy for all assets
+├── ATKAssetRoles.sol                    # Role definitions
+├── bond/                                # Fixed-term debt instruments
+│   ├── ATKBondImplementation.sol
+│   ├── ATKBondFactoryImplementation.sol
+│   ├── ATKBondProxy.sol
+│   ├── IATKBond.sol
+│   └── IATKBondFactory.sol
+├── equity/                              # Tokenized shares with voting
+│   ├── ATKEquityImplementation.sol
+│   ├── ATKEquityFactoryImplementation.sol
+│   ├── ATKEquityProxy.sol
+│   ├── IATKEquity.sol
+│   └── IATKEquityFactory.sol
+├── deposit/                             # Collateral-backed deposits
+│   ├── ATKDepositImplementation.sol
+│   ├── ATKDepositFactoryImplementation.sol
+│   ├── ATKDepositProxy.sol
+│   ├── IATKDeposit.sol
+│   └── IATKDepositFactory.sol
+├── fund/                                # Investment fund shares
+│   ├── ATKFundImplementation.sol
+│   ├── ATKFundFactoryImplementation.sol
+│   ├── ATKFundProxy.sol
+│   ├── IATKFund.sol
+│   └── IATKFundFactory.sol
+└── stable-coin/                         # Fiat-pegged stablecoins
+    ├── ATKStableCoinImplementation.sol
+    ├── ATKStableCoinFactoryImplementation.sol
+    ├── ATKStableCoinProxy.sol
+    ├── IATKStableCoin.sol
+    └── IATKStableCoinFactory.sol
+```
+
+## Implementation architecture
+
+All asset tokens follow a consistent implementation pattern:
+
+### Common architecture
+
+1. **Implementation contract** - Contains the core logic for the asset type
+2. **Factory contract** - Deploys new instances of the asset
+3. **Proxy contract** - Upgradeable proxy for deployed instances
+4. **Interface** - Defines the public API for the asset
+5. **Factory interface** - Defines the factory deployment API
+
+### Deployment flow
+
+<Mermaid chart={`
+sequenceDiagram
+    participant User
+    participant Factory
+    participant Implementation
+    participant Proxy
+    participant IdentityFactory
+
+    User->>Factory: createAsset(params)
+    Factory->>Proxy: Deploy proxy via CREATE2
+    Factory->>IdentityFactory: Create contract identity
+    IdentityFactory-->>Factory: Identity address
+    Factory->>Proxy: Initialize with identity
+    Proxy->>Implementation: delegatecall initialize
+    Implementation-->>Proxy: Initialized
+    Proxy-->>Factory: Asset created
+    Factory-->>User: Asset address
+
+`} />
+
+### Upgrade safety
+
+Assets use upgradeable proxies with the following safety features:
+
+- **Immutable proxy addresses** - User-facing addresses never change
+- **Access-controlled upgrades** - Only authorized roles can upgrade
+- **Storage layout preservation** - Upgrades maintain state compatibility
+- **Initialization protection** - Prevents re-initialization attacks
+
+## Conclusion
+
+ATK Assets provide compliant tokenization solutions built on the SMART Protocol
+foundation. Each asset type is optimized for specific use cases while
+maintaining:
+
+- **Regulatory compliance** - Full ERC-3643 compliance with modular rules
+- **Operational flexibility** - Role-based access control and emergency
+  procedures
+- **Extensibility** - Modular extension system for custom functionality
+- **Security** - Role-based access controls and custodian safeguards
+- **Interoperability** - Full ERC-20 compatibility for ecosystem integration
+
+The unified architecture ensures consistent behavior across all asset types
+while providing specialized functionality for different financial instruments.

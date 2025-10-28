@@ -1,0 +1,10 @@
+{
+  "title": "Smart contracts",
+  "pages": [
+    "smart-protocol",
+    "asset-contracts",
+    "identity-compliance",
+    "addon-modules",
+    "factory-upgradeability"
+  ]
+}

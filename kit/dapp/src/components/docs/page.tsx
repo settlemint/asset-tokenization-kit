@@ -1,5 +1,6 @@
 "use client";
 
+import { LLMCopyButton, ViewOptions } from "@/components/docs/open-in-dropdown";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "fumadocs-core/framework";
 import type * as PageTree from "fumadocs-core/page-tree";
@@ -15,22 +16,30 @@ import { cn } from "../../lib/cn";
 
 export interface DocsPageProps {
   toc?: TOCItemType[];
-
+  path: string;
   children: ReactNode;
 }
 
-export function DocsPage({ toc = [], ...props }: DocsPageProps) {
+export function DocsPage({ toc = [], path, ...props }: DocsPageProps) {
   return (
     <AnchorProvider toc={toc}>
       <div className="flex w-full min-w-0 flex-row h-full ">
         <main className="flex flex-1 min-w-0 flex-col overflow-y-auto">
-          <article className="flex flex-1 flex-col w-full gap-6 px-4 py-8 md:px-6">
+          <article className="flex flex-1 flex-col w-full gap-6 px-4 py-8 md:px-6 max-w-5xl">
             {props.children}
             <Footer />
           </article>
         </main>
         {toc.length > 0 && (
-          <aside className="sticky top-0 w-[286px] shrink-0 h-[calc(100vh-64px)] p-4 overflow-y-auto max-xl:hidden">
+          <aside className="sticky top-0 w-[286px] xl:w-[320px] 2xl:w-[360px] shrink-0 h-[calc(100vh-64px)] pl-4 pr-6 xl:pr-8 pt-8 pb-4 overflow-y-auto max-xl:hidden">
+            <div className="flex flex-row gap-2 mb-4">
+              <LLMCopyButton markdownUrl={`/docs/${path}`} className="w-full" />
+              <ViewOptions
+                markdownUrl={`/docs/${path}`}
+                githubUrl={`https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/content/docs/${path}`}
+                className="w-full"
+              />
+            </div>
             <p className="text-sm text-fd-muted-foreground mb-2">
               On this page
             </p>

@@ -190,13 +190,37 @@ spec:
 
             # Redis configuration
             {{- if .Values.redis.enabled }}
+            {{- $redisLocal := default (dict) .Values.redis }}
+            {{- $redisConfig := ((include "atk.datastores.redis" (dict "context" $ "chartKey" "hasura" "local" $redisLocal)) | fromYaml) | default (dict) }}
+            {{- $redisExistingSecret := trim (default "" (index $redisConfig "existingSecret")) }}
+            {{- $redisSecretKeys := (index $redisConfig "existingSecretKeys") | default (dict) }}
+            {{- $cacheUrlKey := trim (printf "%v" (default "cacheUrl" (index $redisSecretKeys "cacheUrl"))) }}
+            {{- $rateLimitUrlKey := trim (printf "%v" (default "" (index $redisSecretKeys "rateLimitUrl"))) }}
+            {{- $effectiveRateLimitKey := default $cacheUrlKey $rateLimitUrlKey }}
             {{- $redisCacheUrl := include "hasura.redisCacheUrl" . }}
             {{- $redisRateLimitUrl := include "hasura.redisRateLimitUrl" . }}
-            {{- if $redisCacheUrl }}
+            {{- if ne $redisExistingSecret "" }}
+              {{- if ne $cacheUrlKey "" }}
+            - name: HASURA_GRAPHQL_REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $redisExistingSecret | quote }}
+                  key: {{ $cacheUrlKey | quote }}
+              {{- end }}
+              {{- if ne $effectiveRateLimitKey "" }}
+            - name: HASURA_GRAPHQL_RATE_LIMIT_REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $redisExistingSecret | quote }}
+                  key: {{ $effectiveRateLimitKey | quote }}
+              {{- end }}
+            {{- else if $redisCacheUrl }}
             - name: HASURA_GRAPHQL_REDIS_URL
               value: {{ $redisCacheUrl }}
             - name: HASURA_GRAPHQL_RATE_LIMIT_REDIS_URL
               value: {{ $redisRateLimitUrl | default $redisCacheUrl }}
+            {{- end }}
+            {{- if or (ne $redisExistingSecret "") $redisCacheUrl }}
             - name: HASURA_GRAPHQL_CACHE_MAX_TTL
               value: {{ .Values.redis.cacheTtl | quote }}
             {{- end }}

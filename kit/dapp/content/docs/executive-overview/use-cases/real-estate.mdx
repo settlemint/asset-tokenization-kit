@@ -1,0 +1,138 @@
+---
+title: Real estate
+pageTitle: Real estate fractionalization
+description: Fractionalized property ownership with rental income distribution
+tags: [use-case, real-estate, fractionalization, rental-income, property]
+---
+
+## The scenario
+
+Highland Properties owns a $25 million office building in a major market. They
+want to fractionalize ownership to enable smaller investors to participate while
+maintaining professional property management and compliance controls.
+
+### Traditional approach
+
+<Mermaid
+  chart={`
+flowchart TB
+    PROPERTY[$25M Office Building]
+    BARRIER[High Entry Barrier<br/>$25M Minimum]
+    MANUAL[Manual Processes]
+    
+    DIST[Monthly Distribution<br/>Days of Processing]
+    EXPENSE[Expense Tracking<br/>Spreadsheets]
+    VOTE[Governance Voting<br/>Email & Phone Calls]
+    ILLIQUID[No Liquidity<br/>Property Must Sell]
+    OPAQUE[Limited Visibility<br/>Quarterly Reports]
+    
+    PROPERTY --> BARRIER
+    BARRIER --> MANUAL
+    MANUAL --> DIST
+    MANUAL --> EXPENSE
+    MANUAL --> VOTE
+    MANUAL --> ILLIQUID
+    MANUAL --> OPAQUE
+    
+    style PROPERTY fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style BARRIER fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style MANUAL fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style DIST fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style EXPENSE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style VOTE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style ILLIQUID fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style OPAQUE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+`}
+/>
+
+## How ATK handles it
+
+**Property tokenization as equity**: Highland creates 250,000 equity tokens,
+each representing $100 of building ownership. Token holders receive proportional
+rental income distributions and have voting rights on major property decisions.
+
+**Investor eligibility and documentation**: The platform enforces that only
+verified investors with appropriate accreditation levels can purchase tokens.
+Property documents—purchase agreements, operating agreements, building
+inspections, insurance policies—are hashed and linked to the token metadata for
+permanent transparency.
+
+**Fractional ownership**: Investors can purchase as few as 10 tokens ($1,000
+investment) or as many as they want up to regulatory limits. The platform
+enforces maximum ownership percentages to maintain distributed ownership.
+
+**Rental income distributions**: Monthly rental income from tenants flows into
+Highland's treasury. After deducting property management fees and reserves, the
+platform distributes net income proportionally to all token holders.
+Distributions happen automatically on a preset schedule.
+
+**Property expenses and reserves**: Major repairs or capital improvements
+require approval from token holders. Highland creates a governance proposal
+through the platform. Token holders vote with their holdings weighted
+proportionally. Approved expenses draw from reserves or trigger special
+assessments distributed fairly among holders.
+
+**Valuation updates**: Annual appraisals update the property's value in the
+platform, adjusting the implied token value. Holders see current valuations
+without requesting reports.
+
+**Compliance with securities and real estate law**: The platform enforces both
+securities regulations (accredited investor requirements) and any applicable
+real estate regulations (ownership transfer restrictions, FIRPTA withholding for
+foreign investors).
+
+**Exit mechanisms**: When Highland eventually sells the building, sale proceeds
+distribute automatically to all holders proportionally. Tokens are redeemed and
+the holding concludes with complete documentation of every income distribution,
+every expense, and every ownership change.
+
+## The outcomes
+
+### With ATK
+
+<Mermaid
+  chart={`
+flowchart TB
+    PROPERTY[$25M Office Building]
+    TOKEN[250,000 Tokens<br/>$100 Each]
+    ACCESS[Fractional Ownership<br/>$1,000 Minimum]
+    AUTO[Automated Platform]
+    
+    DIST[Monthly Distributions<br/>Automatic & Instant]
+    EXPENSE[Expense Tracking<br/>On-chain Records]
+    VOTE[Token-weighted Voting<br/>Programmatic]
+    LIQUID[Secondary Market<br/>Trade Anytime]
+    REALTIME[Real-time Visibility<br/>Performance Dashboard]
+    
+    PROPERTY --> TOKEN
+    TOKEN --> ACCESS
+    ACCESS --> AUTO
+    AUTO --> DIST
+    AUTO --> EXPENSE
+    AUTO --> VOTE
+    AUTO --> LIQUID
+    AUTO --> REALTIME
+    
+    style PROPERTY fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style TOKEN fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style ACCESS fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style AUTO fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style DIST fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style EXPENSE fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style VOTE fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style LIQUID fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style REALTIME fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+`}
+/>
+
+**Democratized access**: Real estate institutional-quality investment became
+available to smaller investors who couldn't deploy $25 million.
+
+**Operational streamlining**: Distribution processing that used to take days of
+manual work now happens automatically each month.
+
+**Transparency**: Investors see property performance, expenses, and income in
+real time rather than waiting for quarterly reports.
+
+**Secondary market**: Token holders could sell positions to other qualified
+investors, creating liquidity in an traditionally illiquid asset class.

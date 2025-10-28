@@ -30,6 +30,25 @@ vi.mock("@/orpc/orpc-client", () => ({
   },
 }));
 
+// Mock the lazy-loaded AreaChartComponent to avoid Suspense issues in tests
+vi.mock("@/components/charts/area-chart", () => ({
+  AreaChartComponent: ({
+    title,
+    description,
+    data,
+  }: {
+    title: string;
+    description: string;
+    data: unknown[];
+  }) => (
+    <div>
+      <div>{title}</div>
+      <div>{description}</div>
+      {data.length === 0 && <div>charts.common.noData</div>}
+    </div>
+  ),
+}));
+
 describe("AssetSupplyChangesAreaChart", () => {
   const mockAssetAddress = "0x1234567890abcdef";
 
