@@ -53,7 +53,7 @@ const clientLoader = createClientLoader(docs.doc, {
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <h1 className="text-3xl font-bold tracking-tight wrap-break-words">
-                {frontmatter.title}
+                {frontmatter.pageTitle}
               </h1>
               {frontmatter.description && (
                 <p className="text-sm text-fd-muted-foreground font-light tracking-normal mt-2 wrap-break-words">
@@ -98,7 +98,6 @@ function Page() {
 }
 
 function transformPageTree(tree: PageTree.Folder): PageTree.Folder {
-  console.log(222, tree);
   function transform<T extends PageTree.Item | PageTree.Separator>(item: T) {
     if (typeof item.icon !== "string") return item;
 
