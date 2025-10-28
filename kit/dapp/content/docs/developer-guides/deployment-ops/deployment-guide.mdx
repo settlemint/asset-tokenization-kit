@@ -695,18 +695,220 @@ support:
                topologyKey: kubernetes.io/hostname
    ```
 
-### Monitoring and observability
+### Monitoring and observability (Production Advantage)
+
+**ATK includes a comprehensive observability stack that provides
+production-grade monitoring out of the box.** This is a competitive
+differentiator—most tokenization platforms require you to assemble monitoring
+yourself from multiple vendors. ATK gives you everything integrated and
+pre-configured.
+
+#### Accessing the observability stack
 
 The observability stack is enabled by default. Access Grafana at the configured
-hostname to view:
+hostname (default: `grafana.k8s.orb.local`):
 
-- **Infrastructure metrics**: CPU, memory, disk, network (VictoriaMetrics + Node
-  Exporter)
-- **Application logs**: Aggregated logs from all pods (Loki)
-- **Distributed tracing**: Request traces (Tempo)
-- **Custom dashboards**: Pre-configured dashboards for Besu, PostgreSQL, Redis
+```bash
+# Get Grafana URL
+kubectl get ingress -n atk grafana
 
-Configure alerting in Grafana to receive notifications on critical events.
+# Default credentials (change immediately in production)
+Username: settlemint
+Password: atk
+```
+
+#### Pre-built dashboards for instant insights
+
+ATK ships with production-ready dashboards covering every layer of the stack:
+
+**Blockchain layer:**
+
+- **Besu Dashboard**: Node sync status, transaction throughput, block production
+  rates, gas usage, peer connections, and chain reorganizations
+- **Portal Metrics**: RPC request rates, authentication flows, rate limiting,
+  and gateway health
+
+**Indexing layer:**
+
+- **TheGraph Indexing Status**: Subgraph sync progress, indexing latency,
+  deployment health, and entity counts
+- **TheGraph Query Performance**: Query response times, cache hit rates, GraphQL
+  operation metrics, and query complexity analysis
+
+**RPC gateway:**
+
+- **ERPC Dashboard**: Comprehensive metrics including request routing, upstream
+  health, cache effectiveness, rate limiting, error rates, and latency
+  percentiles across all configured RPC endpoints
+
+**Storage layer:**
+
+- **IPFS Dashboard**: Pin operations, bandwidth usage, peer connectivity, and
+  content retrieval metrics
+
+**Infrastructure:**
+
+- **Kubernetes Overview**: Cluster resource utilization, pod health, node
+  capacity, and namespace quotas
+- **NGINX Ingress**: Request rates, response times, error rates, and upstream
+  connectivity
+- **Node Exporter**: System-level metrics (CPU, memory, disk, network) for each
+  Kubernetes node
+- **VictoriaMetrics**: TSDB metrics including series cardinality, ingestion
+  rates, and storage usage
+- **Tempo Tracing**: Distributed trace visualization with service dependency
+  graphs
+
+#### Monitoring stack components
+
+**VictoriaMetrics** (Metrics storage and querying):
+
+- Time-series database optimized for Prometheus metrics
+- 1-month retention by default (configurable via
+  `observability.victoria-metrics-single.server.retentionPeriod`)
+- Query interface compatible with PromQL
+- Remote write endpoint for external Prometheus instances
+
+**Loki** (Log aggregation):
+
+- Centralized logging for all ATK components
+- 7-day retention (168 hours) by default
+- Structured metadata support for advanced queries
+- Automatic log pattern detection
+- Integrated with Grafana Explore for interactive log analysis
+
+**Tempo** (Distributed tracing):
+
+- OpenTelemetry-compatible trace collection
+- 7-day retention by default
+- Trace-to-log correlation (click a trace span to see related logs)
+- Metrics generation from trace data
+
+**Alloy** (Telemetry collection agent):
+
+- Scrapes metrics from all annotated pods automatically
+- Collects logs from Kubernetes pods
+- Receives OpenTelemetry traces
+- Supports forwarding to external observability platforms (Grafana Cloud,
+  Datadog, etc.)
+
+**Grafana** (Visualization and dashboards):
+
+- Pre-configured datasources for all telemetry backends
+- Auto-loading of dashboards from ConfigMaps
+- Dashboard version control through Kubernetes manifests
+- Alert rule management with notification channels
+
+#### Using observability for verification
+
+**After deployment, verify correct operation:**
+
+1. **Check TheGraph indexing status dashboard**:
+   - Confirm subgraph sync is progressing
+   - Validate no indexing errors in entity processing
+   - Verify query performance meets SLAs (&lt;500ms p99)
+
+2. **Monitor Besu dashboard**:
+   - Ensure all validator nodes are producing blocks
+   - Confirm transaction throughput matches expected load
+   - Check peer connectivity (should match validator count)
+
+3. **Review ERPC gateway metrics**:
+   - Verify request routing to healthy upstreams
+   - Confirm cache hit rate improves over time
+   - Check error rate &lt;0.1% for production readiness
+
+4. **Inspect application logs in Loki**:
+   - Query: `{namespace="atk", app="dapp"} |= "error"`
+   - Validate authentication flows completing successfully
+   - Check for database connection pool saturation
+
+#### Troubleshooting with dashboards
+
+**Scenario: Slow transaction confirmations**
+
+1. Open Besu dashboard → Check block production rate
+2. If blocks are slow: Check validator connectivity and peer count
+3. If blocks are normal: Open ERPC dashboard → Check RPC latency percentiles
+4. Inspect Loki logs: `{namespace="atk"} |= "transaction" |= "timeout"`
+
+**Scenario: Subgraph queries returning stale data**
+
+1. TheGraph Indexing Status dashboard → Verify sync is not lagging
+2. Check indexing error rate for failed block processing
+3. Review TheGraph Query Performance → Confirm cache invalidation working
+4. Inspect Loki: `{namespace="atk", app="graph-node"} |= "revert"`
+
+**Scenario: High API latency**
+
+1. Tempo traces → Identify slow spans in request path
+2. Correlate trace IDs with logs to see detailed execution
+3. Check database query performance in PostgreSQL metrics
+4. Review Hasura dashboard for GraphQL query optimization needs
+
+#### Configuring external observability platforms
+
+Send telemetry to external platforms for long-term storage and advanced
+analysis:
+
+```yaml
+# values-production.yaml
+observability:
+  alloy:
+    endpoints:
+      external:
+        prometheus:
+          enabled: true
+          url: https://prometheus-external.example.com/api/v1/write
+          basicAuth:
+            username: atk-prod
+            password: "${EXTERNAL_PROM_PASSWORD}"
+        loki:
+          enabled: true
+          url: https://loki-external.example.com/loki/api/v1/push
+          basicAuth:
+            username: atk-prod
+            password: "${EXTERNAL_LOKI_PASSWORD}"
+        otel:
+          enabled: true
+          url: https://tempo-external.example.com:4318
+```
+
+This forwards all metrics, logs, and traces to external systems while keeping
+local observability operational.
+
+#### Alerting configuration
+
+Configure alerting in Grafana to receive notifications on critical events:
+
+1. Navigate to Alerting → Alert rules
+2. Import pre-configured alert rules:
+   - **High error rate**: Alert when error rate &gt;1% for 5 minutes
+   - **Database connection exhaustion**: Alert when connection pool &gt;90% for
+     3 minutes
+   - **Blockchain sync lag**: Alert when Besu falls &gt;100 blocks behind
+   - **Disk space critical**: Alert when PVC utilization &gt;85%
+3. Configure notification channels (Slack, PagerDuty, email)
+
+Example alert rule for transaction processing delays:
+
+```yaml
+# Alert when average block time exceeds 15 seconds
+groups:
+  - name: blockchain_health
+    interval: 1m
+    rules:
+      - alert: SlowBlockProduction
+        expr: rate(besu_block_height[5m]) < 0.067 # Less than 1 block per 15s
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Block production slower than expected"
+          description:
+            "Block production rate has fallen below 1 block per 15 seconds for
+            10 minutes"
+```
 
 ### Backup and disaster recovery
 
@@ -874,7 +1076,37 @@ spec:
 
 ## Troubleshooting
 
+**ATK's integrated observability stack accelerates troubleshooting by providing
+correlated metrics, logs, and traces in one interface.** Start with Grafana
+dashboards to identify issues, then drill into detailed logs and traces.
+
+### General troubleshooting workflow
+
+1. **Check Grafana dashboards** for high-level health indicators
+2. **Query Loki** for detailed application logs
+3. **Inspect Tempo traces** to identify slow operations
+4. **Use kubectl** for immediate remediation
+
 ### Pod crashes or restarts
+
+**Using observability stack:**
+
+1. **Open Grafana → Explore → Loki**:
+
+   ```text
+   # Find crash logs
+   {namespace="atk"} |= "panic" or "fatal" or "OOM"
+
+   # Check specific pod
+   {namespace="atk", pod=~"dapp-.*"} |= "error"
+   ```
+
+2. **Check Kubernetes dashboard** in Grafana:
+   - Identify pods with high restart counts
+   - Review memory usage trends before OOM kills
+   - Check CPU throttling that might cause timeouts
+
+**Using kubectl:**
 
 1. **Check pod logs**:
 
@@ -888,13 +1120,30 @@ spec:
    kubectl describe pod -n atk <pod-name>
    ```
 
-3. **Common issues**:
-   - **Database connection errors**: Verify PostgreSQL is running and
-     credentials match
-   - **RPC connection errors**: Check ERPC and Besu node status
-   - **OOM kills**: Increase memory limits in `values.yaml`
+3. **Common issues identified via dashboards**:
+   - **Database connection errors**: PostgreSQL dashboard shows connection pool
+     exhaustion
+   - **RPC connection errors**: ERPC dashboard displays all upstreams as
+     unhealthy
+   - **OOM kills**: Node Exporter dashboard shows memory saturation; increase
+     limits in `values.yaml`
 
 ### Ingress not accessible
+
+**Using observability stack:**
+
+1. **Open NGINX Ingress dashboard** in Grafana:
+   - Check request rate and error codes (4xx, 5xx)
+   - Verify upstream connectivity to backend services
+   - Review SSL certificate expiration warnings
+
+2. **Query logs for connection errors**:
+
+   ```text
+   {namespace="atk", app="ingress-nginx"} |= "error" | json
+   ```
+
+**Using kubectl:**
 
 1. **Verify ingress controller**:
 

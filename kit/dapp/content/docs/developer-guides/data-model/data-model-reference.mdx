@@ -336,7 +336,7 @@ Current exchange rates cache for O(1) retrieval.
 
 **Design notes**:
 
-- Small table (<1000 rows) stays in memory
+- Small table (&lt;1000 rows) stays in memory
 - UPSERT on rate updates
 - Sub-millisecond p99 latency
 
@@ -875,14 +875,16 @@ Subgraph schema changes require redeployment.
 ## Next steps
 
 - **Deploy infrastructure**: See
-  [Deployment Guide](/developer-guides/deployment-guide) for production setup
-- **Query APIs**: Review [API Reference](/developer-guides/api-reference) for
-  data access patterns
+  [Deployment Guide](/developer-guides/deployment-ops/deployment-guide) for
+  production setup
+- **Query APIs**: Review
+  [API Reference](/developer-guides/api-integration/api-reference) for data
+  access patterns
 - **Contract interactions**: Check
-  [Contract Reference](/developer-guides/contract-reference) for on-chain
-  operations
+  [Contract Reference](/developer-guides/smart-contracts/contract-reference) for
+  on-chain operations
 - **Review code**: Explore implementations in `kit/dapp/src/lib/db/` and
   `kit/subgraph/src/`
 
 For testing strategies that validate data integrity, continue to
-[Testing & QA](/developer-guides/testing-qa).
+[Testing & QA](/developer-guides/quality-assurance/testing-qa).
