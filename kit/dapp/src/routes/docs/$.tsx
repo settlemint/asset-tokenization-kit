@@ -24,11 +24,11 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import DOMPurify from "isomorphic-dompurify";
 import { useBreadcrumb } from "fumadocs-core/breadcrumb";
 import type * as PageTree from "fumadocs-core/page-tree";
 import { createClientLoader } from "fumadocs-mdx/runtime/vite";
 import defaultMdxComponents from "fumadocs-ui/mdx";
+import DOMPurify from "isomorphic-dompurify";
 import { Home } from "lucide-react";
 import { Fragment, useMemo } from "react";
 
@@ -185,16 +185,8 @@ function Page() {
 }
 
 function transformPageTree(tree: PageTree.Folder): PageTree.Folder {
-  type ChildNode = PageTree.Folder["children"][number];
-  type NonFolderNode = Exclude<ChildNode, { type: "folder" }>;
-
-  const isFolderNode = (node: ChildNode): node is PageTree.Folder =>
-    node.type === "folder";
-
-  const decorateIcon = <Node extends { icon?: unknown }>(item: Node): Node => {
-    if (typeof item.icon !== "string") {
-      return item;
-    }
+  function transform<T extends PageTree.Item | PageTree.Separator>(item: T) {
+    if (typeof item.icon !== "string") return item;
 
     return {
       ...item,
@@ -237,20 +229,14 @@ function transformPageTree(tree: PageTree.Folder): PageTree.Folder {
         />
       ),
     };
-  };
-
-  const transformLeaf = (item: NonFolderNode): NonFolderNode =>
-    decorateIcon(item);
-
-  const transformIndex = (index: PageTree.Folder["index"]) =>
-    index ? decorateIcon(index) : undefined;
-
-  const transformChild = (item: ChildNode): ChildNode =>
-    isFolderNode(item) ? transformPageTree(item) : transformLeaf(item);
+  }
 
   return {
     ...tree,
-    index: transformIndex(tree.index),
-    children: tree.children.map((item) => transformChild(item)),
+    index: tree.index ? transform(tree.index) : undefined,
+    children: tree.children.map((item) => {
+      if (item.type === "folder") return transformPageTree(item);
+      return transform(item);
+    }),
   };
 }
