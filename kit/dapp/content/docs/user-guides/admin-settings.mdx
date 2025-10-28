@@ -7,12 +7,613 @@ pageTitle: Admin guide - Configuring platform settings and modules
 tags: [how-to, admin, settings, configuration, roles]
 ---
 
-## Steps (Planned)
+Platform administration involves configuring system-wide settings, managing
+roles and permissions, deploying addon modules, and maintaining system health.
+This guide walks administrators through platform configuration and operational
+maintenance.
 
-1. Accessing Admin Settings
-2. User Roles and Permissions
-3. Platform Parameters
-4. Blockchain Network Settings
-5. Branding/White-label Options
-6. Monitoring and Maintenance
-7. Backup & Recovery
+**Who should read this:** Platform administrators, DevOps engineers, system
+operators, and IT managers responsible for platform configuration and
+maintenance.
+
+**Time required:** 30-60 minutes for initial configuration; ongoing maintenance
+is periodic.
+
+**Prerequisites:**
+
+- Platform admin role with ACCESS_MANAGER_ADMIN permission
+- Completed system deployment during onboarding
+- Understanding of organizational structure and role assignments
+- Familiarity with blockchain networks and gas management
+
+## Step 1: Access admin settings
+
+Navigate to administrative controls:
+
+1. Log in to platform with administrator account
+2. Click **Platform Settings** in the left sidebar
+3. Administrative dashboard appears with configuration sections:
+   - System configuration
+   - Access control
+   - Asset types and factories
+   - Addon modules
+   - Compliance settings
+   - Network and infrastructure
+   - Monitoring and maintenance
+
+![Admin dashboard](/images/screenshots/placeholder.svg) _Screenshot: Platform
+settings dashboard showing navigation tiles for each configuration section_
+
+**Permission check:** Admin settings are only visible to users with platform
+administrator roles.
+
+## Step 2: Configure system parameters
+
+Set platform-wide operational parameters:
+
+### General settings
+
+Navigate to **Platform Settings** &gt; **System Configuration**:
+
+**Platform information:**
+
+- **Platform name** - Display name for your organization
+- **Platform description** - Brief description shown on login page
+- **Support email** - Contact email for user support
+- **Documentation URL** - Link to custom documentation (if any)
+
+**Operational parameters:**
+
+- **Default gas limit** - Default gas limit for platform transactions
+- **Gas price strategy** - Slow, standard, fast, or custom
+- **Transaction timeout** - Seconds before considering transaction failed
+- **Confirmation blocks** - Number of blocks for transaction finality
+
+![System configuration](/images/screenshots/placeholder.svg) _Screenshot: System
+configuration showing platform info fields and operational parameter inputs_
+
+**Gas management:** Monitor gas prices and adjust strategy based on network
+conditions to balance cost and speed.
+
+### Network configuration
+
+Configure blockchain network settings:
+
+Navigate to **Platform Settings** &gt; **Network**:
+
+**Connected network:**
+
+- **Network name** - Current blockchain network (e.g., Ethereum, Polygon, Besu)
+- **Chain ID** - Network identifier
+- **RPC endpoint** - Connection URL to blockchain node
+- **Block explorer** - Etherscan/Polygonscan URL for transaction links
+
+**Network health:**
+
+- Current block number
+- Average block time
+- Network congestion status
+- Gas price (current/average)
+
+![Network settings](/images/screenshots/placeholder.svg) _Screenshot: Network
+configuration showing connected network details and real-time health metrics_
+
+**Multi-network note:** Enterprise deployments may connect to private consortium
+chains; configuration is deployment-specific.
+
+## Step 3: Manage access control
+
+Configure roles and permissions:
+
+### System roles overview
+
+Platform uses role-based access control (RBAC) with predefined roles:
+
+**Platform-level roles:**
+
+Navigate to **Platform Settings** &gt; **Permissions**:
+
+- **PLATFORM_ADMIN** - Full system administrator
+- **COMPLIANCE_OFFICER** - Manage compliance and KYC
+- **ASSET_MANAGER** - Deploy and manage assets
+- **CLAIM_ISSUER** - Issue identity claims
+- **AUDITOR** - Read-only access to all data
+
+**Token-level roles:**
+
+Assigned per individual token:
+
+- **GOVERNANCE_ROLE** - Token compliance and parameters
+- **SUPPLY_MANAGEMENT_ROLE** - Mint and burn tokens
+- **CUSTODIAN_ROLE** - Freeze and recover tokens
+- **EMERGENCY_ROLE** - Pause token transfers
+
+![Roles overview](/images/screenshots/placeholder.svg) _Screenshot: Roles and
+permissions page showing role hierarchy and permission matrix_
+
+### Assign platform roles
+
+Grant platform-level permissions:
+
+1. Navigate to **Platform Settings** &gt; **Permissions**
+2. Click **Assign Role**
+3. Enter user address or select from directory
+4. Select role to assign
+5. Click **Grant Permission**
+6. Platform grants role via access manager contract
+7. User immediately gains associated permissions
+
+**Role assignment:**
+
+- PLATFORM_ADMIN: Assign to 2-3 trusted administrators using multisig wallets
+- COMPLIANCE_OFFICER: Assign to compliance team members
+- ASSET_MANAGER: Assign to treasury or operations team
+- CLAIM_ISSUER: Assign to KYC provider or compliance system
+- AUDITOR: Assign to external auditors or regulatory oversight
+
+![Role assignment](/images/screenshots/placeholder.svg) _Screenshot: Role
+assignment modal showing user selection, role dropdown, and grant button_
+
+**Best practice:** Use multisig wallets for critical roles (PLATFORM_ADMIN,
+CLAIM_ISSUER) to prevent single-point-of-failure.
+
+### Revoke roles
+
+Remove permissions:
+
+1. Navigate to **Platform Settings** &gt; **Permissions** &gt; **Active Roles**
+2. Find user in role members list
+3. Click **Revoke** next to user address
+4. Confirm revocation
+5. User immediately loses permissions
+
+**Offboarding:** Always revoke roles when staff leave organization or change
+responsibilities.
+
+## Step 4: Manage asset types
+
+Configure which asset types are available:
+
+### Asset type registry
+
+View enabled asset types:
+
+Navigate to **Platform Settings** &gt; **Asset Types**:
+
+Platform shows enabled asset types:
+
+- **Bonds** - Debt instruments
+- **Equity** - Company shares
+- **Funds** - Investment fund units
+- **Stablecoins** - Fiat-pegged tokens
+- **Deposits** - Certificate of deposit tokens
+
+Each asset type shows:
+
+- Factory contract address
+- Number of deployed tokens
+- Status (enabled/disabled)
+
+![Asset types list](/images/screenshots/placeholder.svg) _Screenshot: Asset
+types configuration showing enabled asset types with factory addresses and token
+counts_
+
+### Enable new asset type
+
+Add asset type to platform:
+
+If asset type was not deployed during onboarding:
+
+1. Navigate to **Platform Settings** &gt; **Asset Types**
+2. Click **Enable Asset Type**
+3. Select asset type from available list
+4. Review deployment parameters
+5. Click **Deploy Factory**
+6. Platform:
+   - Deploys factory implementation contract
+   - Deploys factory proxy
+   - Registers factory in factory registry
+   - Enables asset type in platform UI
+7. Asset type now available for token creation
+
+**Cost:** Factory deployment consumes gas; plan deployment during low-congestion
+periods.
+
+### Disable asset type
+
+Temporarily disable asset type:
+
+To prevent new token deployments without affecting existing tokens:
+
+1. Navigate to **Platform Settings** &gt; **Asset Types**
+2. Find asset type to disable
+3. Click **Disable**
+4. Confirm action
+5. Asset type removed from token creation UI
+6. Existing tokens continue functioning normally
+
+**Use case:** Disable asset type during regulatory review or system upgrades.
+
+## Step 5: Manage addon modules
+
+Configure optional platform addons:
+
+### Addon registry
+
+View available addons:
+
+Navigate to **Platform Settings** &gt; **Addons**:
+
+Platform shows addon categories:
+
+**Yield distribution:**
+
+- Fixed yield schedule - Automated interest/dividend payments
+
+**Airdrop mechanisms:**
+
+- Push airdrop - Distribute tokens to recipients
+- Time-bound airdrop - Claimable for limited time
+- Vesting airdrop - Tokens unlock over vesting schedule
+
+**Trading and settlement:**
+
+- Token sale - Primary issuance sale mechanism
+- Delivery versus payment (DvP) - Atomic asset exchange
+- Vault - Token custody with access controls
+
+Each addon shows deployment status and usage statistics.
+
+![Addons list](/images/screenshots/placeholder.svg) _Screenshot: Addons
+configuration showing addon categories with deployment status and usage metrics_
+
+### Deploy addon factory
+
+Enable addon for platform use:
+
+1. Navigate to **Platform Settings** &gt; **Addons**
+2. Find addon to deploy (e.g., "Vesting Airdrop")
+3. Click **Deploy Factory**
+4. Review addon parameters and permissions
+5. Click **Confirm Deployment**
+6. Platform:
+   - Deploys addon factory contract
+   - Registers in addon registry
+   - Makes available in token creation and management UI
+7. Addon now available for use with compatible tokens
+
+**Selective deployment:** Only deploy addons needed for your use cases to
+minimize deployment costs.
+
+### Configure addon defaults
+
+Set default addon parameters:
+
+For commonly used addons:
+
+1. Navigate to addon details page
+2. Click **Configure Defaults**
+3. Set default parameters:
+   - Vesting cliff (e.g., 12 months)
+   - Vesting duration (e.g., 48 months)
+   - Distribution schedule (e.g., monthly)
+4. Save defaults
+5. New addon deployments pre-populate with defaults
+
+**Efficiency:** Defaults streamline repetitive addon configurations.
+
+## Step 6: Configure compliance settings
+
+Set system-wide compliance parameters:
+
+### Claim topics and issuers
+
+Manage identity claim framework:
+
+Navigate to **Platform Settings** &gt; **Compliance** &gt; **Claim Topics &
+Issuers**:
+
+**Claim topics:**
+
+View registered claim topics:
+
+- CLAIM_TOPIC_KYC (Topic 1)
+- CLAIM_TOPIC_ACCREDITED_INVESTOR (Topic 2)
+- CLAIM_TOPIC_JURISDICTION (Topic 3)
+- CLAIM_TOPIC_INVESTOR_TYPE (Topic 4)
+
+**Add custom claim topic:**
+
+1. Click **Add Claim Topic**
+2. Enter topic ID (incremental number)
+3. Enter topic name and description
+4. Click **Register Topic**
+5. Topic available for claim issuance
+
+**Trusted claim issuers:**
+
+View registered claim issuers:
+
+- Platform claim issuer (default)
+- External KYC provider integrations
+
+**Add trusted issuer:**
+
+1. Click **Add Trusted Issuer**
+2. Enter issuer OnchainID address
+3. Select which claim topics issuer can issue
+4. Click **Register Issuer**
+5. Claims from issuer now accepted by compliance modules
+
+![Claim configuration](/images/screenshots/placeholder.svg) _Screenshot: Claim
+topics and issuers showing registered topics list and trusted issuers with their
+authorized claim types_
+
+### Global compliance modules
+
+Configure platform-wide compliance defaults:
+
+Navigate to **Platform Settings** &gt; **Compliance** &gt; **Default Modules**:
+
+Set default compliance modules applied to new tokens:
+
+- **Identity Verification** - Require verified OnchainID
+- **Country Allow List** - Default permitted jurisdictions
+- **Transfer Limits** - Default maximum transaction size
+
+**Template compliance frameworks:**
+
+Create reusable compliance templates:
+
+1. Click **Create Compliance Template**
+2. Name template (e.g., "Reg D 506c")
+3. Add compliance modules with configurations
+4. Save template
+5. Template available during token creation
+
+**Use case:** Streamline token deployment with pre-configured compliance for
+common regulatory frameworks.
+
+## Step 7: System monitoring and maintenance
+
+Monitor platform health and perform maintenance:
+
+### System health dashboard
+
+Monitor platform metrics:
+
+Navigate to **Platform Settings** &gt; **Monitoring**:
+
+View key metrics:
+
+**Contract health:**
+
+- System contract addresses
+- Proxy upgrade status
+- Access control status
+
+**Transaction metrics:**
+
+- 24-hour transaction volume
+- Failed transaction rate
+- Average gas cost
+- Transaction types breakdown
+
+**Token statistics:**
+
+- Total tokens deployed
+- Total supply across all tokens
+- Active holders count
+- Top tokens by volume
+
+![Monitoring dashboard](/images/screenshots/placeholder.svg) _Screenshot:
+Monitoring dashboard showing system health indicators, transaction metrics
+charts, and token statistics_
+
+### Event logs and audit trail
+
+Review system events:
+
+Navigate to **Platform Settings** &gt; **Audit Logs**:
+
+View comprehensive event log:
+
+- User access events
+- Role assignment changes
+- Token deployments
+- Compliance module updates
+- Claim issuance/revocation
+- Emergency actions (pauses, freezes)
+
+Filter logs by:
+
+- Event type
+- User/address
+- Date range
+- Contract
+
+Export logs for external analysis or regulatory reporting.
+
+### Backup and recovery
+
+Ensure data availability:
+
+**On-chain data:**
+
+Blockchain data is inherently backed up across network nodes. For
+private/consortium chains:
+
+1. Navigate to **Platform Settings** &gt; **Maintenance** &gt; **Blockchain
+   Backup**
+2. Review node backup status
+3. Configure automated snapshot schedule
+4. Verify backup retention policy
+
+**Off-chain data:**
+
+Database backups for application data:
+
+1. Navigate to **Platform Settings** &gt; **Maintenance** &gt; **Database
+   Backup**
+2. Review backup schedule (daily recommended)
+3. Verify backup location and retention
+4. Test restoration procedure quarterly
+
+**Configuration backup:**
+
+Export platform configuration:
+
+1. Navigate to **Platform Settings** &gt; **Maintenance** &gt; **Export
+   Configuration**
+2. Click **Generate Configuration Export**
+3. Download JSON file containing:
+   - Deployed contract addresses
+   - Role assignments
+   - Claim topics and issuers
+   - Asset type registrations
+   - Addon deployments
+4. Store securely for disaster recovery
+
+## Common workflows
+
+### Upgrade platform contracts
+
+Deploy new contract versions:
+
+For proxy-based contracts (system, factories, tokens):
+
+1. Prepare new implementation contract (development/testing complete)
+2. Navigate to **Platform Settings** &gt; **Maintenance** &gt; **Upgrades**
+3. Select contract to upgrade (e.g., "Bond Factory")
+4. Enter new implementation address
+5. Review upgrade impact analysis
+6. Click **Propose Upgrade**
+7. If multisig governance:
+   - Other administrators review and approve
+   - Execute upgrade after approval threshold met
+8. Platform upgrades proxy to new implementation
+9. Verify upgrade successful
+
+**Testing:** Always test upgrades on staging environment before production
+deployment.
+
+### Migrate to new blockchain network
+
+Move platform to different chain:
+
+1. Deploy system contracts on new network
+2. Migrate identity registry data:
+   - Export investor OnchainIDs
+   - Deploy OnchainIDs on new network
+   - Re-issue claims
+3. Migrate tokens:
+   - Deploy new token contracts on new network
+   - Coordinate with token holders for migration
+   - Burn tokens on old network, mint on new network
+4. Update platform network configuration
+5. Communicate migration timeline to users
+
+**Multi-chain:** Some deployments maintain presence on multiple chains
+simultaneously for cross-chain asset transfers.
+
+### Handle system emergency
+
+Respond to security incidents:
+
+If critical vulnerability or attack detected:
+
+1. Navigate to **Platform Settings** &gt; **Emergency**
+2. Click **Activate System Pause**
+3. Pauses:
+   - All token transfers
+   - New token deployments
+   - Claim issuance
+   - Allows read-only operations
+4. Investigate incident
+5. Deploy fixes if needed
+6. Navigate to **Emergency** &gt; **Deactivate Pause**
+7. Resume normal operations
+
+**Communication:** Notify users of emergency pause via status page and email.
+
+## Best practices
+
+**Access control:**
+
+- Use multisig wallets for all platform admin roles
+- Implement timelocks for critical operations
+- Review role assignments quarterly
+- Revoke unnecessary permissions (least privilege)
+- Maintain role assignment documentation
+
+**System monitoring:**
+
+- Monitor transaction success rate daily
+- Set up alerts for failed transaction thresholds
+- Review gas costs weekly to optimize
+- Track token deployment trends for capacity planning
+- Monitor blockchain node health continuously
+
+**Maintenance:**
+
+- Schedule regular platform upgrades during low-traffic periods
+- Test all upgrades in staging environment first
+- Maintain rollback procedures for failed upgrades
+- Document all configuration changes
+- Perform quarterly disaster recovery drills
+
+**Compliance:**
+
+- Audit claim issuers annually
+- Review compliance module configurations quarterly
+- Update compliance templates for regulatory changes
+- Maintain compliance audit trail
+- Test compliance enforcement with sample transactions
+
+## Troubleshooting
+
+**Cannot access admin settings**
+
+- Verify your address has PLATFORM_ADMIN role
+- Check wallet connection and network
+- Clear browser cache and reload
+- Ensure using admin account (not investor account)
+
+**Role assignment fails**
+
+- Verify target address is valid Ethereum address
+- Check you have permission to assign role (PLATFORM_ADMIN)
+- Ensure role exists in access manager
+- Confirm transaction has sufficient gas
+
+**Asset type deployment fails**
+
+- Check sufficient platform balance for factory deployment
+- Verify factory implementation contracts exist
+- Ensure factory registry is accessible
+- Review deployment transaction revert reason
+
+**Addon factory deployment reverts**
+
+- Verify addon implementation contract deployed
+- Check addon compatible with system version
+- Ensure addon registry accessible
+- Confirm sufficient gas for deployment
+
+**System pause fails to activate**
+
+- Verify you have EMERGENCY_ROLE on platform
+- Check emergency module is not already paused
+- Ensure sufficient gas for pause transaction
+- Review access manager permissions
+
+For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+contact platform support.
+
+## Next steps
+
+- **Asset deployment** - Review asset-specific deployment guides
+- **Compliance configuration** - Configure
+  [Manage investors](/docs/user-guides/manage-investors) workflows
+- **System architecture** - Understand
+  [Deployment and operations](/docs/architecture/integration-operations/deployment-operations)

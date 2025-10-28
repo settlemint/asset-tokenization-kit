@@ -7,11 +7,552 @@ pageTitle: How to onboard investors and manage compliance operations
 tags: [how-to, KYC, investor-onboarding, compliance-ops]
 ---
 
-## Steps (Planned)
+Investor management encompasses KYC/AML verification, OnchainID deployment,
+claim issuance, and ongoing compliance monitoring. This guide walks compliance
+officers through the complete investor lifecycle from onboarding through ongoing
+surveillance.
 
-1. Invite or Register Investors
-2. KYC Verification
-3. Assigning Identity Claims
-4. Whitelist/Eligibility Management
-5. Ongoing Compliance Tasks
-6. Handling Compliance Flags
+**Who should read this:** Compliance officers, KYC analysts, investor relations
+teams, and transfer agents managing participant eligibility and regulatory
+compliance.
+
+**Time required:** 10-15 minutes per investor for complete onboarding; ongoing
+monitoring is continuous.
+
+**Prerequisites:**
+
+- Platform admin or compliance officer role
+- Access to KYC/AML verification system (integrated or external)
+- Understanding of required investor eligibility claims for your asset types
+- Regulatory framework requirements (Reg D, UCITS, MiCA, etc.)
+
+## Step 1: Investor registration
+
+Initiate the onboarding process:
+
+### Invite new investor
+
+From the compliance dashboard:
+
+1. Navigate to **Participants** &gt; **Entities** in the left sidebar
+2. Click **Invite Investor** button
+3. Choose invitation method:
+   - **Email invitation** - Send invite link to investor email
+   - **Direct registration** - Provide investor with registration URL
+   - **Bulk import** - Upload CSV of multiple investors
+
+![Investor invitation](/images/screenshots/placeholder.svg) _Screenshot:
+Investor invitation modal showing email input, invitation method options, and
+bulk upload interface_
+
+### Investor self-registration
+
+Investor completes registration:
+
+1. Investor receives invitation and clicks registration link
+2. Platform presents onboarding flow:
+   - Create account with email/password
+   - Verify email address
+   - Accept terms and conditions
+   - Proceed to KYC verification
+3. Investor lands on KYC verification portal
+
+**Email verification:** Investor must verify email before proceeding to prevent
+fraudulent registrations.
+
+## Step 2: KYC/AML verification
+
+Collect and verify investor identity:
+
+### KYC data collection
+
+Platform collects required information based on investor type:
+
+**Individual investors:**
+
+- Full legal name
+- Date of birth
+- Residential address
+- Nationality and citizenship
+- Government-issued ID (passport, driver's license, national ID)
+- Tax identification number (SSN, EIN, VAT number)
+- Source of funds declaration
+- Employment and income information (for accredited investor determination)
+
+**Institutional investors:**
+
+- Legal entity name and type (corporation, LLC, trust, etc.)
+- Registration/incorporation number
+- Registered address
+- Beneficial owners (25%+ ownership)
+- Authorized signatories
+- Corporate documents (articles of incorporation, certificates)
+- Tax identification
+- Financial statements (for qualified purchaser determination)
+
+![KYC form](/images/screenshots/placeholder.svg) _Screenshot: KYC data
+collection form showing personal information fields, document upload areas, and
+investor type selection_
+
+### Identity verification process
+
+Platform verifies collected information:
+
+**Automated verification:**
+
+If integrated KYC provider configured:
+
+1. Platform submits collected data to KYC service (Onfido, Jumio, Trulioo, etc.)
+2. Service performs:
+   - Document authenticity verification
+   - Facial recognition match
+   - Address verification
+   - Database checks (PEP, sanctions, adverse media)
+3. Results return to platform automatically
+4. Investor receives verification status
+
+**Manual verification:**
+
+If manual review required:
+
+1. Compliance officer reviews submitted documents
+2. Navigate to **Participants** &gt; **Entities** &gt; **Pending KYC**
+3. Select investor from queue
+4. Review uploaded documents and information
+5. Perform verification checks:
+   - Document validity and authenticity
+   - Address verification via utility bill or bank statement
+   - Sanctions screening against OFAC, EU, UN lists
+   - PEP screening
+   - Adverse media search
+6. Mark verification as **Approved** or **Rejected**
+
+![KYC review interface](/images/screenshots/placeholder.svg) _Screenshot:
+Compliance officer KYC review showing investor documents, verification
+checklist, sanctions screening results, and approve/reject buttons_
+
+**Verification levels:**
+
+- **Level 1 (Basic KYC)** - Name, address, date of birth verified
+- **Level 2 (Enhanced KYC)** - Level 1 + document verification + sanctions
+  screening
+- **Level 3 (Enhanced Due Diligence)** - Level 2 + source of funds + enhanced
+  monitoring
+
+Set verification level requirement per asset type compliance rules.
+
+## Step 3: OnchainID deployment
+
+Create blockchain identity for verified investor:
+
+### OnchainID creation
+
+After KYC approval:
+
+1. Navigate to investor details page: **Participants** &gt; **Entities** &gt;
+   [Investor Name]
+2. Review KYC status showing **Verified**
+3. Click **Create OnchainID**
+4. Platform:
+   - Deploys OnchainID contract for investor (30-45 seconds)
+   - Records OnchainID address in investor profile
+   - Registers OnchainID in identity registry
+5. OnchainID contract address appears on investor profile
+
+![OnchainID deployment](/images/screenshots/placeholder.svg) _Screenshot:
+Investor profile showing KYC status verified, OnchainID contract deployment
+progress, and resulting OnchainID address_
+
+**OnchainID:** Each investor has unique on-chain identity contract holding
+verifiable claims about their status and compliance.
+
+### Wallet linking
+
+Associate investor wallets with OnchainID:
+
+**Primary wallet (automatic):**
+
+Platform automatically links wallet created during registration as primary key.
+
+**Additional wallets:**
+
+If investor needs multiple wallets:
+
+1. Investor navigates to account settings in dApp
+2. Clicks **Add Wallet**
+3. Connects additional wallet via WalletConnect or direct signature
+4. Platform adds wallet as management key on OnchainID
+5. Multiple wallets now linked to same identity and claims
+
+**Use case:** Investor may have hot wallet for trading and cold wallet for
+long-term holding, both linked to same OnchainID.
+
+## Step 4: Issue claims
+
+Assign verifiable credentials to investor OnchainID:
+
+### Required claims for asset access
+
+Determine which claims investor needs based on target assets:
+
+**Common claim types:**
+
+- **KYC_VERIFIED** - Basic identity verification completed
+- **ACCREDITED_INVESTOR** - Accredited investor status (Reg D)
+- **QUALIFIED_PURCHASER** - Qualified purchaser status (3(c)(7) funds)
+- **JURISDICTION** - Country of residence
+- **INVESTOR_TYPE** - Individual, institutional, professional
+- **SOPHISTICATED_INVESTOR** - EU sophisticated investor status
+- **PEP_STATUS** - Politically exposed person classification
+
+Review asset compliance requirements to determine necessary claims:
+
+1. Navigate to **Asset Management** &gt; [Asset Type] &gt; [Specific Token]
+2. Review **Compliance** tab showing required claims
+3. Note which claims investor needs for eligibility
+
+### Issue individual claims
+
+Add claims to investor OnchainID:
+
+1. Navigate to **Participants** &gt; **Entities** &gt; [Investor Name]
+2. Scroll to **Claims** section
+3. Click **Issue Claim**
+4. Select claim type from dropdown (e.g., ACCREDITED_INVESTOR)
+5. Enter claim data:
+   - **Claim topic** - Automatically filled based on type
+   - **Claim data** - Encoded investor information (auto-generated)
+   - **Expiration date** - When claim expires (optional, e.g., 1 year for
+     accredited status)
+   - **URI** - Link to supporting documentation (optional)
+6. Click **Sign and Issue Claim**
+7. Platform:
+   - Signs claim with platform claim issuer key
+   - Adds claim to investor's OnchainID contract
+   - Records claim in compliance database
+8. Claim appears in investor's claims list
+
+![Claim issuance](/images/screenshots/placeholder.svg) _Screenshot: Claim
+issuance form showing claim type dropdown, automatically generated claim data,
+expiration date picker, and issue button_
+
+**Claim issuer:** Platform is registered as trusted claim issuer in the system;
+only trusted issuers can issue claims accepted by compliance modules.
+
+### Batch claim issuance
+
+Issue claims to multiple investors:
+
+For common claims needed by many investors:
+
+1. Navigate to **Participants** &gt; **Entities**
+2. Select multiple investors via checkboxes
+3. Click **Batch Actions** &gt; **Issue Claim**
+4. Select claim type
+5. Configure expiration (applies to all selected)
+6. Click **Issue to All Selected**
+7. Platform processes batch issuance
+8. Review results showing successful/failed claim issuances
+
+**Use case:** After quarterly accreditation verification, batch-issue renewed
+ACCREDITED_INVESTOR claims to all qualifying investors.
+
+## Step 5: Manage investor eligibility
+
+Monitor and update investor compliance status:
+
+### Investor eligibility dashboard
+
+Track which investors can hold which assets:
+
+1. Navigate to **Compliance** &gt; **Eligibility Matrix**
+2. View table showing:
+   - Rows: All registered investors
+   - Columns: All deployed tokens
+   - Cells: Green (eligible), Red (ineligible), Yellow (pending)
+3. Click cell to see eligibility details:
+   - Required claims for token
+   - Investor's current claims
+   - Missing claims preventing eligibility
+   - Expired claims needing renewal
+
+![Eligibility matrix](/images/screenshots/placeholder.svg) _Screenshot:
+Eligibility matrix showing grid of investors vs tokens with color-coded
+eligibility status_
+
+**Proactive monitoring:** Use matrix to identify investors losing eligibility
+due to expiring claims before they attempt transactions.
+
+### Handle eligibility issues
+
+Resolve investor compliance gaps:
+
+**Missing claims:**
+
+1. Identify investor missing required claim
+2. Determine if investor qualifies for claim
+3. If yes, issue claim per Step 4
+4. If no, notify investor of additional requirements
+
+**Expired claims:**
+
+1. Review expiring claims report: **Compliance** &gt; **Expiring Claims**
+2. Contact investors 30 days before expiration
+3. Request updated documentation for renewal
+4. Review and re-issue claims with new expiration
+5. If investor doesn't renew, claim expires and tokens become non-transferable
+
+**Failed compliance checks:**
+
+If investor fails ongoing monitoring (e.g., added to sanctions list):
+
+1. Navigate to investor profile
+2. Click **Actions** &gt; **Revoke Claim**
+3. Select claim to revoke (e.g., KYC_VERIFIED)
+4. Enter revocation reason
+5. Confirm revocation
+6. Platform removes claim from OnchainID
+7. Investor immediately loses token transfer capability
+8. Consider freezing investor's holdings: **Actions** &gt; **Freeze Account**
+
+## Step 6: Ongoing compliance monitoring
+
+Continuous surveillance of investor status:
+
+### Automated screening
+
+Configure automatic re-screening:
+
+1. Navigate to **Compliance** &gt; **Monitoring Settings**
+2. Enable **Continuous Screening**
+3. Configure screening frequency:
+   - Daily screening against sanctions lists
+   - Weekly PEP list updates
+   - Monthly adverse media searches
+4. Set alert thresholds and notification recipients
+5. Platform automatically re-screens all investors on schedule
+
+**Alert handling:**
+
+When screening identifies match:
+
+1. Alert appears in **Compliance** &gt; **Alerts**
+2. Compliance officer reviews match details
+3. Investigates to determine true positive or false positive
+4. Actions:
+   - **False positive** - Dismiss alert with notes
+   - **True positive** - Revoke claims, freeze account, file SAR
+   - **Uncertain** - Escalate for enhanced due diligence
+
+![Compliance alerts](/images/screenshots/placeholder.svg) _Screenshot:
+Compliance alerts dashboard showing pending alerts with investor name, alert
+type, severity, and review button_
+
+### Transaction monitoring
+
+Monitor investor transaction patterns:
+
+1. Navigate to **Compliance** &gt; **Transaction Monitoring**
+2. Review flagged transactions:
+   - Unusual transaction sizes
+   - High frequency trading patterns
+   - Transactions exceeding velocity limits
+   - Cross-border transfers to high-risk jurisdictions
+3. Investigate suspicious activity
+4. File Suspicious Activity Reports (SARs) per BSA/AML requirements
+
+**Monitoring rules:**
+
+Configure transaction monitoring rules:
+
+- **Amount threshold** - Flag transactions over $10,000 (CTR requirement)
+- **Velocity limit** - Flag if investor exceeds volume within period
+- **Geographic risk** - Flag transfers involving high-risk countries
+- **Pattern detection** - Identify structuring or smurfing patterns
+
+## Step 7: Investor communications
+
+Maintain investor relationship:
+
+### Send notifications
+
+Communicate with investors:
+
+1. Navigate to **Participants** &gt; **Entities** &gt; [Investor Name]
+2. Click **Send Message**
+3. Choose message type:
+   - **Claim expiration reminder** - Auto-send 30 days before expiration
+   - **Compliance update** - Notify of new requirements
+   - **Transaction notification** - Confirm large transfers
+   - **Document request** - Request updated documents
+4. Compose message
+5. Send notification (email + in-app)
+
+**Bulk communications:**
+
+For announcements to all investors:
+
+1. **Participants** &gt; **Entities** &gt; **Select All**
+2. **Batch Actions** &gt; **Send Announcement**
+3. Compose message
+4. Send to all or filtered group (e.g., only accredited investors)
+
+### Investor data updates
+
+Handle investor information changes:
+
+**Address change:**
+
+1. Investor submits address update via dApp
+2. Request appears in **Compliance** &gt; **Pending Updates**
+3. Review supporting documentation (utility bill, etc.)
+4. Approve or reject update
+5. If approved, update investor profile and re-issue JURISDICTION claim if
+   country changed
+
+**Accreditation renewal:**
+
+1. Investor submits updated financial documentation annually
+2. Compliance officer reviews income/net worth for accredited status
+3. Re-issue ACCREDITED_INVESTOR claim with new expiration
+4. Deny renewal if no longer qualifies; investor loses access to Reg D offerings
+
+## Common workflows
+
+### Onboard institutional investor
+
+Additional steps for legal entities:
+
+1. Collect corporate documentation:
+   - Certificate of incorporation
+   - Shareholder register
+   - Board resolution authorizing investment
+   - Beneficial ownership disclosure (UBO)
+2. Verify each beneficial owner (25%+ ownership):
+   - Perform individual KYC on each UBO
+   - Issue individual OnchainIDs to UBOs
+3. Create OnchainID for corporate entity
+4. Link UBO OnchainIDs to corporate OnchainID
+5. Issue entity-level claims (e.g., QUALIFIED_PURCHASER)
+6. Designate authorized signatories for corporate wallet
+
+**Beneficial ownership:** Ensure all natural persons with 25%+ ownership are
+verified per AML regulations.
+
+### Handle investor offboarding
+
+Remove investor from platform:
+
+1. Ensure investor holds zero token balances across all assets
+2. Navigate to investor profile
+3. Click **Actions** &gt; **Offboard Investor**
+4. Confirm investor has redeemed/transferred all holdings
+5. Revoke all claims
+6. Deactivate investor account
+7. Archive investor records per data retention policy (typically 5-7 years)
+8. Notify investor of account closure
+
+**Data retention:** Maintain KYC records and transaction history per regulatory
+requirements even after offboarding.
+
+### Upgrade investor accreditation
+
+Elevate investor status:
+
+1. Investor submits documentation for higher qualification:
+   - Income verification for accredited investor
+   - Net worth documentation for qualified purchaser
+   - Professional certification for sophisticated investor
+2. Review documentation meets SEC/regulatory standards
+3. Issue additional claim (e.g., QUALIFIED_PURCHASER)
+4. Investor gains access to additional asset offerings
+5. Update investor tier in CRM
+
+**Investor tiers:** Common progression: Basic → Accredited → Qualified Purchaser
+
+## Best practices
+
+**KYC verification:**
+
+- Use risk-based approach: higher verification for higher investment amounts
+- Leverage automated KYC providers for efficiency and consistency
+- Perform enhanced due diligence on high-risk investors (PEPs, high-risk
+  jurisdictions)
+- Refresh KYC annually or when material changes occur
+- Maintain detailed audit trail of all verification decisions
+
+**Claim management:**
+
+- Set expiration dates on time-sensitive claims (accreditation, jurisdiction)
+- Implement reminder system 30 days before claim expiration
+- Batch-renew claims during annual refresh cycles
+- Monitor claim usage: revoke unused claims to maintain hygiene
+- Use claim versioning to track renewals and updates
+
+**Ongoing monitoring:**
+
+- Screen against sanctions lists daily (OFAC updates frequently)
+- Review PEP lists quarterly
+- Conduct adverse media searches semi-annually
+- Monitor transaction patterns continuously
+- Escalate alerts to compliance leadership within 24 hours
+
+**Regulatory compliance:**
+
+- File CTRs (Currency Transaction Reports) for $10,000+ transactions within 15
+  days
+- File SARs (Suspicious Activity Reports) within 30 days of detection
+- Maintain independent compliance audit trail
+- Update procedures for regulatory changes
+- Train compliance staff quarterly
+
+## Troubleshooting
+
+**OnchainID deployment fails**
+
+- Check platform has sufficient gas for deployment
+- Verify investor wallet address is valid
+- Ensure investor not already has OnchainID
+- Retry deployment after 30 seconds if network congestion
+
+**Claim issuance reverts**
+
+- Verify investor has OnchainID deployed
+- Check claim issuer has CLAIM_ISSUER_ROLE
+- Ensure claim topic exists in topic registry
+- Confirm claim data format is correct (bytes format)
+
+**Investor cannot transfer tokens despite claims**
+
+- Verify all required claims are present (not just some)
+- Check claim expiration dates (expired claims invalid)
+- Ensure claim issuer is trusted issuer for token
+- Review token compliance module for additional restrictions
+
+**KYC verification stuck in pending**
+
+- Check KYC provider API connection status
+- Review submitted documents for quality (blurry images fail)
+- Verify investor completed all required fields
+- Manually approve if automated verification unavailable
+
+**Eligibility matrix showing incorrect status**
+
+- Refresh OnchainID claims cache
+- Verify compliance module configuration on token
+- Check for recently expired claims
+- Re-sync identity registry if registry and token state inconsistent
+
+For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+contact platform support.
+
+## Next steps
+
+- **Asset issuance** - Review asset-specific guides for required claims:
+  - [Issue a bond](/docs/user-guides/issue-bond)
+  - [Issue equity](/docs/user-guides/issue-equity)
+  - [Issue a fund](/docs/user-guides/issue-fund)
+- **Compliance architecture** - Deep dive into
+  [Identity and compliance](/docs/architecture/smart-contracts/identity-compliance)
+- **Platform settings** - Configure system-wide compliance in
+  [Admin settings](/docs/user-guides/admin-settings)
