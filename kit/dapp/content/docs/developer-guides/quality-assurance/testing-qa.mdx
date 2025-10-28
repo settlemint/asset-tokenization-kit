@@ -42,13 +42,18 @@ graph TD
 kit/
 ├── contracts/
 │   └── test/          # Foundry smart contract tests
+│       https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/test
 ├── dapp/
 │   └── test/          # Vitest unit tests for frontend
+│       https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/test
 ├── subgraph/
 │   └── test/          # Matchstick subgraph tests
+│       https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/subgraph/test
 └── e2e/
     ├── ui-tests/      # Playwright browser automation tests
+    │   https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/e2e/ui-tests
     └── test-data/     # Shared test fixtures
+        https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/e2e/test-data
 ```
 
 ## Running tests
@@ -126,7 +131,8 @@ bun run test:unit:watch
 bun run test:unit:coverage
 ```
 
-View coverage report at `kit/dapp/coverage/index.html`:
+View coverage report at
+[`kit/dapp/coverage/index.html`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp):
 
 - Line coverage
 - Branch coverage
@@ -185,7 +191,8 @@ Shows gas consumption per function call:
 bun run test:ci
 ```
 
-Creates LCOV report at `kit/contracts/coverage/lcov.info`.
+Creates LCOV report at
+[`kit/contracts/coverage/lcov.info`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts).
 
 **Fuzzing:**
 
@@ -420,8 +427,9 @@ describe("formatCurrency", () => {
 
 ### Smart contract tests
 
-Create test contracts in `kit/contracts/test/` following the pattern
-`ContractName.t.sol`:
+Create test contracts in
+[`kit/contracts/test/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/test)
+following the pattern `ContractName.t.sol`:
 
 ```
 test/
@@ -502,7 +510,9 @@ Use Foundry cheatcodes:
 
 ### E2E tests
 
-Create test files in `kit/e2e/ui-tests/` with `.spec.ts` extension.
+Create test files in
+[`kit/e2e/ui-tests/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/e2e/ui-tests)
+with `.spec.ts` extension.
 
 #### Example: Playwright test
 
@@ -951,7 +961,8 @@ View coverage at:
 
 1. **View trace files**:
 
-   Playwright saves traces on failure in `kit/e2e/test-results/`:
+   Playwright saves traces on failure in
+   [`kit/e2e/test-results/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/e2e):
 
    ```bash
    npx playwright show-trace test-results/bond-issuance/trace.zip

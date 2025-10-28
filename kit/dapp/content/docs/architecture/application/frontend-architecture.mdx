@@ -42,8 +42,9 @@ The interface is built on accessible, composable primitives:
 - **Lucide React** - Consistent icon library (version 0.548)
 
 All UI components prioritize accessibility (WCAG 2.1 AA compliance), keyboard
-navigation, and screen reader support. See `src/components/ui/` for the
-component library.
+navigation, and screen reader support. See
+[`src/components/ui/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/components/ui)
+for the component library.
 
 ### Type safety and validation
 
@@ -62,7 +63,9 @@ class of runtime errors.
 
 ### File-based routing structure
 
-Routes are defined in `src/routes/` using TanStack Router's file conventions:
+Routes are defined in
+[`src/routes/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/routes)
+using TanStack Router's file conventions:
 
 <Mermaid
   chart={`
@@ -171,7 +174,9 @@ flowchart LR
 
 The application uses three primary data sources:
 
-**1. ORPC API** (`src/orpc/`) - Type-safe RPC for business logic:
+**1. ORPC API**
+([`src/orpc/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/orpc)) -
+Type-safe RPC for business logic:
 
 ```typescript
 import { orpc } from "@/orpc/client";
@@ -220,7 +225,7 @@ const { data: theme } = useQuery(
 ### Asset designer wizard
 
 Multi-step token creation interface at
-`src/routes/_private/_onboarded/_sidebar/addon-designer.tsx`:
+[`src/routes/_private/_onboarded/_sidebar/addon-designer.tsx`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/routes/_private/_onboarded/_sidebar/addon-designer.tsx):
 
 <Mermaid
   chart={`

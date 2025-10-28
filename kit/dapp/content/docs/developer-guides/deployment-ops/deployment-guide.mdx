@@ -90,12 +90,13 @@ graph TB
 ## Helm chart structure
 
 The Asset Tokenization Kit uses an umbrella chart architecture located in
-`kit/charts/atk/`:
+[`kit/charts/atk/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/charts/atk):
 
 ### Chart dependencies
 
-The main chart (`kit/charts/atk/Chart.yaml`) orchestrates 11 dependent
-subcharts:
+The main chart
+([`kit/charts/atk/Chart.yaml`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/charts/atk/Chart.yaml))
+orchestrates 11 dependent subcharts:
 
 ```yaml
 dependencies:
@@ -119,20 +120,16 @@ Each subchart can be enabled/disabled via the `enabled` flag in `values.yaml`.
 ```
 kit/charts/atk/
 ├── Chart.yaml              # Chart metadata and dependencies
+│   https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/charts/atk/Chart.yaml
 ├── values.yaml             # Default configuration values
+│   https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/charts/atk/values.yaml
 ├── values-openshift.yaml   # OpenShift-specific overrides
 ├── templates/              # Kubernetes resource templates
 │   ├── _helpers.tpl        # Template helpers
 │   ├── _common-helpers.tpl # Shared helper functions
 │   └── image-pull-secrets.yaml
 └── charts/                 # Subchart definitions
-    ├── support/
-    ├── network/
-    ├── erpc/
-    ├── graph-node/
-    ├── hasura/
-    ├── txsigner/
-    └── dapp/
+    https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/charts/atk/charts
 ```
 
 ## Prerequisites
