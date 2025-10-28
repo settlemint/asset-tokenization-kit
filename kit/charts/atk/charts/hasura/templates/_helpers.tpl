@@ -191,11 +191,17 @@ Database connection URL
   {{- if and .Values.global.datastores.hasura .Values.global.datastores.hasura.postgresql -}}
     {{- $sslMode = $sslMode | default .Values.global.datastores.hasura.postgresql.sslMode -}}
   {{- end -}}
-  {{- if and .Values.global.datastores.default .Values.global.datastores.default.postgresql -}}
-    {{- $sslMode = $sslMode | default .Values.global.datastores.default.postgresql.sslMode -}}
-  {{- end -}}
+{{- if and .Values.global.datastores.default .Values.global.datastores.default.postgresql -}}
+  {{- $sslMode = $sslMode | default .Values.global.datastores.default.postgresql.sslMode -}}
 {{- end -}}
+{{- end -}}
+{{- $mergedConfig := ((include "atk.datastores.postgresql.config" (dict "context" . "chartKey" "hasura" "local" (default (dict) .Values.database))) | fromYaml) | default (dict) -}}
+{{- $existingSecret := trim (default "" (index $mergedConfig "existingSecret")) -}}
+{{- if ne $existingSecret "" -}}
+{{- "" -}}
+{{- else -}}
 {{- include "atk.datastores.postgresql.url" (dict "context" . "chartKey" "hasura" "local" (default (dict) .Values.database)) -}}
+{{- end -}}
 {{- end -}}
 
 {{/*

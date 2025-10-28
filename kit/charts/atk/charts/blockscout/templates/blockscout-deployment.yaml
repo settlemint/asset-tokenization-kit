@@ -94,6 +94,17 @@ spec:
             {{- else }}
             value: ""
             {{- end }}
+          {{- $pgConfig := ((include "blockscout.postgresql" (dict "context" $ "local" .Values.blockscout.postgresql)) | fromYaml) | default (dict) }}
+          {{- $pgExistingSecret := trim (default "" (index $pgConfig "existingSecret")) }}
+          {{- $pgSecretKeys := (index $pgConfig "existingSecretKeys") | default (dict) }}
+          {{- $pgUrlKey := trim (default "url" (index $pgSecretKeys "url")) }}
+          {{- if ne $pgExistingSecret "" }}
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: {{ $pgExistingSecret | quote }}
+                key: {{ $pgUrlKey | quote }}
+          {{- end }}
           envFrom:
             - secretRef:
                 name: {{ include "blockscout.fullname" . }}-blockscout-env
@@ -190,6 +201,17 @@ spec:
           {{- if or .Values.blockscout.ingress.enabled .Values.blockscout.openShiftRoute.enabled }}
           - name: BLOCKSCOUT_HOST
             value: {{ $blockscoutHost | quote }}
+          {{- end }}
+          {{- $pgConfig := ((include "blockscout.postgresql" (dict "context" $ "local" .Values.blockscout.postgresql)) | fromYaml) | default (dict) }}
+          {{- $pgExistingSecret := trim (default "" (index $pgConfig "existingSecret")) }}
+          {{- $pgSecretKeys := (index $pgConfig "existingSecretKeys") | default (dict) }}
+          {{- $pgUrlKey := trim (default "url" (index $pgSecretKeys "url")) }}
+          {{- if ne $pgExistingSecret "" }}
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: {{ $pgExistingSecret | quote }}
+                key: {{ $pgUrlKey | quote }}
           {{- end }}
           envFrom:
             - secretRef:
