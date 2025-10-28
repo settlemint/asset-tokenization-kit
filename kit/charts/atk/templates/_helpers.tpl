@@ -314,6 +314,30 @@ Return the effective Redis datastore configuration with empty overrides pruned.
     {{- $_ := set $result $key $value -}}
   {{- end -}}
 {{- end -}}
+{{- $existingSecret := "" -}}
+{{- if hasKey $result "existingSecret" -}}
+  {{- $existingSecret = trim (printf "%v" (index $result "existingSecret")) -}}
+{{- end -}}
+{{- if ne $existingSecret "" -}}
+  {{- $namespace := "" -}}
+  {{- if and $ctx $ctx.Release $ctx.Release.Namespace -}}
+    {{- $namespace = $ctx.Release.Namespace -}}
+  {{- end -}}
+  {{- if ne $namespace "" -}}
+    {{- $secret := lookup "v1" "Secret" $namespace $existingSecret -}}
+    {{- if and $secret $secret.data -}}
+      {{- $secretData := $secret.data -}}
+      {{- $secretKeys := (index $result "existingSecretKeys") | default (dict) -}}
+      {{- range $configKey, $secretKey := $secretKeys -}}
+        {{- $secretKeyString := trim (printf "%v" $secretKey) -}}
+        {{- if and (ne $secretKeyString "") (hasKey $secretData $secretKeyString) -}}
+          {{- $decoded := (index $secretData $secretKeyString) | b64dec -}}
+          {{- $_ := set $result $configKey $decoded -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 {{- toYaml $result -}}
 {{- end -}}
 
@@ -339,6 +363,18 @@ Return the effective PostgreSQL datastore configuration with empty overrides pru
   {{- if ne $string "" -}}
     {{- $_ := set $result $key $value -}}
   {{- end -}}
+{{- end -}}
+{{- $defaultSecretKeys := dict "host" "host" "port" "port" "database" "database" "username" "username" "password" "password" "url" "url" "metadataUrl" "metadataUrl" -}}
+{{- $providedSecretKeys := (index $result "existingSecretKeys") | default (dict) -}}
+{{- range $key, $value := $providedSecretKeys -}}
+  {{- $string := trim (printf "%v" $value) -}}
+  {{- if ne $string "" -}}
+    {{- $_ := set $defaultSecretKeys $key $value -}}
+  {{- end -}}
+{{- end -}}
+{{- $_ := set $result "existingSecretKeys" $defaultSecretKeys -}}
+{{- if not (hasKey $result "existingSecret") -}}
+  {{- $_ := set $result "existingSecret" "" -}}
 {{- end -}}
 {{- toYaml $result -}}
 {{- end -}}
@@ -392,6 +428,10 @@ Shared PostgreSQL helpers.
 {{- $local := default (dict) .local -}}
 {{- $config := ((include "atk.datastores.postgresql.config" (dict "context" $ctx "chartKey" $chartKey "legacyKey" $legacyKey "local" $local)) | fromYaml) | default (dict) -}}
 {{- $source := trim (include "atk.datastores.source" (dict "context" $ctx "chartKey" $chartKey)) -}}
+{{- $existingSecret := trim (default "" (index $config "existingSecret")) -}}
+{{- if ne $existingSecret "" -}}
+{{- "" -}}
+{{- else -}}
 {{- $username := trim (include "atk.datastores.require" (dict "value" (index $config "username") "field" "postgresql.username" "source" $source)) -}}
 {{- $password := trim (include "atk.datastores.require" (dict "value" (index $config "password") "field" "postgresql.password" "source" $source)) -}}
 {{- $database := trim (include "atk.datastores.require" (dict "value" (index $config "database") "field" "postgresql.database" "source" $source)) -}}
@@ -402,6 +442,7 @@ Shared PostgreSQL helpers.
   {{- $query = printf "?sslmode=%s" $sslMode -}}
 {{- end -}}
 {{- printf "postgresql://%s:%s@%s/%s%s" $username $password $endpoint $database $query -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
