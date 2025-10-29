@@ -1,262 +1,168 @@
 ---
 title: API reference
 description:
-  A comprehensive reference of all public API endpoints and RPC procedures
+  Type-safe ORPC procedures for token lifecycle, DALP operations, compliance
+  enforcement, and identity management. Includes authentication patterns, error
+  handling, and observability integration.
 pageTitle: Complete API reference documentation
 tags: [reference, api, endpoints, rpc, orpc]
 ---
 
-This is a comprehensive reference for all API endpoints in the Asset
-Tokenization Kit. The API is built with ORPC (Open Remote Procedure Call) and
-provides type-safe, contract-first procedures for all platform operations.
+The Asset Tokenization Kit exposes a type-safe API built with ORPC (Open Remote
+Procedure Call) that provides contract-first procedures for all platform
+operations. The API supports the complete DALP lifecycle—DvP settlement, vault
+operations, and yield distribution—alongside identity management, compliance
+enforcement, and token operations.
 
-## API organization
+All procedures leverage end-to-end type safety from client to server, with
+automatic request validation via Zod schemas and TypeScript inference for
+response types.
 
-The API is organized into logical namespaces:
+## API architecture
 
-- **account** - Wallet and account search operations
-- **actions** - Time-bound executable tasks
-- **exchangeRates** - Currency conversion rate management
-- **fixedYieldSchedule** - Yield schedule operations for bonds
-- **settings** - User preferences and platform configuration
-- **system** - SMART protocol infrastructure
-- **token** - Token lifecycle and operations
-- **user** - User profiles and KYC
+The API organizes operations into logical namespaces that mirror the platform's
+architectural layers:
 
-All endpoints follow REST-like conventions for HTTP methods and paths while
-providing RPC-style type safety.
+- **system** — SMART protocol infrastructure (registries, factories, access
+  control)
+- **token** — Token lifecycle management (creation, transfers, supply
+  operations)
+- **user** — User profiles, KYC workflows, and asset queries
+- **account** — Wallet operations and address lookup
+- **actions** — Time-bound executable tasks with role-based access
+- **exchangeRates** — Currency conversion rate synchronization
+- **fixedYieldSchedule** — Yield schedule operations for automated distributions
+- **settings** — Platform configuration and theming
 
-## Base URL
+Each namespace follows REST-like conventions (GET for queries, POST for
+mutations) while providing RPC-style type safety. Procedures accept
+strongly-typed input objects and return structured responses with full
+TypeScript inference.
+
+## Base URL and client configuration
 
 **Development**: `http://localhost:3000/api/rpc`  
-**Production**: `https://your-production-domain.com/api/rpc` (configure per
-deployment)
+**Production**: Configure via `VITE_API_BASE_URL` environment variable
 
-The client automatically handles URL resolution based on environment.
-
-## Authentication
-
-Most endpoints require authentication via session cookies. The auth middleware
-checks for valid sessions and provides user context.
-
-**Authentication levels**:
-
-- **Public** - No authentication required
-- **Authenticated** - Valid session cookie required
-- **Onboarded** - Completed KYC and wallet connection required
-- **Token-scoped** - Token-specific permissions required
-
-## Account namespace
-
-Account operations for wallet management and search.
-
-### `account.search`
-
-Search for accounts by wallet address or other criteria.
-
-**Method**: `GET`  
-**Path**: `/account/search`  
-**Auth**: Authenticated  
-**Input**:
+The ORPC client automatically resolves URLs based on environment. Import the
+client from `@/lib/orpc/client`:
 
 ```typescript
-{
-  query: string;           // Search term
-  limit?: number;          // Max results (default: 10)
-}
+import { orpc } from "@/lib/orpc/client";
+
+// Type-safe procedure call with automatic validation
+const tokens = await orpc.token.list.query({
+  input: { typeId: "bond", limit: 20 },
+});
 ```
 
-**Output**:
+Track API request latency and error rates through the **API Performance**
+dashboard in your observability stack. Monitor `orpc_request_duration_seconds`
+and `orpc_request_errors_total` metrics to validate response times and identify
+failing procedures.
+
+## Authentication and authorization
+
+The API enforces authentication via session cookies managed by Better Auth. Each
+procedure declares its required authentication level:
+
+**Public** — No session required (e.g., `system.list`, `system.read`)
+
+**Authenticated** — Valid session cookie required. The auth middleware populates
+`ctx.user` with session details. Most read operations require authentication:
 
 ```typescript
-Array<{
-  address: `0x${string}`; // Wallet address
-  identity?: {
-    country: string; // ISO country code
-    verified: boolean;
+// Requires valid session
+const profile = await orpc.user.me.query();
+```
+
+**Onboarded** — Completed KYC and wallet connection required. Mutation
+operations typically require onboarding:
+
+```typescript
+// Requires KYC approval and wallet address
+const { transactionHash } = await orpc.token.create.mutate({
+  input: {
+    name: "Corporate Bond 2025",
+    symbol: "CORP25",
+    typeId: "bond",
+    decimals: 18,
+    initialSupply: "1000000000000000000000000", // 1M tokens
+  },
+});
+```
+
+**Token-scoped** — Specific token roles required (e.g., `SUPPLY_MANAGEMENT_ROLE`
+for minting). The API validates role membership via on-chain access control
+before executing privileged operations.
+
+Failed authentication returns `UNAUTHORIZED` (401). Insufficient permissions
+return `FORBIDDEN` (403). Track authentication failures via the
+`orpc_auth_failures_total` metric in your observability dashboards.
+
+## Error handling patterns
+
+All procedures return standardized error responses with typed error codes:
+
+```typescript
+type APIError = {
+  error: {
+    code:
+      | "UNAUTHORIZED"
+      | "FORBIDDEN"
+      | "NOT_FOUND"
+      | "BAD_REQUEST"
+      | "INTERNAL_ERROR";
+    message: string;
+    details?: unknown; // Validation errors or additional context
   };
-}>;
+};
 ```
 
-**Example**:
+**Error codes**:
+
+- `UNAUTHORIZED` (401) — Missing or expired session
+- `FORBIDDEN` (403) — Insufficient permissions or roles
+- `NOT_FOUND` (404) — Resource does not exist
+- `BAD_REQUEST` (400) — Invalid input or validation failure
+- `INTERNAL_ERROR` (500) — Unexpected server error or blockchain RPC failure
+
+**Validation errors** include structured details in the `details` field:
 
 ```typescript
-const accounts = await orpc.account.search.query({
-  input: { query: "0x123", limit: 5 },
-});
-```
-
-## Actions namespace
-
-Time-bound executable tasks that users can perform on assets.
-
-### `actions.list`
-
-List actions available to the authenticated user.
-
-**Method**: `GET`  
-**Path**: `/actions/list`  
-**Auth**: Authenticated  
-**Input**:
-
-```typescript
-{
-  status?: 'PENDING' | 'ACTIVE' | 'EXECUTED' | 'EXPIRED';
-  targetAddresses?: Array<`0x${string}`>;
-  requiredRoles?: string[];
-  first?: number;          // Page size (default: 20)
-  skip?: number;           // Offset
+try {
+  await orpc.token.mint.mutate({
+    input: { tokenId: "0x...", to: "invalid", amount: "-100" },
+  });
+} catch (error) {
+  // error.details contains field-level validation failures
+  // { to: 'Invalid address format', amount: 'Must be positive' }
 }
 ```
 
-**Output**:
+Monitor error distribution through the **API Error Rates** dashboard. High
+`BAD_REQUEST` rates indicate client-side validation issues; `INTERNAL_ERROR`
+spikes require investigation of blockchain connectivity or contract execution
+failures.
 
-```typescript
-{
-  data: Array<{
-    id: string;
-    name: string;
-    status: "PENDING" | "ACTIVE" | "EXECUTED" | "EXPIRED";
-    activeAt: string; // Unix timestamp
-    expiresAt: string; // Unix timestamp
-    targetAddress: `0x${string}`;
-    requiredRoles: string[];
-    metadata?: Record<string, unknown>;
-  }>;
-  total: number;
-}
-```
+## System namespace: SMART protocol infrastructure
 
-**Example**:
+The system namespace manages SMART protocol deployments—the foundational
+infrastructure that provides identity registries, compliance modules, and token
+factories. These operations support multi-tenant deployments where each
+organization can provision isolated SMART systems.
 
-```typescript
-const { data: actions } = await orpc.actions.list.query({
-  input: { status: "ACTIVE", first: 10 },
-});
-```
+### Listing and reading systems
 
-## Exchange Rates namespace
+#### `system.list`
 
-Currency conversion rate management with external provider sync.
-
-### `exchangeRates.read`
-
-Get current exchange rate between two currencies.
-
-**Method**: `GET`  
-**Path**: `/exchange-rates/:baseCurrency/:quoteCurrency`  
-**Auth**: Authenticated  
-**Input**:
-
-```typescript
-{
-  baseCurrency: string; // e.g., 'USD'
-  quoteCurrency: string; // e.g., 'EUR'
-}
-```
-
-**Output**:
-
-```typescript
-{
-  baseCurrency: string;
-  quoteCurrency: string;
-  rate: number;
-  effectiveAt: Date;
-} | null
-```
-
-### `exchangeRates.list`
-
-List all available exchange rates.
-
-**Method**: `GET`  
-**Path**: `/exchange-rates`  
-**Auth**: Authenticated  
-**Input**:
-
-```typescript
-{
-  baseCurrency?: string;   // Filter by base currency
-  offset?: number;
-  limit?: number;
-}
-```
-
-**Output**:
-
-```typescript
-{
-  items: Array<{
-    baseCurrency: string;
-    quoteCurrency: string;
-    rate: number;
-    effectiveAt: Date;
-  }>;
-  total: number;
-}
-```
-
-### `exchangeRates.sync`
-
-Synchronize rates with external providers.
-
-**Method**: `POST`  
-**Path**: `/exchange-rates/sync`  
-**Auth**: Authenticated (admin)  
-**Input**:
-
-```typescript
-{
-  baseCurrency?: string;   // Sync specific currency or all
-}
-```
-
-**Output**:
-
-```typescript
-{
-  success: boolean;
-  ratesUpdated: number;
-  syncedAt: Date;
-}
-```
-
-### `exchangeRates.update`
-
-Manually update an exchange rate.
-
-**Method**: `PUT`  
-**Path**: `/exchange-rates/:baseCurrency/:quoteCurrency`  
-**Auth**: Authenticated (admin)
-
-### `exchangeRates.delete`
-
-Delete a manual exchange rate.
-
-**Method**: `DELETE`  
-**Path**: `/exchange-rates/:baseCurrency/:quoteCurrency`  
-**Auth**: Authenticated (admin)
-
-### `exchangeRates.history`
-
-Get historical rates for a currency pair.
-
-**Method**: `GET`  
-**Path**: `/exchange-rates/:baseCurrency/:quoteCurrency/history`  
-**Auth**: Authenticated
-
-## System namespace
-
-SMART protocol system infrastructure operations.
-
-### `system.list`
-
-List all deployed SMART systems.
+List all deployed SMART systems across the platform. Useful for multi-tenant
+environments where each organization operates an independent system.
 
 **Method**: `GET`  
 **Path**: `/systems`  
-**Auth**: Public  
+**Auth**: Public
+
 **Input**:
 
 ```typescript
@@ -278,45 +184,29 @@ Array<{
 }>;
 ```
 
-### `system.create`
-
-Deploy a new SMART system with all registries.
-
-**Method**: `POST`  
-**Path**: `/systems`  
-**Auth**: Onboarded  
-**Input**:
+**Example**:
 
 ```typescript
-{
-  // System deploys with default configuration
-}
+// Retrieve all systems ordered by deployment date
+const systems = await orpc.system.list.query({
+  input: { orderBy: "deployedAt", orderDirection: "desc" },
+});
 ```
 
-**Output**:
+#### `system.read`
 
-```typescript
-{
-  id: `0x${string}`;
-  transactionHash: `0x${string}`;
-  identityRegistry: `0x${string}`;
-  compliance: `0x${string}`;
-  tokenFactoryRegistry: `0x${string}`;
-}
-```
-
-### `system.read`
-
-Get details of a specific SMART system.
+Get detailed configuration for a specific SMART system, including all registered
+token factories and module addresses.
 
 **Method**: `GET`  
 **Path**: `/systems/:id`  
-**Auth**: Public  
+**Auth**: Public
+
 **Input**:
 
 ```typescript
 {
-  id: "default" | `0x${string}`; // 'default' for dApp system
+  id: "default" | `0x${string}`; // 'default' resolves to dApp's configured system
 }
 ```
 
@@ -334,38 +224,99 @@ Get details of a specific SMART system.
 }
 ```
 
+**Example**:
+
+```typescript
+// Get default system configuration
+const system = await orpc.system.read.query({
+  input: { id: "default" },
+});
+
+// Check which token types are deployable
+const availableTypes = system.tokenFactories.map((f) => f.typeId);
+```
+
+### Deploying new systems
+
+#### `system.create`
+
+Deploy a complete SMART system with identity registry, compliance modules, and
+token factories. This operation provisions the full infrastructure stack
+required for tokenization operations.
+
+**Method**: `POST`  
+**Path**: `/systems`  
+**Auth**: Onboarded
+
+**Output**:
+
+```typescript
+{
+  id: `0x${string}`;
+  transactionHash: `0x${string}`;
+  identityRegistry: `0x${string}`;
+  compliance: `0x${string}`;
+  tokenFactoryRegistry: `0x${string}`;
+}
+```
+
+**Example**:
+
+```typescript
+// Deploy new SMART system for organization
+const newSystem = await orpc.system.create.mutate();
+
+// Wait for transaction confirmation before proceeding
+const receipt = await waitForTransaction(newSystem.transactionHash);
+```
+
+System deployment typically completes in 30-60 seconds depending on network
+conditions. Monitor deployment progress via the **Smart Contract Operations**
+dashboard, which tracks transaction confirmation times and gas costs.
+
 ### System sub-namespaces
 
-- **system.identity** - Identity creation and registration
-- **system.compliance** - Compliance module management
-- **system.claimTopics** - Topic scheme registry
-- **system.trustedIssuers** - Trusted issuer management
-- **system.stats** - System-wide statistics
-- **system.accessManager** - Access control operations
-- **system.factory** - Token factory operations
+The system namespace includes additional sub-namespaces for granular operations:
 
-## Token namespace
+- **system.identity** — OnchainID creation and identity claim management
+- **system.compliance** — Compliance module configuration and rule enforcement
+- **system.claimTopics** — Topic scheme registry for identity claims
+- **system.trustedIssuers** — Trusted issuer management for claim verification
+- **system.stats** — System-wide statistics (token count, user metrics)
+- **system.accessManager** — Role-based access control operations
+- **system.factory** — Token factory queries and deployment
 
-Comprehensive token lifecycle management and operations.
+See
+[Smart Contracts Reference](/docs/developer-guides/smart-contracts/contract-reference)
+for detailed contract interfaces and event schemas.
 
-### Query operations
+## Token namespace: Complete lifecycle management
+
+The token namespace provides comprehensive operations for token lifecycle
+management—from deployment through daily operations to maturity and redemption.
+These procedures support all DALP lifecycle features including DvP settlement
+coordination, yield distribution integration, and compliance enforcement.
+
+### Querying tokens
 
 #### `token.list`
 
-List tokens with filtering and pagination.
+List tokens with filtering, sorting, and pagination. Supports filtering by asset
+type, status, and ownership.
 
 **Method**: `GET`  
 **Path**: `/tokens`  
-**Auth**: Authenticated  
+**Auth**: Authenticated
+
 **Input**:
 
 ```typescript
 {
   typeId?: 'bond' | 'equity' | 'fund' | 'stablecoin' | 'deposit';
   status?: 'active' | 'paused';
-  ownerId?: string;         // Filter by owner
+  ownerId?: string;
   offset?: number;
-  limit?: number;
+  limit?: number; // Default: 20, max: 100
   orderBy?: 'createdAt' | 'name' | 'totalSupply';
   orderDirection?: 'asc' | 'desc';
 }
@@ -381,7 +332,7 @@ List tokens with filtering and pagination.
     symbol: string;
     decimals: number;
     typeId: "bond" | "equity" | "fund" | "stablecoin" | "deposit";
-    totalSupply: string; // BigInt serialized
+    totalSupply: string; // BigInt serialized as string
     paused: boolean;
     owner: `0x${string}`;
     createdAt: Date;
@@ -390,18 +341,38 @@ List tokens with filtering and pagination.
 }
 ```
 
+**Example**:
+
+```typescript
+// List active bonds sorted by creation date
+const { items: bonds, total } = await orpc.token.list.query({
+  input: {
+    typeId: "bond",
+    status: "active",
+    orderBy: "createdAt",
+    orderDirection: "desc",
+    limit: 50,
+  },
+});
+```
+
+Use the **Token Registry** dashboard to visualize token distribution by type and
+monitor total value locked across asset classes.
+
 #### `token.read`
 
-Get detailed token information.
+Retrieve detailed token information including type-specific fields (maturity
+dates for bonds, denomination assets) and current user balance.
 
 **Method**: `GET`  
 **Path**: `/tokens/:id`  
-**Auth**: Authenticated  
+**Auth**: Authenticated
+
 **Input**:
 
 ```typescript
 {
-  id: `0x${string}`; // Token address
+  id: `0x${string}`; // Token contract address
 }
 ```
 
@@ -415,36 +386,46 @@ Get detailed token information.
   decimals: number;
   typeId: 'bond' | 'equity' | 'fund' | 'stablecoin' | 'deposit';
   totalSupply: string;
-  cap?: string;
+  cap?: string; // Maximum supply if capped
   paused: boolean;
   owner: `0x${string}`;
   compliance: `0x${string}`;
   identityRegistry: `0x${string}`;
-  balance?: string;         // Current user's balance
+  balance?: string; // Authenticated user's balance
   createdAt: Date;
 
-  // Type-specific fields
-  maturityDate?: Date;      // Bonds only
-  faceValue?: string;       // Bonds only
-  denominationAsset?: `0x${string}`;  // Bonds only
+  // Bond-specific fields
+  maturityDate?: Date;
+  faceValue?: string;
+  denominationAsset?: `0x${string}`; // Stablecoin used for redemption
 }
 ```
 
-#### `token.search`
+**Example**:
 
-Search tokens by name or symbol.
+```typescript
+// Get bond details including maturity and redemption info
+const bond = await orpc.token.read.query({
+  input: { id: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb" },
+});
 
-**Method**: `GET`  
-**Path**: `/tokens/search`  
-**Auth**: Authenticated
+if (bond.typeId === "bond" && bond.maturityDate) {
+  const daysToMaturity = Math.floor(
+    (bond.maturityDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+  );
+  console.log(`Bond matures in ${daysToMaturity} days`);
+}
+```
 
 #### `token.holders`
 
-List token holders and their balances.
+List token holders and their balances with percentage ownership calculations.
+Essential for compliance reporting and distribution operations.
 
 **Method**: `GET`  
 **Path**: `/tokens/:id/holders`  
-**Auth**: Authenticated  
+**Auth**: Authenticated
+
 **Input**:
 
 ```typescript
@@ -464,27 +445,46 @@ List token holders and their balances.
   items: Array<{
     address: `0x${string}`;
     balance: string;
-    percentage: number; // % of total supply
+    percentage: number; // Percentage of total supply (0-100)
   }>;
-  total: number;
+  total: number; // Total holder count
 }
+```
+
+**Example**:
+
+```typescript
+// Get top 10 holders for distribution planning
+const { items: topHolders } = await orpc.token.holders.query({
+  input: {
+    tokenId: "0x...",
+    orderBy: "balance",
+    orderDirection: "desc",
+    limit: 10,
+  },
+});
+
+// Calculate required vault deposit for full yield payment
+const totalBalance = topHolders.reduce((sum, h) => sum + BigInt(h.balance), 0n);
 ```
 
 #### `token.events`
 
-Get token event history.
+Query token event history for transfers, mints, burns, and administrative
+actions. Integrates with subgraph indexing for efficient historical queries.
 
 **Method**: `GET`  
 **Path**: `/tokens/:id/events`  
-**Auth**: Authenticated  
+**Auth**: Authenticated
+
 **Input**:
 
 ```typescript
 {
   tokenId: `0x${string}`;
   eventType?: 'Transfer' | 'Mint' | 'Burn' | 'Pause' | 'Unpause';
-  first?: number;
-  skip?: number;
+  first?: number; // Page size
+  skip?: number; // Offset
 }
 ```
 
@@ -505,43 +505,59 @@ Get token event history.
 }
 ```
 
-#### `token.compliance`
+**Example**:
 
-Get token compliance module configuration.
+```typescript
+// Audit recent mint operations
+const { data: mints } = await orpc.token.events.query({
+  input: {
+    tokenId: "0x...",
+    eventType: "Mint",
+    first: 50,
+  },
+});
 
-**Method**: `GET`  
-**Path**: `/tokens/:id/compliance`  
-**Auth**: Authenticated
+// Verify mint authorization via transaction hash lookup
+for (const mint of mints) {
+  console.log(`Minted ${mint.value} to ${mint.to} at ${mint.timestamp}`);
+}
+```
 
-### Mutation operations
+Use the **Token Activity** dashboard to visualize event timelines and identify
+unusual patterns that may indicate security issues or operational anomalies.
+
+### Creating and managing tokens
 
 #### `token.create`
 
-Deploy a new token contract.
+Deploy a new token contract via the appropriate factory. Automatically
+configures identity registry linkage, compliance modules, and type-specific
+parameters (maturity dates, denomination assets).
 
 **Method**: `POST`  
 **Path**: `/tokens`  
-**Auth**: Onboarded  
+**Auth**: Onboarded
+
 **Input**:
 
 ```typescript
 {
   name: string;
   symbol: string;
-  decimals: number;
+  decimals: number; // Typically 18 for divisible assets
   typeId: 'bond' | 'equity' | 'fund' | 'stablecoin' | 'deposit';
-  initialSupply: string;
-  cap?: string;
+  initialSupply: string; // Wei format (supply * 10^decimals)
+  cap?: string; // Maximum supply cap
 
-  // Bond-specific
+  // Bond-specific (required when typeId === 'bond')
   maturityDate?: Date;
   faceValue?: string;
-  denominationAsset?: `0x${string}`;
+  denominationAsset?: `0x${string}`; // Stablecoin for redemption
 
   // Compliance configuration
   complianceModules?: Array<{
     moduleAddress: `0x${string}`;
-    params: string;         // ABI-encoded parameters
+    params: string; // ABI-encoded initialization parameters
   }>;
 }
 ```
@@ -556,20 +572,47 @@ Deploy a new token contract.
 }
 ```
 
+**Example**:
+
+```typescript
+// Deploy corporate bond with 3-year maturity
+const result = await orpc.token.create.mutate({
+  input: {
+    name: "Corporate Bond 2028",
+    symbol: "CORP28",
+    decimals: 18,
+    typeId: "bond",
+    initialSupply: "5000000000000000000000000", // 5M tokens
+    cap: "10000000000000000000000000", // 10M max
+    maturityDate: new Date("2028-01-15"),
+    faceValue: "1000000000000000000", // $1 face value
+    denominationAsset: "0x...", // USDC address
+  },
+});
+
+console.log(`Bond deployed at ${result.tokenAddress}`);
+console.log(`Transaction: ${result.transactionHash}`);
+```
+
+Token deployment typically completes in 15-30 seconds. Monitor deployment
+success rates and gas costs via the **Contract Deployment** dashboard.
+
 #### `token.mint`
 
-Mint new tokens to an address.
+Mint new tokens to a specified address. Requires `SUPPLY_MANAGEMENT_ROLE` on the
+token contract. Respects supply caps and compliance rules.
 
 **Method**: `POST`  
 **Path**: `/tokens/:id/mint`  
-**Auth**: Onboarded + Token role (SUPPLY_MANAGEMENT_ROLE)  
+**Auth**: Onboarded + Token role (SUPPLY_MANAGEMENT_ROLE)
+
 **Input**:
 
 ```typescript
 {
   tokenId: `0x${string}`;
-  to: `0x${string}`;
-  amount: string;
+  to: `0x${string}`; // Recipient must have verified identity
+  amount: string; // Wei format
 }
 ```
 
@@ -582,21 +625,34 @@ Mint new tokens to an address.
 }
 ```
 
-#### `token.burn`
+**Example**:
 
-Burn tokens from an address.
+```typescript
+// Mint additional bonds for new issuance
+const mintResult = await orpc.token.mint.mutate({
+  input: {
+    tokenId: "0x...",
+    to: "0x...", // Treasury wallet
+    amount: "1000000000000000000000000", // 1M tokens
+  },
+});
 
-**Method**: `POST`  
-**Path**: `/tokens/:id/burn`  
-**Auth**: Onboarded + Token role (SUPPLY_MANAGEMENT_ROLE)
+// Verify mint in supply tracking dashboard
+await waitForTransaction(mintResult.transactionHash);
+```
+
+Failed mints due to compliance violations appear in the **Compliance Events**
+dashboard with detailed rejection reasons.
 
 #### `token.transfer`
 
-Transfer tokens to another address.
+Transfer tokens to another address with automatic compliance verification. The
+transaction is validated against transfer restrictions before execution.
 
 **Method**: `POST`  
 **Path**: `/tokens/:id/transfer`  
-**Auth**: Onboarded  
+**Auth**: Onboarded
+
 **Input**:
 
 ```typescript
@@ -616,91 +672,155 @@ Transfer tokens to another address.
 }
 ```
 
-#### `token.pause` / `token.unpause`
+**Example**:
 
-Pause or unpause token transfers.
+```typescript
+// Transfer with automatic compliance check
+try {
+  const transfer = await orpc.token.transfer.mutate({
+    input: {
+      tokenId: "0x...",
+      to: "0xRecipientAddress",
+      amount: "100000000000000000000", // 100 tokens
+    },
+  });
+} catch (error) {
+  // Compliance failure details in error.details
+  console.error("Transfer blocked:", error.message);
+}
+```
 
-**Auth**: Onboarded + Token role (EMERGENCY_ROLE)
-
-#### `token.freezeAddress`
-
-Freeze all tokens for a specific address.
-
-**Auth**: Onboarded + Token role (CUSTODIAN_ROLE)
-
-#### `token.freezePartial` / `token.unfreezePartial`
-
-Freeze or unfreeze specific amounts.
-
-**Auth**: Onboarded + Token role (CUSTODIAN_ROLE)
+Track transfer success rates and average settlement times in the **DvP
+Settlement** dashboard when coordinating atomic swaps.
 
 #### `token.redeem`
 
-Redeem tokens (bonds at maturity).
+Redeem tokens at maturity (bonds only). Triggers vault withdrawal of
+denomination assets to token holders based on face value.
 
 **Method**: `POST`  
 **Path**: `/tokens/:id/redeem`  
-**Auth**: Onboarded  
+**Auth**: Onboarded
+
 **Input**:
 
 ```typescript
 {
   tokenId: `0x${string}`;
-  amount: string;
+  amount: string; // Amount to redeem
 }
 ```
 
-#### `token.mature`
+**Example**:
 
-Mark a bond as matured (bonds only).
+```typescript
+// Redeem matured bonds for stablecoin payout
+const redemption = await orpc.token.redeem.mutate({
+  input: {
+    tokenId: "0xBondAddress",
+    amount: "50000000000000000000", // 50 bonds
+  },
+});
 
-**Auth**: Onboarded + Token role (GOVERNANCE_ROLE)
+// User receives (amount * faceValue) in denomination asset
+// Verify redemption payout in wallet
+```
 
-#### `token.setCap`
+Redemption operations interact with vault contracts to ensure sufficient
+denomination asset reserves. Monitor vault health via the **Vault Operations**
+dashboard before initiating large redemptions.
 
-Update token supply cap.
+### Token administration
 
-**Auth**: Onboarded + Token role (SUPPLY_MANAGEMENT_ROLE)
+#### `token.pause` / `token.unpause`
 
-#### `token.addComplianceModule` / `token.removeComplianceModule`
+Emergency pause mechanism to halt all token transfers. Requires
+`EMERGENCY_ROLE`.
 
-Manage compliance modules.
+**Auth**: Onboarded + Token role (EMERGENCY_ROLE)
 
-**Auth**: Onboarded + Token role (GOVERNANCE_ROLE)
+**Example**:
+
+```typescript
+// Pause token due to security incident
+await orpc.token.pause.mutate({
+  input: { tokenId: "0x..." },
+});
+
+// Resume after investigation
+await orpc.token.unpause.mutate({
+  input: { tokenId: "0x..." },
+});
+```
+
+#### `token.freezeAddress`
+
+Freeze all tokens for a specific address, preventing transfers. Used for
+compliance enforcement and legal holds.
+
+**Auth**: Onboarded + Token role (CUSTODIAN_ROLE)
 
 #### `token.setYieldSchedule`
 
-Attach yield schedule to token.
+Attach a yield schedule contract to the token for automated distribution.
+Integrates with the fixed yield schedule namespace for coupon payments and
+dividends.
 
 **Auth**: Onboarded + Token role (GOVERNANCE_ROLE)
 
+**Example**:
+
+```typescript
+// Link bond to yield schedule for quarterly coupons
+await orpc.token.setYieldSchedule.mutate({
+  input: {
+    tokenId: "0xBondAddress",
+    scheduleId: "0xYieldScheduleAddress",
+  },
+});
+```
+
+After linking, holders can claim yields via `fixedYieldSchedule.claim`. Monitor
+distribution progress in the **Yield Distribution** dashboard.
+
 #### `token.grantRole` / `token.revokeRole`
 
-Manage token access control roles.
+Manage token-specific access control roles. Requires `DEFAULT_ADMIN_ROLE` on the
+token contract.
 
 **Auth**: Onboarded + Token role (DEFAULT_ADMIN_ROLE)
 
-### Statistics operations
+**Example**:
+
+```typescript
+// Grant supply management role to operations team
+await orpc.token.grantRole.mutate({
+  input: {
+    tokenId: "0x...",
+    role: "SUPPLY_MANAGEMENT_ROLE",
+    account: "0xOpsWallet",
+  },
+});
+```
+
+### Token statistics and analytics
+
+The token namespace includes statistics procedures that leverage subgraph
+indexing for efficient historical queries:
 
 #### `token.statsTotalSupply`
 
-Get total supply over time.
+Get total supply evolution over time with configurable intervals (hourly, daily,
+weekly).
 
 **Method**: `GET`  
 **Path**: `/tokens/:id/stats/total-supply`  
 **Auth**: Authenticated
 
-#### `token.statsSupplyChanges`
-
-Get mint and burn history.
-
-**Method**: `GET`  
-**Path**: `/tokens/:id/stats/supply-changes`  
-**Auth**: Authenticated
-
 #### `token.statsVolume`
 
-Get transfer volume statistics.
+Calculate transfer volume metrics with time-based aggregation. Essential for
+market making and liquidity analysis.
 
 **Method**: `GET`  
 **Path**: `/tokens/:id/stats/volume`  
@@ -708,47 +828,55 @@ Get transfer volume statistics.
 
 #### `token.statsWalletDistribution`
 
-Get holder distribution metrics.
+Analyze holder distribution patterns to identify concentration risks. Returns
+Gini coefficient and decile breakdowns.
 
 **Method**: `GET`  
 **Path**: `/tokens/:id/stats/wallet-distribution`  
 **Auth**: Authenticated
 
-#### `token.statsBondStatus`
-
-Get bond maturity status (bonds only).
-
-**Method**: `GET`  
-**Path**: `/tokens/:id/stats/bond-status`  
-**Auth**: Authenticated
-
 #### `token.statsYieldDistribution`
 
-Get yield payment history.
+Get yield payment history with claim rates and coverage metrics. Validates vault
+sufficiency for upcoming distributions.
 
 **Method**: `GET`  
 **Path**: `/tokens/:id/stats/yield-distribution`  
 **Auth**: Authenticated
 
-#### `token.statsYieldCoverage`
+**Example**:
 
-Get yield schedule coverage metrics.
+```typescript
+// Verify yield coverage before quarterly payment
+const yieldStats = await orpc.token.statsYieldCoverage.query({
+  input: { tokenId: "0xBondAddress" },
+});
 
-**Method**: `GET`  
-**Path**: `/tokens/:id/stats/yield-coverage`  
-**Auth**: Authenticated
+if (yieldStats.coverageRatio < 1.0) {
+  console.warn("Insufficient vault balance for full distribution");
+  // Trigger vault top-up workflow
+}
+```
 
-## User namespace
+All statistics procedures integrate with the **Analytics** dashboard for visual
+exploration of token metrics and trend analysis.
 
-User profile management and KYC operations.
+## User namespace: Identity and asset management
 
-### `user.me`
+The user namespace manages user profiles, KYC workflows, and asset queries.
+These operations support the identity verification pipeline and provide holders
+with portfolio visibility.
 
-Get current authenticated user profile.
+### Profile operations
+
+#### `user.me`
+
+Get the authenticated user's profile with KYC status and wallet linkage.
 
 **Method**: `GET`  
 **Path**: `/user/me`  
-**Auth**: Authenticated  
+**Auth**: Authenticated
+
 **Output**:
 
 ```typescript
@@ -763,83 +891,28 @@ Get current authenticated user profile.
 }
 ```
 
-### `user.list`
-
-List all users (admin only).
-
-**Method**: `GET`  
-**Path**: `/user/list`  
-**Auth**: Authenticated (admin)  
-**Input**:
+**Example**:
 
 ```typescript
-{
-  offset?: number;
-  limit?: number;
-  kycStatus?: 'pending' | 'approved' | 'rejected';
-  orderBy?: 'createdAt' | 'name';
-  orderDirection?: 'asc' | 'desc';
+const profile = await orpc.user.me.query();
+
+if (profile.kycStatus === "approved" && profile.walletAddress) {
+  // User can perform onboarded operations
+  console.log("Onboarding complete");
+} else {
+  // Redirect to KYC flow
+  console.log("Complete KYC to continue");
 }
 ```
 
-### `user.read`
+#### `user.assets`
 
-Get specific user by ID or wallet.
-
-**Method**: `GET`  
-**Path**: `/user/read`  
-**Auth**: Authenticated  
-**Input**:
-
-```typescript
-{
-  id?: string;              // User ID
-  walletAddress?: `0x${string}`;  // Or wallet address
-}
-```
-
-### `user.search`
-
-Search users by name or wallet.
-
-**Method**: `GET`  
-**Path**: `/user/search`  
-**Auth**: Authenticated  
-**Input**:
-
-```typescript
-{
-  query: string;
-  limit?: number;
-}
-```
-
-### `user.stats`
-
-Get user statistics and metrics.
-
-**Method**: `GET`  
-**Path**: `/user/stats`  
-**Auth**: Authenticated (admin)  
-**Output**:
-
-```typescript
-{
-  totalUsers: number;
-  kycPending: number;
-  kycApproved: number;
-  kycRejected: number;
-  recentSignups: number; // Last 30 days
-}
-```
-
-### `user.assets`
-
-Get all token balances for a user.
+Get all token balances for a user's wallet address.
 
 **Method**: `GET`  
 **Path**: `/user/assets`  
-**Auth**: Authenticated  
+**Auth**: Authenticated
+
 **Input**:
 
 ```typescript
@@ -860,71 +933,300 @@ Array<{
 }>;
 ```
 
-### `user.events`
+**Example**:
 
-Get recent blockchain events for a user.
+```typescript
+// Get portfolio holdings for dashboard
+const assets = await orpc.user.assets.query({
+  input: { walletAddress: profile.walletAddress },
+});
+
+const totalValue = assets.reduce((sum, asset) => {
+  const balance = parseFloat(asset.balance) / Math.pow(10, asset.decimals);
+  return sum + balance; // Apply pricing for actual valuation
+}, 0);
+```
+
+#### `user.events`
+
+Query recent blockchain events involving the user's wallet (transfers, mints,
+claims).
 
 **Method**: `GET`  
 **Path**: `/user/events`  
-**Auth**: Authenticated  
+**Auth**: Authenticated
+
 **Input**:
 
 ```typescript
 {
-  walletAddress?: `0x${string}`;
+  walletAddress?: `0x${string}`; // Defaults to authenticated user
   limit?: number;
-  eventTypes?: string[];
+  eventTypes?: string[]; // Filter by event type
 }
 ```
 
-### User sub-namespaces
+### Administrative operations
 
-- **user.kyc** - KYC submission and verification
-- **user.createWallet** - Wallet creation and linking
+#### `user.list`
 
-## Settings namespace
-
-Platform configuration and theming.
-
-### `settings.theme.get`
-
-Get current theme configuration.
+List all platform users with filtering by KYC status. Admin-only operation for
+user management.
 
 **Method**: `GET`  
-**Path**: `/settings/theme`  
+**Path**: `/user/list`  
+**Auth**: Authenticated (admin)
+
+**Input**:
+
+```typescript
+{
+  offset?: number;
+  limit?: number;
+  kycStatus?: 'pending' | 'approved' | 'rejected';
+  orderBy?: 'createdAt' | 'name';
+  orderDirection?: 'asc' | 'desc';
+}
+```
+
+#### `user.stats`
+
+Get platform-wide user statistics including KYC funnel metrics.
+
+**Method**: `GET`  
+**Path**: `/user/stats`  
+**Auth**: Authenticated (admin)
+
+**Output**:
+
+```typescript
+{
+  totalUsers: number;
+  kycPending: number;
+  kycApproved: number;
+  kycRejected: number;
+  recentSignups: number; // Last 30 days
+}
+```
+
+**Example**:
+
+```typescript
+// Monitor KYC processing backlog
+const stats = await orpc.user.stats.query();
+
+const kycBacklog = stats.kycPending;
+const approvalRate = stats.kycApproved / stats.totalUsers;
+
+console.log(`KYC approval rate: ${(approvalRate * 100).toFixed(1)}%`);
+```
+
+Use the **User Analytics** dashboard to visualize KYC funnel conversion rates
+and identify bottlenecks in the onboarding process.
+
+### User sub-namespaces
+
+- **user.kyc** — KYC document submission and verification workflows
+- **user.createWallet** — Custodial wallet creation for users without external
+  wallets
+
+## Actions namespace: Time-bound operations
+
+The actions namespace manages time-bound executable tasks that users can perform
+on assets. Actions support role-based access control and lifecycle state
+management (pending, active, executed, expired).
+
+### `actions.list`
+
+List actions available to the authenticated user based on their roles and wallet
+address.
+
+**Method**: `GET`  
+**Path**: `/actions/list`  
 **Auth**: Authenticated
 
-### `settings.theme.update`
+**Input**:
 
-Update theme configuration.
+```typescript
+{
+  status?: 'PENDING' | 'ACTIVE' | 'EXECUTED' | 'EXPIRED';
+  targetAddresses?: Array<`0x${string}`>; // Filter by token addresses
+  requiredRoles?: string[]; // Filter by required roles
+  first?: number; // Page size (default: 20)
+  skip?: number; // Offset
+}
+```
 
-**Method**: `PUT`  
-**Path**: `/settings/theme`  
-**Auth**: Authenticated (admin)
+**Output**:
 
-### `settings.theme.uploadLogo`
+```typescript
+{
+  data: Array<{
+    id: string;
+    name: string;
+    status: "PENDING" | "ACTIVE" | "EXECUTED" | "EXPIRED";
+    activeAt: string; // Unix timestamp
+    expiresAt: string; // Unix timestamp
+    targetAddress: `0x${string}`; // Token or contract address
+    requiredRoles: string[]; // Roles needed to execute
+    metadata?: Record<string, unknown>; // Action-specific data
+  }>;
+  total: number;
+}
+```
 
-Upload platform logo.
+**Example**:
+
+```typescript
+// Get active governance actions for user's tokens
+const { data: actions } = await orpc.actions.list.query({
+  input: {
+    status: "ACTIVE",
+    targetAddresses: userTokenAddresses,
+  },
+});
+
+// Display pending votes or approvals
+for (const action of actions) {
+  console.log(
+    `${action.name} expires ${new Date(parseInt(action.expiresAt) * 1000)}`
+  );
+}
+```
+
+Actions integrate with notification systems to alert users of expiring
+opportunities. Monitor action execution rates in the **Governance Activity**
+dashboard.
+
+## Exchange rates namespace: Currency conversion
+
+The exchange rates namespace manages currency conversion rates with external
+provider synchronization. Essential for multi-currency operations and
+accounting.
+
+### `exchangeRates.read`
+
+Get the current exchange rate between two currencies.
+
+**Method**: `GET`  
+**Path**: `/exchange-rates/:baseCurrency/:quoteCurrency`  
+**Auth**: Authenticated
+
+**Input**:
+
+```typescript
+{
+  baseCurrency: string; // e.g., 'USD'
+  quoteCurrency: string; // e.g., 'EUR'
+}
+```
+
+**Output**:
+
+```typescript
+{
+  baseCurrency: string;
+  quoteCurrency: string;
+  rate: number; // Conversion rate
+  effectiveAt: Date; // Rate timestamp
+} | null
+```
+
+**Example**:
+
+```typescript
+// Convert bond face value to user's display currency
+const rate = await orpc.exchangeRates.read.query({
+  input: { baseCurrency: "USD", quoteCurrency: "EUR" },
+});
+
+if (rate) {
+  const bondValueEUR = bondFaceValueUSD * rate.rate;
+  console.log(`Bond value: €${bondValueEUR.toFixed(2)}`);
+}
+```
+
+### `exchangeRates.sync`
+
+Synchronize rates with external providers (e.g., CoinGecko, forex APIs).
+Admin-only operation typically invoked on a schedule.
 
 **Method**: `POST`  
-**Path**: `/settings/theme/logo`  
+**Path**: `/exchange-rates/sync`  
 **Auth**: Authenticated (admin)
 
-## Fixed Yield Schedule namespace
+**Input**:
 
-Yield schedule management for bonds.
+```typescript
+{
+  baseCurrency?: string; // Sync specific currency or all
+}
+```
+
+**Output**:
+
+```typescript
+{
+  success: boolean;
+  ratesUpdated: number; // Count of updated rates
+  syncedAt: Date;
+}
+```
+
+**Example**:
+
+```typescript
+// Sync all USD pairs daily via cron job
+const syncResult = await orpc.exchangeRates.sync.mutate({
+  input: { baseCurrency: "USD" },
+});
+
+console.log(
+  `Updated ${syncResult.ratesUpdated} rates at ${syncResult.syncedAt}`
+);
+```
+
+Track rate synchronization latency and failures via the **External
+Integrations** dashboard to ensure pricing accuracy.
+
+### Additional operations
+
+- **`exchangeRates.list`** — List all available rates with pagination
+- **`exchangeRates.update`** — Manually override a rate (admin)
+- **`exchangeRates.delete`** — Remove a manual override (admin)
+- **`exchangeRates.history`** — Get historical rate data for charting
+
+## Fixed yield schedule namespace: Automated distributions
+
+The fixed yield schedule namespace manages yield distribution contracts that
+automate coupon payments, dividends, and interest. These operations integrate
+with vault contracts to ensure sufficient reserves for scheduled payouts.
 
 ### `fixedYieldSchedule.create`
 
-Create a new yield schedule.
+Deploy a new yield schedule contract with payment intervals and rates.
 
 **Method**: `POST`  
 **Path**: `/fixed-yield-schedule`  
 **Auth**: Onboarded
 
+**Example**:
+
+```typescript
+// Create quarterly coupon schedule for bond
+const schedule = await orpc.fixedYieldSchedule.create.mutate({
+  input: {
+    tokenAddress: "0xBondAddress",
+    denominationAsset: "0xUSDCAddress",
+    intervalSeconds: 7776000, // 90 days
+    yieldRatePerInterval: "25000000000000000", // 2.5% per quarter
+  },
+});
+```
+
 ### `fixedYieldSchedule.read`
 
-Get yield schedule details.
+Get schedule details including next payment date and vault balance.
 
 **Method**: `GET`  
 **Path**: `/fixed-yield-schedule/:id`  
@@ -932,68 +1234,199 @@ Get yield schedule details.
 
 ### `fixedYieldSchedule.claim`
 
-Claim yield distribution.
+Claim accumulated yield for the authenticated user's holdings.
 
 **Method**: `POST`  
 **Path**: `/fixed-yield-schedule/:id/claim`  
 **Auth**: Onboarded
 
+**Example**:
+
+```typescript
+// Claim quarterly coupon payment
+const claimResult = await orpc.fixedYieldSchedule.claim.mutate({
+  input: { scheduleId: "0xScheduleAddress" },
+});
+
+console.log(`Claimed yield: ${claimResult.amountClaimed}`);
+```
+
+Yield claims withdraw from the schedule's vault contract proportional to token
+holdings. Monitor claim rates and vault sufficiency in the **Yield
+Distribution** dashboard to prevent shortfalls.
+
 ### `fixedYieldSchedule.topUp`
 
-Add funds to yield schedule.
+Add denomination assets to the schedule's vault to fund upcoming distributions.
 
 **Method**: `POST`  
 **Path**: `/fixed-yield-schedule/:id/top-up`  
 **Auth**: Onboarded
 
+**Example**:
+
+```typescript
+// Fund next quarter's coupon payments
+await orpc.fixedYieldSchedule.topUp.mutate({
+  input: {
+    scheduleId: "0xScheduleAddress",
+    amount: "500000000000", // 500k USDC (6 decimals)
+  },
+});
+```
+
 ### `fixedYieldSchedule.withdraw`
 
-Withdraw excess funds.
+Withdraw excess funds from the vault after final distribution.
 
 **Method**: `POST`  
 **Path**: `/fixed-yield-schedule/:id/withdraw`  
 **Auth**: Onboarded
 
-## Error responses
+## Settings namespace: Platform configuration
 
-All endpoints return standardized errors:
+The settings namespace manages platform-wide configuration including theming,
+branding, and feature flags.
+
+### `settings.theme.get`
+
+Retrieve current theme configuration (colors, logos, typography).
+
+**Method**: `GET`  
+**Path**: `/settings/theme`  
+**Auth**: Authenticated
+
+### `settings.theme.update`
+
+Update theme configuration (admin-only).
+
+**Method**: `PUT`  
+**Path**: `/settings/theme`  
+**Auth**: Authenticated (admin)
+
+### `settings.theme.uploadLogo`
+
+Upload platform logo for branding customization.
+
+**Method**: `POST`  
+**Path**: `/settings/theme/logo`  
+**Auth**: Authenticated (admin)
+
+## Account namespace: Wallet operations
+
+### `account.search`
+
+Search for accounts by wallet address or other criteria. Useful for recipient
+lookup during transfers.
+
+**Method**: `GET`  
+**Path**: `/account/search`  
+**Auth**: Authenticated
+
+**Input**:
 
 ```typescript
 {
-  error: {
-    code: 'UNAUTHORIZED' | 'FORBIDDEN' | 'NOT_FOUND' | 'BAD_REQUEST' | 'INTERNAL_ERROR';
-    message: string;
-    details?: unknown;      // Validation errors, etc.
-  }
+  query: string; // Search term (address prefix, name)
+  limit?: number; // Max results (default: 10)
 }
 ```
 
-**Common error codes**:
+**Output**:
 
-- `UNAUTHORIZED` (401) - Authentication required or session expired
-- `FORBIDDEN` (403) - Insufficient permissions
-- `NOT_FOUND` (404) - Resource does not exist
-- `BAD_REQUEST` (400) - Invalid input or validation error
-- `INTERNAL_ERROR` (500) - Unexpected server error
+```typescript
+Array<{
+  address: `0x${string}`;
+  identity?: {
+    country: string; // ISO country code
+    verified: boolean; // KYC status
+  };
+}>;
+```
 
-## Rate limiting
+**Example**:
 
-Currently no rate limiting is enforced. Production deployments should implement
-appropriate rate limiting at the reverse proxy or API gateway level.
+```typescript
+// Search for recipient by address prefix
+const accounts = await orpc.account.search.query({
+  input: { query: "0x742d", limit: 5 },
+});
+
+// Filter to verified accounts only
+const verified = accounts.filter((a) => a.identity?.verified);
+```
+
+## Rate limiting and performance
+
+Currently no rate limiting is enforced at the application layer. Production
+deployments should implement rate limiting via reverse proxy (nginx, Envoy) or
+API gateway (Kong, AWS API Gateway).
+
+**Recommended limits**:
+
+- **Query operations**: 100 requests/minute per user
+- **Mutation operations**: 20 requests/minute per user
+- **Authentication endpoints**: 10 requests/minute per IP
+
+Monitor request rates and latencies via the **API Performance** dashboard. Set
+alerts on `orpc_request_duration_seconds` p99 latency exceeding 500ms to detect
+performance degradation.
+
+**Optimization strategies**:
+
+- Use pagination (`limit`/`offset`) for large result sets
+- Cache exchange rate queries client-side with 5-minute TTL
+- Batch token queries via `token.list` instead of individual `token.read` calls
+- Leverage subgraph queries for historical data instead of on-chain RPC calls
+
+Track cache hit rates and query patterns in the **Query Performance** dashboard
+to identify optimization opportunities.
+
+## Observability and monitoring
+
+The API integrates with the platform's observability stack to provide
+comprehensive operational visibility:
+
+**Key metrics**:
+
+- `orpc_request_duration_seconds` — Request latency histogram by procedure
+- `orpc_request_total` — Request count by procedure and status
+- `orpc_request_errors_total` — Error count by procedure and error code
+- `orpc_auth_failures_total` — Authentication failure count by reason
+- `orpc_validation_errors_total` — Input validation failure count by field
+
+**Dashboards**:
+
+- **API Performance** — Request latency, throughput, and error rates
+- **API Error Analysis** — Error distribution by code and procedure
+- **Authentication Metrics** — Session creation, validation, and expiration
+  rates
+- **Procedure Usage** — Most-called procedures and usage patterns
+
+**Alerting**:
+
+- P99 latency &gt; 1s for query operations
+- P99 latency &gt; 3s for mutation operations
+- Error rate &gt; 5% for any procedure
+- Authentication failure rate &gt; 10%
+
+Access dashboards via the observability stack's Grafana instance. See
+[Deployment Guide](/docs/deployment-guides/kubernetes-helm/deployment-guide) for
+observability configuration details.
 
 ## Next steps
 
-- **Review data models**: See
+- **Explore data models**: See
   [Data Model Reference](/docs/developer-guides/data-model/data-model-reference)
-  for schema details
-- **Check contract details**: Review
+  for database schemas and relationships
+- **Review smart contracts**: Study
   [Contract Reference](/docs/developer-guides/smart-contracts/contract-reference)
-  for blockchain interactions
-- **Study usage patterns**: Read
-  [Using the API](/docs/developer-guides/api-integration/using-api) for
-  integration examples
-- **Explore route code**: Check `kit/dapp/src/orpc/routes/` for implementation
-  details
+  for on-chain interfaces and events
+- **Build integrations**: Follow
+  [Using the API](/docs/developer-guides/api-integration/using-api) for client
+  setup and authentication patterns
+- **Examine implementation**: Check `kit/dapp/src/orpc/routes/` for procedure
+  implementations and validation schemas
 
-For smart contract interfaces and on-chain operations, continue to
-[Contract Reference](/docs/developer-guides/smart-contracts/contract-reference).
+For GraphQL queries against indexed blockchain data, continue to
+[Subgraph Reference](/docs/developer-guides/subgraph-integration/subgraph-reference).

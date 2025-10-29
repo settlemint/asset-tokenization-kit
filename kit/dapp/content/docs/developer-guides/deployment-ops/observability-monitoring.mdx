@@ -10,10 +10,23 @@ tags: [how-to, observability, monitoring, dashboards, metrics, grafana]
 ## Overview
 
 ATK includes a comprehensive observability stack deployed via Helm that provides
-production-grade monitoring, distributed tracing, and log aggregation. This is a
-key competitive advantage—most tokenization platforms require you to assemble
-monitoring from multiple vendors, while ATK delivers everything integrated and
-pre-configured.
+production-grade monitoring, distributed tracing, and log aggregation. This
+integrated approach represents a significant competitive advantage in the
+digital asset platform space. While most tokenization platforms force operators
+to cobble together monitoring solutions from multiple vendors—creating
+integration headaches, data silos, and blind spots—ATK delivers a unified
+observability foundation that works out of the box. The stack provides complete
+visibility from blockchain nodes through indexing layers to application APIs,
+all accessible through pre-configured dashboards that understand the unique
+requirements of asset tokenization workloads.
+
+The observability infrastructure serves as both an operational necessity and a
+business differentiator. Real-time metrics enable you to verify compliance check
+latencies stay within regulatory requirements, distributed traces reveal
+bottlenecks in settlement workflows, and log correlation speeds incident
+resolution from hours to minutes. For platform operators managing billions in
+tokenized assets, this level of visibility isn't optional—it's essential for
+maintaining the trust and availability that institutional clients demand.
 
 **Primary role:** DevOps engineers, platform operators
 
@@ -29,13 +42,110 @@ Make sure you have:
 - Web browser to access Grafana interface
 - Basic understanding of metrics, logs, and traces
 
-**Time required:** 15 minutes to understand dashboards; ongoing for monitoring
+**Time required:** 30 minutes to understand dashboards; ongoing for monitoring
 
 ## Step 1: Access the observability stack
 
+The observability infrastructure consists of five integrated components that
+work together to capture, store, and visualize telemetry data from every layer
+of the ATK platform. Understanding how these components interact helps you
+navigate the system effectively and troubleshoot data collection issues when
+they arise.
+
+### Observability stack architecture
+
+The telemetry pipeline follows a consistent pattern across all ATK components.
+Alloy agents deployed as a DaemonSet on every Kubernetes node automatically
+discover pods and services, scraping Prometheus metrics from standard endpoints
+while simultaneously collecting structured logs and distributed traces. This
+agent-based approach requires zero configuration from application code—ATK
+services expose metrics and traces through standardized libraries, and Alloy
+handles the collection mechanics transparently.
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Application Layer"
+        DApp(DApp Pods<br/>API Metrics & Traces)
+        Hasura(Hasura GraphQL<br/>Query Metrics)
+        PostgreSQL(PostgreSQL<br/>DB Metrics)
+    end
+    
+    subgraph "Blockchain Layer"
+        Besu(Besu Nodes<br/>Block & TX Metrics)
+        ERPC(ERPC Gateway<br/>RPC Metrics)
+        TheGraph(TheGraph Node<br/>Indexing Metrics)
+    end
+    
+    subgraph "Telemetry Collection"
+        Alloy(Alloy Agent<br/>Scrapes Metrics, Logs, Traces)
+    end
+    
+    subgraph "Storage Layer"
+        VictoriaMetrics(VictoriaMetrics<br/>Time-Series DB)
+        Loki(Loki<br/>Log Aggregation)
+        Tempo(Tempo<br/>Trace Storage)
+    end
+    
+    subgraph "Visualization"
+        Grafana(Grafana<br/>Dashboards & Alerts)
+    end
+    
+    DApp --> Alloy
+    Hasura --> Alloy
+    PostgreSQL --> Alloy
+    Besu --> Alloy
+    ERPC --> Alloy
+    TheGraph --> Alloy
+    
+    Alloy -->|Prometheus Remote Write| VictoriaMetrics
+    Alloy -->|Push API| Loki
+    Alloy -->|OTLP| Tempo
+    
+    VictoriaMetrics --> Grafana
+    Loki --> Grafana
+    Tempo --> Grafana
+    
+    style Grafana fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Alloy fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style VictoriaMetrics fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Loki fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Tempo fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff`}
+/>
+
+Collected telemetry flows to purpose-built storage backends optimized for each
+data type. VictoriaMetrics provides high-compression time-series storage for
+numeric metrics, Loki offers indexed log aggregation with efficient querying,
+and Tempo stores distributed traces with automatic service graph generation.
+Grafana serves as the unified query and visualization layer, federating data
+from all three backends through native datasource integrations that understand
+each system's query language and capabilities.
+
+### Component inventory and data retention
+
+| Component           | Purpose                      | Access                           | Data Retention |
+| ------------------- | ---------------------------- | -------------------------------- | -------------- |
+| **Grafana**         | Visualization and dashboards | HTTP ingress                     | N/A (UI only)  |
+| **VictoriaMetrics** | Time-series metrics storage  | Internal (Grafana datasource)    | 1 month        |
+| **Loki**            | Log aggregation and querying | Internal (Grafana datasource)    | 7 days         |
+| **Tempo**           | Distributed tracing          | Internal (Grafana datasource)    | 7 days         |
+| **Alloy**           | Telemetry collection agent   | Internal (scrapes pods/services) | N/A (agent)    |
+
+Default retention periods balance storage costs against operational needs for
+most deployments. Metrics retain their full resolution for one month, providing
+sufficient history for performance trending and capacity planning. Logs and
+traces retain for one week, covering typical incident response timelines while
+avoiding excessive storage consumption. Production environments with compliance
+requirements or longer investigation cycles should extend these retention
+periods through Helm value overrides, as documented in the retention tuning
+section below.
+
 ### Accessing Grafana
 
-Grafana is the primary interface for all observability data.
+Grafana serves as your primary interface for all observability activities. The
+web UI provides access to pre-built dashboards, ad-hoc exploration of metrics
+and logs, trace visualization, and alert configuration. Before diving into
+specific dashboards, you need to establish access to the Grafana instance
+running in your ATK deployment.
 
 **Get Grafana URL:**
 
@@ -50,6 +160,13 @@ NAME      CLASS   HOSTS                      ADDRESS         PORTS   AGE
 grafana   nginx   grafana.k8s.orb.local      203.0.113.10    80      3h
 ```
 
+The ingress hostname depends on your cluster configuration—development
+environments typically use `.k8s.orb.local` hostnames resolved through local DNS
+or `/etc/hosts` entries, while production clusters use real DNS records pointing
+to load balancer IPs. If you don't see an ingress resource, verify that the
+`observability.grafana.ingress.enabled` Helm value is set to `true` in your
+deployment configuration.
+
 **Default credentials** (change immediately in production):
 
 - Username: `settlemint`
@@ -57,331 +174,531 @@ grafana   nginx   grafana.k8s.orb.local      203.0.113.10    80      3h
 
 **Access Grafana:**
 
-Navigate to `http://grafana.k8s.orb.local` (or your configured hostname) in your
-browser.
+Navigate to the hostname shown in the ingress output (e.g.,
+`http://grafana.k8s.orb.local`) in your web browser. You should see the Grafana
+login page. Enter the default credentials to access the main dashboard
+interface.
 
 **Production security:**
 
+Default credentials exist purely for initial access in development environments.
+Production deployments must change these credentials before exposing Grafana to
+any network, even internal corporate networks. Use either the CLI approach for
+immediate changes or the Helm values approach for persistent configuration.
+
 ```bash
-# Change default password
+# Change default password via CLI
 kubectl exec -n atk deployment/grafana -- grafana-cli admin reset-admin-password <NewStrongPassword>
 
-# Or configure via Helm values
+# Or configure via Helm values for persistent deployment
 # values-production.yaml:
 observability:
   grafana:
     adminPassword: <SecurePassword>
+    adminUser: admin  # Also change default username
 ```
 
-### Observability stack components
-
-ATK deploys these components automatically:
-
-| Component           | Purpose                      | Access                           | Data Retention |
-| ------------------- | ---------------------------- | -------------------------------- | -------------- |
-| **Grafana**         | Visualization and dashboards | HTTP ingress                     | N/A (UI only)  |
-| **VictoriaMetrics** | Time-series metrics storage  | Internal (Grafana datasource)    | 1 month        |
-| **Loki**            | Log aggregation and querying | Internal (Grafana datasource)    | 7 days         |
-| **Tempo**           | Distributed tracing          | Internal (Grafana datasource)    | 7 days         |
-| **Alloy**           | Telemetry collection agent   | Internal (scrapes pods/services) | N/A (agent)    |
-
-**Architecture:**
-
-<Mermaid
-  chart={`flowchart TB
-    subgraph "Kubernetes Pods"
-        Besu(Besu Nodes)
-        ERPC(ERPC Gateway)
-        TheGraph(TheGraph Node)
-        DApp(DApp Pods)
-        Hasura(Hasura GraphQL)
-    end
-    
-    subgraph "Telemetry Collection"
-        Alloy(Alloy Agent<br/>Metrics, Logs, Traces)
-    end
-    
-    subgraph "Storage Layer"
-        VictoriaMetrics(VictoriaMetrics<br/>Metrics TSDB)
-        Loki(Loki<br/>Log Aggregation)
-        Tempo(Tempo<br/>Trace Storage)
-    end
-    
-    subgraph "Visualization"
-        Grafana(Grafana<br/>Dashboards & Alerts)
-    end
-    
-    Besu --> Alloy
-    ERPC --> Alloy
-    TheGraph --> Alloy
-    DApp --> Alloy
-    Hasura --> Alloy
-    
-    Alloy -->|Metrics| VictoriaMetrics
-    Alloy -->|Logs| Loki
-    Alloy -->|Traces| Tempo
-    
-    VictoriaMetrics --> Grafana
-    Loki --> Grafana
-    Tempo --> Grafana
-    
-    style Grafana fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
-    style Alloy fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style VictoriaMetrics fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff`}
-/>
+Beyond credential changes, production environments should integrate Grafana with
+enterprise SSO systems using OAuth, LDAP, or SAML authentication. This
+centralizes access control, enables audit logging of user actions, and removes
+the burden of managing separate Grafana passwords. The Helm chart supports all
+major authentication providers through standard Grafana configuration values.
 
 ## Step 2: Navigate pre-built dashboards
 
-ATK ships with 15+ production-ready dashboards covering every layer of the
-stack.
+ATK ships with 15+ production-ready dashboards covering every architectural
+layer. These dashboards aren't generic infrastructure monitors—they're
+purpose-built for asset tokenization workloads, tracking metrics like settlement
+latency, compliance check duration, token transfer rates, and subgraph sync lag.
+Understanding which dashboard to use for different investigation scenarios
+significantly accelerates troubleshooting and reduces mean time to resolution.
+
+The dashboards organize into logical categories matching ATK's architectural
+layers. When investigating an issue, start at the layer where symptoms appear,
+then work up or down the stack as needed. For example, slow API responses might
+originate from database queries (application layer), slow RPC calls (blockchain
+layer), or resource contention (infrastructure layer)—the dashboards help you
+quickly eliminate possibilities and identify root causes.
 
 ### Dashboard inventory
 
-**Blockchain layer:**
+#### Blockchain layer dashboards
 
-1. **Besu Dashboard**
-   - **What it shows:** Node sync status, transaction throughput, block
-     production rates, gas usage, peer connections, chain reorganizations
-   - **Use case:** Verify blockchain health, diagnose slow block production
-   - **Key metrics:** Blocks per second, transaction pool size, peer count
+**Besu dashboard**
 
-2. **Portal Metrics**
-   - **What it shows:** RPC request rates, authentication flows, rate limiting,
-     gateway health
-   - **Use case:** Monitor API access patterns, identify authentication issues
-   - **Key metrics:** Requests per second, auth success rate, rate limit hits
+This dashboard monitors the Besu blockchain nodes that form the foundation of
+your ATK deployment. The overview section shows real-time block production
+metrics, helping you verify that validators are creating blocks at the expected
+rate (default 4-second block time). Transaction throughput panels break down
+transactions per second by type (token transfers, compliance checks, settlement
+operations), revealing usage patterns and capacity headroom. Peer connectivity
+graphs show the validator mesh topology, with alerts triggering when peer counts
+drop below the expected validator count indicating potential network
+partitioning.
 
-**Indexing layer:**
+Gas usage metrics deserve particular attention in production environments. The
+"Gas Usage by Contract" panel identifies which smart contracts consume the most
+computational resources, informing gas price strategies and highlighting
+optimization opportunities. The "Transaction Pool Size" graph shows pending
+transactions awaiting inclusion in blocks—sustained growth here indicates either
+insufficient block space or validator issues preventing block production.
+Operators should investigate whenever this metric exceeds 100 pending
+transactions for more than 5 minutes.
 
-3. **TheGraph Indexing Status**
-   - **What it shows:** Subgraph sync progress, indexing latency, deployment
-     health, entity counts
-   - **Use case:** Verify subgraph is catching up to chain head, diagnose
-     indexing errors
-   - **Key metrics:** Current block vs. latest block, indexing rate, entity
-     count growth
+**Portal metrics dashboard**
 
-4. **TheGraph Query Performance**
-   - **What it shows:** Query response times, cache hit rates, GraphQL operation
-     metrics, query complexity analysis
-   - **Use case:** Optimize slow queries, monitor query load
-   - **Key metrics:** p50/p95/p99 query latency, cache hit rate, queries per
-     second
+The Portal RPC authentication layer handles all API access to Besu nodes,
+enforcing rate limits and managing API keys. This dashboard tracks request rates
+by authenticated client, revealing which applications or users generate the most
+blockchain load. The authentication flow panels show successful versus failed
+authentication attempts, with the failed attempts view helping identify
+misconfigured API keys or potential attack patterns.
 
-**RPC gateway:**
+Rate limiting panels indicate when clients hit their configured request limits,
+suggesting either legitimate spikes requiring limit increases or misbehaving
+applications issuing excessive requests. The "Requests by Method" breakdown
+shows which RPC methods receive the most calls—`eth_call` and
+`eth_getBlockByNumber` typically dominate, but unusual patterns like excessive
+`eth_sendRawTransaction` calls might indicate automated trading systems or other
+high-frequency operations that warrant capacity planning attention.
 
-5. **ERPC Dashboard**
-   - **What it shows:** Request routing, upstream health, cache effectiveness,
-     rate limiting, error rates, latency percentiles across all RPC endpoints
-   - **Use case:** Diagnose RPC failures, optimize caching strategy
-   - **Key metrics:** Upstream availability, cache hit rate, error rate by
-     endpoint
+#### Indexing layer dashboards
 
-**Storage layer:**
+**TheGraph indexing status dashboard**
 
-6. **IPFS Dashboard**
-   - **What it shows:** Pin operations, bandwidth usage, peer connectivity,
-     content retrieval metrics
-   - **Use case:** Monitor content availability, track bandwidth consumption
-   - **Key metrics:** Pinned content count, peer count, retrieval success rate
+The indexing status dashboard provides critical visibility into whether your
+subgraph tracks the current blockchain state or lags behind. The primary metric
+to monitor is the block gap—the difference between the subgraph's current
+indexed block and the blockchain's latest block. Under normal operation, this
+gap should remain below 10 blocks, indicating the subgraph processes new blocks
+nearly as fast as validators produce them.
 
-**Infrastructure:**
+When the gap grows beyond 50-100 blocks, the subgraph can't keep pace with block
+production, causing application data to become stale. The "Indexing Rate" panel
+shows blocks processed per second—this rate should match or exceed the block
+production rate (0.25 blocks/second for 4-second block times). Sustained
+indexing rates below the production rate indicate resource constraints,
+inefficient subgraph mappings, or database performance issues that require
+investigation.
 
-7. **Kubernetes Overview**
-   - **What it shows:** Cluster resource utilization, pod health, node capacity,
-     namespace quotas
-   - **Use case:** Identify resource bottlenecks, plan capacity
-   - **Key metrics:** CPU/memory usage per namespace, pod restart count, node
-     pressure
+Entity count growth panels track the number of indexed entities (tokens,
+transfers, compliance events, etc.) over time. Steady growth indicates healthy
+indexing, while flat lines during periods when new blocks arrive suggest
+indexing errors. The "Failed Block Processing" metric provides the smoking
+gun—any value above zero indicates the subgraph encountered errors processing
+specific blocks, requiring log analysis to identify the root cause.
 
-8. **NGINX Ingress**
-   - **What it shows:** Request rates, response times, error rates, upstream
-     connectivity
-   - **Use case:** Diagnose ingress routing issues, monitor external access
-   - **Key metrics:** Requests per second, 4xx/5xx error rates, upstream latency
+**TheGraph query performance dashboard**
 
-9. **Node Exporter**
-   - **What it shows:** System-level metrics (CPU, memory, disk, network) for
-     each Kubernetes node
-   - **Use case:** Diagnose node-level resource exhaustion
-   - **Key metrics:** CPU utilization, disk I/O, network throughput
+While the indexing status dashboard monitors data freshness, the query
+performance dashboard tracks how efficiently the subgraph serves GraphQL queries
+from applications. The latency percentile panels (p50, p95, p99) show query
+response time distribution—p50 represents the median experience, while p99
+reveals the worst-case latency that affects your slowest users.
 
-10. **VictoriaMetrics**
-    - **What it shows:** TSDB metrics including series cardinality, ingestion
-      rates, storage usage
-    - **Use case:** Monitor observability backend health
-    - **Key metrics:** Active time series, ingestion rate, disk usage
+Target latencies depend on query complexity, but as a general guideline: simple
+field lookups should return in &lt;50ms (p99), while complex queries with nested
+relationships and filtering should complete within &lt;500ms (p99). Latencies
+exceeding these targets indicate either inefficient queries requiring schema
+optimization or resource constraints requiring horizontal scaling of graph-node
+replicas.
 
-11. **Tempo Tracing**
-    - **What it shows:** Distributed trace visualization with service dependency
-      graphs
-    - **Use case:** Identify slow operations in request path
-    - **Key metrics:** Trace duration, span count, service dependencies
+Cache hit rate metrics reveal the percentage of queries served from TheGraph's
+query cache versus requiring database access. Cache hit rates above 30%
+typically indicate good cache effectiveness, reducing database load and
+improving response times. Low cache hit rates (&lt;10%) suggest highly dynamic
+query patterns with little repetition, or overly aggressive cache TTL settings
+that expire cached results too quickly.
 
-**Application layer:**
+#### RPC gateway dashboard
 
-12. **DApp Metrics**
-    - **What it shows:** API request rates, response times, error rates by
-      endpoint
-    - **Use case:** Monitor user-facing application performance
-    - **Key metrics:** API latency, error rate, active users
+**ERPC dashboard**
 
-13. **PostgreSQL**
-    - **What it shows:** Database connection pool, query performance,
-      replication lag
-    - **Use case:** Diagnose database bottlenecks
-    - **Key metrics:** Active connections, slow query count, replication lag
+The ERPC gateway sits between applications and blockchain nodes, providing
+intelligent request routing, caching, and high availability. This dashboard's
+most critical panel is "Upstream Health," showing the availability percentage of
+each configured RPC endpoint. In a typical configuration with Besu nodes as
+upstreams, all upstreams should show 99%+ availability—anything lower indicates
+node issues requiring investigation.
 
-14. **Hasura GraphQL**
-    - **What it shows:** GraphQL query performance, subscription counts,
-      authorization checks
-    - **Use case:** Optimize GraphQL operations
-    - **Key metrics:** Query latency, subscription count, auth failures
+Request routing panels show how ERPC distributes traffic across healthy
+upstreams, implementing round-robin load balancing by default. During upstream
+failures, watch the routing change as ERPC automatically excludes unhealthy
+backends and redistributes load to remaining healthy nodes. The "Failover
+Events" counter tracks these transitions—occasional failovers (1-2 per day) are
+normal during deployments, but frequent failovers indicate chronic upstream
+instability.
+
+Cache effectiveness metrics demonstrate ERPC's value for read-heavy workloads.
+The "Cache Hit Rate by Method" panel breaks down caching by RPC
+method—`eth_getBlockByNumber`, `eth_getTransactionReceipt`, and `eth_call` for
+deterministic calls typically achieve &gt;50% cache hit rates, significantly
+reducing load on Besu nodes. Monitor "Cache Evictions" to understand cache
+pressure—high eviction rates suggest increasing cache size through Helm
+configuration.
+
+#### Infrastructure dashboards
+
+**Kubernetes overview dashboard**
+
+This dashboard provides a cluster-wide view of resource utilization and pod
+health across all namespaces. The namespace-level resource consumption panels
+show CPU and memory usage for the ATK namespace, helping you understand resource
+allocation versus actual consumption. Significant gaps between requested
+resources (what you told Kubernetes to reserve) and actual usage indicate
+over-provisioning opportunities to reduce costs.
+
+Pod health panels list all pods with their current status, restart counts, and
+age. Pods in states other than "Running" require immediate
+attention—"CrashLoopBackOff" indicates the pod crashes repeatedly on startup
+(check logs), while "Pending" suggests resource constraints preventing
+scheduling. Restart counts above 5-10 indicate instability, warranting
+investigation even if the pod currently runs successfully.
+
+Node capacity and pressure indicators show whether Kubernetes nodes have
+sufficient resources. Memory pressure warnings indicate nodes nearing memory
+limits, risking pod evictions and instability. Disk pressure warnings suggest
+storage consumption approaching capacity, threatening log collection and
+persistent volume writes. These warnings typically require either scaling up
+node sizes or adding additional nodes to the cluster.
+
+**NGINX ingress dashboard**
+
+The ingress controller routes external traffic to ATK services, making it a
+critical observability point for understanding user-facing performance and
+errors. Request rate panels show total requests per second across all ingress
+resources, providing a high-level activity indicator. Spikes in traffic might
+indicate organic growth, marketing campaigns driving adoption, or potential DDoS
+attacks requiring investigation.
+
+Error rate breakdowns separate client errors (4xx status codes) from server
+errors (5xx status codes). High 4xx rates suggest client misconfigurations,
+authentication failures, or API compatibility issues—these typically don't
+indicate platform problems but might warrant API documentation improvements or
+client SDK updates. High 5xx rates indicate backend service failures requiring
+urgent investigation, as they represent genuine platform problems affecting
+users.
+
+Response time percentiles measure end-to-end latency from ingress receipt to
+backend response. These metrics include network latency, TLS handshake time,
+backend processing, and response transmission—making them the truest measure of
+user experience. Target p95 latency &lt;2s for interactive API endpoints, though
+specific requirements depend on endpoint complexity and workload
+characteristics.
+
+#### Application layer dashboards
+
+**DApp metrics dashboard**
+
+The DApp dashboard focuses on application-level performance and business metrics
+specific to asset tokenization workflows. The "API Latency by Endpoint" panel
+breaks down response times by specific API routes, helping identify which
+endpoints exhibit performance problems. Endpoints consistently exceeding latency
+targets become optimization candidates, warranting code profiling and potential
+caching strategies.
+
+Compliance check duration panels track a critical business metric—how long it
+takes to validate whether a token transfer meets regulatory requirements. The
+SMART protocol performs these checks on-chain during every transfer, making
+check duration a direct component of transaction latency. The dashboard shows
+compliance check duration percentiles (p50, p95, p99) and should alert when
+checks exceed 200ms (p95), as lengthy checks indicate complex compliance rule
+sets requiring optimization or architectural changes like compliance check
+caching.
+
+Settlement operation metrics track DvP (Delivery versus Payment) settlement
+durations, measuring the time from initiating atomic settlement to final
+confirmation. This end-to-end metric includes smart contract execution,
+blockchain consensus, and any off-chain coordination. Production systems should
+target &lt;30s for settlement operations (p95), ensuring competitive performance
+for secondary market trades and primary issuance workflows.
+
+**PostgreSQL dashboard**
+
+The PostgreSQL dashboard monitors the relational database backing application
+state, user data, and operational records. Connection pool utilization panels
+show active versus available connections—sustained utilization above 80%
+indicates the pool size limits application throughput, requiring either
+increasing `max_connections` in PostgreSQL or connection pool size in
+application configuration.
+
+Query performance metrics identify slow queries consuming excessive database
+resources. The "Long-Running Queries" panel lists queries exceeding 1 second of
+execution time, providing a starting point for optimization efforts. Common
+culprits include missing indexes on frequently filtered columns, overly complex
+joins, or queries loading excessive data rows that should implement pagination.
+
+Replication lag panels appear only in high-availability configurations with read
+replicas. This metric shows the delay between primary database writes and their
+replication to read replicas—sustained lag &gt;5 seconds indicates replication
+throughput problems, causing read replicas to serve stale data that might affect
+application correctness.
+
+**Hasura GraphQL dashboard**
+
+Hasura provides the GraphQL API layer for application data access, making its
+performance critical for frontend responsiveness. The query latency panels show
+GraphQL operation response times, broken down by operation name (query,
+mutation, subscription). These metrics help identify which GraphQL operations
+need optimization, either through query refinement, database indexing, or
+caching strategies.
+
+Subscription count panels track active GraphQL subscriptions, which maintain
+WebSocket connections for real-time data updates. High subscription counts
+(thousands per instance) can exhaust Hasura resources, requiring horizontal
+scaling or evaluating whether clients truly need real-time updates versus
+polling or SSE approaches.
+
+Authorization check metrics reveal how many GraphQL operations undergo
+permission evaluation and how many fail authorization. High authorization
+failure rates might indicate overly restrictive permissions, client bugs
+attempting unauthorized operations, or potential security incidents warranting
+investigation. The Hasura dashboard helps distinguish legitimate access control
+from configuration problems.
 
 ### Accessing dashboards
 
-1. Log into Grafana
-2. Click **Dashboards** in left sidebar
-3. Browse folders:
+1. Log into Grafana using credentials from Step 1
+2. Click **Dashboards** (four-squares icon) in left sidebar
+3. Browse folders organized by architectural layer:
    - **Blockchain** - Besu, Portal
    - **Indexing** - TheGraph Status, TheGraph Query
    - **Infrastructure** - Kubernetes, NGINX, Node Exporter
    - **Storage** - IPFS, VictoriaMetrics, Tempo
    - **Application** - DApp, PostgreSQL, Hasura, ERPC
 
+Each folder contains related dashboards for that layer. Dashboard names clearly
+indicate their focus area, making discovery straightforward. Starred dashboards
+appear in your personal "Starred" folder for quick access to frequently used
+views.
+
 ## Step 3: Monitor key metrics
+
+While the dashboards provide comprehensive visibility, certain metrics deserve
+continuous monitoring as they directly impact business operations and regulatory
+compliance. These key performance indicators (KPIs) form the foundation of
+effective alerting strategies and operational health verification. Understanding
+target values and alert thresholds for each metric helps you distinguish normal
+operation from conditions requiring intervention.
 
 ### Critical metrics per layer
 
-**Transaction latency (blockchain):**
+Each metric below includes target values based on typical production
+requirements, but your specific targets should align with business SLAs and
+regulatory obligations. The "Alert if" conditions represent suggested starting
+points for Grafana alert rules—tune these thresholds based on actual workload
+patterns and acceptable performance envelopes.
 
-Target: &lt;2s from submission to confirmation
+#### Transaction latency (blockchain layer)
 
-Dashboard: **Besu Dashboard** &gt; **Transaction Latency** panel
+**Target:** &lt;2s from submission to confirmation
 
-What to watch:
+**Dashboard:** Besu Dashboard &gt; Transaction Latency panel
 
-- P50 latency (median transaction time)
-- P95 latency (95th percentile)
-- P99 latency (tail latency)
+**What to watch:**
+
+- P50 latency shows the median transaction experience, representing typical
+  user-facing latency
+- P95 latency reveals the slowest 5% of transactions, indicating whether
+  occasional slowness affects user experience
+- P99 latency catches extreme outliers that might indicate systemic issues
+  during peak load
 
 **Alert if:** P95 latency &gt;5s for &gt;10 minutes
 
-**Compliance check duration:**
+Transaction latency directly impacts user experience for token transfers,
+compliance updates, and settlement operations. Sustained elevated latency
+indicates either validator performance issues, network congestion, or gas price
+problems preventing transaction inclusion. The alert threshold of 10 minutes
+prevents alerts on temporary spikes while catching sustained degradation
+requiring operator intervention.
 
-Target: &lt;200ms per transfer validation
+#### Compliance check duration (application layer)
 
-Dashboard: **DApp Metrics** &gt; **Compliance Check Duration** panel
+**Target:** &lt;200ms per transfer validation
 
-What to watch:
+**Dashboard:** DApp Metrics &gt; Compliance Check Duration panel
 
-- Average compliance check time
-- Max compliance check time
-- Failed compliance checks per minute
+**What to watch:**
+
+- Average compliance check time indicates typical processing overhead for
+  transfers
+- Max compliance check time reveals worst-case scenarios, often triggered by
+  complex compliance rule combinations
+- Failed compliance checks per minute tracks rejection rate, helping distinguish
+  performance issues from legitimate rule enforcement
 
 **Alert if:** Average &gt;500ms or failure rate &gt;1%
 
-**Settlement times (DvP):**
+Compliance checks execute on-chain during every token transfer, making their
+performance a critical component of overall transaction latency. Checks
+exceeding 500ms suggest overly complex compliance rules requiring optimization
+or architectural changes like introducing compliance check result caching.
+Failure rates above 1% might indicate overly restrictive rules affecting
+legitimate transfers, warranting rule review with compliance officers.
 
-Target: &lt;30s for atomic settlement
+#### Settlement times (DvP operations)
 
-Dashboard: **DApp Metrics** &gt; **Settlement Operations** panel
+**Target:** &lt;30s for atomic settlement
 
-What to watch:
+**Dashboard:** DApp Metrics &gt; Settlement Operations panel
 
-- DvP settlement duration (p50, p95, p99)
-- Settlement success rate
-- Failed settlements by reason
+**What to watch:**
+
+- DvP settlement duration percentiles (p50, p95, p99) measure end-to-end atomic
+  settlement performance
+- Settlement success rate indicates what percentage of attempted settlements
+  complete successfully
+- Failed settlements by reason breakdown helps identify whether failures stem
+  from insufficient balances, compliance failures, or technical issues
 
 **Alert if:** Success rate &lt;99% or p95 &gt;60s
 
-**Subgraph sync lag:**
+DvP settlement represents a core value proposition of the DALP protocol—atomic
+delivery versus payment that eliminates counterparty risk. Settlement
+performance directly impacts trading velocity and user confidence. Success rates
+below 99% suggest systemic problems rather than legitimate rejections, requiring
+immediate investigation. Settlement times exceeding 60s approach the limits of
+acceptable user experience for secondary market trades.
 
-Target: &lt;10 blocks behind chain head
+#### Subgraph sync lag (indexing layer)
 
-Dashboard: **TheGraph Indexing Status** &gt; **Sync Progress** panel
+**Target:** &lt;10 blocks behind chain head
 
-What to watch:
+**Dashboard:** TheGraph Indexing Status &gt; Sync Progress panel
 
-- Latest indexed block vs. chain head
-- Indexing rate (blocks per second)
-- Failed block processing count
+**What to watch:**
+
+- Latest indexed block vs. chain head shows the current block gap, indicating
+  data freshness
+- Indexing rate (blocks per second) reveals whether the subgraph keeps pace with
+  block production
+- Failed block processing count identifies specific blocks causing indexing
+  errors
 
 **Alert if:** Lag &gt;100 blocks for &gt;5 minutes
 
-**RPC gateway health:**
+Subgraph sync lag directly affects application data freshness—lagging subgraphs
+cause UIs to display stale token balances, outdated compliance status, or
+missing recent transactions. A lag of 10 blocks represents roughly 40 seconds of
+staleness (at 4s block time), generally acceptable for most UI use cases. Lag
+exceeding 100 blocks (6-7 minutes) creates user confusion as their recent
+actions don't appear reflected in the UI, warranting investigation and
+resolution.
 
-Target: &gt;99.9% availability
+#### RPC gateway health (infrastructure layer)
 
-Dashboard: **ERPC Dashboard** &gt; **Upstream Health** panel
+**Target:** &gt;99.9% availability
 
-What to watch:
+**Dashboard:** ERPC Dashboard &gt; Upstream Health panel
 
-- Upstream availability percentage
-- Request error rate by upstream
-- Failover events per minute
+**What to watch:**
+
+- Upstream availability percentage for each configured Besu node or RPC endpoint
+- Request error rate by upstream helps identify problematic backends versus
+  systematic issues
+- Failover events per minute tracks how frequently ERPC reroutes traffic due to
+  upstream failures
 
 **Alert if:** Availability &lt;99% or error rate &gt;1%
 
-**API error rate:**
+The RPC gateway represents a single point of failure for all blockchain
+interactions. While ERPC provides high availability through multiple upstreams,
+sustained failures across upstreams indicate broader problems. Availability
+below 99% means roughly 15 minutes of downtime per day—unacceptable for
+production operations. Error rates above 1% suggest either upstream node issues
+or network problems preventing communication.
 
-Target: &lt;0.1% for production
+#### API error rate (application layer)
 
-Dashboard: **DApp Metrics** &gt; **Error Rate** panel
+**Target:** &lt;0.1% for production
 
-What to watch:
+**Dashboard:** DApp Metrics &gt; Error Rate panel
 
-- 4xx errors per second (client errors)
-- 5xx errors per second (server errors)
-- Error rate by endpoint
+**What to watch:**
+
+- 4xx errors per second indicate client errors (bad requests, authentication
+  failures, not found)
+- 5xx errors per second represent server errors (uncaught exceptions, dependency
+  failures, timeouts)
+- Error rate by endpoint identifies which API routes exhibit the highest failure
+  rates
 
 **Alert if:** 5xx rate &gt;0.5% for &gt;5 minutes
+
+Server errors (5xx status codes) represent genuine platform failures affecting
+users and require immediate attention. While some 4xx errors are expected (users
+make mistakes, authentication expires), 5xx errors should remain extremely rare
+in production. An error rate of 0.5% means 1 in 200 requests fail—a rate that
+quickly erodes user confidence and suggests urgent remediation.
 
 ### Viewing metrics in Grafana
 
 **Time range selection:**
 
-Use the time picker in top-right corner:
-
-- Last 1 hour (default)
-- Last 24 hours
-- Last 7 days
-- Custom range
+The time picker in the top-right corner of every dashboard controls the data
+time range displayed in all panels. Default view shows the last 1 hour,
+providing recent context without overwhelming detail. For troubleshooting active
+incidents, use "Last 5 minutes" or "Last 15 minutes" for near-real-time
+visibility. For trend analysis and capacity planning, expand to "Last 7 days" or
+"Last 30 days" to reveal longer-term patterns.
 
 **Refresh rate:**
 
-Set auto-refresh for live monitoring:
-
-- 5s for active debugging
-- 30s for normal monitoring
-- Off for historical analysis
+Auto-refresh controls how frequently Grafana reloads dashboard data. During
+active troubleshooting, set refresh to 5-10 seconds to track the impact of
+changes in near-real-time. For routine monitoring, 30-60 second refresh provides
+adequate visibility without excessive backend queries. Disable auto-refresh when
+analyzing historical incidents or creating reports, as constant refreshes
+interfere with careful data examination.
 
 **Variable filtering:**
 
-Many dashboards support filtering:
+Many dashboards include dropdown variables at the top that filter displayed data
+by specific dimensions. Common filters include:
 
-- Select namespace (for multi-tenant clusters)
-- Select pod (for specific instance)
-- Select endpoint (for API-specific metrics)
+- **Namespace**: Useful in multi-tenant Kubernetes clusters to isolate ATK
+  metrics from other workloads
+- **Pod**: Drill into specific pod instances when investigating issues affecting
+  only certain replicas
+- **Endpoint**: Focus on specific API routes when analyzing application
+  performance
+- **Upstream**: Isolate specific Besu nodes or RPC endpoints when
+  troubleshooting backend issues
+
+Filters stack—selecting multiple dimensions narrows the displayed data
+progressively. Use the "All" option to reset filters and view aggregated data
+across all instances.
 
 ## Step 4: Use observability for verification
 
-After deployment, use dashboards to confirm correct operation.
+The observability stack serves two distinct purposes: ongoing monitoring of
+production operations and verification of successful deployments or
+configuration changes. This section focuses on the verification use case—how to
+systematically confirm that a new deployment or upgrade succeeded and operates
+correctly before declaring the change complete.
+
+Many deployment failures manifest subtly rather than catastrophically. Pods
+might start successfully but crash during traffic load, subgraphs might lag
+behind the blockchain without obvious errors, or compliance checks might
+silently fail validation. The observability stack makes these failure modes
+visible, transforming deployment verification from "the pods are running" into
+comprehensive health validation.
 
 ### Post-deployment verification workflow
 
 <Mermaid
   chart={`flowchart TB
-    Deploy(Helm Install/Upgrade) --> Wait[Wait 2 minutes]
+    Deploy(Helm Install/Upgrade) --> Wait[Wait 2 minutes<br/>for pod stabilization]
     Wait --> CheckInfra{Infrastructure<br/>healthy?}
-    CheckInfra -->|No| FixInfra[Fix pod/node issues]
+    CheckInfra -->|No| FixInfra[Fix pod/node issues<br/>Check: Pod status, restarts, resource limits]
     CheckInfra -->|Yes| CheckBlockchain{Blockchain<br/>producing blocks?}
-    CheckBlockchain -->|No| FixChain[Check Besu logs]
+    CheckBlockchain -->|No| FixChain[Check Besu logs<br/>Verify: Peer connectivity, genesis config]
     CheckBlockchain -->|Yes| CheckIndexing{Subgraph<br/>syncing?}
-    CheckIndexing -->|No| FixGraph[Check TheGraph logs]
+    CheckIndexing -->|No| FixGraph[Check TheGraph logs<br/>Verify: RPC connectivity, schema deployment]
     CheckIndexing -->|Yes| CheckAPI{API<br/>responding?}
-    CheckAPI -->|No| FixAPI[Check DApp logs]
-    CheckAPI -->|Yes| Verified[Deployment verified ✓]
+    CheckAPI -->|No| FixAPI[Check DApp logs<br/>Verify: DB connection, env variables]
+    CheckAPI -->|Yes| Verified[Deployment verified ✓<br/>Monitor for 24h]
     
     FixInfra --> Wait
     FixChain --> Wait
@@ -395,338 +712,966 @@ After deployment, use dashboards to confirm correct operation.
     style Verified fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
 />
 
+The verification workflow follows ATK's architectural layers from bottom to top.
+Infrastructure health forms the foundation—without healthy Kubernetes pods and
+nodes, higher layers can't function correctly. The blockchain layer must produce
+blocks before the indexing layer can process them, and both must work before
+applications can serve user requests. This dependency chain dictates the
+verification order.
+
+After fixing issues at any layer, the workflow returns to the stabilization wait
+step rather than immediately rechecking. This pause allows Kubernetes to restart
+failed pods, Besu nodes to re-establish peer connections, or subgraphs to resume
+indexing—most self-healing mechanisms need 1-2 minutes to take effect.
+
 ### Verification checklist
 
-**1. Infrastructure health (Kubernetes Overview dashboard):**
+Execute these checks in order after any deployment or configuration change. Each
+check builds on previous ones—skip earlier checks only if you're absolutely
+certain lower layers operate correctly.
 
-- ✅ All pods in `Running` state
-- ✅ No pod restart loops (restart count stable)
-- ✅ Node CPU utilization &lt;70%
-- ✅ Node memory utilization &lt;80%
-- ✅ Persistent volumes bound
+#### 1. Infrastructure health (Kubernetes overview dashboard)
 
-**2. Blockchain health (Besu Dashboard):**
+- ✅ All pods in `Running` state (verify in "Pod Status by Phase" panel)
+- ✅ No pod restart loops—restart count stable or zero (check "Pods with High
+  Restart Count" panel)
+- ✅ Node CPU utilization &lt;70% (verify in "Node CPU Usage" panel)
+- ✅ Node memory utilization &lt;80% (verify in "Node Memory Usage" panel)
+- ✅ Persistent volumes bound and not full (check "PVC Usage" panel)
 
-- ✅ All validator nodes producing blocks
-- ✅ Block production rate matches configured target (default: 4s block time)
-- ✅ Peer connectivity matches validator count
-- ✅ Transaction throughput &gt;0 if activity expected
+Infrastructure problems manifest as pods in states other than "Running" or
+through resource exhaustion preventing normal operation. Pods stuck in "Pending"
+state indicate resource constraints—Kubernetes can't find nodes with sufficient
+CPU/memory to schedule the pod. Pods in "CrashLoopBackOff" state indicate the
+container starts but immediately crashes, usually due to configuration errors or
+missing dependencies.
 
-**3. Indexing health (TheGraph Indexing Status):**
+Restart counts above 0 warrant investigation even if pods currently run
+successfully. Occasional restarts (1-2) might result from transient issues
+during deployment, but restart counts above 5 indicate chronic instability
+requiring log analysis. Each restart disrupts service and might indicate memory
+leaks, unhandled exceptions, or liveness probe configuration issues.
 
-- ✅ Subgraph deployment status = "Synced" or "Syncing"
-- ✅ No indexing errors in entity processing
-- ✅ Indexed block count increasing steadily
-- ✅ Query performance p99 &lt;500ms
+#### 2. Blockchain health (Besu dashboard)
 
-**4. RPC gateway health (ERPC Dashboard):**
+- ✅ All validator nodes producing blocks (verify in "Block Production Rate"
+  panel)
+- ✅ Block production rate matches configured target—default 4s block time means
+  0.25 blocks/second (check "Blocks per Second" graph)
+- ✅ Peer connectivity matches validator count (verify in "Peer Count"
+  panel—should equal number of validators minus one)
+- ✅ Transaction throughput &gt;0 if activity expected (check "Transactions per
+  Second" panel)
 
-- ✅ All upstreams marked healthy
-- ✅ Request routing to healthy upstreams only
-- ✅ Error rate &lt;0.1%
-- ✅ Cache hit rate improving over time (target: &gt;30%)
+Blockchain verification ensures the foundation layer operates correctly. Block
+production represents the fundamental health indicator—if validators don't
+produce blocks, nothing else matters. The Besu dashboard's "Latest Block Number"
+panel should increment steadily, with new blocks appearing at the configured
+interval.
 
-**5. Application health (DApp Metrics):**
+Peer connectivity deserves careful attention in private networks. Each validator
+should connect to all other validators, forming a complete mesh. If a validator
+shows fewer peers than expected, it suffers network partitioning—it might
+produce blocks that other validators don't see, creating potential chain splits.
+Network policies, firewall rules, or misconfigured P2P ports typically cause
+peer connectivity issues.
 
-- ✅ API returning 200 OK for health check endpoint
-- ✅ Database connection pool has available connections
-- ✅ Authentication flows completing successfully
-- ✅ No 5xx errors in last 5 minutes
+#### 3. Indexing health (TheGraph indexing status dashboard)
+
+- ✅ Subgraph deployment status shows "Synced" or "Syncing" (verify in
+  "Deployment Status" panel)
+- ✅ No indexing errors in entity processing (check "Failed Block Processing"
+  counter—should be zero)
+- ✅ Indexed block count increasing steadily (verify "Current Block" graph shows
+  consistent upward slope)
+- ✅ Query performance p99 &lt;500ms (check in "Query Performance" tab of
+  TheGraph dashboard)
+
+Subgraph health determines application data freshness. The "Synced" status
+indicates the subgraph has caught up to the blockchain head and processes new
+blocks as they arrive. "Syncing" status is expected after deployment or during
+initial indexing—the subgraph works through historical blocks to build its
+entity database.
+
+Failed block processing indicates the subgraph encountered an error processing a
+specific block, halting forward progress. Common causes include mapping errors
+(JavaScript exceptions in subgraph code), incompatible schema changes, or
+unexpected smart contract events. The subgraph won't advance past the failed
+block until you fix the underlying issue, causing the block lag to grow
+unbounded.
+
+#### 4. RPC gateway health (ERPC dashboard)
+
+- ✅ All upstreams marked healthy (verify in "Upstream Health" panel—should show
+  100% or near-100%)
+- ✅ Request routing distributes to healthy upstreams only (check "Requests by
+  Upstream" panel)
+- ✅ Error rate &lt;0.1% (verify in "Error Rate" panel)
+- ✅ Cache hit rate improving over time (check "Cache Hit Rate" panel—target
+  &gt;30% after warmup)
+
+The RPC gateway provides critical load balancing and high availability for
+blockchain access. All configured upstreams should appear healthy—unhealthy
+upstreams indicate Besu nodes that don't respond to health checks, either due to
+node failures, network issues, or health check misconfigurations.
+
+Request distribution across healthy upstreams should appear roughly even,
+indicating the load balancer works correctly. If one upstream receives
+significantly more traffic than others, check for stickiness configurations or
+upstream weight settings that might intentionally skew traffic.
+
+Cache hit rates start at 0% after deployment but improve as ERPC populates its
+cache with repeated requests. After 10-15 minutes of traffic, cache hit rates
+should exceed 20-30% for typical read-heavy workloads. Cache hit rates that
+remain below 10% after 30 minutes suggest either highly dynamic queries with no
+repetition or cache configuration issues requiring investigation.
+
+#### 5. Application health (DApp metrics dashboard)
+
+- ✅ API health check endpoint returns 200 OK (verify via curl or check "Health
+  Check Status" panel)
+- ✅ Database connection pool has available connections (check PostgreSQL
+  dashboard "Connection Pool" panel—utilization &lt;80%)
+- ✅ Authentication flows complete successfully (check "Auth Success Rate"
+  panel—should exceed 99%)
+- ✅ No 5xx errors in last 5 minutes (verify in "Error Rate" panel)
+
+Application health represents the final verification step, confirming that
+user-facing services operate correctly. The health check endpoint provides a
+synthetic probe that exercises critical dependencies—database connectivity,
+cache availability, external API access—returning success only if the
+application can actually serve requests.
+
+Authentication success rates below 99% suggest either authentication system
+problems or client configuration issues. Failed authentication attempts should
+get logged with detailed error information to distinguish legitimate failures
+(expired tokens, wrong passwords) from system problems (database unavailable,
+identity provider unreachable).
+
+The absence of 5xx errors over a 5-minute window provides reasonable confidence
+that the application handles requests successfully. However, this check might
+pass even with lurking problems if traffic remains low—consider executing
+synthetic transactions (token transfers, compliance checks) as additional
+verification for critical deployments.
 
 ## Step 5: Troubleshoot using dashboards
 
-Use observability tools to diagnose and resolve production issues.
+The observability stack transforms troubleshooting from art to science. Rather
+than guessing at root causes or adding logging statements and redeploying, you
+use existing telemetry data to systematically eliminate possibilities and
+identify actual problems. This section walks through common production
+scenarios, demonstrating the investigative process using dashboards, logs, and
+traces.
+
+### Alert response workflow
+
+When an alert fires, follow this structured investigation workflow to identify
+and resolve the root cause efficiently:
+
+<Mermaid
+  chart={`flowchart TB
+    Alert(Alert Notification<br/>PagerDuty/Slack) --> Identify[Identify affected metric<br/>Open relevant dashboard]
+    Identify --> Scope{Single component<br/>or widespread?}
+    Scope -->|Single| Isolate[Isolate failing component<br/>Check pod logs & traces]
+    Scope -->|Widespread| Infrastructure[Check infrastructure<br/>Node resources, network]
+    
+    Isolate --> Logs[Query logs for errors<br/>Loki: namespace, pod, time range]
+    Infrastructure --> Metrics[Compare metrics across components<br/>Find common failure patterns]
+    
+    Logs --> Trace{Distributed<br/>operation?}
+    Metrics --> Correlation[Correlate resource exhaustion<br/>CPU/memory/disk/network]
+    
+    Trace -->|Yes| TraceView[View trace in Tempo<br/>Find slow span]
+    Trace -->|No| RootCause[Identify root cause]
+    
+    TraceView --> RootCause
+    Correlation --> RootCause
+    
+    RootCause --> Remediate[Apply fix<br/>Scale/restart/config change]
+    Remediate --> Verify[Verify resolution<br/>Monitor metrics for 10min]
+    Verify --> Postmortem[Document incident<br/>Update runbook]
+    
+    style Alert fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style RootCause fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Postmortem fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff`}
+/>
+
+The workflow prioritizes rapid triage—determining whether an issue affects a
+single component (suggesting a component-specific problem) or multiple
+components (suggesting infrastructure or dependency problems). This distinction
+fundamentally changes investigation strategy and likely resolution paths.
 
 ### Scenario 1: Slow transaction confirmations
 
 **Symptom:** Users report transactions taking &gt;30s to confirm
 
-**Investigation:**
+**Investigation process:**
 
-1. Open **Besu Dashboard**
-2. Check **Block Production Rate** panel
-   - If blocks are slow (&gt;10s block time): Check validator connectivity
-   - If blocks are normal (4-5s): Continue investigation
+Begin by confirming the symptom using objective metrics rather than relying
+solely on user reports. User-reported issues sometimes reflect frontend
+problems, caching issues, or misunderstandings rather than actual platform
+problems. Open the **Besu Dashboard** and navigate to the **Transaction
+Latency** panel to check actual confirmation times.
 
-3. Open **ERPC Dashboard**
-4. Check **RPC Latency Percentiles** panel
-   - If p95 &gt;2s: RPC gateway is bottleneck
-   - If p95 &lt;1s: Not an RPC issue
+Examine the p95 and p99 latency lines for the past 1-2 hours. If latency remains
+consistently below 5 seconds, the issue likely affects only certain transaction
+types or specific users rather than representing systemic platform slowness. If
+latency clearly spikes above 10-15 seconds, you've confirmed a real performance
+issue requiring investigation.
 
-5. Open **Grafana Explore** &gt; **Loki**
-6. Query logs:
-   ```
-   {namespace="atk"} |= "transaction" |= "timeout"
-   ```
-7. Review recent timeout events
+Check the **Block Production Rate** panel in the same dashboard. Block
+production represents the foundation of transaction confirmation—transactions
+can't confirm until validators include them in blocks. If the block production
+rate drops below the expected rate (default 0.25 blocks/second, or one block
+every 4 seconds), you've identified the root cause: validators aren't producing
+blocks at the expected rate.
 
-**Resolution paths:**
+Slow block production typically indicates validator connectivity problems.
+Switch to the **Peer Count** panel to verify validator mesh topology. Each
+validator should show peer connections equal to (number of validators - 1). If
+peer counts appear lower, network partitioning has occurred—validators can't
+reach each other, preventing consensus. Check firewall rules, network policies,
+and Kubernetes service configurations to restore connectivity.
 
-- **Validator connectivity issue:** Check validator peer count; restart
-  validators if &lt;expected
-- **RPC bottleneck:** Scale ERPC replicas or check upstream health
-- **Network congestion:** Increase gas price in transaction submission
+If block production operates normally (steady 4-second block times) but
+transaction latency remains high, the bottleneck lies elsewhere. Open the **ERPC
+Dashboard** to examine RPC gateway performance. Check the **RPC Latency
+Percentiles** panel—if p95 latency exceeds 2 seconds, the RPC gateway represents
+the bottleneck rather than the blockchain itself.
+
+High RPC latency suggests either upstream health problems or overload. Check the
+**Upstream Health** panel to verify all Besu nodes appear healthy. If upstreams
+show reduced availability (&lt;99%), investigate the failing nodes through their
+logs. If upstreams appear healthy but latency remains high, ERPC is likely
+overloaded—scale ERPC replicas horizontally through Helm value adjustments.
+
+If neither block production nor RPC latency explains slow confirmations, the
+issue likely affects specific transaction types. Open **Grafana Explore**,
+select the **Loki** datasource, and query transaction-related logs:
+
+```
+{namespace="atk"} |= "transaction" |= "timeout" | json
+```
+
+This query finds all log lines containing both "transaction" and "timeout",
+parsing JSON-formatted log entries for easier analysis. Review recent timeout
+events to identify common patterns—do timeouts affect specific addresses, token
+types, or transaction methods? Common timeout causes include:
+
+- **Insufficient gas price**: Transactions with low gas prices wait in the
+  mempool indefinitely, appearing slow to users
+- **Nonce gaps**: Transactions with incorrect nonces (non-sequential) can't
+  process until earlier nonce transactions complete
+- **Compliance check failures**: Transfers failing compliance validation might
+  appear slow if frontend code doesn't properly handle rejection
 
 ### Scenario 2: Subgraph queries returning stale data
 
-**Symptom:** DApp showing outdated token balances
+**Symptom:** DApp displays outdated token balances or missing recent transfers
 
-**Investigation:**
+**Investigation process:**
 
-1. Open **TheGraph Indexing Status**
-2. Check **Sync Progress** panel
-   - Note current block vs. latest block gap
+Stale application data almost always traces to subgraph sync lag. The subgraph
+provides the queryable data layer for applications—if it lags behind the
+blockchain, applications inevitably display stale information. Open the
+**TheGraph Indexing Status** dashboard to verify sync status.
 
-3. If gap &gt;100 blocks:
-   - Check **Indexing Rate** panel - should be &gt;0 blocks/sec
-   - Check **Indexing Errors** panel - look for failed block processing
+Examine the **Sync Progress** panel, which shows the current indexed block
+versus the blockchain head block. The gap between these lines represents data
+staleness measured in blocks. A gap below 10 blocks (roughly 40 seconds at 4s
+block time) represents acceptable operational latency. Gaps exceeding 50-100
+blocks indicate the subgraph can't keep pace with block production, requiring
+investigation and intervention.
 
-4. Open **Grafana Explore** &gt; **Loki**
-5. Query TheGraph logs:
-   ```
-   {namespace="atk", app="graph-node"} |= "error" or "revert"
-   ```
-6. Identify specific error messages
+Check the **Indexing Rate** panel to understand indexing throughput. This panel
+shows blocks processed per second over time. Under normal operation, the
+indexing rate should match or exceed the block production rate (0.25
+blocks/second for 4-second block times). Indexing rates consistently below the
+production rate mean the subgraph falls progressively further behind, with the
+gap growing unbounded until you resolve the performance issue.
+
+If the indexing rate appears healthy but the block gap remains large, the
+subgraph likely encountered historical blocks that took exceptionally long to
+process, creating a backlog it's slowly clearing. The subgraph will eventually
+catch up, but you might consider increasing graph-node resources (CPU/memory) to
+accelerate the process.
+
+Check the **Indexing Errors** panel, which displays the count of failed block
+processing attempts. Any value above zero indicates the subgraph encountered
+errors processing specific blocks, halting forward progress entirely. The
+subgraph won't advance past the failed block until you identify and fix the
+underlying issue.
+
+Open **Grafana Explore**, select **Loki** datasource, and query TheGraph logs to
+identify the specific error:
+
+```
+{namespace="atk", app="graph-node"} |= "error" | json | line_format "{{.block}} {{.msg}}"
+```
+
+This query finds all error log lines from graph-node pods, parses JSON
+formatting, and extracts the block number and error message for each failure.
+Common indexing errors include:
+
+- **Mapping errors**: JavaScript exceptions in subgraph mapping code (typically
+  TypeErrors from unexpected data types)
+- **Schema validation failures**: Entities that violate schema constraints
+  (missing required fields, invalid references)
+- **Timeout errors**: Blocks that take too long to process due to excessive
+  events or complex mappings
+- **RPC errors**: Failures communicating with Besu nodes to fetch block data or
+  make `eth_call` requests
 
 **Resolution paths:**
 
-- **Indexing stuck:** Restart graph-node pod; may need to rewind and replay
-  blocks
-- **Subgraph errors:** Fix subgraph mapping code causing reverts; redeploy
-  subgraph
-- **Database connection:** Check PostgreSQL connection pool utilization; scale
-  if exhausted
-- **RPC connection:** Ensure graph-node can reach ERPC; check ERPC upstream
-  health
+- **Mapping errors**: Fix the subgraph mapping code, rebuild, and redeploy the
+  subgraph—it will resume from the last successfully processed block
+- **Schema validation**: Either fix mapping code to generate valid entities or
+  update the schema to match actual data, then redeploy
+- **Timeout errors**: Increase graph-node timeout settings, optimize mapping
+  code efficiency, or split complex handlers into smaller operations
+- **RPC errors**: Check ERPC dashboard to verify RPC gateway health, ensure
+  graph-node can reach ERPC service, verify Besu nodes operate correctly
 
 ### Scenario 3: High API latency
 
-**Symptom:** DApp pages loading slowly (&gt;3s)
+**Symptom:** DApp pages load slowly, taking &gt;3s for API responses
 
-**Investigation:**
+**Investigation process:**
 
-1. Open **DApp Metrics**
-2. Check **API Latency by Endpoint** panel
-   - Identify which endpoints are slow
+High API latency represents a symptom rather than a diagnosis—the root cause
+might lie in database performance, RPC call latency, external service timeouts,
+or application code inefficiencies. The observability stack's distributed
+tracing capability excels at this diagnostic challenge, providing end-to-end
+visibility into request processing across multiple services.
 
-3. Open **Tempo** dashboard
-4. Search for traces of slow requests:
-   - Filter by service: `dapp`
-   - Filter by duration: &gt;2s
-   - Click trace ID to view detailed span breakdown
+Open the **DApp Metrics** dashboard and examine the **API Latency by Endpoint**
+panel. This breakdown identifies which specific endpoints exhibit slow response
+times, narrowing investigation scope. If all endpoints show elevated latency,
+the problem likely affects a shared dependency (database, RPC gateway, cache).
+If only specific endpoints slow down, the issue relates to those endpoints'
+specific operations.
 
-5. Identify slowest span in trace:
-   - Database query?
-   - RPC call?
-   - External API call?
-   - Compliance check?
+For endpoint-specific slowness, use distributed tracing to understand where time
+is spent. Open **Grafana Explore**, select the **Tempo** datasource, and search
+for recent traces of the slow endpoint. You can search by service name (`dapp`),
+operation name (the API endpoint path), or duration (&gt;2s for example) to find
+problematic traces.
 
-6. Open corresponding dashboard:
-   - **PostgreSQL** for database queries
-   - **ERPC** for RPC calls
-   - **DApp Metrics** for compliance checks
+Click on a trace ID to open the detailed trace view, which shows a waterfall
+diagram of all operations (spans) involved in processing the request. Each span
+represents a discrete operation—database query, RPC call, external API request,
+cache lookup, etc. The waterfall view immediately reveals which operation
+consumed the most time, pointing you toward the actual bottleneck.
 
-**Resolution paths:**
+Common patterns you'll observe in traces:
 
-- **Slow database query:** Add index to frequently queried columns; review query
-  plan
-- **Slow RPC call:** Check ERPC cache configuration; enable caching for
-  read-only methods
-- **Slow compliance check:** Review module count; consider simplifying complex
-  expressions
-- **External API timeout:** Increase timeout or implement circuit breaker
-  pattern
+**Database query consuming most of request time:** The trace shows a span
+labeled with the SQL query that takes &gt;1s to execute. This pattern indicates
+either a missing database index, an inefficient query plan, or returning too
+many rows without pagination.
+
+Switch to the **PostgreSQL** dashboard and examine the **Slow Queries** panel,
+which lists queries exceeding execution time thresholds. Find the problematic
+query in this list—the dashboard shows execution count, average time, and the
+full query text. Use PostgreSQL's `EXPLAIN ANALYZE` command to understand the
+query execution plan and identify optimization opportunities (missing indexes,
+unnecessary joins, suboptimal join order).
+
+**RPC call consuming most of request time:** The trace shows an `eth_call` or
+similar RPC operation taking &gt;1s. This pattern indicates either slow Besu
+node response, complex smart contract computation, or RPC gateway issues.
+
+Open the **ERPC Dashboard** and check **Upstream Latency Percentiles**. If
+upstream latency appears normal (&lt;500ms), the specific contract call likely
+requires significant computation—consider optimizing the smart contract
+function, reducing computation, or caching results. If upstream latency appears
+high, investigate Besu node performance through the **Besu Dashboard**.
+
+**Compliance check consuming most of request time:** The trace shows a span
+labeled "compliance check" taking &gt;500ms. This pattern indicates complex
+compliance rules requiring optimization.
+
+The SMART protocol evaluates all compliance modules sequentially during each
+transfer validation. Complex deployments with many modules (KYC + AML +
+geographic restrictions + trading hours + holder count limits + etc.) can
+accumulate significant overhead. Review the compliance module configuration to
+identify whether all modules provide business value, considering disabling
+rarely-triggered modules or implementing compliance result caching for repeat
+checks.
+
+**External API timeout:** The trace shows a span for an external service
+(perhaps an identity verification API or price feed) that times out after 10-30
+seconds. External service timeouts represent inherent reliability challenges in
+distributed systems.
+
+Implement retry logic with exponential backoff, circuit breaker patterns to fail
+fast when external services become unavailable, and timeout values aggressive
+enough to avoid blocking user requests for extended periods. Consider whether
+the operation truly needs synchronous external API calls or whether asynchronous
+processing with eventual consistency would better serve user experience.
 
 ### Scenario 4: Database connection exhaustion
 
-**Symptom:** DApp returning 500 errors intermittently
+**Symptom:** DApp returns intermittent 500 errors with "connection pool
+exhausted" messages
 
-**Investigation:**
+**Investigation process:**
 
-1. Open **PostgreSQL** dashboard
-2. Check **Connection Pool** panel
-   - Note active connections vs. max connections
+Database connection exhaustion occurs when application components request more
+simultaneous database connections than the connection pool provides. This
+classic resource exhaustion problem can manifest intermittently—during traffic
+spikes or when long-running queries hold connections for extended periods—making
+it challenging to diagnose through symptoms alone.
 
-3. If connections &gt;90% of max:
-   - Check **Long-Running Queries** panel
-   - Identify queries holding connections open
+Open the **PostgreSQL** dashboard and examine the **Connection Pool** panel.
+This visualization shows active connections versus the maximum connection limit
+over time. Under normal operation, connection utilization should remain below
+70-80% even during peak load, providing headroom for traffic spikes. If the
+connection count consistently approaches the maximum, you've confirmed
+connection exhaustion as the root cause.
 
-4. Open **Grafana Explore** &gt; **Loki**
-5. Query DApp logs:
-   ```
-   {namespace="atk", app="dapp"} |= "ECONNREFUSED" or "connection pool exhausted"
-   ```
-6. Correlate connection errors with slow queries
+Check the **Long-Running Queries** panel to identify queries holding connections
+open for extended periods. Long-running queries (execution time &gt;5-10
+seconds) consume connection pool capacity disproportionate to their business
+value—a single slow query holding a connection for 30 seconds prevents that
+connection from serving 30+ fast queries that would complete in under 1 second
+each.
+
+Review the long-running queries for optimization opportunities. Common causes
+include:
+
+- **Missing indexes** forcing full table scans on large tables
+- **Overly complex joins** combining many tables with insufficient filtering
+- **N+1 query patterns** executing hundreds of queries in application loops
+  rather than batch operations
+- **Lock contention** where queries wait for exclusive locks held by other
+  transactions
+
+Open **Grafana Explore**, select the **Loki** datasource, and query DApp logs
+for connection errors:
+
+```
+{namespace="atk", app="dapp"} |= "ECONNREFUSED" or "connection pool exhausted" or "too many connections" | json
+```
+
+This query captures various connection-related error messages, helping you
+understand error frequency and correlation with connection pool metrics. The
+timestamp correlation proves whether connection exhaustion causes application
+errors or whether the errors stem from different root causes.
 
 **Resolution paths:**
 
-- **Connection leak:** Fix application code not closing connections; redeploy
-- **Too many simultaneous requests:** Scale DApp replicas horizontally
-- **Long-running queries:** Optimize queries or kill long-running transactions
-- **Pool size too small:** Increase PostgreSQL max_connections and DApp pool
-  size
+- **Connection leak**: Application code that opens database connections without
+  reliably closing them in all code paths (including error paths) slowly
+  exhausts the connection pool. Review database access patterns for proper
+  connection lifecycle management—use try/finally blocks or connection pooling
+  abstractions that guarantee connection return. Restart DApp pods to
+  immediately free leaked connections while preparing a code fix.
+
+- **Too many simultaneous requests**: Legitimate traffic spikes overwhelming
+  connection pool capacity. Scale DApp replicas horizontally to distribute load,
+  ensuring each replica maintains its own connection pool. For example, 3
+  replicas with 20 connections each provide 60 total connections versus 20
+  connections from a single replica.
+
+- **Long-running queries**: Optimize query performance through indexing, query
+  rewriting, or breaking complex operations into smaller chunks. Consider query
+  timeouts to prevent individual slow queries from monopolizing connections
+  indefinitely.
+
+- **Pool size too small**: Increase both PostgreSQL `max_connections` setting
+  and application connection pool size. These settings must change
+  together—increasing application pool size without increasing database
+  max_connections causes connection failures at the database level. Update
+  through Helm values and perform rolling restart to apply configuration
+  changes.
 
 ## Step 6: Configure alerting
 
-Set up proactive alerts for critical conditions.
+Proactive alerting transforms the observability stack from a diagnostic tool
+into an operational safety net. Rather than discovering problems when users
+complain, alerts notify you of degraded conditions before they impact users or
+breach SLA commitments. Effective alerting requires balancing sensitivity
+(catching real problems) against specificity (avoiding false alarms that erode
+trust in the alerting system).
 
-### Alert rules
+### Alerting philosophy
 
-Grafana supports alerting on metrics to notify you before users are impacted.
+Alert rules should focus on symptoms (user-facing problems) rather than causes
+(component-level failures). For example, alert on "API error rate &gt;1%"
+(symptom users experience) rather than "Pod restart detected" (internal event
+that might not affect users). This symptom-based approach ensures every alert
+represents something worth investigating immediately, preventing alert fatigue
+from low-severity notifications.
 
-**Access alert configuration:**
+Alert thresholds should account for normal operational variance. A single slow
+API request doesn't warrant paging an engineer at 2 AM, but sustained slowness
+exceeding 5-10 minutes indicates a systemic issue requiring intervention.
+Duration thresholds prevent alerts on transient spikes while catching sustained
+problems that actually impact users.
 
-1. Navigate to **Alerting** &gt; **Alert rules** in Grafana
-2. Click **New alert rule**
+### Alert rule architecture
+
+<Mermaid
+  chart={`flowchart TB
+    Metrics(VictoriaMetrics<br/>Stores time-series data) --> AlertRule[Grafana Alert Rule<br/>Evaluates condition every 60s]
+    
+    AlertRule --> Check{Condition<br/>met?}
+    Check -->|No| Wait[Wait 60s]
+    Check -->|Yes| Duration{Duration<br/>threshold met?}
+    
+    Duration -->|No| Pending[Pending state<br/>Increment counter]
+    Duration -->|Yes| Firing[Firing state<br/>Send notifications]
+    
+    Pending --> Wait
+    Wait --> AlertRule
+    
+    Firing --> Slack(Slack channel<br/>#alerts-production)
+    Firing --> PagerDuty(PagerDuty<br/>Pages on-call engineer)
+    Firing --> Email(Email<br/>ops-team@example.com)
+    
+    Slack --> Acknowledged{Engineer<br/>acknowledges?}
+    PagerDuty --> Acknowledged
+    
+    Acknowledged -->|Yes| Investigating[Investigating<br/>Use dashboards for diagnosis]
+    Acknowledged -->|No| Escalate[Escalate after 15min<br/>Page backup engineer]
+    
+    Investigating --> Resolved{Problem<br/>resolved?}
+    Resolved -->|Yes| Wait
+    Resolved -->|No| Investigating
+    
+    style AlertRule fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Firing fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Resolved fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
+/>
+
+Grafana evaluates alert rules on a fixed interval (default 60 seconds), checking
+whether the alert condition evaluates to true. When conditions first become
+true, the alert enters "Pending" state, incrementing a duration counter. Only
+after the condition remains true for the configured duration does the alert
+transition to "Firing" state, triggering notifications through configured
+channels.
+
+This two-stage evaluation prevents alerts on transient conditions—a single slow
+request doesn't trigger alerts, but sustained slowness exceeding the duration
+threshold does. The duration threshold effectively acts as a low-pass filter,
+passing through sustained signals while rejecting temporary noise.
 
 ### Pre-configured alert examples
 
-**High error rate:**
+**High API error rate**
 
 ```yaml
-Alert when: Error rate >1% for 5 minutes
-Expression:
-  rate(http_requests_total{code=~"5.."}[1m]) / rate(http_requests_total[1m]) >
-  0.01
+Alert name: High API Error Rate
+Condition: Rate of 5xx responses exceeds 1% for 5 minutes
+PromQL query:
+  ( sum(rate(http_requests_total{code=~"5.."}[1m])) /
+  sum(rate(http_requests_total[1m])) ) > 0.01
+For: 5m
 Severity: critical
-Notification: Slack, PagerDuty
+Labels:
+  component: dapp
+  layer: application
+Annotations:
+  summary: "API error rate {{$value | humanizePercentage}} exceeds threshold"
+  dashboard: "https://grafana.k8s.orb.local/d/dapp-metrics"
+Notification: PagerDuty, Slack #critical-alerts
 ```
 
-**Database connection exhaustion:**
+This rule calculates error rate as a ratio: 5xx responses divided by total
+responses. The `rate()` function computes per-second rates over a 1-minute
+window, smoothing momentary spikes while remaining responsive to sustained
+problems. The `For: 5m` duration requirement ensures five consecutive evaluation
+intervals (5 minutes) exceed the threshold before firing, preventing alerts on
+brief error bursts during deployments.
+
+**Database connection exhaustion**
 
 ```yaml
-Alert when: Connection pool >90% for 3 minutes
-Expression: pg_stat_database_numbackends / pg_settings_max_connections > 0.9
+Alert name: Database Connection Pool Exhausted
+Condition: Connection pool utilization >90% for 3 minutes
+PromQL query:
+  ( pg_stat_database_numbackends{datname="atk"} / pg_settings_max_connections )
+  > 0.9
+For: 3m
 Severity: warning
-Notification: Slack
+Labels:
+  component: postgresql
+  layer: storage
+Annotations:
+  summary:
+    "Database connection pool at {{$value | humanizePercentage}} capacity"
+  runbook: "https://wiki.example.com/runbooks/connection-exhaustion"
+Notification: Slack #database-alerts
 ```
 
-**Blockchain sync lag:**
+Connection exhaustion develops gradually rather than instantaneously, making a
+3-minute duration appropriate for catching developing problems without excessive
+sensitivity. The alert severity remains "warning" rather than "critical" because
+connection exhaustion affects application throughput rather than causing
+complete outages—it degrades service rather than eliminating it.
+
+**Blockchain sync lag**
 
 ```yaml
-Alert when: Besu falls >100 blocks behind for 5 minutes
-Expression: eth_blockchain_height - eth_syncing_current_block > 100
+Alert name: Besu Node Sync Lag
+Condition: Node falls >100 blocks behind for 5 minutes
+PromQL query: eth_blockchain_height - eth_syncing_current_block > 100
+For: 5m
 Severity: critical
+Labels:
+  component: besu
+  layer: blockchain
+Annotations:
+  summary: "Besu node {{$labels.instance}} lagging {{$value}} blocks behind"
+  dashboard: "https://grafana.k8s.orb.local/d/besu-dashboard"
 Notification: PagerDuty
 ```
 
-**Disk space critical:**
+Blockchain sync lag directly impacts application functionality—lagging nodes
+can't validate recent blocks or return current data. A lag of 100 blocks
+(roughly 6-7 minutes at 4-second block time) represents significant staleness
+warranting immediate investigation. The critical severity and PagerDuty
+notification ensure rapid response.
+
+**Disk space critical**
 
 ```yaml
-Alert when: PVC utilization >85%
-Expression:
-  kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes > 0.85
+Alert name: Persistent Volume Nearly Full
+Condition: PVC utilization >85% (predictive alert)
+PromQL query:
+  ( kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes ) >
+  0.85
+For: 10m
 Severity: warning
-Notification: Email, Slack
+Labels:
+  component: infrastructure
+  layer: kubernetes
+Annotations:
+  summary:
+    "PVC {{$labels.persistentvolumeclaim}} at {{$value | humanizePercentage}}
+    capacity"
+  action: "Expand PVC or clean up old data"
+Notification: Slack #infra-alerts, Email ops-team
 ```
 
-**Compliance check degradation:**
+Disk space alerts require lead time—operators need hours to provision additional
+storage or clean up data, making early warning essential. The 85% threshold
+provides this lead time, alerting before the volume fills completely. The
+warning severity reflects that disk space issues develop gradually, allowing
+planned response rather than emergency reaction.
+
+**Compliance check degradation**
 
 ```yaml
-Alert when: Average compliance check duration >500ms for 10 minutes
-Expression:
-  histogram_quantile(0.95, rate(compliance_check_duration_seconds_bucket[5m])) >
-  0.5
+Alert name: Slow Compliance Checks
+Condition: P95 compliance check duration >500ms for 10 minutes
+PromQL query:
+  histogram_quantile( 0.95, rate(compliance_check_duration_seconds_bucket[5m]) )
+  > 0.5
+For: 10m
 Severity: warning
-Notification: Slack
+Labels:
+  component: smart-contracts
+  layer: blockchain
+Annotations:
+  summary: "Compliance checks taking {{$value}}s (P95), exceeding 500ms target"
+  impact: "Increases transaction latency, degrades user experience"
+Notification: Slack #compliance-ops
 ```
+
+Compliance check performance directly impacts transaction latency and user
+experience. The 500ms threshold represents half a second of overhead per
+transfer—fast enough for acceptable UX but slow enough to warrant investigation
+and optimization. The 10-minute duration prevents alerts during temporary
+traffic spikes or complex one-off compliance scenarios.
 
 ### Notification channels
 
-Configure notification channels under **Alerting** &gt; **Contact points**:
+Grafana supports dozens of notification channels, from chat platforms to
+incident management systems. Configure notification channels once, then
+reference them in alert rules through contact point assignments.
 
-**Slack:**
+**Slack configuration:**
 
-1. Create Slack webhook in Slack admin
-2. Add **Slack** contact point in Grafana
-3. Enter webhook URL
-4. Test notification
+1. Create an incoming webhook in your Slack workspace (Slack Admin &gt; Apps
+   &gt; Incoming Webhooks)
+2. Navigate to **Grafana &gt; Alerting &gt; Contact points** and click **New
+   contact point**
+3. Select **Slack** as the type
+4. Enter the webhook URL and optionally customize the channel, username, and
+   icon
+5. Test the notification to verify connectivity
+6. Save the contact point
 
-**PagerDuty:**
+**PagerDuty configuration:**
 
-1. Create PagerDuty integration key
-2. Add **PagerDuty** contact point in Grafana
-3. Enter integration key
-4. Test notification
+1. Create a new service integration in PagerDuty (Services &gt; Service
+   Directory &gt; New Service)
+2. Choose "Grafana" as the integration type and copy the integration key
+3. Navigate to **Grafana &gt; Alerting &gt; Contact points** and click **New
+   contact point**
+4. Select **PagerDuty** as the type
+5. Paste the integration key and optionally set severity mappings
+6. Test the notification to verify it creates an incident in PagerDuty
+7. Save the contact point
 
-**Email:**
+**Email configuration:**
 
-1. Configure SMTP settings in Grafana Helm values:
-   ```yaml
-   grafana:
-     smtp:
-       enabled: true
-       host: smtp.example.com:587
-       user: alerts@example.com
-       password: <SmtpPassword>
-   ```
-2. Add **Email** contact point in Grafana
-3. Enter recipient addresses
-4. Test notification
+Email notifications require SMTP configuration at the Grafana instance level
+before creating contact points. Edit your Helm values:
+
+```yaml
+observability:
+  grafana:
+    smtp:
+      enabled: true
+      host: smtp.gmail.com:587
+      user: alerts@example.com
+      password: ${SMTP_PASSWORD}
+      fromAddress: grafana@example.com
+      fromName: ATK Alerts
+```
+
+Apply the Helm upgrade, then create an email contact point in Grafana that
+references these SMTP settings. Email notifications work best for informational
+alerts and summary reports rather than urgent issues requiring immediate
+attention.
+
+### Notification routing
+
+Not every alert requires paging the on-call engineer at 3 AM. Grafana
+notification policies route different alert severities through appropriate
+channels:
+
+```yaml
+Root notification policy:
+  - Group by: [alertname, namespace]
+  - Group wait: 30s (wait for additional alerts before sending)
+  - Group interval: 5m (time between notification batches)
+  - Repeat interval: 4h (resend if alert remains firing)
+
+  Child policy (Critical severity):
+    - Match: severity=critical
+    - Route to: PagerDuty + Slack #critical-alerts
+    - Group wait: 0s (send immediately)
+    - Repeat interval: 30m
+
+  Child policy (Warning severity):
+    - Match: severity=warning
+    - Route to: Slack #alerts + Email ops-team
+    - Group wait: 5m (batch multiple warnings)
+    - Repeat interval: 4h
+
+  Child policy (Info severity):
+    - Match: severity=info
+    - Route to: Email ops-team (daily digest)
+    - Group interval: 24h
+```
+
+This routing strategy ensures critical alerts receive immediate attention
+through high-urgency channels (PagerDuty pages), warnings reach the team through
+asynchronous channels (Slack, email), and informational alerts batch into daily
+digests avoiding interruption fatigue.
 
 ## Step 7: Configure external observability platforms
 
-Forward telemetry to external platforms for long-term storage and advanced
-analysis.
+The built-in observability stack provides excellent operational visibility for
+individual ATK deployments, but many organizations require additional
+capabilities: longer retention for compliance, centralized visibility across
+multiple deployments, advanced analytics and ML-based anomaly detection, or
+managed service offerings that eliminate operational burden. External
+observability platforms address these requirements through telemetry forwarding.
+
+### Integration architecture
+
+ATK's Alloy agent supports parallel telemetry forwarding—sending metrics, logs,
+and traces simultaneously to both the internal observability stack
+(VictoriaMetrics, Loki, Tempo) and external platforms (Grafana Cloud, Datadog,
+New Relic, etc.). This dual-writing approach maintains local observability for
+rapid troubleshooting while providing external platforms with complete
+historical data.
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "ATK Kubernetes Cluster"
+        Services(Application Services<br/>Expose metrics & traces)
+        Alloy(Alloy Agent<br/>Collects telemetry)
+        
+        subgraph "Internal Stack"
+            VictoriaMetrics(VictoriaMetrics<br/>30-day retention)
+            Loki(Loki<br/>7-day retention)
+            Tempo(Tempo<br/>7-day retention)
+        end
+        
+        Grafana(Grafana<br/>Query both internal & external)
+    end
+    
+    subgraph "External Platform"
+        RemoteWrite(Remote Write Endpoint<br/>Prometheus metrics)
+        LogsAPI(Logs API<br/>Push or OTLP)
+        TracesAPI(Traces API<br/>OTLP or vendor-specific)
+        Storage(Long-term Storage<br/>1-year+ retention)
+    end
+    
+    Services --> Alloy
+    Alloy -->|Internal| VictoriaMetrics
+    Alloy -->|Internal| Loki
+    Alloy -->|Internal| Tempo
+    Alloy -->|External| RemoteWrite
+    Alloy -->|External| LogsAPI
+    Alloy -->|External| TracesAPI
+    
+    VictoriaMetrics --> Grafana
+    Loki --> Grafana
+    Tempo --> Grafana
+    
+    RemoteWrite --> Storage
+    LogsAPI --> Storage
+    TracesAPI --> Storage
+    Storage --> Grafana
+    
+    style Alloy fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Storage fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
+/>
+
+Dual-writing increases network egress and agent CPU consumption compared to
+internal-only telemetry collection. Monitor Alloy resource utilization after
+enabling external forwarding—most deployments require 10-20% additional CPU for
+external write load. If Alloy becomes resource-constrained, consider either
+scaling Alloy replicas, implementing sampling for high-volume telemetry, or
+prioritizing critical metrics over comprehensive collection.
 
 ### Supported external integrations
 
-ATK Alloy agent can forward telemetry to:
+ATK Alloy agent supports any observability platform that accepts
+industry-standard protocols:
 
-- Grafana Cloud
-- Datadog
-- New Relic
-- Elastic APM
-- Any Prometheus-compatible remote write endpoint
-- Any OpenTelemetry-compatible endpoint
+- **Prometheus remote write**: Grafana Cloud, Datadog, New Relic, Thanos,
+  Cortex, Mimir
+- **Loki push API**: Grafana Cloud, Loki instances
+- **OpenTelemetry Protocol (OTLP)**: Grafana Cloud, Datadog, New Relic,
+  Honeycomb, Elastic APM
+- **Vendor-specific APIs**: Datadog, New Relic, Splunk (via protocol-specific
+  exporters)
+
+The recommended approach uses standard protocols (Prometheus remote write, OTLP)
+rather than vendor-specific APIs, maximizing flexibility to change vendors
+without reconfiguring collection agents. Most modern platforms support these
+standard protocols.
 
 ### Example: Forward to Grafana Cloud
 
-Edit Helm values:
+Grafana Cloud provides a fully managed observability platform with generous free
+tiers suitable for development and small production deployments. The
+configuration example below forwards all telemetry to Grafana Cloud while
+maintaining the internal stack for local troubleshooting.
+
+Edit your Helm values file to add external endpoints:
 
 ```yaml
 # values-production.yaml
 observability:
   alloy:
     endpoints:
+      # Keep internal endpoints enabled
+      internal:
+        enabled: true
+
+      # Add external Grafana Cloud endpoints
       external:
         prometheus:
           enabled: true
           url: https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push
           basicAuth:
-            username: "123456"
-            password: "${GRAFANA_CLOUD_API_KEY}"
+            username: "123456" # Your Grafana Cloud Prometheus username
+            password: "${GRAFANA_CLOUD_API_KEY}" # Reference secret
+
         loki:
           enabled: true
           url: https://logs-prod-us-central1.grafana.net/loki/api/v1/push
           basicAuth:
-            username: "67890"
-            password: "${GRAFANA_CLOUD_API_KEY}"
-        otel:
+            username: "67890" # Your Grafana Cloud Loki username
+            password: "${GRAFANA_CLOUD_API_KEY}" # Reference secret
+
+        tempo:
           enabled: true
-          url: https://otlp-gateway-prod-us-central-0.grafana.net/otlp
+          url: https://tempo-prod-us-central-0.grafana.net:443
           headers:
-            Authorization: "Basic ${GRAFANA_CLOUD_OTEL_KEY}"
+            # Tempo uses different authentication
+            Authorization: "Basic ${GRAFANA_CLOUD_TEMPO_KEY}"
 ```
 
-Apply:
+Store the API keys in Kubernetes secrets rather than embedding them directly in
+Helm values:
+
+```bash
+kubectl create secret generic observability-secrets \
+  --from-literal=grafana-cloud-api-key=<YourAPIKey> \
+  --from-literal=grafana-cloud-tempo-key=<YourTempoKey> \
+  -n atk
+```
+
+Reference these secrets in Helm values:
+
+```yaml
+observability:
+  alloy:
+    env:
+      - name: GRAFANA_CLOUD_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: observability-secrets
+            key: grafana-cloud-api-key
+      - name: GRAFANA_CLOUD_TEMPO_KEY
+        valueFrom:
+          secretKeyRef:
+            name: observability-secrets
+            key: grafana-cloud-tempo-key
+```
+
+Apply the Helm upgrade to enable external forwarding:
 
 ```bash
 helm upgrade atk ./kit/charts/atk -n atk -f values-production.yaml
 ```
 
-**Benefits:**
+After 2-3 minutes, telemetry should appear in your Grafana Cloud account. Verify
+by logging into Grafana Cloud and exploring recent metrics, searching logs, or
+viewing traces—data should match your internal Grafana instance.
 
-- Long-term retention (months to years vs. days)
-- Advanced analytics and correlation
-- Centralized view across multiple ATK deployments
-- Managed service (no maintenance burden)
+**Benefits of external platforms:**
+
+- **Extended retention**: Grafana Cloud retains metrics for 13 months, logs for
+  30+ days, and traces for 30 days (configurable)—far exceeding internal stack
+  defaults
+- **Multi-deployment visibility**: Centralize observability across dev, staging,
+  and multiple production ATK deployments in a single pane of glass
+- **Advanced analytics**: ML-based anomaly detection, automated service
+  dependency mapping, and predictive alerting
+- **Managed service**: Zero operational burden for storage scaling, backup, high
+  availability, or software updates
+- **Compliance**: Many platforms offer compliance certifications (SOC 2,
+  ISO 27001) simplifying audit requirements
+
+**Trade-offs:**
+
+- **Cost**: External platforms charge based on data volume (metrics cardinality,
+  log lines, trace spans)—costs scale with usage
+- **Data egress**: Forwarding telemetry to external platforms consumes network
+  bandwidth and might incur cloud provider egress charges
+- **Vendor lock-in**: Vendor-specific features (custom dashboards, alerting
+  workflows) create migration friction if changing platforms later
 
 ## Best practices
 
 ### Retention tuning
 
-Adjust retention based on compliance and operational needs:
+Default retention periods balance operational needs against storage costs for
+typical deployments, but your specific requirements might differ based on
+compliance obligations, investigation workflows, or incident retrospective
+practices. Adjust retention through Helm value overrides.
 
 **Metrics (VictoriaMetrics):**
 
@@ -735,7 +1680,16 @@ observability:
   victoria-metrics-single:
     server:
       retentionPeriod: "3m" # 3 months (default: 1m)
+      persistentVolume:
+        size: 50Gi # Increase volume size to match retention
 ```
+
+Metrics storage grows with retention period and metrics cardinality (number of
+unique time series). A typical ATK deployment with default instrumentation
+generates 50,000-100,000 unique time series. At this cardinality, expect roughly
+1-2 GB storage per month—3 months retention requires 3-6 GB, 6 months requires
+6-12 GB. Size persistent volumes accordingly, leaving 30-40% free space for
+compression overhead and growth.
 
 **Logs (Loki):**
 
@@ -745,7 +1699,19 @@ observability:
     loki:
       limits_config:
         retention_period: "30d" # 30 days (default: 7d)
+      compactor:
+        retention_enabled: true
+        retention_delete_delay: "2h"
+    persistence:
+      size: 100Gi # Increase volume size to match retention
 ```
+
+Log volume varies dramatically based on application verbosity and traffic
+patterns. Measure actual log ingestion rates through the Loki dashboard's
+"Ingestion Rate" panel—multiply bytes/second by retention seconds to estimate
+storage requirements. For example, 1 MB/sec log ingestion with 30-day retention
+requires roughly 2.5 TB raw storage (compression typically achieves 5-10x,
+reducing to 250-500 GB actual storage).
 
 **Traces (Tempo):**
 
@@ -754,104 +1720,313 @@ observability:
   tempo:
     tempo:
       retention: "15d" # 15 days (default: 7d)
+      storage:
+        trace:
+          backend: local
+          local:
+            path: /var/tempo/traces
+    persistence:
+      size: 50Gi # Increase volume size to match retention
 ```
 
-**Trade-offs:**
+Trace storage depends on request volume and trace complexity (span count). A
+typical request generates 5-20 spans, with each span consuming roughly 1-2 KB
+storage after compression. At 100 requests/second with 10 spans each, expect
+roughly 100 MB/hour trace data (roughly 35 GB/15 days). Size Tempo storage
+volumes based on actual ingestion rates measured through Tempo dashboards.
 
-- Longer retention = more storage cost
-- Compliance requirements may mandate minimum retention
-- Use external platforms for long-term historical analysis
+**Retention strategy recommendations:**
+
+- **Development**: Short retention (metrics: 7d, logs: 3d, traces: 2d) minimizes
+  storage costs while providing adequate debugging context
+- **Production**: Medium retention (metrics: 90d, logs: 30d, traces: 14d)
+  supports incident investigation and monthly performance reporting
+- **Compliance**: Extended retention (metrics: 1y+, logs: 90d+, traces: 30d+)
+  meets regulatory requirements for audit trails and investigation support
+- **External platforms**: Use external observability platforms for long-term
+  retention rather than scaling internal storage indefinitely
 
 ### Performance optimization
 
 **Reduce metrics cardinality:**
 
-High-cardinality metrics (many unique label combinations) increase storage and
-query cost.
+High-cardinality metrics create excessive unique time series, consuming storage
+and degrading query performance. Cardinality problems typically arise from
+including high-cardinality dimensions as labels (user IDs, transaction hashes,
+timestamps) rather than limiting labels to low-cardinality dimensions (service
+name, pod name, endpoint, status code).
 
-Review top cardinality metrics:
+Review metrics cardinality through the **VictoriaMetrics** dashboard:
 
-1. Navigate to **VictoriaMetrics** dashboard
-2. Check **Series Cardinality** panel
-3. Identify metrics with &gt;10,000 unique series
+1. Navigate to the **Series Cardinality by Metric** panel
+2. Identify metrics with &gt;10,000 unique time series
+3. Click a high-cardinality metric to view label distributions
+4. Look for labels with thousands of unique values—these drive cardinality
+   problems
 
-Reduce cardinality:
+Common cardinality reduction techniques:
 
-- Drop unused labels
-- Aggregate low-value dimensions
-- Sample high-volume metrics
+- **Drop high-cardinality labels**: Remove user IDs, transaction hashes, IP
+  addresses from labels
+- **Aggregate dimensions**: Replace specific values with categories (e.g.,
+  replace specific HTTP paths with path templates: `/api/users/{id}` rather than
+  `/api/users/12345`)
+- **Sample metrics**: For debug-level metrics, sample 1-in-10 or 1-in-100 rather
+  than recording every occurrence
+- **Use exemplars**: Store high-cardinality data (trace IDs, transaction hashes)
+  as exemplars linked to low-cardinality metrics rather than as separate
+  high-cardinality time series
 
 **Optimize log volume:**
 
-Excessive logging increases costs and reduces signal-to-noise ratio.
+Excessive logging creates noise, increases costs, and can paradoxically make
+troubleshooting harder by overwhelming signal with irrelevant data. Production
+applications should log primarily at INFO level or higher, reserving DEBUG/TRACE
+logging for specific investigation scenarios enabled temporarily.
 
-1. Review log volume by source:
+Review log volume by source:
+
+1. Open **Grafana Explore** and select the **Loki** datasource
+2. Query log ingestion rates:
    ```
-   sum by (app) (rate({namespace="atk"}[1m]))
+   sum(rate({namespace="atk"}[1m])) by (app)
    ```
-2. Reduce debug logging in production
-3. Sample verbose logs (keep 1 in 10)
+3. Identify applications generating excessive log volume (&gt;10 lines/second
+   per replica)
+
+Log volume reduction techniques:
+
+- **Reduce log levels in production**: Set application log level to INFO,
+  enabling DEBUG only during active troubleshooting
+- **Implement sampling**: For high-frequency events (per-request logging),
+  sample 1-in-N requests rather than logging every request
+- **Structured logging**: Use structured log formats (JSON) with consistent
+  field names, enabling efficient log aggregation and filtering
+- **Remove noise**: Eliminate logs that provide no diagnostic value (startup
+  banners, verbose library output, debug logs from dependencies)
 
 **Query performance:**
 
-- Use smaller time ranges for ad-hoc queries
-- Pre-aggregate frequently accessed data
-- Cache dashboard results (Grafana caching)
+Dashboard query performance impacts user experience and backend load. Slow
+queries force operators to wait for dashboard refreshes and consume backend
+resources that could serve other requests.
+
+Query optimization techniques:
+
+- **Reduce time ranges**: Querying 30 days of data when investigating recent
+  issues wastes resources—use narrower time ranges (last 1 hour, last 6 hours)
+- **Pre-aggregate data**: Create recording rules that pre-compute frequently
+  accessed aggregations, storing results as new metrics that queries can access
+  instantly
+- **Limit series**: Use label filters to reduce the number of time series
+  Grafana must process (e.g., filter by specific pods or endpoints rather than
+  querying all instances)
+- **Cache dashboard results**: Enable Grafana dashboard caching with 5-10 minute
+  TTLs for dashboards that don't require real-time data
 
 ### Security hardening
 
-**Change default credentials:**
+**Change default credentials immediately:**
+
+Default credentials exist solely for initial development access. Production
+deployments must change these credentials before exposing Grafana to any
+network, even supposedly trusted internal networks.
 
 ```bash
-# Grafana admin
-kubectl exec -n atk deployment/grafana -- grafana-cli admin reset-admin-password <NewPassword>
+# Grafana admin password reset via CLI
+kubectl exec -n atk deployment/grafana -- \
+  grafana-cli admin reset-admin-password <NewStrongPassword>
 ```
 
-**Enable authentication:**
+Verify the password change by logging out and back into Grafana with the new
+credentials before proceeding.
 
-Configure Grafana to use OAuth, LDAP, or SAML instead of basic auth.
+**Enable SSO authentication:**
+
+Managing separate Grafana passwords for every team member creates security and
+operational burden. Production deployments should integrate Grafana with
+enterprise identity providers using OAuth, LDAP, or SAML authentication.
+
+Example OAuth configuration (GitHub):
+
+```yaml
+observability:
+  grafana:
+    auth:
+      github:
+        enabled: true
+        client_id: ${GH_CLIENT_ID}
+        client_secret: ${GH_CLIENT_SECRET}
+        scopes: "user:email,read:org"
+        auth_url: https://github.com/login/oauth/authorize
+        token_url: https://github.com/login/oauth/access_token
+        api_url: https://api.github.com/user
+        allowed_organizations: "your-org"
+        role_attribute_path:
+          "contains(groups[*], 'your-org:admins') && 'Admin' || 'Viewer'"
+```
+
+This configuration allows any member of `your-org` GitHub organization to
+authenticate, automatically assigning Admin role to members of the `admins` team
+and Viewer role to others. Adapt to your organization's structure and role
+requirements.
 
 **Restrict network access:**
 
+Even with authentication, restrict Grafana network access to trusted sources
+through ingress annotations:
+
 ```yaml
-grafana:
-  ingress:
-    annotations:
-      nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,192.168.0.0/16"
+observability:
+  grafana:
+    ingress:
+      annotations:
+        # Only allow access from corporate VPN and office networks
+        nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,192.168.0.0/16,203.0.113.0/24"
 ```
 
-**Audit logging:**
+This annotation configures the NGINX ingress controller to reject connections
+from source IPs outside the allowed ranges, providing defense-in-depth even if
+authentication credentials become compromised.
 
-Enable Grafana audit logs to track dashboard changes and user access.
+**Enable audit logging:**
+
+Audit logs track who accessed Grafana, what dashboards they viewed, what
+configuration changes they made, and when they performed these actions. Audit
+trails support incident investigation, compliance requirements, and detection of
+unauthorized access.
+
+```yaml
+observability:
+  grafana:
+    grafana.ini:
+      log:
+        mode: console file
+        level: info
+      log.frontend:
+        enabled: true
+      audit:
+        enabled: true
+        logBackend: file
+        maxDays: 90
+```
+
+Audit logs write to files in the Grafana pod's filesystem—configure a sidecar
+container to forward these logs to your centralized logging system (Loki or
+external platform) for long-term retention and correlation with other security
+events.
 
 ## Troubleshooting
 
 **Grafana ingress not accessible:**
 
-- Check ingress controller is running:
-  `kubectl get pods -n atk -l app=ingress-nginx`
-- Verify DNS points to ingress controller LoadBalancer IP
-- Check ingress resource: `kubectl describe ingress -n atk grafana`
+Symptoms: Browser displays "Connection refused", "DNS resolution failed", or
+"This site can't be reached" when accessing Grafana hostname.
+
+Verification steps:
+
+1. Confirm ingress controller runs:
+   `kubectl get pods -n atk -l app.kubernetes.io/name=ingress-nginx`
+2. Check ingress resource exists: `kubectl get ingress -n atk grafana`
+3. Verify ingress controller service has external IP:
+   `kubectl get svc -n atk ingress-nginx-controller`
+4. Test DNS resolution: `nslookup grafana.k8s.orb.local` (should resolve to
+   ingress controller IP)
+5. Check ingress logs:
+   `kubectl logs -n atk -l app.kubernetes.io/name=ingress-nginx --tail=100`
+
+Common causes:
+
+- **Ingress controller not running**: Deploy NGINX ingress controller via Helm
+  or verify your cluster's ingress implementation
+- **DNS not configured**: Add hostname to `/etc/hosts` for development clusters
+  or configure DNS records for production
+- **Firewall blocking access**: Verify network policies, security groups, or
+  firewalls allow traffic to ingress controller LoadBalancer IP
 
 **Missing metrics in dashboards:**
 
-- Verify VictoriaMetrics is scraping targets: Navigate to VictoriaMetrics UI
-  &gt; Targets
-- Check Alloy agent logs: `kubectl logs -n atk -l app=alloy`
-- Confirm pods have Prometheus annotations:
-  `kubectl get pods -n atk -o yaml | grep prometheus`
+Symptoms: Dashboard panels display "No data" or "N/A" despite applications
+running and generating traffic.
+
+Verification steps:
+
+1. Confirm VictoriaMetrics scrapes targets: Access VictoriaMetrics UI at
+   `http://victoria-metrics.atk.svc.cluster.local:8428/targets` (via
+   port-forward)
+2. Check Alloy agent logs:
+   `kubectl logs -n atk -l app.kubernetes.io/name=alloy --tail=100`
+3. Verify pods expose Prometheus metrics endpoint:
+   `kubectl get pods -n atk -o yaml | grep prometheus.io/scrape`
+4. Test metrics endpoint directly:
+   `kubectl exec -n atk deployment/dapp -- curl http://localhost:9090/metrics`
+
+Common causes:
+
+- **Missing Prometheus annotations**: Add `prometheus.io/scrape: "true"` and
+  `prometheus.io/port: "9090"` annotations to pod specs
+- **Incorrect metrics port**: Verify the `prometheus.io/port` annotation matches
+  the actual metrics endpoint port
+- **Alloy configuration error**: Check Alloy ConfigMap for syntax errors
+  preventing metric scraping
+- **Network policies blocking scraping**: Ensure network policies allow Alloy
+  pods to reach application pods on metrics ports
 
 **Loki query timeouts:**
 
-- Reduce query time range
-- Add label filters to narrow search: `{namespace="atk", app="dapp"}`
-- Increase Loki query timeout in datasource settings
+Symptoms: Log queries in Grafana Explore display "Query timeout" or "Context
+deadline exceeded" errors.
+
+Verification steps:
+
+1. Check Loki logs:
+   `kubectl logs -n atk -l app.kubernetes.io/name=loki --tail=100`
+2. Review Loki query stats in dashboard: Check "Query Performance" panel for
+   slow queries
+3. Monitor Loki resource utilization: CPU/memory usage during queries
+
+Common causes:
+
+- **Overly broad time range**: Reduce query time range from 24h to 1h or less
+- **Missing label filters**: Add label filters to narrow search scope:
+  `{namespace="atk", app="dapp"}` rather than `{namespace="atk"}`
+- **Regex filters on large data**: Avoid expensive regex operations on
+  high-volume labels
+- **Insufficient Loki resources**: Scale Loki replicas or increase CPU/memory
+  limits
+
+Resolution:
+
+- Increase query timeout: Grafana datasource settings &gt; Loki datasource &gt;
+  Query timeout: 300s
+- Optimize queries: Use label filters (indexed) before line filters (unindexed)
+- Scale Loki horizontally: Add read replicas for query load distribution
 
 **Tempo traces not appearing:**
 
-- Verify DApp sends traces: Check OpenTelemetry exporter configuration
-- Confirm Tempo receiving spans: Check Tempo ingester logs
-- Ensure trace sampling is enabled (not 100% dropped)
+Symptoms: Traces don't appear in Grafana Explore when searching Tempo
+datasource, despite application generating traces.
+
+Verification steps:
+
+1. Verify application sends traces: Check application configuration for
+   OpenTelemetry exporter settings
+2. Confirm Tempo receives spans:
+   `kubectl logs -n atk -l app.kubernetes.io/name=tempo --tail=100 | grep -i "received"`
+3. Check trace sampling configuration: Verify sampling isn't set to 0% (dropping
+   all traces)
+4. Test Tempo query API: Use Tempo's search API directly to verify trace storage
+
+Common causes:
+
+- **Tracing disabled in application**: Enable OpenTelemetry instrumentation in
+  application configuration
+- **Wrong Tempo endpoint**: Verify application sends traces to correct Tempo
+  service address
+- **100% sampling drop rate**: Adjust sampling configuration to retain
+  representative traces (10-100% depending on volume)
+- **Tempo ingestion errors**: Check Tempo logs for errors processing incoming
+  spans
 
 For additional help, see
 [Production operations troubleshooting](/docs/developer-guides/deployment-ops/production-operations#troubleshooting)
@@ -860,11 +2035,15 @@ or join the
 
 ## Next steps
 
-- **Configure alerting** - Set up PagerDuty or Slack notifications:
-  [Alerting configuration](#step-6-configure-alerting)
-- **Production deployment** - Review full production checklist:
+- **Configure alerting** - Set up proactive notifications to catch issues before
+  users report them: Review the
+  [alerting configuration section](#step-6-configure-alerting) above
+- **Production deployment** - Review the full production operations checklist
+  covering security, scaling, and reliability:
   [Production operations](/docs/developer-guides/deployment-ops/production-operations)
-- **Performance tuning** - Optimize based on observability data:
+- **Performance tuning** - Use observability data to identify and resolve
+  performance bottlenecks:
   [Performance operations](/docs/architecture/performance/performance-operations)
-- **Integration patterns** - Connect external monitoring systems:
+- **Integration patterns** - Connect external monitoring systems and SIEM
+  platforms:
   [Integration playbook](/docs/architecture/integration-operations/integration-playbook)

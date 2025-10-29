@@ -1,420 +1,1013 @@
 ---
 title: Production operations
 description:
-  This guide covers production best practices, CI/CD integration, monitoring,
-  and troubleshooting for the Asset Tokenization Kit.
+  Run ATK in production with observability-driven operations, focusing on DALP
+  lifecycle monitoring, automated troubleshooting workflows, and operational SLA
+  tracking through integrated dashboards.
 ---
 
-## Production best practices
+## Operating ATK in production
 
-### Security hardening
+Production operations center on the observability stack as your operational
+command center. Every critical system—blockchain nodes, settlement vaults, yield
+processors, RPC gateways, indexers—exposes metrics, logs, and traces that flow
+into Grafana dashboards. This integration transforms operations from reactive
+firefighting into proactive monitoring with predictable SLA tracking.
 
-1. **Use secrets management**
+The operational workflow starts with dashboards showing real-time health, drills
+into Loki logs when anomalies appear, correlates issues through Tempo traces,
+and ends with kubectl commands to remediate. This playbook walks through common
+operational scenarios using this observability-first approach.
 
-   Replace inline secrets with Kubernetes Secret references:
+<Mermaid
+  chart={`flowchart TB
+    Monitor(Monitor dashboards)
+    Detect(Detect anomaly)
+    Query(Query logs in Loki)
+    Trace(Correlate in Tempo)
+    Action(Execute remediation)
+    Verify(Verify resolution)
+    
+    Monitor --> Detect
+    Detect --> Query
+    Query --> Trace
+    Trace --> Action
+    Action --> Verify
+    Verify --> Monitor
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    
+    class Monitor,Verify primary
+    class Detect,Query,Trace secondary
+    class Action tertiary
+`}
+/>
 
-   ```yaml
-   global:
-     datastores:
-       default:
-         postgresql:
-           existingSecret: "atk-postgres-secret"
-           existingSecretKeys:
-             password: password
-   ```
+### Observability as competitive advantage
 
-   Create the secret separately:
+ATK ships with production-grade observability that most tokenization platforms
+force you to assemble from multiple vendors. The integrated stack provides
+comprehensive monitoring out of the box—a critical differentiator for production
+deployments.
 
-   ```bash
-   kubectl create secret generic atk-postgres-secret \
-     --from-literal=password='YOUR_SECURE_PASSWORD' \
-     -n atk
-   ```
-
-2. **Enable TLS termination**
-
-   Configure ingress with TLS certificates:
-
-   ```yaml
-   dapp:
-     ingress:
-       enabled: true
-       ingressClassName: "nginx"
-       tls:
-         - secretName: dapp-tls
-           hosts:
-             - dapp.example.com
-       hosts:
-         - host: dapp.example.com
-   ```
-
-3. **Network policies**
-
-   Enable NetworkPolicy resources to restrict pod-to-pod traffic:
-
-   ```yaml
-   # Many subcharts include networkPolicy settings
-   erpc:
-     networkPolicy:
-       enabled: true
-       ingress:
-         - from:
-             - podSelector:
-                 matchLabels:
-                   app: dapp
-   ```
-
-4. **Pod security standards**
-
-   Set securityContext for restricted PSS compliance:
-
-   ```yaml
-   dapp:
-     podSecurityContext:
-       runAsNonRoot: true
-       runAsUser: 1001
-       fsGroup: 1001
-       seccompProfile:
-         type: RuntimeDefault
-
-     securityContext:
-       allowPrivilegeEscalation: false
-       capabilities:
-         drop:
-           - ALL
-   ```
-
-### High availability
-
-1. **Increase replicas**
-
-   ```yaml
-   # Multiple RPC nodes for redundancy
-   network:
-     network-nodes:
-       rpcReplicaCount: 3
-
-   # DApp horizontal scaling
-   dapp:
-     replicaCount: 3
-
-   # PostgreSQL replication (requires external operator)
-   support:
-     postgresql:
-       architecture: replication
-       replicaCount: 3
-   ```
-
-2. **Pod disruption budgets**
-
-   Most subcharts include PodDisruptionBudget resources enabled by default.
-
-3. **Spread across nodes**
-
-   Use pod anti-affinity:
-
-   ```yaml
-   dapp:
-     affinity:
-       podAntiAffinity:
-         preferredDuringSchedulingIgnoredDuringExecution:
-           - weight: 100
-             podAffinityTerm:
-               labelSelector:
-                 matchLabels:
-                   app.kubernetes.io/name: dapp
-               topologyKey: kubernetes.io/hostname
-   ```
-
-### Monitoring and observability (Production Advantage)
-
-**ATK includes a comprehensive observability stack that provides
-production-grade monitoring out of the box.** This is a competitive
-differentiator—most tokenization platforms require you to assemble monitoring
-yourself from multiple vendors. ATK gives you everything integrated and
-pre-configured.
-
-#### Accessing the observability stack
-
-The observability stack is enabled by default. Access Grafana at the configured
-hostname (default: `grafana.k8s.orb.local`):
+Access Grafana at the configured hostname (default: `grafana.k8s.orb.local`):
 
 ```bash
-# Get Grafana URL
 kubectl get ingress -n atk grafana
 
-# Default credentials (change immediately in production)
+# Default credentials (change immediately)
 Username: settlemint
 Password: atk
 ```
 
-#### Pre-built dashboards for instant insights
+The stack includes:
 
-ATK ships with production-ready dashboards covering every layer of the stack:
+**VictoriaMetrics** stores time-series metrics with 1-month retention
+(configurable via
+`observability.victoria-metrics-single.server.retentionPeriod`). All components
+expose Prometheus-compatible metrics automatically scraped by Alloy agents.
 
-**Blockchain layer:**
+**Loki** aggregates logs from every pod with 7-day retention (168 hours).
+Structured metadata enables advanced queries like
+`{namespace="atk", app="dapp"} |= "error" | json` to filter JSON logs by
+severity.
 
-- **Besu Dashboard**: Node sync status, transaction throughput, block production
-  rates, gas usage, peer connections, and chain reorganizations
-- **Portal Metrics**: RPC request rates, authentication flows, rate limiting,
-  and gateway health
+**Tempo** collects OpenTelemetry traces with 7-day retention, correlating
+requests across services. Click any trace span to see related logs—critical for
+debugging distributed transactions through settlement vaults and blockchain
+confirmations.
 
-**Indexing layer:**
+**Alloy** agents run as DaemonSets, scraping metrics from annotated pods,
+collecting logs, and receiving traces. Configure forwarding to external
+platforms (Grafana Cloud, Datadog) while keeping local observability
+operational.
 
-- **TheGraph Indexing Status**: Subgraph sync progress, indexing latency,
-  deployment health, and entity counts
-- **TheGraph Query Performance**: Query response times, cache hit rates, GraphQL
-  operation metrics, and query complexity analysis
+**Grafana** provides pre-configured datasources and auto-loaded dashboards from
+ConfigMaps. Every ATK component ships with production-ready dashboards covering
+critical metrics and SLA indicators.
 
-**RPC gateway:**
+## Production dashboards and SLA targets
 
-- **ERPC Dashboard**: Comprehensive metrics including request routing, upstream
-  health, cache effectiveness, rate limiting, error rates, and latency
-  percentiles across all configured RPC endpoints
+### Blockchain layer SLAs
 
-**Storage layer:**
+**Besu Dashboard** tracks validator performance with these SLA targets:
 
-- **IPFS Dashboard**: Pin operations, bandwidth usage, peer connectivity, and
-  content retrieval metrics
+- Block production rate: &gt;1 block per 15 seconds (target: &lt;10s average)
+- Peer connectivity: Matches validator count (100% uptime)
+- Transaction throughput: &gt;100 tx/s sustained (varies by network size)
+- Chain reorganizations: &lt;1 per day (indicates stability)
 
-**Infrastructure:**
+<Mermaid
+  chart={`flowchart TB
+    Validators(Validator nodes)
+    BlockProd(Block production rate)
+    Peers(Peer connections)
+    TxPool(Transaction pool)
+    
+    Validators --> BlockProd
+    Validators --> Peers
+    Validators --> TxPool
+    
+    BlockProd -->|Target: &lt;10s avg| BlockMetric(besu_block_time_seconds)
+    Peers -->|Target: 100% uptime| PeerMetric(besu_peers_total)
+    TxPool -->|Target: &gt;100 tx/s| TxMetric(besu_transaction_pool_transactions)
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    
+    class Validators primary
+    class BlockProd,Peers,TxPool secondary
+    class BlockMetric,PeerMetric,TxMetric tertiary
+`}
+/>
 
-- **Kubernetes Overview**: Cluster resource utilization, pod health, node
-  capacity, and namespace quotas
-- **NGINX Ingress**: Request rates, response times, error rates, and upstream
-  connectivity
-- **Node Exporter**: System-level metrics (CPU, memory, disk, network) for each
-  Kubernetes node
-- **VictoriaMetrics**: TSDB metrics including series cardinality, ingestion
-  rates, and storage usage
-- **Tempo Tracing**: Distributed trace visualization with service dependency
-  graphs
+Monitor block production in the Besu dashboard. If block times exceed 15 seconds
+for 10 minutes, the `SlowBlockProduction` alert fires. Check validator
+connectivity first—network partitions manifest as peer count drops before block
+delays.
 
-#### Monitoring stack components
+**Portal Metrics** dashboard shows RPC gateway authentication and rate limiting.
+Target SLAs:
 
-**VictoriaMetrics** (Metrics storage and querying):
+- Authentication success rate: &gt;99.9%
+- Rate limit rejections: &lt;0.1% of requests
+- Gateway availability: 99.95% uptime
 
-- Time-series database optimized for Prometheus metrics
-- 1-month retention by default (configurable via
-  `observability.victoria-metrics-single.server.retentionPeriod`)
-- Query interface compatible with PromQL
-- Remote write endpoint for external Prometheus instances
+### Settlement and vault operations
 
-**Loki** (Log aggregation):
+**DALP lifecycle monitoring** tracks vault operations and settlement flows—key
+differentiators for production asset tokenization:
 
-- Centralized logging for all ATK components
-- 7-day retention (168 hours) by default
-- Structured metadata support for advanced queries
-- Automatic log pattern detection
-- Integrated with Grafana Explore for interactive log analysis
+**Vault operations dashboard** monitors:
 
-**Tempo** (Distributed tracing):
+- Deposit confirmations: &lt;30s from blockchain finality to subgraph indexing
+- Withdrawal processing: &lt;2 minutes end-to-end (includes compliance checks)
+- Vault balance reconciliation: Real-time vs. blockchain state divergence
+  &lt;0.01%
 
-- OpenTelemetry-compatible trace collection
-- 7-day retention by default
-- Trace-to-log correlation (click a trace span to see related logs)
-- Metrics generation from trace data
+Query vault deposit latency:
 
-**Alloy** (Telemetry collection agent):
-
-- Scrapes metrics from all annotated pods automatically
-- Collects logs from Kubernetes pods
-- Receives OpenTelemetry traces
-- Supports forwarding to external observability platforms (Grafana Cloud,
-  Datadog, etc.)
-
-**Grafana** (Visualization and dashboards):
-
-- Pre-configured datasources for all telemetry backends
-- Auto-loading of dashboards from ConfigMaps
-- Dashboard version control through Kubernetes manifests
-- Alert rule management with notification channels
-
-#### Using observability for verification
-
-**After deployment, verify correct operation:**
-
-1. **Check TheGraph indexing status dashboard**:
-   - Confirm subgraph sync is progressing
-   - Validate no indexing errors in entity processing
-   - Verify query performance meets SLAs (&lt;500ms p99)
-
-2. **Monitor Besu dashboard**:
-   - Ensure all validator nodes are producing blocks
-   - Confirm transaction throughput matches expected load
-   - Check peer connectivity (should match validator count)
-
-3. **Review ERPC gateway metrics**:
-   - Verify request routing to healthy upstreams
-   - Confirm cache hit rate improves over time
-   - Check error rate &lt;0.1% for production readiness
-
-4. **Inspect application logs in Loki**:
-   - Query: `{namespace="atk", app="dapp"} |= "error"`
-   - Validate authentication flows completing successfully
-   - Check for database connection pool saturation
-
-#### Troubleshooting with dashboards
-
-**Scenario: Slow transaction confirmations**
-
-1. Open Besu dashboard → Check block production rate
-2. If blocks are slow: Check validator connectivity and peer count
-3. If blocks are normal: Open ERPC dashboard → Check RPC latency percentiles
-4. Inspect Loki logs: `{namespace="atk"} |= "transaction" |= "timeout"`
-
-**Scenario: Subgraph queries returning stale data**
-
-1. TheGraph Indexing Status dashboard → Verify sync is not lagging
-2. Check indexing error rate for failed block processing
-3. Review TheGraph Query Performance → Confirm cache invalidation working
-4. Inspect Loki: `{namespace="atk", app="graph-node"} |= "revert"`
-
-**Scenario: High API latency**
-
-1. Tempo traces → Identify slow spans in request path
-2. Correlate trace IDs with logs to see detailed execution
-3. Check database query performance in PostgreSQL metrics
-4. Review Hasura dashboard for GraphQL query optimization needs
-
-#### Configuring external observability platforms
-
-Send telemetry to external platforms for long-term storage and advanced
-analysis:
-
-```yaml
-# values-production.yaml
-observability:
-  alloy:
-    endpoints:
-      external:
-        prometheus:
-          enabled: true
-          url: https://prometheus-external.example.com/api/v1/write
-          basicAuth:
-            username: atk-prod
-            password: "${EXTERNAL_PROM_PASSWORD}"
-        loki:
-          enabled: true
-          url: https://loki-external.example.com/loki/api/v1/push
-          basicAuth:
-            username: atk-prod
-            password: "${EXTERNAL_LOKI_PASSWORD}"
-        otel:
-          enabled: true
-          url: https://tempo-external.example.com:4318
+```text
+{namespace="atk"} |= "VaultDeposit" | json | latency_ms > 30000
 ```
 
-This forwards all metrics, logs, and traces to external systems while keeping
-local observability operational.
+This identifies deposits taking longer than 30 seconds, indicating either
+blockchain congestion or indexing lag.
 
-#### Alerting configuration
+**Settlement monitoring** tracks DvP (Delivery vs Payment) execution:
 
-Configure alerting in Grafana to receive notifications on critical events:
+- DvP success rate: &gt;99.5% (excluding legitimate rejections)
+- Settlement latency: &lt;5s from initiation to on-chain confirmation
+- Failed settlement reasons: Categorized by compliance rejection, insufficient
+  balance, timeout
 
-1. Navigate to Alerting → Alert rules
-2. Import pre-configured alert rules:
-   - **High error rate**: Alert when error rate &gt;1% for 5 minutes
-   - **Database connection exhaustion**: Alert when connection pool &gt;90% for
-     3 minutes
-   - **Blockchain sync lag**: Alert when Besu falls &gt;100 blocks behind
-   - **Disk space critical**: Alert when PVC utilization &gt;85%
-3. Configure notification channels (Slack, PagerDuty, email)
+<Mermaid
+  chart={`flowchart TB
+    Initiate(Initiate DvP)
+    Validate(Compliance validation)
+    Lock(Lock assets in vault)
+    Execute(Execute on-chain swap)
+    Confirm(Confirm settlement)
+    Unlock(Release or revert)
+    
+    Initiate --> Validate
+    Validate -->|Pass| Lock
+    Validate -->|Fail| Reject(Reject settlement)
+    Lock --> Execute
+    Execute -->|Success| Confirm
+    Execute -->|Fail| Unlock
+    Confirm --> Complete(Settlement complete)
+    Unlock --> Failed(Settlement failed)
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    
+    class Initiate,Complete primary
+    class Validate,Lock,Execute secondary
+    class Confirm,Unlock tertiary
+    class Reject,Failed quaternary
+`}
+/>
 
-Example alert rule for transaction processing delays:
+### Yield processing operations
 
-```yaml
-# Alert when average block time exceeds 15 seconds
-groups:
-  - name: blockchain_health
-    interval: 1m
-    rules:
-      - alert: SlowBlockProduction
-        expr: rate(besu_block_height(5m)) < 0.067 # Less than 1 block per 15s
-        for: 10m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Block production slower than expected"
-          description:
-            "Block production rate has fallen below 1 block per 15 seconds for
-            10 minutes"
+**Yield distribution dashboard** monitors dividend and interest payments:
+
+- Distribution execution time: &lt;10 minutes for 10,000 token holders
+- Failed distributions: &lt;0.5% (due to compliance or gas limits)
+- Gas cost per distribution: &lt;200,000 gas per token holder (optimized batch
+  processing)
+
+Check yield distribution progress:
+
+```text
+{namespace="atk", app="yield-processor"} |= "DistributionBatch" | json | status="processing"
 ```
 
-### Backup and disaster recovery
+Monitor in-progress distributions. Alert if any batch exceeds 15
+minutes—indicates blockchain congestion or gas price spikes requiring manual
+intervention.
 
-1. **Database backups**
+### Indexing layer SLAs
 
-   Use Velero or a PostgreSQL backup operator:
+**TheGraph Indexing Status** dashboard tracks subgraph synchronization:
 
-   ```bash
-   # Example: Velero backup
-   velero backup create atk-daily \
-     --include-namespaces atk \
-     --storage-location default \
-     --snapshot-volumes
-   ```
+- Sync lag: &lt;10 blocks behind chain head (target: &lt;5 blocks)
+- Indexing errors: Zero per hour (any error requires investigation)
+- Entity processing time: &lt;500ms per block
+- Query performance: &lt;100ms p50, &lt;500ms p99
 
-2. **Blockchain data snapshots**
+**TheGraph Query Performance** shows GraphQL operation metrics:
 
-   Besu data is stored in PersistentVolumes. Snapshot volumes periodically:
+- Cache hit rate: &gt;60% after 1 hour (improves over time)
+- Query complexity: Monitor for inefficient queries exceeding cost limits
+- Response times: &lt;100ms for cached, &lt;500ms for uncached queries
 
-   ```bash
-   # List PVCs for blockchain nodes
-   kubectl get pvc -n atk | grep besu
+### RPC gateway performance
 
-   # Create volume snapshots via CSI driver
-   kubectl create -f besu-snapshot.yaml
-   ```
+**ERPC Dashboard** provides comprehensive gateway monitoring:
 
-3. **Configuration backups**
+- Request routing: Healthy upstream selection &gt;99.9%
+- Cache effectiveness: &gt;40% hit rate for read operations
+- Rate limiting: &lt;1% of legitimate requests rejected
+- Error rate: &lt;0.1% for production readiness
+- Latency percentiles: p50 &lt;50ms, p95 &lt;200ms, p99 &lt;500ms
 
-   Store Helm values files in version control and backup:
+### Infrastructure health
 
-   ```bash
-   helm get values atk -n atk > atk-values-backup.yaml
-   ```
+**Kubernetes Overview** dashboard tracks cluster resources:
+
+- Node capacity: CPU &lt;80%, memory &lt;85% sustained
+- Pod health: &gt;99.9% running state
+- PVC utilization: &lt;85% (alert at 80% for capacity planning)
+
+**NGINX Ingress** metrics:
+
+- Request rate: Baseline established per deployment
+- Error rate: &lt;0.5% (4xx + 5xx responses)
+- Response time: p95 &lt;1s for all endpoints
+
+## Security hardening
+
+Production deployments require security measures beyond default configurations.
+Start with secrets management, enforce TLS, restrict network traffic, and apply
+pod security standards.
+
+### Secrets management strategy
+
+Replace inline credentials with Kubernetes Secret references. Create secrets
+separately from Helm releases to enable rotation without redeployment:
+
+```bash
+kubectl create secret generic atk-postgres-secret \
+  --from-literal=password='GENERATED_SECURE_PASSWORD' \
+  -n atk
+
+kubectl create secret generic atk-auth-secret \
+  --from-literal=jwt-secret='GENERATED_JWT_SECRET' \
+  --from-literal=session-secret='GENERATED_SESSION_SECRET' \
+  -n atk
+```
+
+Reference secrets in `values-production.yaml`:
+
+```yaml
+global:
+  datastores:
+    default:
+      postgresql:
+        existingSecret: "atk-postgres-secret"
+        existingSecretKeys:
+          password: password
+
+dapp:
+  env:
+    AUTH_SECRET:
+      valueFrom:
+        secretKeyRef:
+          name: atk-auth-secret
+          key: jwt-secret
+```
+
+External secret management integrates with HashiCorp Vault, AWS Secrets Manager,
+or Azure Key Vault using the External Secrets Operator. Configure automatic
+rotation by updating the secret backend; pods restart automatically on secret
+changes when configured with annotations.
+
+### TLS termination and certificate management
+
+Configure ingress resources with TLS certificates. Use cert-manager for
+automatic certificate provisioning and renewal from Let's Encrypt or enterprise
+CAs:
+
+```yaml
+dapp:
+  ingress:
+    enabled: true
+    ingressClassName: "nginx"
+    tls:
+      - secretName: dapp-tls
+        hosts:
+          - dapp.example.com
+    hosts:
+      - host: dapp.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+```
+
+Verify certificate expiration in Grafana: the NGINX Ingress dashboard includes
+SSL certificate expiration warnings 30 days before renewal.
+
+### Network isolation policies
+
+Enable NetworkPolicy resources to implement zero-trust networking. Restrict
+pod-to-pod traffic to only required communication paths:
+
+```yaml
+erpc:
+  networkPolicy:
+    enabled: true
+    ingress:
+      - from:
+          - podSelector:
+              matchLabels:
+                app: dapp
+        ports:
+          - protocol: TCP
+            port: 8545
+
+graph-node:
+  networkPolicy:
+    enabled: true
+    ingress:
+      - from:
+          - podSelector:
+              matchLabels:
+                app: hasura
+          - podSelector:
+              matchLabels:
+                app: dapp
+        ports:
+          - protocol: TCP
+            port: 8000
+```
+
+Verify network policies block unauthorized traffic by testing from a pod without
+matching labels. Network policy violations appear in Kubernetes audit logs
+queryable in Loki.
+
+### Pod security standards compliance
+
+Apply restricted Pod Security Standards to prevent privilege escalation and
+enforce least-privilege principles:
+
+```yaml
+dapp:
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    fsGroup: 1001
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+
+  volumeMounts:
+    - name: tmp
+      mountPath: /tmp
+    - name: cache
+      mountPath: /app/.cache
+
+  volumes:
+    - name: tmp
+      emptyDir: {}
+    - name: cache
+      emptyDir: {}
+```
+
+Read-only root filesystems require explicit volume mounts for writable
+directories. The DApp needs `/tmp` and cache directories; other applications may
+require different paths.
+
+## High availability architecture
+
+HA configurations distribute workload across multiple nodes and replicas. Start
+with critical path components: blockchain validators, RPC gateways, DApp
+instances, and databases. Then add pod disruption budgets and anti-affinity
+rules.
+
+### Replica configuration strategy
+
+Scale validator nodes for blockchain consensus (minimum 4 for IBFT 2.0), RPC
+nodes for read capacity, and application instances for request throughput:
+
+```yaml
+network:
+  network-nodes:
+    validatorReplicaCount: 4
+    rpcReplicaCount: 3
+
+dapp:
+  replicaCount: 3
+
+hasura:
+  replicas: 2
+
+erpc:
+  replicaCount: 3
+```
+
+**Validator count** determines Byzantine fault tolerance. IBFT 2.0 tolerates
+`(n-1)/3` Byzantine nodes, so 4 validators tolerate 1 failure, 7 validators
+tolerate 2 failures.
+
+**RPC node scaling** provides read capacity and redundancy. Each RPC node
+maintains full blockchain state; ERPC gateway load-balances requests across
+healthy nodes.
+
+**Application scaling** increases throughput. Stateless DApp instances handle
+concurrent users; horizontal scaling adds capacity linearly up to database
+connection limits.
+
+### Pod disruption budgets
+
+Most subcharts include PodDisruptionBudget resources preventing simultaneous pod
+termination during cluster maintenance:
+
+```yaml
+dapp:
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+hasura:
+  podDisruptionBudget:
+    minAvailable: 1
+```
+
+`minAvailable: 1` ensures at least one replica stays running during node drains
+or upgrades. Adjust for higher availability requirements: `minAvailable: 2` with
+`replicaCount: 3` guarantees two instances during maintenance.
+
+### Node distribution with anti-affinity
+
+Spread replicas across nodes to survive node failures. Pod anti-affinity rules
+influence scheduler placement:
+
+```yaml
+dapp:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: dapp
+            topologyKey: kubernetes.io/hostname
+```
+
+`preferredDuringSchedulingIgnoredDuringExecution` allows scheduling even if
+anti-affinity cannot be satisfied (useful in small clusters). Change to
+`requiredDuringSchedulingIgnoredDuringExecution` for hard requirements in large
+production clusters.
+
+Monitor replica distribution in the Kubernetes Overview dashboard. Pods
+concentrated on single nodes indicate scheduler constraints or insufficient
+cluster capacity.
+
+### Database replication
+
+PostgreSQL replication requires external operators (Bitnami PostgreSQL subchart
+supports replication mode):
+
+```yaml
+support:
+  postgresql:
+    architecture: replication
+    replicaCount: 3
+    replication:
+      synchronousCommit: "on"
+      numSynchronousReplicas: 1
+```
+
+Synchronous replication ensures zero data loss at performance cost. Each write
+waits for acknowledgment from 1 replica before returning. Async replication
+improves performance but risks data loss during primary failures.
+
+Monitor replication lag in PostgreSQL dashboard. Lag exceeding 100MB or 10
+seconds indicates network issues or insufficient replica resources.
+
+## Backup and disaster recovery
+
+Production operations require backup strategies for blockchain data, application
+databases, and configuration state. Recovery Time Objective (RTO) and Recovery
+Point Objective (RPO) determine backup frequency and retention.
+
+### Database backup automation
+
+Use Velero for Kubernetes-native backups or PostgreSQL-specific backup
+operators. Velero provides crash-consistent volume snapshots with
+application-aware hooks:
+
+```bash
+# Install Velero with cloud provider plugin
+velero install \
+  --provider aws \
+  --plugins velero/velero-plugin-for-aws:v1.9.0 \
+  --bucket atk-backups \
+  --backup-location-config region=us-east-1
+
+# Create scheduled backup
+velero schedule create atk-daily \
+  --schedule="0 2 * * *" \
+  --include-namespaces atk \
+  --storage-location default \
+  --snapshot-volumes
+```
+
+Velero backups include PVCs, ConfigMaps, Secrets, and resource definitions.
+Restore creates namespace with identical state:
+
+```bash
+velero restore create atk-restore-20250129 \
+  --from-backup atk-daily-20250129020000
+```
+
+**PostgreSQL logical backups** capture consistent database state:
+
+```bash
+kubectl exec -n atk postgresql-0 -- \
+  pg_dump -U postgres -d atk \
+  | gzip > atk-db-backup-$(date +%Y%m%d).sql.gz
+```
+
+Automate using CronJobs that upload to S3-compatible storage. Retain daily
+backups for 7 days, weekly for 4 weeks, monthly for 12 months based on
+compliance requirements.
+
+### Blockchain data snapshots
+
+Besu validator and RPC node data resides in PersistentVolumes. Volume snapshots
+provide point-in-time recovery:
+
+```bash
+# List blockchain PVCs
+kubectl get pvc -n atk | grep besu
+
+# Create snapshot (requires CSI driver support)
+kubectl create -f - <<EOF
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshot
+metadata:
+  name: besu-validator-0-snapshot
+  namespace: atk
+spec:
+  volumeSnapshotClassName: csi-snapshots
+  source:
+    persistentVolumeClaimName: besu-validator-0
+EOF
+```
+
+Snapshot creation time depends on volume size (typically 1-5 minutes for 100GB).
+Snapshots consume cloud storage incrementally based on changed blocks.
+
+Restore from snapshots by creating new PVCs referencing snapshot as data source:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: besu-validator-0-restored
+  namespace: atk
+spec:
+  dataSource:
+    name: besu-validator-0-snapshot
+    kind: VolumeSnapshot
+    apiGroup: snapshot.storage.k8s.io
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+```
+
+### Configuration backup and version control
+
+Store Helm values files in version-controlled repositories. Extract current
+deployed configuration:
+
+```bash
+helm get values atk -n atk > atk-values-backup-$(date +%Y%m%d).yaml
+```
+
+Commit to Git alongside infrastructure-as-code definitions. Tag releases
+matching production deployments for traceable rollback:
+
+```bash
+git tag -a prod-v1.2.3 -m "Production deployment 2025-01-29"
+git push origin prod-v1.2.3
+```
+
+Disaster recovery procedure:
+
+1. Provision new Kubernetes cluster
+2. Install ATK using backed-up Helm values
+3. Restore database from latest backup
+4. Restore blockchain PVCs from snapshots (or fast-sync from network)
+5. Verify observability dashboards show healthy state
+
+RTO target: &lt;4 hours for full cluster recovery. RPO target: &lt;1 hour data
+loss (based on hourly database backups and blockchain network fast-sync
+capability).
+
+## Operational scenarios
+
+Real production operations combine dashboard monitoring with log analysis and
+remediation commands. These scenarios walk through common issues using
+observability-first workflows.
+
+### Scenario: Settlement transaction delays
+
+**Symptom:** Users report vault withdrawals taking longer than expected. DApp
+shows "pending" status beyond normal 2-minute SLA.
+
+**Investigation workflow:**
+
+1. Open **Besu dashboard** → Check block production rate. If blocks produce
+   normally (&lt;10s average), blockchain is healthy.
+
+2. Open **DALP vault operations dashboard** → Check withdrawal processing time
+   percentiles. If p95 &gt;120s, issue is in withdrawal logic not blockchain.
+
+3. Query Loki for withdrawal transactions:
+
+```text
+{namespace="atk", app="dapp"} |= "WithdrawalRequest" | json | status="pending" | line_format "{{.userId}} {{.vaultAddress}} {{.amount}} {{.duration_ms}}"
+```
+
+This shows pending withdrawals with user IDs and processing time. If multiple
+transactions from same vault show high duration, vault contract may have high
+gas costs or compliance rule delays.
+
+4. Open **Tempo traces** → Search for trace IDs from slow withdrawal logs. Trace
+   spans reveal time spent in each phase: compliance validation, vault unlock,
+   blockchain submission, confirmation waiting.
+
+5. Identify bottleneck from trace breakdown:
+
+- **Compliance validation &gt;30s:** Compliance rules executing expensive
+  off-chain checks. Review rule complexity; consider caching verification
+  results.
+- **Blockchain submission &gt;60s:** Transaction pool congestion or low gas
+  price. Check transaction pool size in Besu dashboard; increase gas price if
+  needed.
+- **Confirmation waiting &gt;45s:** Normal for blockchain finality. Communicate
+  expected wait time in UI; no remediation needed.
+
+**Remediation:** If compliance validation is the bottleneck, review identity
+registry queries in application logs:
+
+```text
+{namespace="atk", app="dapp"} |= "ComplianceCheck" | json | validation_time_ms > 10000
+```
+
+Optimize by adding database indexes on identity lookup fields or implementing
+compliance rule caching with 5-minute TTL.
+
+**Verification:** After optimization, monitor withdrawal latency in vault
+operations dashboard. p95 should drop below 120s within 30 minutes as cache
+warms up.
+
+### Scenario: Subgraph indexing lag
+
+**Symptom:** TheGraph Indexing Status dashboard shows sync lag increasing beyond
+10 blocks. Queries return stale data; recent transactions don't appear in DApp.
+
+**Investigation workflow:**
+
+1. **TheGraph Indexing Status dashboard** → Check "Blocks Behind Head" metric.
+   If lag grows continuously, subgraph cannot keep pace with block production.
+
+2. Check indexing error rate. Any errors require immediate investigation:
+
+```text
+{namespace="atk", app="graph-node"} |= "error" | json | line_format "{{.subgraphName}} {{.blockNumber}} {{.errorMessage}}"
+```
+
+Common errors:
+
+- **"Entity not found"**: Schema mismatch between subgraph and blockchain
+  events. Verify deployed contract addresses match subgraph configuration.
+- **"Transaction reverted"**: Subgraph attempting to index failed transactions.
+  Update subgraph handlers to check transaction receipt status.
+- **"Database timeout"**: PostgreSQL connection saturation. Check database
+  connections in PostgreSQL dashboard.
+
+3. If no errors appear, check entity processing time. High processing time
+   indicates complex event handlers or database query inefficiency:
+
+```text
+{namespace="atk", app="graph-node"} |= "BlockProcessed" | json | processing_time_ms > 500
+```
+
+4. Review Tempo traces for subgraph handler execution. Slow database queries
+   appear as long-duration spans. Common issues:
+
+- Multiple database roundtrips per event (N+1 queries)
+- Missing indexes on frequently-queried fields
+- Complex entity relationships requiring optimization
+
+**Remediation:** For slow database queries, add indexes to subgraph schema:
+
+```graphql
+type Transfer @entity {
+  id: ID!
+  from: Bytes! @index
+  to: Bytes! @index
+  value: BigInt!
+  blockNumber: BigInt! @index
+  timestamp: BigInt! @index
+}
+```
+
+Redeploy subgraph after schema changes. Indexing resumes from last successfully
+processed block.
+
+For persistent lag without errors, scale graph-node replicas to handle parallel
+indexing:
+
+```yaml
+graph-node:
+  replicaCount: 2
+```
+
+**Verification:** Monitor "Blocks Behind Head" metric. Lag should decrease to
+&lt;5 blocks within 15 minutes after scaling or optimization. Query performance
+improves as cache effectiveness increases.
+
+### Scenario: High API error rate
+
+**Symptom:** NGINX Ingress dashboard shows 5xx error rate spike above 1%. Users
+report intermittent "server error" messages in DApp.
+
+**Investigation workflow:**
+
+1. **NGINX Ingress dashboard** → Check error breakdown by status code and
+   upstream. If errors concentrate on specific backend (e.g., Hasura), issue is
+   in that service not ingress.
+
+2. Query Loki for error responses:
+
+```text
+{namespace="atk", app="hasura"} |= "error" | json | statusCode >= 500
+```
+
+Common 5xx errors:
+
+- **503 Service Unavailable:** Upstream connection refused. Pod may be crashing
+  or not ready.
+- **502 Bad Gateway:** Upstream closed connection. Timeout or OOM kill likely.
+- **500 Internal Server Error:** Application logic error. Check error details in
+  logs.
+
+3. Check pod health in **Kubernetes Overview dashboard**:
+
+- Restart count &gt;5: Pod crashlooping. Check logs for panic or fatal errors.
+- Memory usage &gt;90%: Approaching OOM. Increase memory limits.
+- CPU throttling: Pod receiving insufficient CPU. Increase requests or limits.
+
+4. For 503 errors, verify pod readiness:
+
+```bash
+kubectl get pods -n atk -l app=hasura -o wide
+```
+
+Pods in `Running` state but failing readiness checks don't receive traffic.
+Readiness failures appear in describe output:
+
+```bash
+kubectl describe pod -n atk hasura-PODNAME
+```
+
+5. Open **Tempo traces** for failed requests. Trace reveals where error
+   originated:
+
+- Error in Hasura GraphQL execution: Database connection exhausted or query
+  timeout
+- Error in DApp backend: Application logic exception or external API failure
+- Error in authentication middleware: JWT validation failure or session
+  expiration
+
+**Remediation:** For database connection exhaustion, check PostgreSQL dashboard
+connection pool metrics:
+
+```yaml
+hasura:
+  config:
+    HASURA_GRAPHQL_MAX_CONNECTIONS: 50
+    HASURA_GRAPHQL_POOL_TIMEOUT: 180
+```
+
+Increase `MAX_CONNECTIONS` to 100 if pool utilization exceeds 80% sustained.
+Scale PostgreSQL replicas if connection limit cannot be increased further.
+
+For memory-related OOM kills, increase pod memory limits:
+
+```yaml
+hasura:
+  resources:
+    limits:
+      memory: 2Gi
+    requests:
+      memory: 1Gi
+```
+
+**Verification:** Monitor error rate in NGINX Ingress dashboard. Errors should
+drop below 0.5% within 5 minutes after remediation. Check pod metrics in
+Kubernetes dashboard to verify memory usage stays below 85%.
+
+### Scenario: Validator node connectivity loss
+
+**Symptom:** Besu dashboard shows peer count drop on one validator. Block
+production continues but may become unstable if additional validators fail.
+
+**Investigation workflow:**
+
+1. **Besu dashboard** → Identify affected validator by node name. Check peer
+   connectivity graph showing connections between validators.
+
+2. Query Loki for network errors on affected pod:
+
+```text
+{namespace="atk", pod=~"besu-validator-2.*"} |= "peer" |= "disconnect"
+```
+
+Peer disconnections indicate:
+
+- Network partition between validators
+- Firewall rules blocking P2P ports (30303 TCP/UDP)
+- Pod network policy too restrictive
+- Validator crashed and restarted (peers reconnect slowly)
+
+3. Check pod events for network-related issues:
+
+```bash
+kubectl describe pod -n atk besu-validator-2-0
+```
+
+Look for:
+
+- `NetworkNotReady`: CNI plugin failure
+- `FailedMount`: Volume mount issues preventing startup
+- `Unhealthy`: Liveness probe failures indicating crash
+
+4. Test connectivity between validators:
+
+```bash
+kubectl exec -n atk besu-validator-0-0 -- \
+  nc -zv besu-validator-2-0.besu-validator.atk.svc.cluster.local 30303
+```
+
+Connection refused indicates pod not listening. Connection timeout indicates
+network policy or firewall blocking traffic.
+
+5. Review network policies:
+
+```bash
+kubectl get networkpolicy -n atk
+kubectl describe networkpolicy -n atk besu-network-policy
+```
+
+**Remediation:** For network policy issues, verify P2P port ingress allowed:
+
+```yaml
+besu:
+  networkPolicy:
+    enabled: true
+    ingress:
+      - from:
+          - podSelector:
+              matchLabels:
+                app: besu
+        ports:
+          - protocol: TCP
+            port: 30303
+          - protocol: UDP
+            port: 30303
+```
+
+For crashed pods, check logs for errors before restart:
+
+```bash
+kubectl logs -n atk besu-validator-2-0 --previous
+```
+
+Common crash causes:
+
+- **OutOfMemory:** Increase memory limits from 4Gi to 8Gi
+- **Corrupted database:** Restore from PVC snapshot or reinitialize
+- **Genesis mismatch:** Regenerate genesis.json and restart all validators
+
+Restart affected validator after remediation:
+
+```bash
+kubectl rollout restart statefulset/besu-validator -n atk
+```
+
+**Verification:** Monitor peer count in Besu dashboard. All validators should
+show full connectivity (peer count = validator count - 1) within 5 minutes.
+Block production rate returns to normal.
 
 ## CI/CD integration
 
-The kit includes GitHub Actions workflows for automated deployment.
+Automated deployment pipelines ensure consistent, repeatable releases. The
+included GitHub Actions workflows provide foundation for extending to production
+deployment.
 
-### QA workflow
+### QA workflow structure
 
-The `.github/workflows/qa.yml` workflow performs:
+`.github/workflows/qa.yml` executes comprehensive testing pipeline:
 
-1. **Artifact generation** (`bun run artifacts`):
-   - Compiles smart contracts
-   - Generates ABIs and TypeScript bindings
-   - Creates genesis allocation file
-
-2. **Backend services startup** (`bun dev:up`):
-   - Launches Docker Compose stack
-   - Starts local PostgreSQL, Redis, Besu node
-
-3. **Test execution** (`bunx turbo run ci:gha`):
-   - Unit tests (Vitest, Foundry)
-   - Integration tests (contract interactions)
-   - E2E tests (Playwright)
-   - Linting and type checking
-
-4. **Chart testing** (conditional):
-   - Helm chart linting (`ct lint`)
-   - Deployment to ephemeral Kubernetes cluster (`ct install`)
-   - Validates all resources reach ready state
-
-5. **Docker image builds**:
-   - DApp image: `Dockerfile.dapp`
-   - Contract artifacts: `Dockerfile.contracts`
-   - Pushed to GitHub Container Registry
-
-### Deployment workflow
-
-For production deployments, extend the QA workflow:
+**Artifact generation phase** compiles smart contracts, generates ABIs, creates
+TypeScript bindings, and produces genesis allocation:
 
 ```yaml
-# .github/workflows/deploy-production.yml
-name: Deploy to Production
+- name: Generate artifacts
+  run: bun run artifacts
+
+- name: Upload contract ABIs
+  uses: actions/upload-artifact@v4
+  with:
+    name: contract-artifacts
+    path: kit/contracts/artifacts/
+```
+
+Artifacts become Docker image layers and Helm chart ConfigMaps for deployment.
+
+**Backend services startup** launches Docker Compose stack with PostgreSQL,
+Redis, Besu node, and supporting services. Tests execute against this local
+environment mimicking production:
+
+```yaml
+- name: Start development environment
+  run: bun dev:up
+  timeout-minutes: 5
+```
+
+**Test execution** runs parallel test suites across packages:
+
+```yaml
+- name: Run test suite
+  run: bunx turbo run ci:gha --concurrency=3
+```
+
+Includes unit tests (Vitest, Foundry), integration tests (contract
+interactions), E2E tests (Playwright), linting, and type checking.
+
+**Chart validation** (conditional on Helm chart changes) uses `ct`
+(chart-testing) to lint and validate against Kubernetes API:
+
+```yaml
+- name: Lint and install charts
+  run: |
+    ct lint --config ct.yaml
+    ct install --config ct.yaml
+```
+
+**Image builds** create container images tagged with commit SHA and push to
+GitHub Container Registry:
+
+```yaml
+- name: Build and push DApp image
+  uses: docker/build-push-action@v5
+  with:
+    context: .
+    file: Dockerfile.dapp
+    push: true
+    tags: ghcr.io/${{ github.repository }}/dapp:${{ github.sha }}
+```
+
+### Production deployment workflow
+
+Extend QA workflow for production deployment triggered by git tags:
+
+```yaml
+name: Deploy to production
 
 on:
   push:
@@ -424,6 +1017,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: production
+
     steps:
       - uses: actions/checkout@v4
 
@@ -431,8 +1026,9 @@ jobs:
         run: |
           echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig
           export KUBECONFIG=kubeconfig
+          kubectl cluster-info
 
-      - name: Deploy with Helm
+      - name: Deploy ATK
         working-directory: kit/charts/atk
         run: |
           helm upgrade atk . \
@@ -441,24 +1037,54 @@ jobs:
             --create-namespace \
             --values values-production.yaml \
             --set dapp.image.tag=${{ github.ref_name }} \
+            --set contracts.image.tag=${{ github.ref_name }} \
             --timeout 20m \
-            --wait
+            --wait \
+            --atomic
 ```
 
-### GitOps approach
+`--atomic` flag rolls back automatically if deployment fails. `--wait` waits for
+all resources to reach ready state before considering deployment successful.
 
-For declarative deployments, use ArgoCD or Flux:
+**Post-deployment verification** checks observability dashboards
+programmatically:
 
-**ArgoCD Application manifest**:
+```yaml
+- name: Verify deployment health
+  run: |
+    # Wait for pods to be ready
+    kubectl wait --for=condition=ready pod \
+      -l app.kubernetes.io/instance=atk \
+      -n atk \
+      --timeout=600s
+
+    # Check Besu validator connectivity
+    PEER_COUNT=$(kubectl exec -n atk besu-validator-0-0 -- \
+      curl -s -X POST http://localhost:8545 \
+      -H "Content-Type: application/json" \
+      -d '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":1}' \
+      | jq -r '.result' | xargs printf "%d")
+
+    if [ "$PEER_COUNT" -lt 3 ]; then
+      echo "Insufficient peers: $PEER_COUNT"
+      exit 1
+    fi
+```
+
+### GitOps deployment with ArgoCD
+
+Declarative deployments using ArgoCD provide automatic synchronization and drift
+detection:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: atk
+  name: atk-production
   namespace: argocd
 spec:
-  project: default
+  project: tokenization
+
   source:
     repoURL: https://github.com/your-org/asset-tokenization-kit
     targetRevision: main
@@ -466,188 +1092,579 @@ spec:
     helm:
       valueFiles:
         - values-production.yaml
+      parameters:
+        - name: dapp.image.tag
+          value: v1.2.3
+
   destination:
     server: https://kubernetes.default.svc
     namespace: atk
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
 ```
 
-## Troubleshooting
+ArgoCD monitors Git repository and automatically applies changes. Drift
+detection alerts when manual kubectl changes deviate from Git state.
+Self-healing automatically reverts unauthorized changes.
 
-**ATK's integrated observability stack accelerates troubleshooting by providing
-correlated metrics, logs, and traces in one interface.** Start with Grafana
-dashboards to identify issues, then drill into detailed logs and traces.
+**Progressive delivery** with ArgoCD Rollouts enables canary deployments:
+
+```yaml
+dapp:
+  rollout:
+    enabled: true
+    strategy:
+      canary:
+        steps:
+          - setWeight: 20
+          - pause: { duration: 5m }
+          - setWeight: 50
+          - pause: { duration: 5m }
+          - setWeight: 80
+          - pause: { duration: 5m }
+```
+
+Canary deployment gradually shifts traffic to new version. Pause between steps
+allows observability dashboard monitoring for increased error rates or latency
+before proceeding.
+
+## Troubleshooting with observability
+
+Integrated observability accelerates troubleshooting by correlating metrics,
+logs, and traces. Start with high-level dashboards to identify symptoms, drill
+into logs for details, follow traces through distributed operations, then
+execute remediation commands.
 
 ### General troubleshooting workflow
 
-1. **Check Grafana dashboards** for high-level health indicators
-2. **Query Loki** for detailed application logs
-3. **Inspect Tempo traces** to identify slow operations
-4. **Use kubectl** for immediate remediation
+<Mermaid
+  chart={`flowchart TB
+    Symptoms(Identify symptoms)
+    Dashboards(Check Grafana dashboards)
+    Metrics(Review relevant metrics)
+    Logs(Query Loki for details)
+    Traces(Correlate with Tempo traces)
+    Root(Identify root cause)
+    Remediate(Execute kubectl commands)
+    Verify(Verify resolution in dashboards)
+    
+    Symptoms --> Dashboards
+    Dashboards --> Metrics
+    Metrics --> Logs
+    Logs --> Traces
+    Traces --> Root
+    Root --> Remediate
+    Remediate --> Verify
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    
+    class Symptoms,Verify primary
+    class Dashboards,Metrics,Logs,Traces secondary
+    class Root,Remediate tertiary
+`}
+/>
 
-### Pod crashes or restarts
+### Pod crashes and restart loops
 
-**Using observability stack:**
+**Using observability:** Open **Kubernetes Overview dashboard** → Find pods with
+restart count &gt;3. Click pod name to filter metrics showing resource usage
+before crash.
 
-1. **Open Grafana → Explore → Loki**:
+Query Loki for crash logs:
 
-   ```text
-   # Find crash logs
-   {namespace="atk"} |= "panic" or "fatal" or "OOM"
+```text
+{namespace="atk"} |= "panic" or "fatal" or "OOMKilled"
+```
 
-   # Check specific pod
-   {namespace="atk", pod=~"dapp-.*"} |= "error"
-   ```
+Filter by specific application:
 
-2. **Check Kubernetes dashboard** in Grafana:
-   - Identify pods with high restart counts
-   - Review memory usage trends before OOM kills
-   - Check CPU throttling that might cause timeouts
+```text
+{namespace="atk", pod=~"dapp-.*"} |= "error" | json | level="fatal"
+```
 
-**Using kubectl:**
+Check memory trends before OOM kills in Node Exporter dashboard. Memory usage
+climbing to pod limit indicates undersized resources.
 
-1. **Check pod logs**:
+**Using kubectl:** Check previous pod logs (before crash):
 
-   ```bash
-   kubectl logs -n atk <pod-name> --previous
-   ```
+```bash
+kubectl logs -n atk <pod-name> --previous --tail=100
+```
 
-2. **Describe pod for events**:
+Describe pod for termination reason:
 
-   ```bash
-   kubectl describe pod -n atk <pod-name>
-   ```
+```bash
+kubectl describe pod -n atk <pod-name>
+```
 
-3. **Common issues identified via dashboards**:
-   - **Database connection errors**: PostgreSQL dashboard shows connection pool
-     exhaustion
-   - **RPC connection errors**: ERPC dashboard displays all upstreams as
-     unhealthy
-   - **OOM kills**: Node Exporter dashboard shows memory saturation; increase
-     limits in `values.yaml`
+Look for:
 
-### Ingress not accessible
+- `OOMKilled`: Memory limit exceeded → Increase `resources.limits.memory`
+- `Error`: Exit code nonzero → Check application logs for panic
+- `CrashLoopBackOff`: Pod repeatedly failing startup → Fix configuration or
+  application code
 
-**Using observability stack:**
+**Common remediation:**
 
-1. **Open NGINX Ingress dashboard** in Grafana:
-   - Check request rate and error codes (4xx, 5xx)
-   - Verify upstream connectivity to backend services
-   - Review SSL certificate expiration warnings
+Database connection errors:
 
-2. **Query logs for connection errors**:
+```text
+{namespace="atk", app="dapp"} |= "database" |= "connection refused"
+```
 
-   ```text
-   {namespace="atk", app="ingress-nginx"} |= "error" | json
-   ```
+PostgreSQL dashboard shows connection pool exhausted. Increase application
+connection pool size or scale database replicas.
 
-**Using kubectl:**
+RPC connection failures:
 
-1. **Verify ingress controller**:
+```text
+{namespace="atk", app="dapp"} |= "RPC" |= "timeout"
+```
 
-   ```bash
-   kubectl get pods -n atk -l app.kubernetes.io/name=ingress-nginx
-   ```
+ERPC dashboard displays all upstreams unhealthy. Check Besu validator status; if
+validators are healthy, restart ERPC gateway to refresh upstream health checks.
 
-2. **Check ingress resources**:
+### Ingress connectivity issues
 
-   ```bash
-   kubectl get ingress -n atk
-   ```
+**Using observability:** Open **NGINX Ingress dashboard** → Check request rate
+and status code distribution. High 502/503 rate indicates backend
+unavailability; 404 rate suggests misconfigured routes.
 
-   Ensure each ingress has an `ADDRESS` assigned.
+Query ingress controller logs:
 
-3. **DNS resolution**:
+```text
+{namespace="atk", app="ingress-nginx"} |= "error" | json | statusCode >= 500
+```
 
-   ```bash
-   nslookup dapp.example.com
-   ```
+SSL/TLS errors:
 
-   Verify DNS points to ingress controller LoadBalancer IP.
+```text
+{namespace="atk", app="ingress-nginx"} |= "TLS" |= "handshake"
+```
+
+Check certificate expiration in dashboard SSL certificate panel. Expired
+certificates require renewal via cert-manager or manual secret update.
+
+**Using kubectl:** Verify ingress controller pods running:
+
+```bash
+kubectl get pods -n atk -l app.kubernetes.io/name=ingress-nginx
+```
+
+Check ingress resources:
+
+```bash
+kubectl get ingress -n atk
+kubectl describe ingress -n atk dapp-ingress
+```
+
+Ensure `ADDRESS` field populated with LoadBalancer IP. Missing address indicates
+LoadBalancer provisioning failure or cloud provider issue.
+
+Test DNS resolution:
+
+```bash
+nslookup dapp.example.com
+```
+
+Verify DNS record points to ingress LoadBalancer IP. DNS propagation takes 1-60
+minutes after changes.
 
 ### Database migration failures
 
-The DApp includes a post-install job that runs Drizzle migrations. If it fails:
+DApp includes post-install Helm hook job executing Drizzle migrations. Hook
+failures prevent deployment success.
 
-1. **Check job logs**:
+Check migration job logs:
 
-   ```bash
-   kubectl logs -n atk job/dapp-migrations
-   ```
+```bash
+kubectl logs -n atk job/atk-dapp-migrations
+```
 
-2. **Manually run migrations**:
+Common failures:
 
-   ```bash
-   kubectl exec -n atk deployment/dapp -- bun run db:migrate
-   ```
+- **Schema already exists:** Migration previously executed. Delete job and
+  retry: `kubectl delete job -n atk atk-dapp-migrations`
+- **Connection refused:** Database not ready. Increase
+  `helm.sh/hook-wait-timeout` annotation or add init container polling database
+  readiness
+- **Permission denied:** Database user lacks schema modification rights. Grant
+  superuser or schema owner privileges
+
+Manually execute migrations:
+
+```bash
+kubectl exec -n atk deployment/atk-dapp -- bun run db:migrate
+```
 
 ### Genesis file regeneration
 
-If you modify smart contract deployments, regenerate genesis allocations:
+Modifying smart contract deployments requires regenerating genesis allocations
+and restarting validators with new genesis.
+
+Regenerate artifacts locally:
 
 ```bash
-# Locally
 bun run artifacts
+```
 
-# The network-bootstrapper job automatically compiles genesis.json
-# Restart Besu nodes to pick up changes:
+Update genesis ConfigMap:
+
+```bash
+kubectl create configmap atk-genesis \
+  --from-file=genesis.json=kit/contracts/genesis.json \
+  --dry-run=client -o yaml \
+  | kubectl apply -n atk -f -
+```
+
+Restart validators to load new genesis:
+
+```bash
 kubectl rollout restart statefulset/besu-validator -n atk
 kubectl rollout restart statefulset/besu-rpc -n atk
 ```
 
-### Helm upgrade failures
+Monitor restart in Besu dashboard. Block production resumes within 2 minutes
+after majority validators restart.
 
-If `helm upgrade` fails mid-deployment:
+**WARNING:** Genesis changes on running network cause chain fork. Only
+regenerate genesis for development/test environments or when performing
+coordinated network upgrade with all participants.
 
-1. **Check release status**:
+### Helm release recovery
 
-   ```bash
-   helm status atk -n atk
-   ```
+Failed Helm upgrades leave releases in pending or failed state. Recover using
+rollback or force upgrade.
 
-2. **Rollback to previous version**:
-
-   ```bash
-   helm rollback atk -n atk
-   ```
-
-3. **Force upgrade** (use cautiously):
-
-   ```bash
-   helm upgrade atk . --namespace atk --force
-   ```
-
-## Uninstallation
-
-To completely remove the deployment:
+Check release status:
 
 ```bash
-# Uninstall Helm release
-helm uninstall atk -n atk
+helm status atk -n atk
+helm history atk -n atk
+```
 
-# Delete namespace (removes all resources)
+Rollback to last successful revision:
+
+```bash
+helm rollback atk -n atk
+```
+
+Specify revision number for targeted rollback:
+
+```bash
+helm rollback atk 3 -n atk
+```
+
+Force upgrade (use cautiously—may cause resource conflicts):
+
+```bash
+helm upgrade atk . \
+  --namespace atk \
+  --values values-production.yaml \
+  --force \
+  --cleanup-on-fail
+```
+
+`--force` deletes and recreates resources with changes. `--cleanup-on-fail`
+removes resources if upgrade fails, preventing stuck state.
+
+For severely corrupted releases, uninstall and reinstall (destroys data):
+
+```bash
+helm uninstall atk -n atk
+helm install atk . -n atk -f values-production.yaml
+```
+
+Restore data from backups after reinstall.
+
+## Alerting configuration
+
+Proactive monitoring requires alerting on SLA violations and anomalous
+conditions. Configure Grafana alert rules with notification channels for
+critical events.
+
+### Alert rule structure
+
+Navigate to Grafana → Alerting → Alert rules → New alert rule. Define query,
+threshold, evaluation interval, and notification policy.
+
+Example alert for slow block production:
+
+```yaml
+groups:
+  - name: blockchain_health
+    interval: 1m
+    rules:
+      - alert: SlowBlockProduction
+        expr: rate(besu_blockchain_height[5m]) < 0.067
+        for: 10m
+        labels:
+          severity: warning
+          component: blockchain
+        annotations:
+          summary: "Block production slower than target"
+          description:
+            "Block production rate {{ $value | humanize }} blocks/s is below
+            target 0.067 blocks/s (15s block time) for 10 minutes on {{
+            $labels.instance }}"
+```
+
+Alert fires when 5-minute block production rate drops below 1 block per 15
+seconds sustained for 10 minutes.
+
+### Critical SLA alerts
+
+**Settlement latency:**
+
+```yaml
+- alert: HighSettlementLatency
+  expr:
+    histogram_quantile(0.95, rate(settlement_duration_seconds_bucket[5m])) > 5
+  for: 5m
+  labels:
+    severity: critical
+  annotations:
+    summary: "Settlement latency exceeds SLA"
+    description: "95th percentile settlement time {{ $value }}s exceeds 5s SLA"
+```
+
+**Subgraph sync lag:**
+
+```yaml
+- alert: SubgraphSyncLag
+  expr: (ethereum_chain_head_number - ethereum_block_number) > 10
+  for: 5m
+  labels:
+    severity: warning
+  annotations:
+    summary: "Subgraph falling behind chain head"
+    description:
+      "Subgraph {{ $labels.subgraph }} is {{ $value }} blocks behind chain head"
+```
+
+**Database connection exhaustion:**
+
+```yaml
+- alert: DatabaseConnectionPoolSaturated
+  expr:
+    (sum(pg_stat_activity_count) by (instance) /
+    sum(pg_settings_max_connections) by (instance)) > 0.9
+  for: 3m
+  labels:
+    severity: critical
+  annotations:
+    summary: "Database connection pool &gt;90% utilized"
+    description:
+      "PostgreSQL instance {{ $labels.instance }} has {{ $value |
+      humanizePercentage }} connection pool utilization"
+```
+
+**Disk space critical:**
+
+```yaml
+- alert: PVCDiskSpaceCritical
+  expr:
+    (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes) >
+    0.85
+  for: 5m
+  labels:
+    severity: warning
+  annotations:
+    summary: "PVC {{ $labels.persistentvolumeclaim }} &gt;85% full"
+    description:
+      "Disk usage {{ $value | humanizePercentage }} on PVC {{
+      $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }}"
+```
+
+### Notification channels
+
+Configure contact points for alert delivery:
+
+**Slack integration:**
+
+1. Navigate to Grafana → Alerting → Contact points → New contact point
+2. Select "Slack" type
+3. Enter webhook URL from Slack App configuration
+4. Test contact point to verify delivery
+
+**PagerDuty integration:**
+
+1. Create PagerDuty integration key for ATK service
+2. Add contact point with "PagerDuty" type
+3. Enter integration key
+4. Configure routing by severity (critical → page on-call, warning →
+   notification)
+
+**Email notification:**
+
+1. Configure SMTP settings in Grafana Helm values:
+
+```yaml
+grafana:
+  smtp:
+    enabled: true
+    host: smtp.example.com:587
+    user: alerts@example.com
+    password: "${SMTP_PASSWORD}"
+    from_address: atk-alerts@example.com
+```
+
+2. Add email contact point with recipient addresses
+
+### Notification policies
+
+Route alerts to appropriate channels based on severity and component:
+
+```yaml
+# Grafana notification policy configuration
+policies:
+  - match:
+      severity: critical
+    continue: true
+    contact_point: pagerduty
+
+  - match:
+      severity: warning
+      component: blockchain
+    contact_point: slack-ops
+
+  - match:
+      severity: warning
+    contact_point: email-team
+```
+
+Critical alerts page on-call engineer via PagerDuty. Warning-level blockchain
+alerts notify operations Slack channel. Other warnings send email to engineering
+team.
+
+## External observability forwarding
+
+Send telemetry to external platforms for long-term retention, advanced analysis,
+or centralized monitoring across multiple deployments.
+
+Configure Alloy to forward metrics, logs, and traces while maintaining local
+observability:
+
+```yaml
+observability:
+  alloy:
+    endpoints:
+      external:
+        prometheus:
+          enabled: true
+          url: https://prometheus-prod.grafana.net/api/prom/push
+          basicAuth:
+            username: "123456"
+            passwordSecretRef:
+              name: grafana-cloud-secrets
+              key: prometheus-password
+
+        loki:
+          enabled: true
+          url: https://logs-prod.grafana.net/loki/api/v1/push
+          basicAuth:
+            username: "123456"
+            passwordSecretRef:
+              name: grafana-cloud-secrets
+              key: loki-password
+
+        tempo:
+          enabled: true
+          url: https://tempo-prod.grafana.net:443
+          basicAuth:
+            username: "123456"
+            passwordSecretRef:
+              name: grafana-cloud-secrets
+              key: tempo-password
+```
+
+Create secret with platform credentials:
+
+```bash
+kubectl create secret generic grafana-cloud-secrets \
+  --from-literal=prometheus-password='PROMETHEUS_TOKEN' \
+  --from-literal=loki-password='LOKI_TOKEN' \
+  --from-literal=tempo-password='TEMPO_TOKEN' \
+  -n atk
+```
+
+Alloy forwards all telemetry to both local VictoriaMetrics/Loki/Tempo and
+external endpoints. Local observability remains fully operational during
+external platform outages.
+
+**Datadog integration** uses OTLP exporter:
+
+```yaml
+observability:
+  alloy:
+    endpoints:
+      external:
+        otel:
+          enabled: true
+          url: https://api.datadoghq.com
+          headers:
+            DD-API-KEY: "${DATADOG_API_KEY}"
+```
+
+## Uninstallation and cleanup
+
+Complete removal requires deleting Helm release, namespace, and PVCs (which may
+not delete automatically based on reclaim policy).
+
+Uninstall Helm release:
+
+```bash
+helm uninstall atk -n atk
+```
+
+Delete namespace (removes all resources):
+
+```bash
 kubectl delete namespace atk
 ```
 
-**Warning**: This deletes all data including blockchain state, databases, and
-logs. Backup critical data before uninstalling.
+**Warning:** This permanently deletes all data including blockchain state,
+databases, and configuration. Backup critical data before uninstalling.
+
+List remaining PVCs with `Retain` reclaim policy:
+
+```bash
+kubectl get pv | grep atk
+```
+
+Manually delete retained PVs:
+
+```bash
+kubectl delete pv <pv-name>
+```
+
+Cloud provider volumes may require manual deletion through provider console (AWS
+EBS volumes, Azure Disks, GCP Persistent Disks).
 
 ## Next steps
 
 - Review
   [Installation & configuration](/docs/developer-guides/deployment-ops/installation-configuration)
-  for initial setup and configuration reference
+  for initial deployment and configuration reference
 - See [Testing and QA](/docs/developer-guides/quality-assurance) for running
   tests against deployed environments
 - Explore [Development FAQ](/docs/developer-guides/setup) for common deployment
   issues
 - Consult [Code Structure](/docs/developer-guides/architecture) to understand
-  the monorepo layout
+  monorepo layout
 - Review
   [Contract Reference](/docs/developer-guides/smart-contracts/contract-reference)
   for smart contract interfaces

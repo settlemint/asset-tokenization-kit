@@ -56,99 +56,64 @@ tradeoffs for speed, cost, and regulatory complexity.
 
 ### Direct bank integration
 
-**When to use:** You have existing banking relationships and treasury operations
-team familiar with wire processing. Common for issuers handling institutional
-investors or regulated financial products.
+Use this when you have existing banking relationships and a treasury operations
+team familiar with wire processing. This approach is common for issuers handling
+institutional investors or regulated financial products. You avoid third-party
+fees (saving 25-50 bps per transaction), maintain full control over settlement
+timing, and operate under the simplest regulatory structure with no additional
+money transmitter licenses. It works for any transaction size. The tradeoff is
+manual reconciliation unless you integrate a banking API, slower T+1 to T+3
+settlement for wires, business-hours-only processing, and higher operational
+overhead for your treasury team.
 
-**Advantages:**
-
-- No third-party fees (save 25-50 bps per transaction)
-- Full control over settlement timing
-- Simplest regulatory structure (no additional money transmitter licenses)
-- Works for any transaction size
-
-**Disadvantages:**
-
-- Manual reconciliation required (unless banking API integrated)
-- Slower settlement (T+1 to T+3 for wires)
-- Business hours only (no weekend or holiday processing)
-- Higher operational overhead for treasury team
-
-**Check the bridge status panel** in observability dashboards to monitor pending
-wire verification queue and average processing times.
+**Check the bridge status panel** in observability dashboards to monitor the
+pending wire verification queue and track average processing times across your
+operations cycle.
 
 ### Third-party on-ramp providers (Wyre, Circle, Stripe)
 
-**When to use:** You need instant deposits, want to support retail investors
-with smaller transaction sizes, or lack in-house treasury operations.
+Choose providers when you need instant deposits, want to support retail
+investors with smaller transaction sizes, or lack in-house treasury operations.
+Providers offer instant settlement measured in seconds instead of days,
+automated reconciliation via API, support for credit cards and ACH, 24/7
+operation including weekends, and handle AML screening for you. The cost is
+50-100 bps per transaction, potential KYC duplication with your OnchainID
+verification, transaction size limits often capped at $10,000-$50,000,
+additional counterparty risk, and regulatory dependency on the provider
+maintaining their licenses.
 
-**Advantages:**
-
-- Instant settlement (seconds instead of days)
-- Automated reconciliation via API
-- Support for credit cards and ACH
-- 24/7 operation including weekends
-- Provider handles AML screening
-
-**Disadvantages:**
-
-- Transaction fees (typically 50-100 bps)
-- Provider KYC may duplicate your OnchainID verification
-- Transaction size limits (often max $10,000-$50,000)
-- Additional counterparty risk
-- Regulatory dependency (provider must maintain licenses)
-
-**Integration approach:**
-
-1. Register with provider (Wyre, Circle, Stripe Crypto)
-2. Configure webhook endpoints to receive deposit notifications
-3. Link provider's user ID with investor's OnchainID address
-4. Mint tokens automatically when webhook confirms deposit
-5. Monitor provider status via observability dashboard integration
+To integrate, register with your chosen provider (Wyre, Circle, or Stripe
+Crypto), then configure webhook endpoints to receive deposit notifications. Link
+the provider's user ID with each investor's OnchainID address so the system can
+match deposits to accounts. Mint tokens automatically when webhooks confirm
+deposits, and monitor provider status via the observability dashboard
+integration you configure during setup.
 
 **Check the payment provider dashboard** to track provider API health, webhook
-delivery rates, and fee accumulation.
+delivery rates, and accumulated fees over time.
 
 ### Hybrid approach (recommended for institutional issuers)
 
-Support both paths:
-
-- Wires for institutional investors and large transactions (&gt;$50,000)
-- On-ramp providers for retail investors and smaller amounts (&lt;$50,000)
-
-This balances cost efficiency (wires for large amounts) with user experience
-(instant deposits for retail).
+Support both wires for institutional investors and large transactions over
+$50,000 alongside on-ramp providers for retail investors and smaller amounts
+under $50,000. This balances cost efficiency for large amounts with user
+experience for retail participants.
 
 ## Configure bridge settings
 
 ### Banking configuration
 
-Navigate to **Platform Settings** &gt; **Fiat Bridge** &gt; **Banking**.
-
-Configuring bank accounts establishes the receiving endpoint for investor wires.
-Treasury teams need complete account details to generate wire instructions that
-investors will use. Multi-currency support requires separate accounts per
-currency to avoid forex conversion ambiguity.
-
-**Bank account details:**
-
-- **Bank name** - Financial institution name
-- **Account holder** - Legal entity name (must match issuer entity on
-  securities)
-- **Account number** - Bank account number for wire deposits
-- **SWIFT/BIC code** - International bank identifier
-- **Routing number** - Domestic routing (US) or sort code (UK)
-- **IBAN** - International bank account number (Europe)
-
-**Multi-currency configuration:**
-
-To support multiple fiat currencies, add an account for each:
-
-1. Click **Add Currency Account**
-2. Select currency (USD, EUR, GBP, etc.)
-3. Enter bank details specific to that currency
-4. Set currency-specific transaction limits
-5. Configure exchange rate source (manual or API)
+Navigate to **Platform Settings** &gt; **Fiat Bridge** &gt; **Banking** to
+establish the receiving endpoint for investor wires. Treasury teams need
+complete account details to generate wire instructions investors will use. Enter
+your bank name, account holder legal entity name (which must match the issuer
+entity on securities), account number for wire deposits, SWIFT/BIC code for
+international identification, routing number for domestic transfers, and IBAN
+for European accounts. Multi-currency support requires separate accounts per
+currency to avoid forex conversion ambiguity—add each currency by clicking **Add
+Currency Account**, selecting the currency (USD, EUR, GBP), entering
+currency-specific bank details, setting transaction limits, and configuring your
+exchange rate source (manual or API).
 
 ![Banking configuration](/images/screenshots/placeholder.svg) _Banking
 configuration showing bank account details for multiple currencies with account
@@ -159,105 +124,74 @@ operational funds. Segregated accounts simplify reconciliation and demonstrate
 reserve backing to auditors.
 
 **Check the bank balance panel** in observability dashboards to compare actual
-bank balance against expected balance calculated from token supply.
+bank balance against expected balance calculated from token supply and pending
+transactions.
 
 ### Stablecoin configuration
 
-Navigate to **Platform Settings** &gt; **Fiat Bridge** &gt; **Stablecoins**.
+Navigate to **Platform Settings** &gt; **Fiat Bridge** &gt; **Stablecoins** to
+establish which tokens represent fiat deposits. You can bridge your platform
+stablecoin for full control and no third-party risk, or external stablecoins
+like USDC for wider acceptance and network effects. Click **Add Stablecoin**,
+enter the token contract address, verify that token details auto-populate (name,
+symbol, decimals), then set conversion parameters. Configure the peg ratio
+(typically 1:1 meaning 1 token equals 1 fiat unit), deposit fee in basis points
+charged on fiat-to-token conversions (e.g., 0-50 bps), redemption fee in basis
+points for token-to-fiat (e.g., 0-50 bps), minimum deposit amount (e.g., $100),
+and minimum redemption threshold. Click **Enable Stablecoin** when complete.
 
-Linking stablecoins to the bridge establishes which tokens represent fiat
-deposits. You can bridge your platform stablecoin (full control, no third-party
-risk) or external stablecoins like USDC (widely accepted, network effects).
-
-**Supported stablecoins:**
-
-- **Platform stablecoin** - If issued via
-  [Issue a stablecoin](/docs/user-guides/asset-issuance/issue-stablecoin)
-- **External stablecoins** - USDC, USDT, or other third-party stablecoins
-
-**Configure each stablecoin:**
-
-1. Click **Add Stablecoin**
-2. Enter token contract address
-3. Verify token details auto-populate (name, symbol, decimals)
-4. Set conversion parameters:
-   - **Peg ratio** - Typically 1:1 (1 token = 1 fiat unit)
-   - **Deposit fee** - Basis points charged on fiat-to-token (e.g., 0-50 bps)
-   - **Redemption fee** - Basis points charged on token-to-fiat (e.g., 0-50 bps)
-   - **Minimum deposit** - Minimum fiat amount (e.g., $100)
-   - **Minimum redemption** - Minimum token amount (e.g., $100 equivalent)
-5. Click **Enable Stablecoin**
-
-**Fee structure considerations:**
-
-Common setup is 0% deposit fee (to encourage onboarding) and 10-25 bps
-redemption fee to cover wire costs and maintain spread. The redemption fee
-should cover your banking wire fees plus a small margin.
-
-For example, if your bank charges $25 per outbound wire, a 25 bps fee on a
-$10,000 redemption generates $25 to cover the cost. For smaller redemptions,
-consider a minimum fee (e.g., $25 minimum or 25 bps, whichever is greater).
+Common fee structures use 0% deposit fees to encourage onboarding and 10-25 bps
+redemption fees to cover wire costs and maintain spread. The redemption fee
+should cover your banking wire fees plus a small margin. For example, if your
+bank charges $25 per outbound wire, a 25 bps fee on a $10,000 redemption
+generates $25 to cover the cost. For smaller redemptions, consider a minimum fee
+structure ($25 minimum or 25 bps, whichever is greater).
 
 ![Stablecoin configuration](/images/screenshots/placeholder.svg) _Stablecoin
 configuration showing enabled stablecoins with contract addresses, peg ratios,
 fees, and minimum amounts_
 
 **Check the stablecoin metrics panel** to monitor total supply by stablecoin,
-mint/burn rates, and fee accumulation over time.
+mint/burn rates, and fee accumulation trends over time.
 
 ### Operational parameters
 
-Navigate to **Platform Settings** &gt; **Fiat Bridge** &gt; **Operations**.
+Navigate to **Platform Settings** &gt; **Fiat Bridge** &gt; **Operations** to
+define your SLAs to investors. Be realistic—promising T+0 settlement when your
+treasury team operates 9-5 creates expectation mismatches. Align cut-off times
+with your banking hours and internal processing capacity to maintain credibility
+and operational discipline.
 
-These parameters define your SLAs to investors. Be realistic—promising T+0
-settlement when your treasury team operates 9-5 creates expectation mismatches.
-Align cut-off times with your banking hours and internal processing capacity.
+Configure settlement timing by setting deposit settlement policy (T+0, T+1, or
+T+2 for token minting after fiat receipt verification) and redemption settlement
+(T+1, T+2, or T+3 for fiat payout after token burn). Set the daily cut-off time
+as the deadline for same-day processing (e.g., 3:00 PM local time). For example,
+an institutional issuer might configure T+1 deposit settlement with a 3:00 PM
+cut-off (wires received by 3 PM are verified and minted the next business day)
+alongside T+2 redemption settlement (redemption requests approved today result
+in wires sent two business days later). This gives treasury time to verify
+deposits and arrange funding for redemption wires.
 
-**Settlement timing:**
+Set transaction limits including daily deposit limit (maximum total deposits per
+day), daily redemption limit (maximum total redemptions per day constrained by
+liquidity), per-transaction maximum (largest single deposit or redemption), and
+velocity limits (maximum per address per time period for AML control). Base
+limits on liquidity capacity—your daily redemption limit should not exceed your
+available bank balance plus same-day liquidity sources like credit lines or
+on-demand liquidity pools.
 
-- **Deposit settlement** - T+0, T+1, T+2 for token minting after fiat receipt
-  verification
-- **Redemption settlement** - T+1, T+2, T+3 for fiat payout after token burn
-- **Cut-off time** - Daily deadline for same-day processing (e.g., 3:00 PM local
-  time)
-
-Example configuration for institutional issuer:
-
-- Deposits: T+1 settlement with 3:00 PM cut-off (wires received by 3 PM verified
-  and minted next business day)
-- Redemptions: T+2 settlement (redemption requests approved today, wires sent
-  two business days later)
-
-This gives treasury time to verify deposits and arrange funding for redemption
-wires.
-
-**Transaction limits:**
-
-- **Daily deposit limit** - Maximum total deposits per day
-- **Daily redemption limit** - Maximum total redemptions per day (liquidity
-  constraint)
-- **Per-transaction maximum** - Largest single deposit/redemption
-- **Velocity limits** - Maximum per address per time period (AML control)
-
-Set limits based on liquidity capacity. For redemptions, your daily limit should
-not exceed your available bank balance plus same-day liquidity sources (credit
-lines, on-demand liquidity pools).
-
-**Operational hours:**
-
-- **Business days** - Monday-Friday (exclude holidays)
-- **Business hours** - 9:00 AM - 5:00 PM (for manual processing)
-- **Holiday calendar** - US Federal, UK, EU holidays
-
-When operations are closed, deposits queue for next business day processing.
-Communicate this clearly to investors to avoid support inquiries.
+Configure operational hours by defining business days (Monday-Friday excluding
+holidays), business hours for manual processing (9:00 AM - 5:00 PM), and your
+holiday calendar (US Federal, UK, EU holidays). When operations are closed,
+deposits queue for next business day processing—communicate this clearly to
+investors to avoid support inquiries.
 
 ![Operational parameters](/images/screenshots/placeholder.svg) _Operational
 parameters showing settlement times, transaction limits, business hours, and
 holiday calendar_
 
 **Check the bridge operations dashboard** to monitor current queue depths,
-average processing times, and SLA compliance rates.
+average processing times, and SLA compliance rates across all active operations.
 
 ## Process fiat deposits
 
@@ -267,15 +201,15 @@ identity) then minting (issue tokens to investor address).
 
 <Mermaid
   chart={`flowchart TB
-    Wire[Investor initiates<br/>wire transfer] --> BankReceive[Bank receives<br/>wire transfer]
-    BankReceive --> TreasuryVerify[Treasury verifies<br/>deposit receipt]
+    Wire(Investor initiates<br/>wire transfer) --> BankReceive(Bank receives<br/>wire transfer)
+    BankReceive --> TreasuryVerify(Treasury verifies<br/>deposit receipt)
     TreasuryVerify --> IdentityCheck{OnchainID<br/>verified?}
-    IdentityCheck -->|No| Reject[Reject deposit<br/>& refund]
+    IdentityCheck -->|No| Reject(Reject deposit<br/>& refund)
     IdentityCheck -->|Yes| ComplianceCheck{Compliance<br/>checks pass?}
     ComplianceCheck -->|No| Reject
-    ComplianceCheck -->|Yes| CalculateMint[Calculate token<br/>mint amount]
-    CalculateMint --> MintTokens[Mint tokens to<br/>investor address]
-    MintTokens --> NotifyInvestor[Notify investor<br/>of completion]
+    ComplianceCheck -->|Yes| CalculateMint(Calculate token<br/>mint amount)
+    CalculateMint --> MintTokens(Mint tokens to<br/>investor address)
+    MintTokens --> NotifyInvestor(Notify investor<br/>of completion)
     
     style Wire fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
     style BankReceive fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
@@ -286,173 +220,119 @@ identity) then minting (issue tokens to investor address).
 
 ### Receive wire transfer
 
-Investors initiate wire transfers to your configured bank account. Each wire
-must include reference information linking it to the investor's platform account
-or OnchainID address.
+Investors initiate wire transfers to your configured bank account, with each
+wire including reference information linking it to the investor's platform
+account or OnchainID address. Navigate to **Fiat Bridge** &gt; **Deposit
+Instructions** and click **Generate Deposit Instructions**. The platform creates
+a unique deposit reference code for the investor and generates complete wire
+instructions including bank account details, the unique deposit reference code,
+and the required memo/reference field format. Share these instructions with the
+investor via email or your investor portal.
 
-**Generate deposit instructions:**
-
-Navigate to **Fiat Bridge** &gt; **Deposit Instructions**:
-
-1. Click **Generate Deposit Instructions**
-2. Platform creates unique deposit reference code for investor
-3. System generates complete wire instructions including:
-   - Bank account details
-   - Unique deposit reference code
-   - Required memo/reference field format
-4. Share instructions with investor via email or investor portal
-
-The reference code is critical. Without it, treasury must manually match wires
-to investors using name and amount—error-prone and slow.
-
-**Investor wire format:**
-
-Investors receive instructions like:
-
-```
-Bank: JP Morgan Chase
-Account: Asset Tokenization Platform LLC
-Account Number: 123456789
-Routing: 021000021
-SWIFT: CHASUS33
-
-Reference/Memo: DEPOSIT-A7B3C9D2
-
-IMPORTANT: Include reference code in wire memo field.
-```
-
-The reference code links automatically to the investor's OnchainID during
-verification.
+The reference code is critical—without it, treasury must manually match wires to
+investors using name and amount, which is error-prone and slow. Investors
+receive instructions showing the bank name, account holder, account number,
+routing and SWIFT codes, along with the reference code to include in the wire
+memo field. The reference code links automatically to the investor's OnchainID
+during verification.
 
 ### Verify deposit receipt
 
-Treasury confirms fiat arrived in bank account and links it to the correct
-investor.
+Treasury confirms fiat arrived in the bank account and links it to the correct
+investor. If you have banking API integration, the platform polls your bank
+account for incoming wires every 15 minutes, and new deposits appear in **Fiat
+Bridge** &gt; **Pending Deposits** where the platform matches deposits to
+investors via reference code, verifies amount and sender automatically, then
+moves deposits to the mint queue.
 
-**Automated verification (if banking API integrated):**
+**Check the deposit verification panel** in observability dashboards to see
+incoming wires awaiting verification and monitor average time from wire receipt
+to verification completion.
 
-1. Platform polls bank account for incoming wires every 15 minutes
-2. New deposits appear in **Fiat Bridge** &gt; **Pending Deposits**
-3. Platform matches deposit to investor via reference code
-4. Amount, sender, and investor verified automatically
-5. Move to mint queue
-
-**Check the deposit verification panel** to see incoming wires awaiting
-verification and average time from wire receipt to verification.
-
-**Manual verification (no banking API):**
-
-1. Check business bank account for incoming wires (via bank portal)
-2. Navigate to **Fiat Bridge** &gt; **Pending Deposits**
-3. Click **Record Deposit**
-4. Enter deposit details:
-   - Deposit amount (fiat)
-   - Deposit currency
-   - Wire reference number (from bank statement)
-   - Wire date
-   - Investor address (lookup by reference code or email)
-5. Click **Verify Deposit**
-
-Platform now:
-
-- Links deposit to investor account
-- Calculates token mint amount (deposit - fees) / peg ratio
-- Marks deposit as verified and ready for minting
+For manual verification without banking API, check your business bank account
+for incoming wires via the bank portal, then navigate to **Fiat Bridge** &gt;
+**Pending Deposits** and click **Record Deposit**. Enter the deposit amount and
+currency, wire reference number from your bank statement, wire date, and
+investor address (lookup by reference code or email), then click **Verify
+Deposit**. The platform links the deposit to the investor account, calculates
+the token mint amount as (deposit minus fees) divided by peg ratio, and marks
+the deposit as verified and ready for minting.
 
 ![Deposit verification](/images/screenshots/placeholder.svg) _Deposit
 verification showing pending wire transfers with amount, currency, reference,
 investor lookup, and verify button_
 
-**Daily reconciliation:** Before processing each day's deposits, reconcile bank
-account balance against platform recorded deposits. Discrepancies indicate
-missed wires or data entry errors.
+Before processing each day's deposits, reconcile bank account balance against
+platform recorded deposits. Discrepancies indicate missed wires or data entry
+errors that need investigation.
 
 **Check the reconciliation dashboard** to compare expected bank balance (from
-platform records) against actual balance (from banking API or manual entry).
+platform records) against actual balance (from banking API or manual entry) to
+catch issues early.
 
 ### Mint tokens
 
-After verification, issue tokens to investor addresses. This is where fiat
-becomes blockchain-native value.
+After verification, issue tokens to investor addresses—this is where fiat
+becomes blockchain-native value. Navigate to **Fiat Bridge** &gt; **Verified
+Deposits** to review deposits ready for minting. Each verified deposit shows the
+investor OnchainID address, fiat amount deposited, applicable fees (deposit fee
+plus wire fees), net token mint amount calculated as (fiat amount minus fees)
+divided by peg ratio, which stablecoin to mint, and the settlement date based on
+verification time and your T+0/T+1 policy.
 
-Navigate to **Fiat Bridge** &gt; **Verified Deposits**.
+**CRITICAL: Verify investor compliance status.** The platform automatically
+checks OnchainID verification status and compliance module eligibility before
+allowing mint. If the investor lacks required claims or is on a blocklist, the
+mint will fail with a clear error explaining the issue.
 
-**Review deposit ready for minting:**
+To mint a single deposit, click **Mint Tokens**—the platform executes the mint
+transaction on-chain, records the transaction hash on the deposit record,
+updates the investor token balance, sends notification to the investor via email
+and in-app, then marks the deposit as complete. Treasury teams processing 10-100
+daily deposits benefit from batch operations: select multiple deposits via
+checkboxes, click **Batch Mint**, and the platform processes all in sequence
+before showing batch results with successful mints and any failures with
+reasons.
 
-Each verified deposit shows:
-
-- Investor OnchainID address
-- Fiat amount deposited
-- Applicable fees (deposit fee + wire fees)
-- Net token mint amount: (fiat amount - fees) / peg ratio
-- Stablecoin to mint
-- Settlement date (based on verification time and T+0/T+1 policy)
-
-**CRITICAL: Verify investor compliance status.** Platform automatically checks
-OnchainID verification status and compliance module eligibility before allowing
-mint. If investor lacks required claims or is on blocklist, mint will fail with
-clear error.
-
-**Mint single deposit:**
-
-1. Click **Mint Tokens**
-2. Platform executes mint transaction on-chain
-3. Records mint transaction hash on deposit record
-4. Updates investor token balance
-5. Sends notification to investor (email + in-app)
-6. Marks deposit as complete
-
-**Batch minting (for multiple deposits):**
-
-Treasury teams processing 10-100 daily deposits benefit from batch operations:
-
-1. Select deposits via checkboxes (all ready for minting)
-2. Click **Batch Mint**
-3. Platform processes all in sequence
-4. Review batch results—shows successful mints and any failures with reasons
-
-**Check the mint operations panel** to monitor mint transaction success rates,
-average gas costs, and mint volume by stablecoin.
+**Check the mint operations panel** in observability dashboards to monitor mint
+transaction success rates, average gas costs, and mint volume by stablecoin over
+time.
 
 ![Token minting](/images/screenshots/placeholder.svg) _Verified deposits showing
 deposit details, calculated token amounts, and mint buttons with batch
 processing option_
 
-**Compliance integration:** The minting step synchronizes with OnchainID claims.
-Platform validates:
-
-- Investor has KYC claim with issuer signature
-- Investor is not on blocklist
-- Investor meets minimum investment requirements (if configured)
-- Token transfer restrictions allow mint to this address
-
-If any check fails, mint is blocked and deposit queued for manual review or
-refund.
+The minting step synchronizes with OnchainID claims—the platform validates that
+the investor has a KYC claim with issuer signature, is not on any blocklist,
+meets minimum investment requirements if configured, and that token transfer
+restrictions allow minting to this address. If any check fails, the mint is
+blocked and the deposit queues for manual review or refund.
 
 **DALP vault integration:** Minted tokens represent claims on vault-held
 reserves. Ensure vault custody arrangements match token supply to maintain 1:1
-backing. Check vault reserve ratio in observability dashboards after large mint
-operations.
+backing. **Check vault reserve ratio** in observability dashboards after large
+mint operations to verify reserves remain above your target threshold (typically
+100-110%).
 
 ## Process redemption requests
 
 The token-to-fiat flow converts on-chain balances back to bank wire transfers.
 Investors request redemption, treasury approves and burns tokens, then executes
-wire transfers.
+wire transfers to complete the cycle.
 
 <Mermaid
   chart={`flowchart TB
-    Request[Investor submits<br/>redemption request] --> Review[Treasury reviews<br/>request details]
+    Request(Investor submits<br/>redemption request) --> Review(Treasury reviews<br/>request details)
     Review --> BankingCheck{Banking details<br/>match KYC?}
-    BankingCheck -->|No| Reject[Reject request]
+    BankingCheck -->|No| Reject(Reject request)
     BankingCheck -->|Yes| ComplianceCheck{Compliance<br/>checks pass?}
     ComplianceCheck -->|No| Reject
     ComplianceCheck -->|Yes| LiquidityCheck{Sufficient<br/>liquidity?}
-    LiquidityCheck -->|No| Queue[Queue for<br/>liquidity]
-    LiquidityCheck -->|Yes| Approve[Approve redemption]
-    Approve --> BurnTokens[Burn tokens from<br/>investor address]
-    BurnTokens --> ExecuteWire[Execute wire<br/>transfer to investor]
-    ExecuteWire --> NotifyComplete[Notify investor<br/>of completion]
+    LiquidityCheck -->|No| Queue(Queue for<br/>liquidity)
+    LiquidityCheck -->|Yes| Approve(Approve redemption)
+    Approve --> BurnTokens(Burn tokens from<br/>investor address)
+    BurnTokens --> ExecuteWire(Execute wire<br/>transfer to investor)
+    ExecuteWire --> NotifyComplete(Notify investor<br/>of completion)
     Queue --> Approve
     
     style Request fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
@@ -464,63 +344,41 @@ wire transfers.
 
 ### Receive redemption request
 
-Investors initiate redemption via the dApp interface.
+Investors initiate redemption via the dApp interface by navigating to
+**Account** &gt; **Redeem Tokens**, entering the token amount to redeem,
+selecting the fiat currency to receive (USD, EUR, GBP), and providing banking
+details (beneficiary name matching KYC records, bank account number or IBAN,
+SWIFT/BIC code, bank name and address). After reviewing redemption fees and net
+fiat amount, they click **Submit Redemption Request**. The platform creates the
+redemption request and queues it for treasury approval with timestamp and
+estimated settlement date based on your operational parameters.
 
-**Investor workflow:**
-
-1. Navigate to **Account** &gt; **Redeem Tokens** in dApp
-2. Enter redemption details:
-   - Token amount to redeem
-   - Fiat currency to receive (USD, EUR, GBP, etc.)
-   - Banking details:
-     - Beneficiary name (must match KYC records)
-     - Bank account number or IBAN
-     - SWIFT/BIC code
-     - Bank name and address
-3. Review redemption fees and net fiat amount
-4. Click **Submit Redemption Request**
-5. Platform creates redemption request and queues for treasury approval
-
-**Treasury notification:**
-
-New redemption appears in **Fiat Bridge** &gt; **Redemption Requests** with
-timestamp and estimated settlement date based on operational parameters.
-
-**Check the redemption queue panel** to monitor pending redemptions by volume
-and value, average queue time, and approaching SLA deadlines.
+**Check the redemption queue panel** in observability dashboards to monitor
+pending redemptions by volume and value, average queue time, and requests
+approaching SLA deadlines.
 
 ### Review redemption request
 
 Treasury verifies investor identity, compliance status, and banking details
-before approving redemption.
-
-Navigate to **Fiat Bridge** &gt; **Redemption Requests**.
-
-**Review request details:**
-
-- **Investor identity:** OnchainID address, KYC claim status, investor name from
-  claims
-- **Token amount:** Amount to burn (check investor holds sufficient balance)
-- **Banking details:** Beneficiary name, account number, SWIFT/BIC
-- **Fees:** Redemption fee (basis points or minimum)
-- **Net fiat payout:** Token amount × peg ratio - fees
-- **Settlement date:** Based on request time and cut-off policy (T+1, T+2, etc.)
+before approving redemption. Navigate to **Fiat Bridge** &gt; **Redemption
+Requests** to review requests showing investor identity (OnchainID address, KYC
+claim status, investor name from claims), token amount to burn (verify investor
+holds sufficient balance), banking details (beneficiary name, account number,
+SWIFT/BIC), redemption fees (basis points or minimum), net fiat payout (token
+amount times peg ratio minus fees), and settlement date based on request time
+and your T+1/T+2 policy.
 
 **CRITICAL verification: Banking details must match KYC records.** This prevents
-redemption to third-party accounts (potential money laundering vector). If
-beneficiary name does not match investor name from KYC claims, flag for manual
-review.
+redemption to third-party accounts, a potential money laundering vector. If the
+beneficiary name does not match the investor name from KYC claims, flag for
+manual review. Verify that the KYC claim status is current (not expired),
+investor is not on blocklists or sanctions lists, banking details match verified
+KYC records, investor holds sufficient token balance (greater than or equal to
+requested amount), and the redemption amount meets your minimum threshold.
 
-**Compliance checks:**
-
-- KYC claim status current (not expired)
-- Investor not on blocklist or sanctions lists
-- Banking details match verified KYC records
-- Investor holds sufficient token balance (>= requested amount)
-- Redemption amount meets minimum threshold
-
-**Check the compliance metrics panel** to see redemption rejection rates by
-reason and identify patterns requiring investor education.
+**Check the compliance metrics panel** in observability dashboards to see
+redemption rejection rates by reason and identify patterns requiring investor
+education.
 
 ![Redemption review](/images/screenshots/placeholder.svg) _Redemption request
 details showing investor info, token amount, banking details, fees, net payout,
@@ -528,510 +386,403 @@ and approve/reject buttons_
 
 ### Approve or reject redemption
 
-**Approve redemption:**
+To approve, click **Approve Redemption** and confirm—the platform executes the
+burn transaction on-chain, removes tokens from the investor address, moves the
+redemption to **Pending Payout** queue with the settlement date, and records
+liability for the fiat payout. Burned tokens reduce liability against vault
+reserves—monitor vault reserve ratio to ensure sufficient liquidity for pending
+payouts.
 
-1. Click **Approve Redemption**
-2. Confirm approval
-3. Platform executes burn transaction on-chain
-4. Tokens removed from investor address
-5. Redemption moves to **Pending Payout** queue with settlement date
-6. Liability recorded for fiat payout
+If you find compliance or verification issues, click **Reject Redemption** and
+select a rejection reason (banking details mismatch, KYC claim expired or
+missing, insufficient token balance, suspicious activity flag, or sanctions list
+match). Enter detailed notes for the audit trail and confirm rejection. The
+platform cancels the redemption request, notifies the investor with the
+rejection reason, leaves tokens in the investor wallet, and logs the rejection
+in the audit trail.
 
-**DALP vault impact:** Burned tokens reduce liability against vault reserves.
-Monitor vault reserve ratio to ensure sufficient liquidity for pending payouts.
-
-**Reject redemption:**
-
-If compliance or verification issues found:
-
-1. Click **Reject Redemption**
-2. Select rejection reason:
-   - Banking details mismatch
-   - KYC claim expired or missing
-   - Insufficient token balance
-   - Suspicious activity flag
-   - Sanctions list match
-3. Enter detailed notes for audit trail
-4. Confirm rejection
-
-Platform now:
-
-- Cancels redemption request
-- Notifies investor with rejection reason
-- Tokens remain in investor wallet
-- Logs rejection in audit trail
-
-**Rejection metrics:** Monitor rejection rate in observability dashboards. High
-rejection rates (>5%) indicate investor education needed on banking details
-verification or KYC claim renewal.
+Monitor rejection rate in observability dashboards—high rejection rates
+exceeding 5% indicate investor education is needed on banking details
+verification or KYC claim renewal processes.
 
 **Check the redemption approval panel** to track approval throughput, average
-review time per request, and pending approvals approaching SLA deadlines.
+review time per request, and pending approvals approaching SLA deadlines that
+require attention.
 
 ### Execute fiat payout
 
-Transfer fiat from issuer bank account to investor bank account.
+Transfer fiat from your issuer bank account to investor bank accounts. Navigate
+to **Fiat Bridge** &gt; **Pending Payouts** to see approved redemptions with
+settlement dates reached. Before processing payouts, verify bank account balance
+covers total payout amount plus wire fees—if insufficient, arrange funding by
+transferring from reserves, drawing on credit lines, or liquidating collateral.
 
-Navigate to **Fiat Bridge** &gt; **Pending Payouts**.
+**Check the vault liquidity panel** in observability dashboards to see available
+reserves, pending payout liabilities, and current reserve ratio. The system
+alerts if the ratio drops below your configured threshold (typically 100-110%).
 
-This queue shows approved redemptions with settlement date reached. Treasury
-must execute wire transfers to complete redemptions.
+If you have payment processor API integration, select redemptions for payout
+(filter by settlement date equals today), click **Execute Automated Payout**,
+and the platform sends payout instructions to the processor API. The processor
+initiates wire transfers, webhooks confirm wire execution, the platform marks
+redemptions as paid, and observability metrics update automatically.
 
-**Liquidity planning:** Before processing payouts, verify bank account balance
-covers total payout amount plus wire fees. If insufficient, arrange funding
-(transfer from reserves, draw on credit line, liquidate collateral).
+For manual payout via business banking portal, click **Export Payout Batch** to
+generate a CSV with wire details, review the CSV contents (beneficiary, account,
+amount per redemption), then process wire transfers via your business banking
+portal (one by one or bulk upload if your bank supports it). After each wire
+executes, navigate to the redemption record in the platform, click **Mark as
+Paid**, enter the wire confirmation number from your bank and the payout date
+when the wire executed, then confirm completion. The platform records the payout
+and notifies the investor.
 
-**Check the vault liquidity panel** to see available reserves, pending payout
-liabilities, and reserve ratio. Alert if ratio drops below configured threshold
-(typically 100-110%).
-
-**Automated payout (if payment processor integrated):**
-
-1. Select redemptions for payout (filter by settlement date = today)
-2. Click **Execute Automated Payout**
-3. Platform sends payout instructions to payment processor API
-4. Processor initiates wire transfers
-5. Webhook confirms wire execution
-6. Platform marks redemptions as paid
-7. Updates observability metrics
-
-**Manual payout (via business banking portal):**
-
-1. Click **Export Payout Batch** to generate CSV with wire details
-2. Review CSV contents (beneficiary, account, amount per redemption)
-3. Process wire transfers via business banking portal (one by one or bulk upload
-   if bank supports)
-4. After each wire executes:
-   - Navigate to redemption record in platform
-   - Click **Mark as Paid**
-   - Enter wire confirmation number (from bank)
-   - Enter payout date (when wire executed)
-   - Confirm completion
-5. Platform records payout and notifies investor
-
-**Batch wire processing:** Many banks support bulk wire file upload (ISO 20022
-format). Export batch as XML, upload to bank portal, approve batch. This reduces
-manual entry from 100 clicks to 1 upload + 1 approval.
+Many banks support bulk wire file upload in ISO 20022 format—export the batch as
+XML, upload to the bank portal, and approve the batch. This reduces manual entry
+from 100 clicks to 1 upload plus 1 approval step.
 
 ![Payout processing](/images/screenshots/placeholder.svg) _Pending payouts
 showing redemptions grouped by currency with amounts, investor details, and
 execute payout buttons_
 
-**Settlement timing discipline:** Honor stated settlement periods (T+1, T+2)
-rigorously. Delayed redemptions damage investor confidence and may violate
-contractual obligations. If delays occur, proactively notify investors with
-updated timeline.
+Honor stated settlement periods (T+1, T+2) rigorously. Delayed redemptions
+damage investor confidence and may violate contractual obligations. If delays
+occur, proactively notify investors with updated timelines.
 
 **Check the payout execution panel** to monitor wire execution rates, average
-payout processing time, and SLA compliance percentage.
+payout processing time, and SLA compliance percentage across all redemption
+operations.
 
 ## Monitor bridge operations with observability
 
 The bridge dashboard aggregates metrics across deposit verification, minting,
 redemption approval, and payout execution. This unified view prevents
-operational blind spots.
-
-Navigate to **Fiat Bridge** &gt; **Dashboard**.
+operational blind spots that arise when teams track metrics in separate systems.
+Navigate to **Fiat Bridge** &gt; **Dashboard** to access the centralized
+monitoring interface.
 
 ### Volume statistics
 
-Track fiat-crypto flow patterns over time:
+Track fiat-crypto flow patterns over time to understand demand trends. The
+dashboard shows total deposits (24h, 7d, 30d aggregations) representing fiat
+inflows, total redemptions (24h, 7d, 30d) representing fiat outflows, net flow
+calculated as deposits minus redemptions (positive indicates growing AUM,
+negative indicates redemptions exceeding deposits), and average transaction size
+helping segment retail versus institutional activity. Sustained negative net
+flow indicates redemption pressure—check vault liquidity and consider marketing
+campaigns to attract new deposits.
 
-- **Total deposits** (24h, 7d, 30d) - Fiat inflows
-- **Total redemptions** (24h, 7d, 30d) - Fiat outflows
-- **Net flow** - Deposits minus redemptions (positive = growing AUM, negative =
-  redemptions exceeding deposits)
-- **Average transaction size** - Helps segment retail vs institutional activity
-
-**Trend analysis:** Sustained negative net flow indicates redemption pressure.
-Check vault liquidity and consider marketing campaigns to attract new deposits.
-
-**Check the bridge volume chart** to visualize deposit/redemption trends over 30
-days with overlaid liquidity reserve levels.
+**Check the bridge volume chart** to visualize deposit and redemption trends
+over 30 days with overlaid liquidity reserve levels showing the relationship
+between flows and available reserves.
 
 ### Processing metrics
 
-Monitor operational efficiency:
-
-- **Pending deposits count** - Awaiting verification
-- **Pending redemptions count** - Awaiting approval
-- **Average processing time** - Time from request to completion
-- **Failed transaction rate** - Mints or burns that failed on-chain
-
-**Operational targets:**
-
-- Deposit verification time: &lt;4 hours (for T+0 settlement) or &lt;24 hours
-  (for T+1)
-- Redemption approval time: &lt;24 hours
-- Failed transaction rate: &lt;0.1% (investigate any failures immediately)
+Monitor operational efficiency through metrics showing pending deposits count
+(awaiting verification), pending redemptions count (awaiting approval), average
+processing time from request to completion, and failed transaction rate for
+mints or burns that failed on-chain. Target deposit verification time under 4
+hours for T+0 settlement or under 24 hours for T+1, redemption approval time
+under 24 hours, and failed transaction rate under 0.1%—investigate any failures
+immediately to identify root causes.
 
 **Check the bridge processing metrics panel** to see queue depths and processing
-time percentiles (p50, p95, p99).
+time percentiles (p50, p95, p99) that reveal both typical performance and tail
+latencies affecting user experience.
 
 ### Financial metrics
 
-Track fees, liabilities, and reserve backing:
+Track fees, liabilities, and reserve backing through metrics showing total fees
+collected (accumulated from deposit and redemption fees), outstanding redemption
+liability (sum of approved redemptions pending payout), bank account balance
+versus token supply for reserve ratio validation, and vault reserve ratio (total
+vault holdings divided by token supply with target of 100% or higher). Token
+supply must never exceed vault reserves including bank balance plus custodied
+assets—if the ratio drops below 100%, you have undercollateralization risk
+requiring immediate attention.
 
-- **Total fees collected** - Accumulated from deposit and redemption fees
-- **Outstanding redemption liability** - Sum of approved redemptions pending
-  payout
-- **Bank account balance vs. token supply** - Reserve ratio validation
-- **Vault reserve ratio** - Total vault holdings / token supply (target: 100%+)
-
-**CRITICAL: Reserve ratio monitoring.** Token supply must never exceed vault
-reserves (including bank balance + custodied assets). If ratio drops below 100%,
-you have undercollateralization risk.
-
-**Alert thresholds:**
-
-- Reserve ratio &lt;105%: Warning (schedule reserve top-up)
-- Reserve ratio &lt;100%: Critical (halt redemptions until funded)
-- Outstanding redemption liability &gt;50% of bank balance: Warning (arrange
-  liquidity)
+Set alert thresholds at reserve ratio under 105% for warning status (schedule
+reserve top-up), reserve ratio under 100% for critical status (halt redemptions
+until funded), and outstanding redemption liability exceeding 50% of bank
+balance for warning status (arrange liquidity).
 
 **Check the vault reserve panel** in observability dashboards to see real-time
-reserve ratio with historical chart and alert status.
+reserve ratio with historical chart and alert status providing early warning of
+liquidity pressure.
 
 ![Bridge dashboard](/images/screenshots/placeholder.svg) _Fiat bridge dashboard
 showing volume charts, processing queues, financial metrics, and trend graphs_
 
 ### Reconciliation workflow
 
-Ensure fiat and token balances align daily.
-
-Navigate to **Fiat Bridge** &gt; **Reconciliation**.
-
-**Daily reconciliation process:**
-
-1. Review reconciliation report showing:
-   - **Bank account balance** (fiat) - Current balance from banking API or
-     manual entry
-   - **Total token supply** - On-chain token supply minted via bridge
-   - **Pending deposits** - Not yet minted (in verification queue)
-   - **Pending redemptions** - Approved but not yet paid (payout queue)
-   - **Expected bank balance** - (Token supply + pending deposits - pending
-     redemptions)
-2. Compare expected vs. actual bank balance
-3. If variance &gt;$100 or 0.1%, investigate
-4. Mark reconciliation complete after resolving discrepancies
+Ensure fiat and token balances align daily to catch discrepancies before they
+compound. Navigate to **Fiat Bridge** &gt; **Reconciliation** to review the
+reconciliation report showing bank account balance (current fiat balance from
+banking API or manual entry), total token supply (on-chain token supply minted
+via bridge), pending deposits (not yet minted, in verification queue), pending
+redemptions (approved but not yet paid, in payout queue), and expected bank
+balance calculated as (token supply plus pending deposits minus pending
+redemptions). Compare expected versus actual bank balance—if variance exceeds
+$100 or 0.1%, investigate before marking reconciliation complete.
 
 **DALP advantage: Unified registry.** Traditional bridge systems require 3-way
-reconciliation (bank, blockchain, internal database). DALP's on-chain registry
-eliminates the internal database as source of truth—blockchain state is
-authoritative. This reduces reconciliation points from 3 to 2.
+reconciliation across bank, blockchain, and internal database. DALP's on-chain
+registry eliminates the internal database as source of truth—blockchain state is
+authoritative. This reduces reconciliation points from 3 to 2, simplifying daily
+operations.
 
-**Discrepancy resolution:**
-
-If balances don't match, investigate:
-
-- **Unmatched wire transfers:** Check bank for wires received but not recorded
-  in platform
-- **Missed deposits:** Verify all wires have corresponding deposit records
-- **Unauthorized mints:** Review mint transaction history for unexpected entries
-- **Unpaid redemptions:** Check for redemptions marked paid but wires never
-  executed
-- **Bank fees:** Wire fees may reduce balance without corresponding platform
-  transaction
+If balances don't match, investigate unmatched wire transfers (check bank for
+wires received but not recorded in platform), missed deposits (verify all wires
+have corresponding deposit records), unauthorized mints (review mint transaction
+history for unexpected entries), unpaid redemptions (check for redemptions
+marked paid but wires never executed), and bank fees (wire fees may reduce
+balance without corresponding platform transaction).
 
 **Check the reconciliation variance panel** to see historical variance trends
-and identify chronic reconciliation issues requiring process improvement.
+and identify chronic reconciliation issues requiring process improvements to
+eliminate recurring problems.
 
 ![Reconciliation report](/images/screenshots/placeholder.svg) _Reconciliation
 report showing bank balances, token supply, pending transactions, and variance
 analysis_
 
-**Frequency:** Perform reconciliation daily before processing new deposits or
-redemptions. Monthly comprehensive reconciliation with accounting team review.
+Perform reconciliation daily before processing new deposits or redemptions.
+Conduct monthly comprehensive reconciliation with accounting team review to
+validate long-term accuracy and catch accumulated drift.
 
 ## Troubleshooting with observability
 
-When issues occur, dashboards provide diagnostic starting point.
+When issues occur, dashboards provide the diagnostic starting point to identify
+root causes quickly without manual investigation across multiple systems.
 
 ### Deposit not appearing in pending queue
 
-**Symptom:** Investor reports wire sent, but deposit not showing in platform.
+When an investor reports a wire sent but the deposit doesn't show in the
+platform, first **check the deposit receipt panel** in the bridge dashboard for
+recent incoming wires. Navigate to **Fiat Bridge** &gt; **Deposit History** and
+search by investor name or amount, verify the wire completed in the bank account
+(check bank portal), and check that the reference code format in the wire memo
+matches the expected format.
 
-**Investigation:**
+Common causes include wire in transit (banking system shows pending, not yet
+settled—wait 24 hours), wrong reference code (investor omitted or mistyped
+reference code in wire memo), amount below minimum (deposit amount less than
+configured minimum threshold), or banking API delay (if using automated
+matching, API sync may lag—refresh manually). To resolve, manually record the
+deposit via **Record Deposit** and link to investor by name if the reference
+code is missing, contact the investor to request a top-up or refund the original
+wire if below minimum, or force sync via **Refresh Bank Transactions** button if
+experiencing API delay.
 
-1. **Check the deposit receipt panel** in bridge dashboard for recent incoming
-   wires
-2. Navigate to **Fiat Bridge** &gt; **Deposit History** and search by investor
-   name or amount
-3. Verify wire completed in bank account (check bank portal)
-4. Check reference code format in wire memo matches expected format
-
-**Common causes:**
-
-- **Wire in transit:** Banking system shows pending, not yet settled (wait 24
-  hours)
-- **Wrong reference code:** Investor omitted or mistyped reference code in wire
-  memo
-- **Amount below minimum:** Deposit amount less than configured minimum
-  threshold
-- **Banking API delay:** If automated matching, API sync may lag (refresh
-  manually)
-
-**Resolution:**
-
-- If reference code missing: Manually record deposit via **Record Deposit** and
-  link to investor by name
-- If below minimum: Contact investor to request top-up or refund original wire
-- If API delay: Force sync via **Refresh Bank Transactions** button
-
-**Check the deposit matching panel** to see failed automatic matches awaiting
-manual linkage.
+**Check the deposit matching panel** in observability dashboards to see failed
+automatic matches awaiting manual linkage so you can proactively address them.
 
 ### Cannot mint tokens for verified deposit
 
-**Symptom:** Verified deposit in queue, but mint operation fails.
+When a verified deposit is in queue but the mint operation fails, click **View
+Mint Error** on the failed deposit to review the error message (e.g., "Investor
+not eligible", "Insufficient mint capacity"). Navigate to **Identity** &gt;
+**Investors** and search the investor's OnchainID, then check compliance status
+confirming the KYC claim is present and verified, the investor is not on any
+blocklists, and the investor meets token transfer restrictions.
 
-**Investigation:**
-
-1. Click **View Mint Error** on failed deposit
-2. Review error message (e.g., "Investor not eligible", "Insufficient mint
-   capacity")
-3. Navigate to **Identity** &gt; **Investors** and search investor OnchainID
-4. Check investor compliance status:
-   - KYC claim present and verified?
-   - Investor on any blocklists?
-   - Investor meets token transfer restrictions?
-
-**Common causes:**
-
-- **Missing OnchainID:** Investor lacks verified OnchainID claim from issuer
-- **Expired KYC:** Investor's KYC claim expired since deposit initiated
-- **Blocklist:** Investor added to blocklist due to compliance issue
-- **Mint capacity:** Token contract has supply cap, and cap reached
-- **Role missing:** Platform lacks `SUPPLY_MANAGEMENT_ROLE` on token contract
-
-**Resolution:**
-
-- If missing OnchainID: Request investor complete KYC verification before
-  minting
-- If expired KYC: Request investor renew KYC, then retry mint
-- If blocklisted: Manual review required (potential refund or compliance
-  resolution)
-- If supply cap: Increase token supply cap via governance or use different token
-- If role missing: Grant `SUPPLY_MANAGEMENT_ROLE` to platform address
+Common causes include missing OnchainID (investor lacks verified OnchainID claim
+from issuer), expired KYC (investor's KYC claim expired since deposit
+initiated), blocklist (investor added to blocklist due to compliance issue),
+mint capacity (token contract has supply cap and cap reached), or role missing
+(platform lacks `SUPPLY_MANAGEMENT_ROLE` on token contract). Resolve by
+requesting investor complete KYC verification before minting if OnchainID is
+missing, requesting investor renew KYC then retry mint if expired, conducting
+manual review for potential refund or compliance resolution if blocklisted,
+increasing token supply cap via governance or using a different token if supply
+cap reached, or granting `SUPPLY_MANAGEMENT_ROLE` to platform address if role is
+missing.
 
 **Check the compliance metrics panel** to see mint rejection reasons and
-identify systemic compliance issues.
+identify systemic compliance issues requiring policy or process changes.
 
 ### Redemption request rejected by platform
 
-**Symptom:** Investor's redemption request automatically rejected.
+When an investor's redemption request is automatically rejected, navigate to
+**Fiat Bridge** &gt; **Rejected Redemptions** and view the rejection reason for
+the specific request. Common reasons include insufficient token balance, banking
+details incomplete, amount below minimum threshold, or token transfers paused
+(contract-level emergency pause).
 
-**Investigation:**
-
-1. Navigate to **Fiat Bridge** &gt; **Rejected Redemptions**
-2. View rejection reason for specific request
-3. Common reasons:
-   - Insufficient token balance
-   - Banking details incomplete
-   - Amount below minimum threshold
-   - Token transfers paused (contract-level emergency pause)
-
-**Resolution:**
-
-- **Insufficient balance:** Investor spent tokens between request and approval
-  (inform investor of current balance)
-- **Incomplete banking:** Request investor provide complete wire details
-  (account number, SWIFT)
-- **Below minimum:** Investor must request larger redemption or accept queue
-  until minimum met
-- **Transfers paused:** Wait for issuer to unpause token transfers (typically
-  after emergency investigation)
+Resolve insufficient balance issues by informing the investor of their current
+balance (they spent tokens between request and approval), request complete wire
+details (account number, SWIFT) for incomplete banking, inform the investor they
+must request a larger redemption or accept queuing until minimum is met for
+below-minimum amounts, or wait for the issuer to unpause token transfers for
+paused transfers (typically after emergency investigation completes).
 
 **Check the redemption rejection panel** to monitor rejection rate by reason and
-identify need for investor education campaigns.
+identify needs for investor education campaigns addressing common mistakes.
 
 ### Wire transfer failed or returned
 
-**Symptom:** Payout marked as sent, but investor reports no receipt. Bank
-returns wire with error.
+When a payout is marked as sent but the investor reports no receipt and the bank
+returns the wire with an error, check wire confirmation details in the platform,
+contact your bank for wire status (reference confirmation number), and review
+the bank's error message (typically: invalid account, beneficiary name mismatch,
+or SWIFT error).
 
-**Investigation:**
+Common causes include invalid account number (investor provided incorrect
+account number or IBAN), name mismatch (beneficiary name on wire does not match
+account holder name at receiving bank), bank does not accept international wires
+(some banks block SWIFT wires), or insufficient correspondent banking (SWIFT
+routing path fails at intermediate bank). When a wire returns, funds return to
+your issuer account but the redemption remains burned—contact the investor for
+corrected banking details, verify corrected details match KYC records,
+re-execute the wire with updated information, and update the redemption record
+with the new wire confirmation.
 
-1. Check wire confirmation details in platform
-2. Contact bank for wire status (reference confirmation number)
-3. Review bank's error message (typically: invalid account, beneficiary name
-   mismatch, SWIFT error)
-
-**Common causes:**
-
-- **Invalid account number:** Investor provided incorrect account number or IBAN
-- **Name mismatch:** Beneficiary name on wire does not match account holder name
-  at receiving bank
-- **Bank does not accept international wires:** Some banks block SWIFT wires
-- **Insufficient correspondent banking:** SWIFT routing path fails at
-  intermediate bank
-
-**Resolution:**
-
-1. If wire returned, funds back in issuer account (redemption still burned)
-2. Contact investor for corrected banking details
-3. Verify corrected details match KYC records
-4. Re-execute wire with updated information
-5. Update redemption record with new wire confirmation
-
-**Wire return handling:** Returned wires create accounting complexity.
-Redemption already burned tokens, so liability remains. Track returned wires
-separately in **Fiat Bridge** &gt; **Wire Returns** queue until re-executed.
+Track returned wires separately in **Fiat Bridge** &gt; **Wire Returns** queue
+until successfully re-executed to maintain accurate liability accounting.
 
 **Check the wire execution panel** to monitor wire success rates by currency and
-identify problematic correspondent banking routes.
+identify problematic correspondent banking routes requiring alternative banking
+relationships.
 
 ### Reconciliation shows discrepancy
 
-**Symptom:** Daily reconciliation shows bank balance does not match expected
-balance.
+When daily reconciliation shows bank balance does not match expected balance,
+review **Reconciliation** &gt; **Variance Detail** and check for unmatched
+transactions including unrecorded deposits (wires in bank but not in
+platform—search bank statement for unexpected wires), unpaid redemptions
+(platform shows paid but wire never executed—check wire confirmation numbers),
+bank fees (wire fees deducted from account—add as reconciliation adjustment),
+and manual mints (tokens minted outside bridge system via governance action or
+emergency mint). Calculate net variance after adjustments—if still discrepant,
+escalate to your accounting team for deeper investigation.
 
-**Investigation:**
-
-1. Review **Reconciliation** &gt; **Variance Detail**
-2. Check for unmatched transactions:
-   - **Unrecorded deposits:** Wires in bank but not in platform (search bank
-     statement for unexpected wires)
-   - **Unpaid redemptions:** Platform shows paid, but wire never executed (check
-     wire confirmation numbers)
-   - **Bank fees:** Wire fees deducted from account (add as reconciliation
-     adjustment)
-   - **Manual mints:** Tokens minted outside bridge system (governance action,
-     emergency mint)
-3. Calculate net variance after adjustments
-4. If still discrepant, escalate to accounting team
-
-**Resolution process:**
-
-- **Add unrecorded deposits:** Manually record via **Record Deposit**
-- **Fix unpaid redemptions:** Re-execute wires for redemptions incorrectly
-  marked paid
-- **Document bank fees:** Add bank fee entries to reconciliation log
-- **Review manual mints:** Verify manual mints were authorized and properly
-  recorded
+Resolve by manually recording unrecorded deposits via **Record Deposit**,
+re-executing wires for redemptions incorrectly marked paid, documenting bank
+fees by adding bank fee entries to the reconciliation log, and reviewing manual
+mints to verify they were authorized and properly recorded.
 
 **CRITICAL: Never ignore discrepancies.** Reconciliation variance indicates
 either operational error or potential fraud. Investigate every variance before
-marking reconciliation complete.
+marking reconciliation complete to maintain financial integrity.
 
 **Check the reconciliation audit log** to see historical variances, resolution
-actions, and identify recurring issues requiring process changes.
+actions taken, and identify recurring issues requiring process changes to
+prevent future occurrences.
 
 ### High latency in compliance checks
 
-**Symptom:** Mint operations slow (&gt;30s per transaction).
+When mint operations are slow (exceeding 30s per transaction), navigate to
+**Observability** &gt; **Compliance Metrics** and check **Compliance Check
+Duration** panel. Identify average check time and p99 latency, then review
+**Compliance Module Count** to see how many modules are executing per
+transaction.
 
-**Investigation:**
-
-1. Navigate to **Observability** &gt; **Compliance Metrics**
-2. Check **Compliance Check Duration** panel
-3. Identify average check time and p99 latency
-4. Review **Compliance Module Count** - How many modules are executing?
-
-**Common causes:**
-
-- **Too many compliance modules:** 10+ modules executing per transfer
-- **Complex module expressions:** Modules using expensive on-chain lookups
-- **RPC gateway congestion:** Besu node or ERPC gateway overloaded
-
-**Resolution:**
-
-- **Reduce module count:** Consolidate redundant compliance rules
-- **Optimize module logic:** Simplify complex expressions, cache repeated
-  lookups
-- **Scale RPC capacity:** Add ERPC replicas or Besu validator nodes
+Common causes include too many compliance modules (10 or more modules executing
+per transfer), complex module expressions (modules using expensive on-chain
+lookups), or RPC gateway congestion (Besu node or ERPC gateway overloaded).
+Resolve by reducing module count (consolidate redundant compliance rules),
+optimizing module logic (simplify complex expressions, cache repeated lookups),
+or scaling RPC capacity (add ERPC replicas or Besu validator nodes).
 
 **Check the compliance check latency panel** in observability dashboards to see
-p50/p95/p99 latencies and identify slow compliance modules.
+p50/p95/p99 latencies and identify specific slow compliance modules requiring
+optimization.
 
 ## Best practices
 
 ### Deposit processing discipline
 
-- Process verified deposits within stated settlement period (T+0 by end of day,
-  T+1 by next business day)
-- Reconcile bank account before processing each day's deposits (catch missed
-  wires)
-- Maintain audit trail of all deposit verifications (compliance requirement)
-- Use unique reference codes for every deposit (eliminates manual matching)
-- Automate deposit matching via banking API where possible (reduces treasury
-  workload)
+Process verified deposits within stated settlement periods (T+0 by end of day,
+T+1 by next business day) to maintain investor trust. Reconcile your bank
+account before processing each day's deposits to catch missed wires early.
+Maintain audit trail of all deposit verifications for compliance
+requirements—your auditors will request these records. Use unique reference
+codes for every deposit to eliminate manual matching and reduce error rates.
+Automate deposit matching via banking API wherever possible to reduce treasury
+workload and improve processing speed.
 
 ### Redemption processing discipline
 
-- Verify banking details against KYC records 100% of time (prevents misdirected
-  wires)
-- Process redemptions strictly first-in-first-out (fairness and regulatory
-  compliance)
-- Maintain sufficient bank balance for redemption liability (monitor vault
-  reserve ratio)
-- Monitor redemption queue depth (alert if approaching daily limit)
-- Honor stated settlement periods rigorously (T+1, T+2, etc.)
+Verify banking details against KYC records 100% of the time to prevent
+misdirected wires that create operational headaches and compliance risks.
+Process redemptions strictly first-in-first-out to ensure fairness and
+regulatory compliance. Maintain sufficient bank balance for redemption liability
+by monitoring vault reserve ratio continuously. Monitor redemption queue depth
+and alert if approaching daily limits that might force queuing. Honor stated
+settlement periods rigorously (T+1, T+2, etc.) to preserve reputation and
+contractual compliance.
 
 **DALP DvP advantage:** For asset redemptions (bonds, deposits maturing), use
 DvP settlement to atomically exchange asset tokens for stablecoin. This
-eliminates redemption timing risk—investor receives fiat-backed stablecoin
-instantly, then redeems stablecoin to fiat on their timeline.
+eliminates redemption timing risk—investors receive fiat-backed stablecoin
+instantly, then redeem stablecoin to fiat on their own timeline.
 
 ### Reconciliation discipline
 
-- Perform daily reconciliation before processing new transactions (never skip)
-- Investigate discrepancies immediately (don't accumulate variance)
-- Maintain 3-way reconciliation: bank account, on-chain token supply, platform
-  database
-- Document all discrepancy resolutions in audit trail
-- Monthly comprehensive reconciliation review with accounting team
+Perform daily reconciliation before processing new transactions—never skip this
+step as compounding errors become exponentially harder to resolve. Investigate
+discrepancies immediately rather than accumulating variance across multiple
+days. Maintain 3-way reconciliation across bank account, on-chain token supply,
+and platform database to catch errors at any integration point. Document all
+discrepancy resolutions in audit trail so future investigators understand what
+happened. Conduct monthly comprehensive reconciliation review with your
+accounting team to validate long-term accuracy.
 
-**Observability-first approach:** Check reconciliation variance panel every
-morning. Sustained variance indicates systemic process issue requiring
-investigation.
+**Observability-first approach:** Check the reconciliation variance panel every
+morning before beginning operations. Sustained variance indicates a systemic
+process issue requiring investigation rather than one-time error correction.
 
 ### Liquidity management
 
-- Monitor vault reserve ratio in observability dashboards (target: 105%+)
-- Set alerts for reserve ratio &lt;105% (warning) and &lt;100% (critical)
-- Plan liquidity for redemption waves (large investor exits, market stress)
-- Maintain credit line or on-demand liquidity source for emergencies
-- Consider staggered redemption processing if liquidity constrained (process
-  largest redemptions first to maintain reserve ratio)
+Monitor vault reserve ratio in observability dashboards targeting 105% or higher
+to maintain healthy buffer. Set alerts for reserve ratio under 105% (warning)
+and under 100% (critical) to enable proactive response before liquidity crises.
+Plan liquidity for redemption waves during large investor exits or market stress
+periods when redemptions cluster. Maintain credit line or on-demand liquidity
+source for emergencies when immediate capital access is required. Consider
+staggered redemption processing if liquidity constrained—process largest
+redemptions first to maintain reserve ratio health.
 
 **Check the vault liquidity panel** daily to see available reserves, pending
-redemption liabilities, and reserve ratio trend.
+redemption liabilities, and reserve ratio trend providing visibility into
+developing liquidity pressure.
 
 ### Security discipline
 
-- Implement dual approval for large redemptions (&gt;$50,000)
-- Use separate bank accounts for bridge operations (never commingle with
-  operational funds)
-- Monitor unusual deposit/redemption patterns (observability alerts for velocity
-  anomalies)
-- Screen all transactions against sanctions lists (automated via compliance
-  modules)
-- Maintain secure storage of wire confirmation numbers (audit trail requirement)
-- Restrict banking detail changes (require re-verification if investor updates
-  bank account)
+Implement dual approval for large redemptions exceeding $50,000 to add
+accountability and reduce fraud risk. Use separate bank accounts for bridge
+operations—never commingle with operational funds as segregation simplifies
+reconciliation and audit. Monitor unusual deposit/redemption patterns using
+observability alerts for velocity anomalies that might indicate coordinated
+manipulation. Screen all transactions against sanctions lists automatically via
+compliance modules to avoid regulatory violations. Maintain secure storage of
+wire confirmation numbers as audit trail requirement for regulatory review.
+Restrict banking detail changes by requiring re-verification if an investor
+updates their bank account to prevent account takeover attacks.
 
 ## Results
 
-After completing these steps, you will have:
-
-- Configured fiat bridge with banking details and stablecoin settings
-- Chosen on-ramp provider strategy (direct wires, third-party, or hybrid)
-- Established operational parameters for deposits and redemptions with clear
-  SLAs
-- Processed fiat deposits from verification through token minting
-- Handled redemption requests from approval through wire execution
-- Implemented observability-driven monitoring and reconciliation procedures
+After completing these steps, you will have configured your fiat bridge with
+banking details and stablecoin settings establishing the foundation for
+operations. You will have chosen an on-ramp provider strategy (direct wires,
+third-party, or hybrid) balancing cost versus convenience. You will have
+established operational parameters for deposits and redemptions with clear SLAs
+investors understand. You will be able to process fiat deposits from
+verification through token minting with confidence in compliance. You will
+handle redemption requests from approval through wire execution with appropriate
+controls. You will have implemented observability-driven monitoring and
+reconciliation procedures that catch issues early.
 
 Your fiat bridge now operates as treasury infrastructure connecting traditional
 finance with DALP vaults. Daily operations center on observability dashboards
-that show deposit queues, redemption liabilities, vault reserves, and
-reconciliation status in real time.
+showing deposit queues, redemption liabilities, vault reserves, and
+reconciliation status in real time, providing the visibility treasury teams need
+to operate confidently at scale.
 
 The observability integration means treasury teams diagnose issues from
-dashboards before investors report problems. Check the bridge status panel each
-morning to verify queue depths, processing times, and reserve ratios are within
-targets.
+dashboards before investors report problems, shifting from reactive firefighting
+to proactive operations management. Check the bridge status panel each morning
+to verify queue depths, processing times, and reserve ratios are within targets
+before beginning daily processing.
 
 ## Next steps
 

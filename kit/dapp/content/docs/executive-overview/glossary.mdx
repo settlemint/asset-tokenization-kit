@@ -1,132 +1,216 @@
 ---
 title: Glossary
 description:
-  This glossary defines key terms used throughout the executive overview.
-  Understanding these concepts will help you engage with tokenization
-  discussions and evaluate platform capabilities.
+  Key terminology for digital asset platforms and tokenization. These terms
+  connect directly to DALP lifecycle capabilities—from DvP settlement and vault
+  custody to automated yield distribution—giving you the vocabulary to evaluate
+  platform features and operational dashboards.
 pageTitle: Glossary of tokenization and DALP terminology
 tags: [glossary, reference, definitions, terminology]
 ---
 
 ## Core tokenization concepts
 
-**Asset tokenization** : Converting ownership rights in real-world assets into
+The foundation of digital asset platforms rests on a few key innovations that
+make traditional finance programmable. These concepts underpin every feature in
+DALP—from compliance automation to instant settlement—and appear throughout
+observability dashboards when you're monitoring platform health.
+
+**Asset tokenization**: Converting ownership rights in real-world assets into
 digital tokens on a blockchain. The token represents the same legal rights as
 traditional instruments but enables instant transfer and automated compliance.
+For example, a bond token carries identical coupon payment rights but settles
+through DvP vaults rather than wire transfers.
 
-**Blockchain** : A distributed ledger technology where transactions are recorded
+**Blockchain**: A distributed ledger technology where transactions are recorded
 in blocks and cryptographically linked. Provides immutable audit trails and
-eliminates single points of failure.
+eliminates single points of failure. Every transaction visible in your
+observability dashboards is anchored to a specific block for tamper-proof
+verification.
 
-**Smart contract** : Self-executing code on a blockchain that automatically
+**Smart contract**: Self-executing code on a blockchain that automatically
 enforces rules and executes transactions when conditions are met. Enables
-programmable compliance and automated corporate actions.
+programmable compliance and automated corporate actions. For instance, a bond
+smart contract distributes coupon payments to all token holders proportionally
+without manual intervention—you'll see these distributions as events in the
+yield management dashboard.
 
-**Token** : A digital representation of an asset on a blockchain. Security
-tokens represent ownership or financial rights in regulated assets like bonds,
-equities, or fund units.
+**Token**: A digital representation of an asset on a blockchain. Security tokens
+represent ownership or financial rights in regulated assets like bonds,
+equities, or fund units. Each token interaction (transfer, lock, redemption)
+generates metrics tracked in the cap table and compliance dashboards.
 
 ## Compliance and identity
 
-**ERC-3643** : A token standard specifically designed for permissioned
+Regulated assets demand verified identities and automated rule enforcement at
+every transfer. This section covers the identity infrastructure that makes
+compliance invisible to users while remaining auditable for regulators. When you
+review compliance metrics in observability dashboards, these are the mechanisms
+generating those pass/fail statistics.
+
+**ERC-3643**: A token standard specifically designed for permissioned
 securities. Ensures compliance checks happen before every transfer by linking
-tokens to verified identities.
+tokens to verified identities. The compliance dashboard shows real-time rule
+evaluation stats powered by this standard.
 
-**OnchainID** : A decentralized identity protocol where verified claims about an
+**OnchainID**: A decentralized identity protocol where verified claims about an
 investor (KYC status, accreditation, jurisdiction) are cryptographically linked
-to their wallet address.
+to their wallet address. These claims feed the compliance engine that decides
+whether a transfer can proceed.
 
-**Identity registry** : A system that maps wallet addresses to verified
+**Identity registry**: A system that maps wallet addresses to verified
 identities and eligibility criteria. Only registered addresses can interact with
-compliant assets.
+compliant assets. Observability dashboards track registration rates and identity
+verification status across your investor base.
 
-**KYC/AML** : Know Your Customer and Anti-Money Laundering procedures required
-by regulators. Verifies investor identity and screens against sanctions lists.
+**KYC/AML**: Know Your Customer and Anti-Money Laundering procedures required by
+regulators. Verifies investor identity and screens against sanctions lists.
+Completion rates and verification latency appear as metrics in operational
+dashboards.
 
-**Accredited investor** : An individual or entity meeting financial thresholds
+**Accredited investor**: An individual or entity meeting financial thresholds
 (income, net worth, or sophistication) allowing participation in private
-securities offerings under US regulations.
+securities offerings under US regulations. Identity claims capture accreditation
+status, enabling automated eligibility checks at transfer time.
 
 ## Platform architecture
 
-**DALP (Digital Asset Lifecycle Platform)** : Unified infrastructure managing
-the complete lifecycle of tokenized assets from issuance through redemption.
+DALP integrates lifecycle management, compliance, custody, and settlement into
+one coherent system—eliminating the vendor sprawl that creates operational gaps
+and blind spots. These architectural components power the unified observability
+stack that gives you real-time visibility into every aspect of your digital
+asset operations.
+
+**DALP (Digital Asset Lifecycle Platform)**: Unified infrastructure managing the
+complete lifecycle of tokenized assets from issuance through redemption.
 Integrates compliance, custody, settlement, and servicing in one system rather
-than cobbling together multiple vendors.
+than cobbling together multiple vendors. The observability stack monitors all
+DALP components, surfacing performance and health metrics in centralized
+dashboards.
 
-**SMART Protocol (SettleMint Adaptable Regulated Token)** : The compliance
+**SMART Protocol (SettleMint Adaptable Regulated Token)**: The compliance
 framework underlying all ATK assets. Extends ERC-3643 with modular compliance
-rules and identity management.
+rules and identity management. Every compliance check visible in dashboards runs
+through SMART Protocol validation logic.
 
-**Compliance engine** : The policy enforcement system that evaluates every
+**Compliance engine**: The policy enforcement system that evaluates every
 transfer against configurable rules before execution. Non-compliant transactions
-revert automatically.
+revert automatically. Observability dashboards track rule evaluation latency,
+pass rates, and rejection reasons for troubleshooting and audits.
 
-**Factory contract** : A smart contract template that deploys new asset tokens
+**Factory contract**: A smart contract template that deploys new asset tokens
 with pre-configured compliance and governance structures, accelerating time to
-market.
+market. Deployment metrics (time to issue, configuration errors) feed into
+operational dashboards.
 
 ## Settlement and operations
 
-**T+0 settlement** : Same-day settlement where ownership transfers complete on
+Traditional settlement introduces counterparty risk and multi-day delays. DALP
+uses atomic DvP settlement through secure vaults to eliminate these friction
+points. When you monitor settlement latency in observability dashboards, you're
+watching these mechanisms execute in real time—typically under two seconds per
+transaction.
+
+**T+0 settlement**: Same-day settlement where ownership transfers complete on
 the day of the transaction, versus traditional T+2 (two business days after
-trade date).
+trade date). DvP mechanisms in DALP achieve settlement in seconds, surfacing
+latency metrics in performance dashboards.
 
-**Atomic settlement / DvP (Delivery versus Payment)** : Simultaneous exchange
+**Atomic settlement / DvP (Delivery versus Payment)**: Simultaneous exchange
 where the asset and payment both complete or both fail together, eliminating
-counterparty risk during settlement windows.
+counterparty risk during settlement windows. DALP vaults hold assets and payment
+tokens until both parties meet conditions—dashboards show vault utilization and
+settlement success rates.
 
-**Stablecoin** : A cryptocurrency pegged to fiat currency (like USD) at a 1:1
-ratio, typically backed by reserves. Enables on-chain payments and settlement.
+**Stablecoin**: A cryptocurrency pegged to fiat currency (like USD) at a 1:1
+ratio, typically backed by reserves. Enables on-chain payments and settlement
+within DvP vaults. Liquidity and reserve metrics appear in treasury dashboards.
 
-**Gas fee** : Transaction cost on a blockchain network, paid to validators who
-process and confirm transactions.
+**Gas fee**: Transaction cost on a blockchain network, paid to validators who
+process and confirm transactions. Observability dashboards track gas consumption
+per operation type (transfer, yield distribution, redemption) to optimize
+transaction batching and cost efficiency.
 
 ## Corporate actions
 
-**Coupon payment** : Periodic interest payment on a bond, distributed to all
-token holders proportionally to their holdings.
+Automated yield distribution and corporate action processing distinguish DALP
+from basic tokenization platforms. These capabilities execute through smart
+contracts that enforce fairness and auditability—every coupon payment, NAV
+update, or redemption generates events and metrics visible in lifecycle
+dashboards.
 
-**NAV (Net Asset Value)** : The per-share value of a fund, calculated by
-dividing total assets minus liabilities by the number of shares outstanding.
+**Coupon payment**: Periodic interest payment on a bond, distributed to all
+token holders proportionally to their holdings. DALP's yield management module
+automates distribution through smart contracts, surfacing payment schedules,
+execution status, and recipient breakdowns in observability dashboards.
 
-**Cap table** : Capitalization table showing all holders of an asset and their
-ownership percentages. Blockchain provides real-time cap table visibility.
+**NAV (Net Asset Value)**: The per-share value of a fund, calculated by dividing
+total assets minus liabilities by the number of shares outstanding. NAV updates
+trigger revaluation events tracked in fund performance dashboards, feeding into
+redemption calculations.
 
-**Redemption** : The process of converting tokens back to cash or underlying
-assets, typically at maturity for bonds or upon fund exit.
+**Cap table**: Capitalization table showing all holders of an asset and their
+ownership percentages. Blockchain provides real-time cap table visibility—DALP
+dashboards offer live views of holder distributions, concentration metrics, and
+transfer velocity.
+
+**Redemption**: The process of converting tokens back to cash or underlying
+assets, typically at maturity for bonds or upon fund exit. Redemption workflows
+in DALP use DvP vaults to ensure atomic exchange, with success rates and
+settlement times tracked in lifecycle dashboards.
 
 ## Regulatory frameworks
 
-**MiCA (Markets in Crypto-Assets)** : European Union regulation providing
+Operating across jurisdictions requires navigating different regulatory regimes.
+These frameworks shape compliance rule configuration in DALP—when you review
+compliance dashboards segmented by jurisdiction, you're seeing how these
+regulations translate into automated policy enforcement.
+
+**MiCA (Markets in Crypto-Assets)**: European Union regulation providing
 comprehensive framework for crypto-assets including security tokens and
-stablecoins.
+stablecoins. Compliance rules for EU investors enforce MiCA requirements at
+transfer time.
 
-**Regulation D** : US SEC rule allowing private securities offerings to
-accredited investors without full registration requirements.
+**Regulation D**: US SEC rule allowing private securities offerings to
+accredited investors without full registration requirements. Identity claims
+capture Reg D eligibility, enabling automated checks that appear as rule
+evaluations in compliance dashboards.
 
-**Regulation S** : US SEC rule permitting securities offerings outside the
-United States without registration, subject to restrictions.
+**Regulation S**: US SEC rule permitting securities offerings outside the United
+States without registration, subject to restrictions. Geographic claims and
+holding period rules enforce Reg S compliance automatically.
 
-**MAS (Monetary Authority of Singapore)** : Singapore's central bank and
+**MAS (Monetary Authority of Singapore)**: Singapore's central bank and
 financial regulatory authority, which has established clear frameworks for
-digital assets.
+digital assets. MAS-compliant deployments configure jurisdiction-specific rules
+visible in regional compliance dashboards.
 
 ## Security and custody
 
-**Multi-signature wallet (multisig)** : A wallet requiring multiple private key
+Institutional custody demands defense-in-depth: multisig controls, HSM key
+storage, and granular RBAC permissions. DALP vaults implement these safeguards
+while remaining auditable through observability dashboards that track signing
+operations, key rotation, and access patterns.
+
+**Multi-signature wallet (multisig)**: A wallet requiring multiple private key
 signatures to authorize transactions, implementing maker-checker controls and
-segregation of duties.
+segregation of duties. DvP vaults use multisig for treasury
+operations—dashboards track signature collection latency and approval workflows.
 
-**Hardware Security Module (HSM)** : Tamper-resistant physical device that
+**Hardware Security Module (HSM)**: Tamper-resistant physical device that
 securely stores cryptographic keys and performs signing operations, meeting
-bank-grade security requirements.
+bank-grade security requirements. Observability dashboards monitor HSM health,
+signing latency, and key usage patterns for anomaly detection.
 
-**Role-based access control (RBAC)** : Permission system where user capabilities
-are determined by assigned roles, ensuring proper segregation of duties.
+**Role-based access control (RBAC)**: Permission system where user capabilities
+are determined by assigned roles, ensuring proper segregation of duties. RBAC
+policies govern who can issue assets, approve transfers, or configure compliance
+rules—access logs and permission audits appear in security dashboards.
 
-**Private key** : Cryptographic secret that controls access to a blockchain
+**Private key**: Cryptographic secret that controls access to a blockchain
 wallet. Losing the private key means losing access to assets permanently.
+Institutional deployments store keys in HSMs and enforce key rotation policies
+tracked through security dashboards.
 
 ## Where to next
 

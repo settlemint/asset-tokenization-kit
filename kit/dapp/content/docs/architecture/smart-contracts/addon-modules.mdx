@@ -11,49 +11,154 @@ pageTitle:
 tags: [addons, extensions, modules, advanced-features]
 ---
 
-## ATK's lifecycle management advantage
+## The lifecycle management advantage
 
-**These are not optional add-ons—they're competitive differentiators:**
+Tokenizing an asset is the easy part. Managing its complete lifecycle—from
+issuance through custody, settlement, yield distribution, and eventual
+redemption—is where most platforms fail. ATK System Addons provide the
+operational infrastructure that institutions actually need to run digital asset
+programs at scale.
 
-**DvP Settlement (XvP)**: Atomic delivery versus payment eliminates counterparty
-risk and settlement failures. Multi-party exchanges where every leg executes
-together or the entire transaction reverts. True T+0 finality without trusted
-intermediaries or reconciliation.
+These addons represent ATK's competitive differentiators in the DALP market.
+While other platforms stop at token creation, ATK delivers the full stack of
+lifecycle management tools that make digital assets operationally viable for
+institutional finance.
 
-**Vault Custody**: Multi-signature treasury management with maker-checker
-workflows, configurable quorum requirements, and role-based access control. No
-single point of failure. Emergency pause capabilities. Full audit trails for
-regulatory compliance.
+### DvP settlement: Eliminating counterparty risk
 
-**Yield Management**: Scheduled dividend, interest, and coupon entitlement
-calculations without manual spreadsheet work. Configure payment schedules once;
-the platform calculates entitlements automatically on payment dates, and token
-holders claim their distributions on-demand. Cryptographic proof of entitlement.
-No spreadsheets or reconciliation.
+Consider a real-world scenario: a pension fund purchases tokenized corporate
+bonds from an asset manager. In traditional systems, the fund transfers cash
+first, then waits hours (or days) for the bond tokens to arrive. During this
+settlement window, counterparty risk creates exposure—what if the asset
+manager's systems fail? What if they become insolvent before delivering the
+bonds?
 
-**Token Distribution (Airdrop)**: Sophisticated distribution mechanisms for
-primary issuance, vesting schedules, and community rewards with Merkle
-proof-based verification and flexible claim tracking.
+ATK's
+[XvP (Cross-Value Proposition) settlement system](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/xvp/ATKXvPSettlementImplementation.sol)
+eliminates this risk entirely through atomic settlement. The cash token transfer
+and bond token transfer execute together in a single transaction, or neither
+executes at all. True T+0 finality without trusted intermediaries,
+reconciliation, or settlement failure risk.
 
-## What are ATK system addons?
+For multi-party exchanges—such as a three-way swap involving bonds, cash, and
+equity tokens—the XvP system ensures every leg completes atomically. One party
+cannot receive their assets while another party's transfer fails. This atomic
+guarantee makes complex financial transactions viable on-chain.
 
-Unlike assets (which are tokenized instruments), addons are operational tools
-that work alongside the tokenization infrastructure to provide enhanced
-functionality for ecosystem participants. They extend the ATK platform with
-specialized capabilities that address specific operational needs.
+### Vault custody: Multi-signature treasury control
 
-### Design principles
+A DAO treasury holds millions of dollars in tokenized assets. A single private
+key controlling these assets represents an unacceptable security risk—key
+compromise means total loss. Traditional hot wallets are too vulnerable; cold
+wallets too cumbersome for active treasury management.
 
-- **Modularity** - Independent addons that can be used individually or together
-- **Extensibility** - Factory patterns enable easy deployment of new instances
-- **Security** - Consistent security patterns across all addons
-- **Integration** - Direct integration with ATK System infrastructure
-- **Flexibility** - Configurable parameters for different use cases
+ATK's
+[multi-signature vault system](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/vault/ATKVault.sol)
+implements maker-checker workflows with configurable quorum requirements.
+Propose a transaction to distribute investor dividends. Three of five treasury
+signers must approve before execution. No single point of failure. Emergency
+pause capabilities protect against active exploits. Full audit trails satisfy
+regulatory compliance requirements and enable forensic analysis.
 
-## Architecture overview
+The vault integrates role-based access control, separating operational duties
+(SIGNER_ROLE for transaction proposals), emergency response (EMERGENCY_ROLE for
+pause/unpause), and governance (GOVERNANCE_ROLE for parameter changes). This
+separation ensures that even if one role is compromised, the vault remains
+secure.
 
-ATK System Addons follow a modular architecture with specialized functionality
-organized into four main categories:
+### Yield management: Automated entitlement calculations
+
+An investment fund issues tokenized bonds with quarterly coupon payments.
+Calculating entitlements manually requires spreadsheets tracking every token
+holder, their holdings at the record date, partial transfers, and pro-rata
+calculations. Errors create investor disputes. Reconciliation consumes hours of
+staff time every quarter.
+
+ATK's
+[yield management system](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol)
+automates this entire workflow. Configure the payment schedule once: 5% annual
+yield, quarterly payments, specific payment dates. On each payment date, the
+system calculates entitlements automatically based on token holder balances.
+Token holders claim their distributions on-demand with cryptographic proof of
+entitlement. No spreadsheets, no reconciliation, no disputes.
+
+The yield system integrates directly with the bond's snapshot mechanism,
+capturing holder balances at precise record dates. Even if tokens change hands
+between record date and payment date, entitlements remain correctly allocated to
+the holder of record.
+
+### Token distribution: Merkle-proof airdrops
+
+A company launches a governance token and needs to distribute allocations to
+early adopters, team members with vesting schedules, and community participants.
+Traditional distribution requires collecting addresses, validating eligibility,
+executing thousands of individual transfers (expensive in gas costs), and
+tracking who has claimed.
+
+ATK's
+[airdrop system](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/airdrop/ATKAirdrop.sol)
+uses Merkle proofs for efficient, verifiable distribution. The complete
+recipient list (thousands of addresses) compresses into a single 32-byte Merkle
+root stored on-chain. Recipients claim their allocations by providing
+cryptographic proofs of inclusion. Gas costs scale with claims, not the total
+recipient count.
+
+The system supports time-bound distributions (claim windows), vesting schedules
+(gradual release), and push-based distribution (admin-initiated for specific
+scenarios). Bitmap and amount-based claim tracking prevent double-claiming while
+supporting partial claims for vested allocations.
+
+## Addon architecture principles
+
+ATK System Addons follow consistent architectural patterns that ensure
+modularity, security, and operational reliability across the platform.
+
+### Modularity and composition
+
+Each addon operates independently. Deploy the XvP settlement system without
+using vaults. Use yield management without airdrops. This modularity prevents
+bloat—institutions only deploy the addons they actually need, reducing attack
+surface and operational complexity.
+
+However, addons also compose naturally. A vault can hold tokenized bonds that
+use the yield management system. The XvP settlement system can execute atomic
+swaps between vault-held assets. Integration points are well-defined through
+standard interfaces, enabling complex workflows without tight coupling.
+
+### Factory deployment patterns
+
+All addons use factory patterns for standardized deployment. The
+[XvP settlement factory](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol)
+deploys new settlement instances with consistent initialization. This pattern
+ensures:
+
+- Standardized security configurations across all instances
+- Upgradeable implementations through proxy patterns
+- Easy auditing (review one implementation, not hundreds of instances)
+- Reduced deployment errors through parameterized factories
+
+### Security consistency
+
+Every addon implements the same security patterns: role-based access control
+through OpenZeppelin's AccessControl, reentrancy protection, meta-transaction
+support via ERC2771, and emergency pause mechanisms. This consistency means
+security reviews transfer across addons—understanding vault security principles
+directly informs XvP settlement security analysis.
+
+### Observability integration
+
+ATK's observability stack monitors addon operations in real-time. When a
+multi-signature vault transaction awaits approvals, the
+[vault operations dashboard](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/charts/atk/charts/grafana/dashboards/)
+displays pending proposals, current approver count, and remaining required
+signatures. When XvP settlements execute, transaction latency metrics verify
+atomic execution times meet institutional requirements (typically &lt;2
+seconds).
+
+For yield distributions, observability dashboards track entitlement calculation
+timing, claim rates, and unclaimed balances. Operations teams monitor these
+metrics to identify issues—unusually low claim rates might indicate UI problems
+or investor communication failures requiring intervention.
 
 <Mermaid chart={`
 graph TB
@@ -71,18 +176,16 @@ graph TB
     end
 
     subgraph "Supporting Infrastructure"
-        ClaimTracker(Claim Trackers<br/>Bitmap & Amount)
-        VestingStrategy(Vesting Strategies<br/>Linear & Custom)
+        ClaimTracker(Claim Trackers<br/>Bitmap &amp; Amount)
+        VestingStrategy(Vesting Strategies<br/>Linear &amp; Custom)
         MultiSig(Multi-Signature<br/>Wallet)
         AtomicSwap(Atomic<br/>Settlements)
     end
 
-    %% Addon type connections
     Distribution --> TimeBound
     Distribution --> Vesting
     Distribution --> Push
 
-    %% Supporting infrastructure
     TimeBound --> ClaimTracker
     Vesting --> VestingStrategy
     Vesting --> ClaimTracker
@@ -91,108 +194,111 @@ graph TB
     Treasury --> MultiSig
     Settlement --> AtomicSwap
 
-    style Distribution fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Distribution fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
     style Treasury fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    style Settlement fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    style Yield fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Settlement fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Yield fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 
 `} />
 
-## Airdrop system
+## Airdrop system: Merkle-proof distribution
 
-Token distribution system with multiple strategies and claim tracking.
+Token distribution represents a common operational challenge in digital asset
+programs. Early-stage token launches need efficient allocation mechanisms.
+Existing platforms require distributing rewards or governance tokens to
+community participants. Investment vehicles need secure distribution for vested
+team allocations.
 
-### Overview
+### Implementation approach
 
-A comprehensive airdrop system built on Merkle proofs with flexible claim
-tracking and multiple distribution strategies. Supports partial claims,
-time-bound distributions, vesting schedules, and push-based airdrops.
+The
+[ATK airdrop base contract](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/airdrop/ATKAirdrop.sol)
+implements Merkle tree verification for gas-efficient eligibility proofs. Rather
+than storing thousands of eligible addresses on-chain (prohibitively expensive),
+the system stores only a 32-byte Merkle root representing the entire recipient
+list.
 
-### Core features
+Recipients generate proofs off-chain demonstrating their address appears in the
+Merkle tree with a specific allocation amount. The contract verifies these
+proofs in constant time and gas cost, regardless of recipient list size. This
+approach reduces deployment costs by 95% compared to storing addresses directly.
 
-- Merkle proof-based eligibility verification
-- Pluggable claim tracking strategies
-- Meta-transaction support via ERC2771
-- Owner withdrawal of unclaimed tokens
-- Batch claim operations
+### Claim tracking strategies
 
-### Airdrop types
+Different distribution scenarios require different claim tracking approaches:
 
-**Time-bound airdrop**
+**Bitmap claim tracker**: The
+[bitmap implementation](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/airdrop/claim-tracker/ATKBitmapClaimTracker.sol)
+tracks binary claim status (claimed vs unclaimed) using packed bitmaps. For
+10,000 recipients, this uses approximately 313 storage slots instead of 10,000.
+Optimal for simple airdrops where each recipient claims exactly once.
 
-Airdrops with specific start and end times.
+**Amount claim tracker**: The
+[amount-based tracker](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/airdrop/claim-tracker/ATKAmountClaimTracker.sol)
+records claimed amounts per recipient, enabling partial claims. Essential for
+vesting scenarios where recipients claim portions of their allocation over time.
+Slightly higher gas cost per claim, but necessary for progressive distribution.
 
-**Key features:**
+### Time-bound distributions
 
-- Configurable start and end timestamps
-- Automatic expiration handling
-- Owner withdrawal after expiration
-- Standard Merkle proof verification
+The
+[time-bound airdrop](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/airdrop/time-bound-airdrop/ATKTimeBoundAirdropImplementation.sol)
+enforces claim windows through configurable start and end timestamps. Consider a
+marketing campaign distributing tokens to early platform users—claims open on
+announcement day and close 90 days later. After expiration, the owner withdraws
+unclaimed tokens, preventing permanent capital lock.
 
-**Vesting airdrop**
+This pattern suits scenarios with natural deadlines: token launch promotions,
+limited-time governance participation incentives, or time-sensitive community
+rewards. The automatic expiration prevents indefinite capital lockup while
+giving recipients reasonable claim windows.
 
-Airdrops with token vesting schedules.
+### Vesting distributions
 
-**Key features:**
+Team token allocations typically vest over multi-year periods with cliffs. An
+employee receives 100,000 governance tokens vesting over 4 years with a 1-year
+cliff. No tokens available before the cliff. After the cliff, tokens vest
+linearly monthly for 36 months.
 
-- Linear vesting strategy support
-- Configurable vesting periods and cliffs
-- Progressive token release
-- Vesting schedule management
+The
+[vesting airdrop](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropImplementation.sol)
+implements this through pluggable vesting strategies. The
+[linear vesting strategy](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/airdrop/vesting-airdrop/ATKLinearVestingStrategy.sol)
+calculates available amounts based on elapsed time. The employee can claim
+vested portions incrementally as they unlock, or accumulate and claim in
+batches.
 
-**Push airdrop**
+Custom vesting strategies enable more complex schedules: accelerated vesting
+based on performance milestones, reverse vesting for unvested token recovery, or
+step-function vesting with quarterly unlocks.
 
-Admin-initiated token distribution.
+### Push-based distribution
 
-**Key features:**
+Some scenarios require admin-initiated distribution rather than user-claimed. A
+company acquires another company's token holders and needs to exchange old
+tokens for new tokens automatically. Requiring thousands of users to manually
+claim creates friction and poor user experience.
 
-- Admin-controlled token pushing
-- Batch distribution capabilities
-- No user claiming required
-- Instant token delivery
+The
+[push airdrop](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/airdrop/push-airdrop/ATKPushAirdropImplementation.sol)
+allows admins to push tokens directly to recipient addresses in batches. Still
+uses Merkle proofs for eligibility verification (preventing admin errors), but
+executes transfers immediately rather than waiting for claims.
 
-### Claim tracking
+Batch operations enable efficient multi-recipient distribution—push 100
+allocations in a single transaction, optimizing gas costs and operational
+efficiency.
 
-**Bitmap claim tracker**
+### Integration with assets
 
-Efficient tracking of claimed airdrops using bitmaps.
+Airdrop contracts integrate with any ERC20-compatible token, including all ATK
+asset types (bonds, funds, equities, deposits). Deploy an airdrop to distribute
+bond tokens to early investors. Use vesting airdrops for fund management token
+allocations to the investment team. Push airdrops can distribute equity tokens
+in corporate actions.
 
-**Features:**
-
-- Gas-efficient storage for large airdrop lists
-- Binary claim status (claimed/unclaimed)
-- Optimal for simple airdrop scenarios
-
-**Amount claim tracker**
-
-Tracking of partial claims and remaining amounts.
-
-**Features:**
-
-- Support for partial claims
-- Tracks claimed amounts per user
-- Suitable for progressive claiming
-
-### Merkle proof system
-
-- **Root verification** - Efficient verification of large recipient lists
-- **Proof generation** - Off-chain proof generation for gas efficiency
-- **Tamper resistance** - Cryptographic integrity of airdrop data
-
-### Flexible distribution
-
-- **Multiple strategies** - Support for different airdrop types
-- **Configurable parameters** - Customizable timing, amounts, and restrictions
-- **Batch operations** - Efficient multi-user operations
-
-### Use cases
-
-- Token launches and community rewards
-- Retroactive airdrops for existing users
-- Vested team and investor distributions
-- Marketing and engagement campaigns
-
-### Airdrop workflow
+The separation between distribution mechanism (airdrop) and asset type (token)
+maintains modularity. One airdrop implementation serves all asset classes.
 
 <Mermaid chart={`
 sequenceDiagram
@@ -212,61 +318,106 @@ sequenceDiagram
 
 `} />
 
-## Vault system
+## Vault system: Multi-signature custody
 
-Multi-signature treasury management system with role-based access control.
+Treasury management represents a critical security challenge. Hot wallets
+controlled by single private keys create single points of failure. Cold storage
+provides security but prevents operational agility. Institutions need security
+that doesn't sacrifice usability.
 
-### Overview
+### Multi-signature architecture
 
-A comprehensive multi-signature wallet system designed for treasury management,
-featuring role-based access control, transaction proposals, confirmations, and
-emergency procedures.
+The
+[ATK vault](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/vault/ATKVault.sol)
+implements M-of-N multi-signature controls through a proposal-and-approval
+workflow. Any signer proposes a transaction—transferring ETH, moving ERC20
+tokens, or executing arbitrary contract calls. Other signers review and confirm
+the proposal. Once the required threshold of confirmations is reached, the
+transaction executes.
 
-### Core features
+This maker-checker pattern mirrors traditional banking controls. One treasury
+operator cannot unilaterally move funds. Multiple stakeholders must review and
+approve, preventing both internal fraud and external compromise of individual
+keys.
 
-- Multi-signature transaction approval
-- Role-based access control (Signers, Emergency, Governance)
-- Support for both ETH and ERC20 transactions
-- Pausable operations for emergency situations
-- Comprehensive audit trail
+### Role-based access control
 
-### Multi-signature operations
+Vaults implement three distinct roles with different capabilities:
 
-**Transaction proposals**
+**SIGNER_ROLE**: Operational signers who propose and confirm transactions.
+Typically 5-7 individuals across different organizational functions (CFO,
+treasurer, compliance officer). Configurable quorum (e.g., 3-of-5) balances
+security with operational efficiency.
 
-- Signers can propose transactions
-- Required number of confirmations before execution
-- Revocation support for confirmations
-- Automatic execution option upon sufficient approvals
+**EMERGENCY_ROLE**: Limited authority to pause and unpause vault operations.
+When unusual activity is detected—potential exploit, compromised signer key,
+suspicious transaction patterns—emergency role holders immediately pause the
+vault, preventing further operations until the security team investigates.
 
-### Role-based security
+**GOVERNANCE_ROLE**: Authority to modify vault parameters such as required
+confirmation count, add or remove signers, and configure operational policies.
+Reserved for board members or governance token holders in DAO contexts. Changes
+to governance require multiple approvals, preventing unilateral parameter
+manipulation.
 
-**SIGNER_ROLE** - Can propose and confirm transactions
+This role separation implements defense in depth. Compromising one role doesn't
+grant full vault control.
 
-**EMERGENCY_ROLE** - Can pause/unpause operations
+### Transaction lifecycle
 
-**GOVERNANCE_ROLE** - Can modify vault parameters
+Consider a practical scenario: a DAO treasury needs to distribute 500,000 USDC
+in grant funding to a research team.
 
-**Access control** - Enumerable role management
+1. **Proposal**: A treasury signer submits a transaction proposal through the
+   vault interface, specifying recipient address, USDC token address, and
+   500,000 token amount. The vault assigns this proposal an index number and
+   records it in storage.
 
-### Transaction types
+2. **Confirmation**: Other signers review the proposal (verifying recipient
+   address, amount, and justification). Three signers confirm the transaction by
+   submitting their approvals on-chain.
 
-**ETH transfers** - Native currency transactions
+3. **Execution**: Once the third confirmation is received (meeting the 3-of-5
+   quorum), the vault automatically executes the transfer. The 500,000 USDC
+   moves from the vault to the research team.
 
-**ERC20 transfers** - Token transfers with approval mechanics
+4. **Audit trail**: The complete proposal, all confirmations, and execution are
+   recorded on-chain. Immutable audit log satisfies compliance requirements and
+   enables forensic analysis if disputes arise.
 
-**Contract interactions** - General contract function calls
+Signers can revoke their confirmations before execution threshold is reached,
+enabling error correction. Cancel support allows proposal withdrawal if
+circumstances change.
 
-**Batch operations** - Multiple transactions in one proposal
+### Integration patterns
 
-### Use cases
+Vaults integrate with other ATK addons naturally. A vault can hold tokenized
+bonds that generate yield through the yield management system. When yield
+payments are due, a vault transaction proposes distributing the accumulated
+yield to investors—multi-signature approval before distribution ensures proper
+authorization.
 
-- DAO treasury management
-- Multi-sig custody solutions
-- Corporate treasury operations
-- Project fund management
+Vaults can participate in XvP settlements as one party. When executing a large
+asset swap, vault signers approve their side of the settlement. The atomic
+execution guarantee ensures the vault's assets transfer only if the
+counterparty's assets transfer simultaneously.
 
-### Vault workflow
+For DAO treasuries holding governance tokens, the vault can execute governance
+votes through transaction proposals. Signers propose and approve voting on
+specific proposals, maintaining decentralized control while preventing
+unauthorized vote manipulation.
+
+### Observability monitoring
+
+The vault operations dashboard displays pending proposals, current approval
+status, and historical transaction patterns. Operations teams monitor average
+approval time to identify process bottlenecks. Unusual patterns—such as rapid
+proposals from a single signer or proposals submitted during off-hours—trigger
+alerts for security investigation.
+
+Transaction success rates and gas consumption metrics help optimize operational
+efficiency. High gas costs might indicate parameter optimization opportunities
+or the need for batch operations.
 
 <Mermaid chart={`
 sequenceDiagram
@@ -291,98 +442,130 @@ sequenceDiagram
 
 `} />
 
-## XvP settlement system
+## XvP settlement: Atomic cross-chain delivery
 
-Cross-Value Proposition atomic settlement system for multi-party token
-exchanges.
+Settlement risk represents one of the fundamental problems in financial markets.
+When two parties exchange assets, there's always a window where one party has
+delivered while the other has not. During this window, counterparty risk creates
+exposure—the receiving party might fail to deliver their side of the
+transaction.
 
-### Overview
+### Atomic settlement guarantees
 
-A sophisticated settlement system that enables atomic swaps between multiple
-parties with different tokens, ensuring all transfers happen together or none at
-all.
+The
+[XvP settlement system](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/xvp/ATKXvPSettlementImplementation.sol)
+eliminates settlement risk through atomic execution. All transfers in a
+settlement execute together in a single transaction, or none execute at all.
+This all-or-nothing guarantee prevents partial settlement failures.
 
-### Core features
+Consider a bond-for-cash trade: an investor purchases 1,000,000 in tokenized
+corporate bonds with 1,000,000 USDC. In the XvP settlement, the bond token
+transfer and USDC transfer execute atomically. If either transfer fails
+(insufficient balance, compliance restriction, technical error), both revert.
+The investor cannot lose their USDC without receiving bonds. The issuer cannot
+lose bonds without receiving USDC.
 
-- Multi-party atomic settlements
-- Support for any number of participants
-- Configurable expiration dates
-- Per-sender approval system for local senders only
-- Automatic execution options gated by HTLC coordination
-- Optional cross-chain hashlock enforcement
+### Multi-party settlement flows
 
-### Atomic settlement engine
+XvP supports arbitrarily complex multi-party settlements. A three-way exchange
+involves Party A delivering equity tokens to Party B, Party B delivering bond
+tokens to Party C, and Party C delivering USDC to Party A. All three legs
+execute atomically.
 
-**Multi-party support** - Any number of participants
+Each settlement consists of multiple flows. A
+[flow](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/xvp/IATKXvPSettlement.sol)
+specifies:
 
-**Flow management** - Multiple token flows in single settlement
+- Token contract address (the asset being transferred)
+- Sender address (the party delivering this asset)
+- Recipient address (the party receiving this asset)
+- Amount (quantity being transferred)
+- External chain ID (0 for local execution, non-zero for cross-chain
+  coordination)
 
-**All-or-nothing** - Atomic execution guarantees
+The settlement validates all flows before execution. Each local flow
+(externalChainId = 0) is checked for ERC20 compliance, sufficient sender
+balance, and adequate allowance. Only after all validation passes does the
+settlement execute transfers.
 
-**Expiration handling** - Time-based settlement expiry
+### Cross-chain coordination
 
-### Approval system
+Many institutional transactions involve assets on different chains. A fund might
+hold bonds on Ethereum mainnet but settle cash on a Polygon L2 for gas
+efficiency. Pure atomic execution is impossible across chains—they don't share
+transaction state.
 
-**Per-sender approvals** - Each party approves the entire settlement
+XvP uses hash time-locked contracts (HTLCs) for cross-chain coordination. When
+creating a settlement with external flows (externalChainId ≠ 0), the creator
+specifies a hashlock—a hash of a secret value. The settlement on each chain
+includes this same hashlock.
 
-**Approval tracking** - Comprehensive approval status monitoring
+On the external chain, the counterparty deploys an HTLC with the same hashlock.
+When they reveal the secret to claim their assets on that chain, anyone can
+observe the secret and call
+[revealSecret](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/xvp/ATKXvPSettlementImplementation.sol)
+on the local settlement. This permissionless reveal mechanism prevents
+counterparties from withholding the secret to block settlement completion.
 
-**Cancellation rights** - Any sender can cancel before execution
+Once the secret is revealed and all local approvals are received, the local
+settlement executes its flows. The hashlock coordination ensures external and
+local legs complete in the correct sequence, providing practical atomic
+settlement across chains.
 
-**Auto-execution** - Optional automatic execution when all approvals received
+### Approval workflow
 
-### Settlement flows
+Each settlement party must explicitly approve before execution. The
+[approval system](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/xvp/ATKXvPSettlementImplementation.sol)
+tracks per-sender approval status. Only senders in local flows (externalChainId
+= 0) need to approve—external flows are coordinated through hashlocks, not
+approvals.
 
-**Token flows** - ERC20 token transfers between parties
+Approvals serve as a final verification step. Even though all flows are
+pre-validated, parties review the complete settlement (all flows, all
+counterparties, all amounts) before approving. This prevents transaction
+front-running or unexpected settlement modifications.
 
-**External references** - Each flow includes an `externalChainId`:
+Any sender can cancel the settlement before all approvals are received, enabling
+error correction. Once all approvals arrive (and the hashlock is satisfied for
+cross-chain settlements), the settlement executes automatically if
+auto-execution is enabled. Otherwise, any party can manually trigger execution.
 
-- `0` designates a local transfer executed on the current chain
-- Non-zero values record an external leg (no local transfer is attempted)
+### Expiration safety
 
-**Approval scope** - Only senders in local flows must provide ERC20 allowances
-and approvals
+Settlements include expiration timestamps. If a settlement isn't approved and
+executed before expiration, it becomes invalid. This prevents stale settlements
+from executing unexpectedly after market conditions change.
 
-**Validation** - Local flows are probed for ERC20 compliance; external flows
-skip token introspection
+For a bond trade negotiated on Monday at specific pricing, 48-hour expiration
+ensures the settlement executes Tuesday or Wednesday (matching market
+conditions) or expires. Prevents execution the following week when bond prices
+have moved significantly.
 
-### Hashlock coordination
+### Integration with vaults
 
-**Shared hashlock** - Required whenever any flow targets an external chain;
-optional for pure local settlements
+Vault-held assets can participate in XvP settlements by proposing the approval
+as a vault transaction. Treasury signers review the complete settlement flows,
+verify counterparties and amounts, then approve. Once the vault's
+multi-signature threshold is met, the vault approves the XvP settlement on
+behalf of its holdings.
 
-**Permissionless reveal** - Anyone may call `revealSecret(bytes secret)` once
-the external HTLC reveals the preimage
+This integration enables complex scenarios: a DAO treasury (managed by a vault)
+executes a large bond purchase through XvP settlement. Multiple treasury signers
+approve the settlement through the vault. The XvP system ensures atomic
+delivery. The result: secure multi-signature treasury management combined with
+atomic settlement guarantees.
 
-**Execution gate** - Local transfers execute only after both all local approvals
-and the hashlock are satisfied
+### Observability insights
 
-**Auto-execution alignment** - Auto mode waits for approvals and a successful
-secret reveal before triggering transfers
+Settlement monitoring dashboards track execution latency (time from creation to
+completion), approval rates (percentage of settlements that receive all
+approvals), and failure reasons (balance insufficient, compliance blocked,
+etc.). These metrics identify operational bottlenecks and integration issues.
 
-**Withholding protection** - Since `revealSecret` is open to all, counterparties
-cannot block completion once the secret is public
-
-### Hashlock lifecycle
-
-For external flows:
-
-1. Any flow with `externalChainId != 0` requires a non-zero `hashlock` during
-   creation
-2. External counterparties deploy HTLCs using the shared hashlock and eventually
-   reveal the secret on their chain
-3. Anyone can relay the revealed secret via `revealSecret(bytes secret)`
-4. Execution (manual or auto) proceeds only after both the secret is accepted
-   and all local approvals are present
-
-### Use cases
-
-- Cross-chain asset swaps
-- Multi-party token exchanges
-- Complex financial settlements
-- Atomic trade execution
-
-### XvP settlement workflow
+For cross-chain settlements, the dashboard displays hashlock status (pending,
+revealed, expired) and external flow coordination state. Operations teams
+monitor cross-chain settlement completion times to identify relay delays or
+external chain congestion.
 
 <Mermaid chart={`
 sequenceDiagram
@@ -404,174 +587,250 @@ sequenceDiagram
 
 `} />
 
-## Yield management system
+## Yield management: Automated distributions
 
-Fixed yield schedule management system for token yield distribution.
+Yield-bearing assets generate recurring payments to token holders: bond coupons,
+equity dividends, fund distributions, deposit interest. Calculating and
+distributing these payments manually creates operational burden and error risk.
 
-### Overview
+### Scheduled entitlement calculation
 
-A factory system for creating and managing fixed yield schedules that can be
-attached to tokens for scheduled yield entitlement calculations and claim-based
-distribution.
+The
+[yield management system](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol)
+integrates with asset tokens to automate the complete yield lifecycle. When
+configuring a bond token, attach a yield schedule specifying:
 
-### Core features
+- Yield rate (e.g., 5% annual coupon)
+- Payment frequency (quarterly, semi-annual, annual)
+- Payment dates (specific dates or relative timing)
+- Record date offset (how many days before payment date to snapshot balances)
 
-- Fixed yield schedule creation
-- Factory pattern for deployment
-- Integration with token yield systems
-- Configurable yield parameters
+On each record date, the asset token creates a snapshot capturing exact holder
+balances. On the payment date, the yield system calculates each holder's
+entitlement based on their snapshot balance and the configured yield rate.
 
-### Fixed yield schedules
+### Claim-based distribution
 
-**Deterministic yields** - Pre-configured yield amounts and timing
+Rather than pushing payments to all holders (expensive in gas for assets with
+thousands of holders), the yield system implements pull-based claiming. Token
+holders claim their entitled yield on-demand. Each claim includes cryptographic
+proof of entitlement, preventing fraudulent claims.
 
-**Schedule management** - Creation and configuration of yield schedules
+Consider a bond with 5,000 token holders and a quarterly coupon payment:
 
-**Token integration** - Direct integration with yield-bearing tokens
+1. **Record date**: The bond token snapshots holder balances 5 days before
+   payment date
+2. **Payment date**: The yield system marks the payment as available for
+   claiming
+3. **Individual claims**: Each of the 5,000 holders claims their coupon payment
+   when convenient—some immediately, some days later, some months later
+4. **Verification**: Each claim verifies the holder's snapshot balance and
+   calculates exact entitlement before transferring payment tokens
 
-**Factory deployment** - Standardized deployment via factory pattern
+This approach distributes gas costs across claimants rather than concentrating
+costs on the issuer. Total network capacity consumed is identical, but timing is
+spread over days or weeks rather than a single transaction.
 
-### Schedule configuration
+### Integration with snapshots
 
-**Yield amounts** - Fixed yield amounts per distribution
+ATK asset tokens implement ERC20 snapshot extensions that capture holder
+balances at specific block numbers. The yield system leverages these snapshots
+for entitlement calculations.
 
-**Distribution timing** - Configurable distribution schedules
+When a bondholder sells their tokens between record date and payment date, the
+snapshot ensures the original holder (holder at record date) receives the coupon
+payment. This matches traditional finance conventions—the seller keeps the
+upcoming payment, the buyer receives future payments.
 
-**Recipient management** - Entitlement calculation for token holders to claim
+Snapshots also enable accurate calculations even as balances change. A holder
+who owned 1,000 tokens at record date but now owns 10,000 tokens still receives
+payment based on their 1,000-token record date balance.
 
-**Parameter updates** - Admin-controlled schedule modifications
+### Unclaimed yield handling
 
-### Use cases
+Not all holders claim their yield immediately. Some might be inactive wallets,
+lost keys, or simply holders who don't monitor regularly. The yield system
+tracks claimed versus unclaimed amounts for each payment period.
 
-- Fixed-term bond yield distributions
-- Dividend payments for equity tokens
-- Reward distributions for staking
-- Scheduled token distributions
+After a reasonable claim period (e.g., 2 years), the asset administrator can
+reclaim unclaimed yield. This prevents permanent capital lockup while giving
+holders ample opportunity to claim. Reclaimed amounts can be redistributed in
+future payments, returned to the issuer, or handled according to the asset's
+governance policies.
 
-## Access control and security
+### Use case scenarios
 
-All ATK System Addons implement consistent security patterns to ensure safe and
-secure operations.
+**Corporate bonds**: Configure quarterly coupon payments at 4.5% annual yield.
+On each payment date, bondholders claim their quarterly interest in USDC. The
+yield system calculates pro-rata entitlements based on snapshot balances,
+handles partial period holdings correctly, and provides cryptographic proof of
+calculations.
 
-### Common security patterns
+**Equity dividends**: A tokenized real estate fund distributes rental income
+quarterly to token holders. Yield schedule defines payment dates aligned with
+property management cash flows. Token holders claim their dividend distributions
+on-demand, avoiding the need for the fund to execute thousands of individual
+transfers.
 
-**Role-based access control**
+**Deposit interest**: A tokenized time deposit pays monthly interest at 3%
+annual rate. Rather than compounding automatically (which requires iterating all
+holders monthly), the interest accrues in the yield system. Depositors claim
+accumulated interest periodically, reducing gas costs and maintaining
+flexibility.
 
-- Granular permissions for different operations
-- Separation of duties between operational roles
-- Enumerable access for transparent role management
-- Emergency procedures with dedicated response roles
+**Fund distributions**: A venture capital fund tokenizes its LP positions. When
+portfolio companies exit or pay dividends, the fund creates special
+distributions through the yield system. LPs claim their pro-rata shares based on
+token holdings at the distribution record date.
 
-**Meta-transaction support**
+### Observability tracking
 
-- ERC2771 integration for gasless transaction support
-- Configurable trusted forwarders for sponsored transactions
-- Improved user experience through sponsored transactions
+Yield operations dashboards display upcoming payment dates, current claim rates
+(percentage of entitled holders who have claimed), total claimed versus
+unclaimed amounts, and claim timing distribution. These metrics help issuers
+identify communication needs—low claim rates might indicate investors aren't
+aware payments are available.
 
-**Reentrancy protection**
+Gas cost analytics compare claim-based distribution costs (distributed across
+holders) versus theoretical push-based costs (concentrated on issuer). This data
+justifies the architectural choice and helps estimate costs for new asset
+issuances.
 
-- ReentrancyGuard protection against reentrancy attacks
-- Checks-effects-interactions pattern implementation
-- Proper state management during external calls
+## Access control and security patterns
 
-### Addon-specific security
+ATK System Addons implement defense-in-depth security through layered controls,
+consistent patterns, and proven cryptographic techniques.
 
-**Airdrop security**
+### Role-based access control
 
-- Merkle proofs for cryptographic verification of eligibility
-- Claim tracking to prevent double-spending and replay attacks
-- Owner controls for secure withdrawal of unclaimed tokens
-- Time bounds for automatic expiration and cleanup
+All addons use OpenZeppelin's AccessControl for role management. Rather than
+simple owner-based permissions, roles enable granular authority assignment. The
+vault's SIGNER_ROLE can propose and approve transactions but cannot modify vault
+parameters. The GOVERNANCE_ROLE can change parameters but cannot unilaterally
+execute transactions.
 
-**Vault security**
+This separation implements the principle of least privilege—each role has
+exactly the permissions required for its function, no more. Compromising one
+role doesn't grant full system control.
 
-- Multi-signature for distributed control over treasury operations
-- Confirmation thresholds with configurable approval requirements
-- Emergency pause for immediate suspension of operations
-- Audit trail with comprehensive transaction logging
+Enumerable role management provides transparency. Query all addresses with
+SIGNER_ROLE to verify vault signer set. Audit role assignment history to detect
+unauthorized privilege escalation.
 
-**XvP security**
+### Meta-transaction support
 
-- Atomic execution with all-or-nothing transaction guarantees
-- Approval verification with cryptographic approval verification
-- Expiration safety through automatic expiration of stale settlements
-- Flow validation with pre-execution validation of all transfers
+All addons integrate ERC2771 for meta-transaction support. This enables gasless
+transactions where a relayer pays gas costs while the user's signature
+authorizes the operation. Important for institutional scenarios where end users
+(investors) shouldn't need to hold native tokens for gas.
 
-## Directory structure
+An investor claims their bond coupon payment. Rather than requiring the investor
+to hold ETH for gas, a relayer (the bond issuer or a third-party service)
+submits the transaction on their behalf. The investor's signature proves
+authorization. The relayer pays gas costs. The bond tokens transfer to the
+investor.
+
+Configurable trusted forwarders prevent relay attacks. Only approved relayers
+can submit meta-transactions, preventing spam or griefing attacks.
+
+### Reentrancy protection
+
+External calls during token transfers create reentrancy risks. A malicious token
+contract could recursively call back into the addon during transfer, potentially
+bypassing security checks or draining balances.
+
+All addons implement OpenZeppelin's ReentrancyGuard on state-changing functions.
+The guard uses a mutex pattern—once entered, the function cannot be called again
+until the first execution completes. Combined with checks-effects-interactions
+pattern (update state before external calls), this eliminates reentrancy attack
+vectors.
+
+### Cryptographic verification
+
+Airdrops use Merkle proofs for eligibility verification. Rather than trusting
+user-submitted claims, the contract cryptographically verifies each claim
+against the Merkle root. An attacker cannot claim allocations they're not
+entitled to without breaking the hash function.
+
+Yield claims similarly use cryptographic proofs of entitlement. The snapshot
+balance proves holding amount. The yield calculation proves correct entitlement
+based on that balance. Recipients can verify their own entitlements
+independently.
+
+### Emergency response
+
+Pausable contracts enable emergency response to active exploits or suspicious
+activity. When the security team detects unusual patterns, they immediately
+pause affected addons, halting operations until investigation completes.
+
+Pause authority is strictly controlled through dedicated roles. Not every admin
+can pause—only specific emergency response roles. This prevents pause abuse
+while ensuring rapid response capability when needed.
+
+### Audit trails
+
+Every significant operation emits events: vault transaction proposals,
+confirmations, and executions; XvP settlement creation, approvals, and
+completion; yield schedule creation and claim events. These events create
+immutable audit logs for compliance and forensic analysis.
+
+Investigations can reconstruct complete operational history from event logs.
+Verify which signer approved which vault transaction. Trace yield distribution
+timing and amounts. Confirm XvP settlement flows executed atomically.
+
+## Implementation structure
+
+ATK System Addons organize into four main categories, each addressing specific
+operational requirements:
 
 ```
 addons/
-├── airdrop/                              # Token distribution system
-│   ├── ATKAirdrop.sol                    # Base airdrop contract
-│   ├── ATKAirdropErrors.sol              # Error definitions
-│   ├── IATKAirdrop.sol                   # Airdrop interface
-│   ├── claim-tracker/                    # Claim tracking strategies
-│   │   ├── ATKAmountClaimTracker.sol     # Amount-based tracking
-│   │   ├── ATKBitmapClaimTracker.sol     # Bitmap-based tracking
-│   │   └── IATKClaimTracker.sol          # Claim tracker interface
-│   ├── push-airdrop/                     # Admin-initiated distributions
-│   │   ├── ATKPushAirdropImplementation.sol
-│   │   ├── ATKPushAirdropFactoryImplementation.sol
-│   │   ├── ATKPushAirdropProxy.sol
-│   │   ├── IATKPushAirdrop.sol
-│   │   └── IATKPushAirdropFactory.sol
-│   ├── time-bound-airdrop/               # Time-constrained airdrops
-│   │   ├── ATKTimeBoundAirdropImplementation.sol
-│   │   ├── ATKTimeBoundAirdropFactoryImplementation.sol
-│   │   ├── ATKTimeBoundAirdropProxy.sol
-│   │   ├── IATKTimeBoundAirdrop.sol
-│   │   └── IATKTimeBoundAirdropFactory.sol
-│   └── vesting-airdrop/                  # Vesting-enabled airdrops
-│       ├── ATKLinearVestingStrategy.sol   # Linear vesting implementation
-│       ├── ATKVestingAirdropImplementation.sol
-│       ├── ATKVestingAirdropFactoryImplementation.sol
-│       ├── ATKVestingAirdropProxy.sol
-│       ├── IATKLinearVestingStrategy.sol
-│       ├── IATKVestingAirdrop.sol
-│       ├── IATKVestingAirdropFactory.sol
-│       └── IATKVestingStrategy.sol
-├── vault/                                # Multi-signature treasury
-│   ├── ATKVault.sol                      # Multi-sig vault implementation
-│   ├── ATKVaultFactoryImplementation.sol # Vault factory
-│   └── IATKVaultFactory.sol              # Factory interface
-├── xvp/                                  # Cross-value proposition settlements
-│   ├── ATKXvPSettlementImplementation.sol # Settlement logic
-│   ├── ATKXvPSettlementFactoryImplementation.sol
-│   ├── ATKXvPSettlementProxy.sol
-│   ├── IATKXvPSettlement.sol
-│   └── IATKXvPSettlementFactory.sol
-└── yield/                                # Yield schedule management
-    ├── ATKFixedYieldProxy.sol            # Yield schedule proxy
-    ├── ATKFixedYieldScheduleFactoryImplementation.sol
+├── airdrop/                              # Token distribution
+│   ├── ATKAirdrop.sol                    # Base implementation
+│   ├── claim-tracker/                    # Tracking strategies
+│   │   ├── ATKBitmapClaimTracker.sol     # Binary tracking
+│   │   └── ATKAmountClaimTracker.sol     # Amount tracking
+│   ├── time-bound-airdrop/               # Time-windowed claims
+│   ├── vesting-airdrop/                  # Progressive release
+│   │   └── ATKLinearVestingStrategy.sol  # Linear vesting
+│   └── push-airdrop/                     # Admin distribution
+├── vault/                                # Multi-sig custody
+│   ├── ATKVault.sol                      # Core implementation
+│   └── ATKVaultFactoryImplementation.sol # Deployment factory
+├── xvp/                                  # Atomic settlement
+│   ├── ATKXvPSettlementImplementation.sol
+│   └── ATKXvPSettlementFactoryImplementation.sol
+└── yield/                                # Yield schedules
     ├── ATKFixedYieldScheduleUpgradeable.sol
-    └── IATKFixedYieldScheduleFactory.sol
+    └── ATKFixedYieldScheduleFactoryImplementation.sol
 ```
 
-## Conclusion
+Each category follows consistent patterns—base implementations, factory
+deployments, proxy upgradeability, and standardized interfaces. This structure
+enables independent auditing, modular deployment, and straightforward
+integration.
 
-ATK System Addons provide operational tools that extend the core ATK Protocol
-with specialized functionality for:
+## Operational impact
 
-- **Token distribution** - Sophisticated airdrop systems with multiple
-  strategies
-- **Treasury management** - Multi-signature vaults with role-based access
-  control
-- **Atomic settlements** - Cross-value proposition settlements for complex
-  exchanges
-- **Yield management** - Fixed yield schedules for scheduled entitlement
-  calculations
+ATK System Addons transform theoretical tokenization capabilities into
+operational reality. Tokenizing an asset is straightforward—wrapping financial
+claims in smart contracts. Managing that asset through its complete lifecycle
+while satisfying institutional requirements is where most platforms fail.
 
-### Key benefits
+DvP settlement eliminates counterparty risk that institutions cannot accept.
+Vault custody provides security without sacrificing operational efficiency.
+Yield management automates entitlement calculations that consume significant
+manual effort. Airdrop systems enable efficient distribution at scale.
 
-The addon architecture provides:
+Together, these addons deliver the operational infrastructure that makes digital
+assets viable for institutional finance. Not theoretical possibilities, but
+production-ready tools solving real operational challenges that institutions
+face when deploying digital asset programs.
 
-- **Modularity** - Independent addons that can be used individually or together
-- **Extensibility** - Factory patterns enable easy deployment of new instances
-- **Security** - Consistent security patterns across all addons
-- **Integration** - Direct integration with ATK System infrastructure
-- **Flexibility** - Configurable parameters for different use cases
+The observability integration ensures operations teams have the visibility
+required to run these systems confidently in production. Transaction latency
+monitoring, approval rate tracking, claim pattern analysis, and gas cost metrics
+provide the operational intelligence needed for institutional-grade reliability.
 
-The addon system enables ecosystem participants to build sophisticated
-tokenization solutions that go beyond basic asset representation, providing the
-operational tools needed for real-world deployment and management of tokenized
-assets.
+This is ATK's competitive differentiator in the DALP market—not just
+tokenization, but complete lifecycle management infrastructure.

@@ -1,23 +1,155 @@
 ---
 title: Troubleshooting guide
 description:
-  The troubleshooting hub consolidates the most common issues issuers and
-  operators encounter across the platform. Use the sections below to jump
-  directly to deep-dive fixes for wallet access, transaction failures,
-  compliance blocks, and asset management problems.
+  ATK's observability stack surfaces issues before they impact users, giving you
+  diagnostic dashboards, real-time metrics, and structured logs to resolve
+  problems at every layer—from wallet connections to DALP lifecycle operations
+  like DvP settlement and yield distribution.
 pageTitle: Troubleshooting overview - Resolve common user issues quickly
-tags: [user-guides, troubleshooting, support]
+tags: [user-guides, troubleshooting, support, observability, diagnostics]
 ---
 
-- [Wallet issues](/docs/user-guides/troubleshooting/wallet) — wallet connection,
-  signing problems, and permissions
-- [Transaction failures](/docs/user-guides/troubleshooting/transactions) —
-  failed transfers, settlements, and gas errors
-- [Compliance blocks](/docs/user-guides/troubleshooting/compliance) — OnchainID,
-  KYC/AML, and jurisdictional restrictions
-- [Asset management](/docs/user-guides/troubleshooting/assets) — supply,
-  distribution, and reconciliation mismatches
+## Troubleshooting philosophy
 
-Need broader operational help? Cross-reference the
-[Operations guides](/docs/user-guides/operations/admin-settings) or raise an
-issue with your SettleMint support contact.
+ATK treats observability as a first-class feature, not an afterthought. Every
+component emits structured metrics and logs that flow into centralized
+dashboards deployed via Helm charts. When something breaks, you start with the
+metrics—transaction latency spikes, compliance rule rejections, vault balance
+mismatches—and drill down from there. This proactive approach means you often
+catch problems before users report them.
+
+The troubleshooting guides below mirror the platform's architecture:
+wallet/identity issues live at the user layer, transaction failures happen in
+the smart contract and settlement layer, compliance blocks stem from the
+identity registry and rule engine, and asset management problems touch the DALP
+lifecycle features (DvP, vaults, yield distribution). Each guide links to
+specific observability dashboards and metrics that help you diagnose root causes
+fast.
+
+## Diagnostic flow
+
+When a user reports an issue or an alert fires, follow this flow to triage and
+resolve:
+
+<Mermaid chart={`flowchart TB
+  Alert(Alert or user report):::primary
+  Dashboards(Check observability dashboards):::secondary
+  Scope(Scope: Wallet, TX, Compliance, or Asset?):::tertiary
+  Wallet(Wallet troubleshooting guide):::quaternary
+  TX(Transaction troubleshooting guide):::quaternary
+  Compliance(Compliance troubleshooting guide):::quaternary
+  Asset(Asset troubleshooting guide):::quaternary
+  Logs(Drill into structured logs):::secondary
+  Fix(Apply fix & verify metrics):::primary
+  Escalate(Escalate to SettleMint support):::tertiary
+
+Alert --> Dashboards Dashboards --> Scope Scope -->|Wallet connection/signing|
+Wallet Scope -->|Failed transfer or gas error| TX Scope -->|KYC/AML or rule
+rejection| Compliance Scope -->|Supply, vault, or yield mismatch| Asset Wallet
+--> Logs TX --> Logs Compliance --> Logs Asset --> Logs Logs --> Fix Fix
+-->|Metrics normal| Alert Fix -->|Metrics still abnormal| Escalate
+
+classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff `}
+/>
+
+Start at the observability layer to narrow the scope, then jump to the relevant
+troubleshooting guide. If metrics confirm the fix, you're done; if not, escalate
+with structured logs and dashboard screenshots attached.
+
+## Observability dashboards for diagnostics
+
+Each troubleshooting category maps to dashboards and metrics that surface the
+most common root causes. Reference these starting points before diving into
+detailed guides:
+
+**Wallet issues**
+
+- **Wallet connection dashboard**: Tracks connection success rate,
+  MetaMask/WalletConnect failures, and RPC endpoint health
+- **Signature failure metrics**: Counts rejected signatures, timeout events, and
+  nonce mismatches
+- Check the wallet troubleshooting guide when connection rates drop below 95% or
+  signature failures spike
+
+**Transaction failures**
+
+- **Transaction latency dashboard**: Shows settlement times, pending TX queue
+  depth, and gas price trends
+- **Revert reason logs**: Structured logs capture revert messages with function
+  signatures and parameters
+- Use the transaction troubleshooting guide when latency exceeds 10s or revert
+  rates climb above 2%
+
+**Compliance blocks**
+
+- **Compliance rule evaluation panel**: Real-time stats on KYC/AML checks,
+  jurisdiction filters, and transfer restrictions
+- **OnchainID registry metrics**: Tracks verification success rates, claim
+  issuance, and identity updates
+- Jump to the compliance troubleshooting guide when rule rejection rates spike
+  or identity verification fails
+
+**Asset management**
+
+- **DALP lifecycle metrics**: Monitors DvP settlement completion, vault balance
+  reconciliation, and yield distribution events
+- **Supply and distribution panel**: Tracks token supply changes, mint/burn
+  events, and holder balance deltas
+- Open the asset troubleshooting guide for supply mismatches, vault balance
+  drift, or yield calculation errors
+
+## Troubleshooting guides by category
+
+### Wallet issues
+
+[Wallet troubleshooting guide](/docs/user-guides/troubleshooting/wallet) covers
+wallet connection failures, signing problems, and permission errors. Common
+scenarios: MetaMask stuck on "Connecting," rejected signatures during DvP
+settlement, or insufficient permissions for vault withdrawals. The guide walks
+through RPC endpoint validation, browser extension conflicts, and nonce resets,
+with observability checkpoints at each step.
+
+### Transaction failures
+
+[Transaction troubleshooting guide](/docs/user-guides/troubleshooting/transactions)
+addresses failed transfers, settlement errors, and gas-related problems. You'll
+diagnose reverts from compliance rules, insufficient gas estimates for complex
+DvP operations, and front-running issues during high-traffic periods. Dashboards
+show you exactly which function reverted and why, saving hours of manual log
+parsing.
+
+### Compliance blocks
+
+[Compliance troubleshooting guide](/docs/user-guides/troubleshooting/compliance)
+handles OnchainID verification failures, KYC/AML rule rejections, and
+jurisdictional restrictions. Users often hit these when attempting cross-border
+transfers or when identity claims expire. The guide explains how to read
+compliance rule evaluation logs, refresh OnchainID claims, and adjust transfer
+restrictions for legitimate edge cases.
+
+### Asset management
+
+[Asset troubleshooting guide](/docs/user-guides/troubleshooting/assets) resolves
+supply mismatches, distribution errors, and reconciliation problems across DALP
+lifecycle operations. This includes vault balance drift after DvP settlement,
+yield distribution amounts that don't match expectations, and supply cap
+enforcement failures. Observability metrics surface these issues
+immediately—often before users notice.
+
+## Escalation path
+
+If the troubleshooting guides and observability dashboards don't resolve the
+issue, escalate to SettleMint support with this information:
+
+- Dashboard screenshots showing abnormal metrics (with timestamps)
+- Structured log excerpts (transaction hashes, revert reasons, error codes)
+- Steps to reproduce, including user role, asset type, and specific operation
+- Expected vs. actual behavior, with reference to DALP lifecycle features if
+  applicable
+
+For broader operational guidance beyond troubleshooting—like adjusting admin
+settings, configuring new asset types, or optimizing gas usage—cross-reference
+the [Operations guides](/docs/user-guides/operations/admin-settings).
