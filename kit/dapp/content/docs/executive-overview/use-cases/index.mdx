@@ -1,56 +1,129 @@
 ---
 title: Use cases
 description:
-  Illustrative scenarios showing how different industries or asset types utilize
-  the ATK
+  This section demonstrates how different institutions deploy ATK to tokenize
+  bonds, funds, real estate, stablecoins, and deposits. Each scenario reflects
+  actual capabilities the platform delivers today.
 pageTitle: Real-world use cases for asset tokenization
 tags: [concept, use-cases, scenarios, industry, examples]
 ---
 
-<Callout type="info" title="Template guide">
-  This page follows The Good Docs Project
-  **[Concept](https://www.thegooddocsproject.dev/template/concept)** template.
-</Callout>
+**Who should read this:** CFOs, treasurers, product managers, and compliance
+officers evaluating tokenization for specific asset classes.
 
-## How different institutions use the platform
+**Business value:** Understand how unified lifecycle infrastructure reduces
+time-to-market, operational overhead, and compliance risk across diverse
+regulated assets.
 
-These scenarios illustrate real workflows that ATK enables today. Names and
-specifics are illustrative, but the mechanics and outcomes reflect actual
-production capabilities.
+## Asset class coverage
 
-The following use cases demonstrate how ATK handles different asset classes and
-institutional requirements:
+The platform handles five primary categories, each with distinct regulatory
+requirements and operational workflows:
 
-- **[Corporate Bonds](/docs/executive-overview/use-cases/corporate-bonds)** -
-  Debt instrument issuance with automated coupon payments and redemption
-- **[Private Equity Funds](/docs/executive-overview/use-cases/private-equity)** -
-  Fund tokenization with NAV tracking and LP servicing
-- **[Real Estate](/docs/executive-overview/use-cases/real-estate)** -
-  Fractionalized property ownership with rental income distribution
-- **[Stablecoins](/docs/executive-overview/use-cases/stablecoins)** -
-  Bank-issued payment infrastructure with reserve management
-- **[Deposit Certificates](/docs/executive-overview/use-cases/deposits)** -
-  Digital time deposits with FDIC compliance
+| Asset class                                                               | Primary use                       | Settlement  | Typical compliance                         |
+| ------------------------------------------------------------------------- | --------------------------------- | ----------- | ------------------------------------------ |
+| **[Corporate Bonds](/docs/executive-overview/use-cases/corporate-bonds)** | Capital raising, debt instruments | Instant     | Accredited investor, transfer restrictions |
+| **[Private Equity](/docs/executive-overview/use-cases/private-equity)**   | Fund units, LP servicing          | Instant     | Qualified purchaser, holding periods       |
+| **[Real Estate](/docs/executive-overview/use-cases/real-estate)**         | Fractionalized ownership          | Instant     | Securities laws, FIRPTA withholding        |
+| **[Stablecoins](/docs/executive-overview/use-cases/stablecoins)**         | Payment rails, treasury           | Instant     | AML/sanctions, reserve attestation         |
+| **[Deposit Certificates](/docs/executive-overview/use-cases/deposits)**   | Time deposits, retail banking     | Time-locked | FDIC limits, customer verification         |
 
-## Why these scenarios work
+<Mermaid
+  chart={`
+flowchart TB
+    ATK(ATK Platform)
+    SMART(SMART Protocol<br/>Unified Compliance Layer)
+    
+    BONDS(Corporate Bonds<br/>Coupon Automation)
+    PE(Private Equity<br/>NAV Tracking)
+    RE(Real Estate<br/>Rental Distributions)
+    STABLE(Stablecoins<br/>Reserve Management)
+    DEPOSIT(Deposits<br/>Interest Accrual)
+    
+    ATK --> SMART
+    SMART --> BONDS
+    SMART --> PE
+    SMART --> RE
+    SMART --> STABLE
+    SMART --> DEPOSIT
+    
+    style ATK fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style SMART fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style BONDS fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style PE fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style RE fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style STABLE fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style DEPOSIT fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+`}
+/>
 
-These use cases succeed because ATK provides unified lifecycle infrastructure.
-You're not cobbling together issuance, compliance, custody, settlement, and
-servicing from separate vendors. The platform handles the complete lifecycle,
-which is why complex workflows like quarterly coupon payments or NAV
-distributions happen automatically instead of requiring manual intervention.
+## Why unified infrastructure matters
 
-Compliance is embedded at the asset level, not layered on afterward. Bond tokens
-only transfer to accredited investors because the eligibility check is in the
-transfer path. Fund tokens enforce holding restrictions because the smart
-contract implements those rules. Stablecoins enforce monitoring requirements
-because compliance modules are part of the architecture.
+Traditional tokenization projects assemble issuance, compliance, custody,
+settlement, and servicing from separate vendors. This creates integration
+overhead, data reconciliation delays, and compliance gaps.
 
-The platform adapts to different asset classes and regulatory frameworks without
-requiring separate deployments. The same infrastructure manages bonds, funds,
-real estate, stablecoins, and deposits because the SMART Protocol provides
-unified compliance and the addon system handles asset-specific features.
+ATK provides lifecycle infrastructure out of the box. Quarterly coupon payments
+and NAV distributions execute automatically because corporate actions are built
+into the asset layer. Compliance checks happen at transfer time because the
+SMART Protocol embeds eligibility rules into token logic.
 
-The next section dives deeper into the compliance and security architecture that
-enables these use cases to operate with institutional confidence and regulatory
-acceptance.
+The same core platform handles bonds, funds, real estate, stablecoins, and
+deposits. Asset-specific features live in addon modules rather than separate
+deployments, reducing operational complexity and accelerating new product
+launches.
+
+## Key capabilities across all asset types
+
+- **Embedded compliance** – Transfer restrictions, investor eligibility, and
+  geographic limits enforced at the smart contract level
+- **Scheduled corporate actions** – Coupon entitlements, distributions,
+  redemptions, and fee calculations execute on schedule without manual
+  spreadsheet work; token holders claim distributions on-demand
+- **Real-time cap tables** – Ownership visibility updates instantly as tokens
+  transfer, eliminating reconciliation delays
+- **Instant settlement** – Atomic finality replaces T+2 or T+5 cycles, reducing
+  counterparty risk and capital lockup
+- **Audit trails** – Every transaction, compliance check, and lifecycle event
+  recorded on-chain for regulatory reporting
+
+## Regulatory considerations
+
+Each asset class navigates distinct frameworks. Bonds typically fall under
+securities laws requiring accredited investor verification. Private equity funds
+add qualified purchaser thresholds and lock-up periods. Real estate introduces
+property transfer rules and tax withholding. Stablecoins face banking
+regulations and reserve requirements. Deposits require FDIC compliance and
+consumer protection.
+
+The platform adapts to these requirements through configurable compliance
+modules rather than hard-coded rules. See
+[Compliance & Security](/docs/executive-overview/compliance-security) for
+detailed architecture.
+
+## Implementation path
+
+Deploying a use case typically involves:
+
+1. **Asset configuration** – Define terms, compliance rules, and lifecycle
+   schedules via the Asset Designer
+2. **Investor onboarding** – Integrate KYC/AML providers to verify eligibility
+   and issue OnchainID credentials
+3. **Primary distribution** – Allocate tokens to verified investors with
+   embedded transfer restrictions
+4. **Lifecycle automation** – Configure corporate actions (coupons,
+   distributions, redemptions) to execute on schedule
+5. **Ongoing operations** – Monitor cap tables, handle secondary transfers,
+   generate regulatory reports
+
+For technical implementation details, see the
+[Developer Documentation](/docs/developer-guides/reference).
+
+## Next steps
+
+- Explore detailed scenarios for your asset class using the links in the table
+  above
+- Review [Architecture & Capabilities](/docs/architecture/system-architecture)
+  to understand the underlying infrastructure
+- Contact your SettleMint representative to discuss a proof of concept for your
+  specific use case

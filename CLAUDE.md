@@ -59,6 +59,34 @@ e2e → dapp (testing UI/API)
 - Turbo task filtering: Use package name directly (e.g.,
   `turbo run build --filter=dapp`)
 
+## Documentation Requirements (MANDATORY)
+
+**CRITICAL: For ANY code change, PR, task, or changeset, you MUST:**
+
+1. **Validate** existing documentation in `kit/dapp/content/docs/` against your changes
+2. **Update** affected documentation pages to reflect new behavior, APIs, or architecture
+3. **Extend** documentation with new sections for new features or capabilities
+4. **Improve** clarity, accuracy, and completeness based on what you've learned
+
+**This is not optional. Documentation updates are REQUIRED as part of every task.**
+
+**Process:**
+- After implementing code changes, identify impacted documentation pages
+- Update technical accuracy (API signatures, component props, contract interfaces)
+- Add examples demonstrating new functionality
+- Update architecture diagrams if structure changed
+- Ensure consistency with style guide in `kit/dapp/content/AGENTS.md`
+- Cross-reference related pages that should link to new content
+
+**Examples of documentation that must be updated:**
+- Smart contract changes → Update contract reference and architecture docs
+- API changes → Update API reference and developer guides
+- New features → Update user guides, use cases, and feature documentation
+- Architecture changes → Update system architecture and component docs
+- Configuration changes → Update deployment guides and environment setup
+
+**Remember: Code without updated documentation is incomplete work.**
+
 ## Best Practices (Cross-Cutting)
 
 <!-- BEGIN AUTO -->

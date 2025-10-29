@@ -1,0 +1,138 @@
+---
+title: Glossary
+description:
+  This glossary defines key terms used throughout the executive overview.
+  Understanding these concepts will help you engage with tokenization
+  discussions and evaluate platform capabilities.
+pageTitle: Glossary of tokenization and DALP terminology
+tags: [glossary, reference, definitions, terminology]
+---
+
+## Core tokenization concepts
+
+**Asset tokenization** : Converting ownership rights in real-world assets into
+digital tokens on a blockchain. The token represents the same legal rights as
+traditional instruments but enables instant transfer and automated compliance.
+
+**Blockchain** : A distributed ledger technology where transactions are recorded
+in blocks and cryptographically linked. Provides immutable audit trails and
+eliminates single points of failure.
+
+**Smart contract** : Self-executing code on a blockchain that automatically
+enforces rules and executes transactions when conditions are met. Enables
+programmable compliance and automated corporate actions.
+
+**Token** : A digital representation of an asset on a blockchain. Security
+tokens represent ownership or financial rights in regulated assets like bonds,
+equities, or fund units.
+
+## Compliance and identity
+
+**ERC-3643** : A token standard specifically designed for permissioned
+securities. Ensures compliance checks happen before every transfer by linking
+tokens to verified identities.
+
+**OnchainID** : A decentralized identity protocol where verified claims about an
+investor (KYC status, accreditation, jurisdiction) are cryptographically linked
+to their wallet address.
+
+**Identity registry** : A system that maps wallet addresses to verified
+identities and eligibility criteria. Only registered addresses can interact with
+compliant assets.
+
+**KYC/AML** : Know Your Customer and Anti-Money Laundering procedures required
+by regulators. Verifies investor identity and screens against sanctions lists.
+
+**Accredited investor** : An individual or entity meeting financial thresholds
+(income, net worth, or sophistication) allowing participation in private
+securities offerings under US regulations.
+
+## Platform architecture
+
+**DALP (Digital Asset Lifecycle Platform)** : Unified infrastructure managing
+the complete lifecycle of tokenized assets from issuance through redemption.
+Integrates compliance, custody, settlement, and servicing in one system rather
+than cobbling together multiple vendors.
+
+**SMART Protocol (SettleMint Adaptable Regulated Token)** : The compliance
+framework underlying all ATK assets. Extends ERC-3643 with modular compliance
+rules and identity management.
+
+**Compliance engine** : The policy enforcement system that evaluates every
+transfer against configurable rules before execution. Non-compliant transactions
+revert automatically.
+
+**Factory contract** : A smart contract template that deploys new asset tokens
+with pre-configured compliance and governance structures, accelerating time to
+market.
+
+## Settlement and operations
+
+**T+0 settlement** : Same-day settlement where ownership transfers complete on
+the day of the transaction, versus traditional T+2 (two business days after
+trade date).
+
+**Atomic settlement / DvP (Delivery versus Payment)** : Simultaneous exchange
+where the asset and payment both complete or both fail together, eliminating
+counterparty risk during settlement windows.
+
+**Stablecoin** : A cryptocurrency pegged to fiat currency (like USD) at a 1:1
+ratio, typically backed by reserves. Enables on-chain payments and settlement.
+
+**Gas fee** : Transaction cost on a blockchain network, paid to validators who
+process and confirm transactions.
+
+## Corporate actions
+
+**Coupon payment** : Periodic interest payment on a bond, distributed to all
+token holders proportionally to their holdings.
+
+**NAV (Net Asset Value)** : The per-share value of a fund, calculated by
+dividing total assets minus liabilities by the number of shares outstanding.
+
+**Cap table** : Capitalization table showing all holders of an asset and their
+ownership percentages. Blockchain provides real-time cap table visibility.
+
+**Redemption** : The process of converting tokens back to cash or underlying
+assets, typically at maturity for bonds or upon fund exit.
+
+## Regulatory frameworks
+
+**MiCA (Markets in Crypto-Assets)** : European Union regulation providing
+comprehensive framework for crypto-assets including security tokens and
+stablecoins.
+
+**Regulation D** : US SEC rule allowing private securities offerings to
+accredited investors without full registration requirements.
+
+**Regulation S** : US SEC rule permitting securities offerings outside the
+United States without registration, subject to restrictions.
+
+**MAS (Monetary Authority of Singapore)** : Singapore's central bank and
+financial regulatory authority, which has established clear frameworks for
+digital assets.
+
+## Security and custody
+
+**Multi-signature wallet (multisig)** : A wallet requiring multiple private key
+signatures to authorize transactions, implementing maker-checker controls and
+segregation of duties.
+
+**Hardware Security Module (HSM)** : Tamper-resistant physical device that
+securely stores cryptographic keys and performs signing operations, meeting
+bank-grade security requirements.
+
+**Role-based access control (RBAC)** : Permission system where user capabilities
+are determined by assigned roles, ensuring proper segregation of duties.
+
+**Private key** : Cryptographic secret that controls access to a blockchain
+wallet. Losing the private key means losing access to assets permanently.
+
+## Where to next
+
+- [Introduction](/docs/executive-overview/introduction) – Start with what
+  tokenization means for your business
+- [Market challenges](/docs/executive-overview/market-challenges) – Understand
+  the pain points ATK addresses
+- [Architecture section](/docs/architecture/system-architecture) – Dive deeper
+  into technical implementation

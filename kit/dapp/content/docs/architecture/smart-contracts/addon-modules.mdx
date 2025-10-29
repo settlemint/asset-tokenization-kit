@@ -1,17 +1,39 @@
 ---
 title: Addon modules
 description:
-  Describes the optional add-on smart contracts and modules that provide extra
-  features
+  ATK System Addons deliver the lifecycle management capabilities that separate
+  institutional-grade DALP implementations from basic tokenization platforms.
+  While competitors offer token creation, ATK provides the operational
+  infrastructure institutions need for the complete asset lifecycle—atomic
+  settlement, secure custody, and scheduled yield management.
 pageTitle:
   Add-on modules - Extending asset functionality (Airdrops, vaults, etc.)
 tags: [addons, extensions, modules, advanced-features]
 ---
 
-ATK System Addons are modular extensions that provide additional functionality
-beyond core asset tokenization. These addons integrate with the ATK System
-infrastructure to offer specialized capabilities for token distribution,
-treasury management, cross-chain settlements, and yield strategies.
+## ATK's lifecycle management advantage
+
+**These are not optional add-ons—they're competitive differentiators:**
+
+**DvP Settlement (XvP)**: Atomic delivery versus payment eliminates counterparty
+risk and settlement failures. Multi-party exchanges where every leg executes
+together or the entire transaction reverts. True T+0 finality without trusted
+intermediaries or reconciliation.
+
+**Vault Custody**: Multi-signature treasury management with maker-checker
+workflows, configurable quorum requirements, and role-based access control. No
+single point of failure. Emergency pause capabilities. Full audit trails for
+regulatory compliance.
+
+**Yield Management**: Scheduled dividend, interest, and coupon entitlement
+calculations without manual spreadsheet work. Configure payment schedules once;
+the platform calculates entitlements automatically on payment dates, and token
+holders claim their distributions on-demand. Cryptographic proof of entitlement.
+No spreadsheets or reconciliation.
+
+**Token Distribution (Airdrop)**: Sophisticated distribution mechanisms for
+primary issuance, vesting schedules, and community rewards with Merkle
+proof-based verification and flexible claim tracking.
 
 ## What are ATK system addons?
 
@@ -36,23 +58,23 @@ organized into four main categories:
 <Mermaid chart={`
 graph TB
     subgraph "Addon Categories"
-        Distribution[Distribution<br/>airdrop/]
-        Treasury[Treasury<br/>vault/]
-        Settlement[Settlement<br/>xvp/]
-        Yield[Yield<br/>yield/]
+        Distribution(Distribution<br/>airdrop/)
+        Treasury(Treasury<br/>vault/)
+        Settlement(Settlement<br/>xvp/)
+        Yield(Yield<br/>yield/)
     end
 
     subgraph "Airdrop Types"
-        TimeBound[Time-Bound<br/>Airdrop]
-        Vesting[Vesting<br/>Airdrop]
-        Push[Push<br/>Airdrop]
+        TimeBound(Time-Bound<br/>Airdrop)
+        Vesting(Vesting<br/>Airdrop)
+        Push(Push<br/>Airdrop)
     end
 
     subgraph "Supporting Infrastructure"
-        ClaimTracker[Claim Trackers<br/>Bitmap & Amount]
-        VestingStrategy[Vesting Strategies<br/>Linear & Custom]
-        MultiSig[Multi-Signature<br/>Wallet]
-        AtomicSwap[Atomic<br/>Settlements]
+        ClaimTracker(Claim Trackers<br/>Bitmap & Amount)
+        VestingStrategy(Vesting Strategies<br/>Linear & Custom)
+        MultiSig(Multi-Signature<br/>Wallet)
+        AtomicSwap(Atomic<br/>Settlements)
     end
 
     %% Addon type connections
@@ -69,10 +91,10 @@ graph TB
     Treasury --> MultiSig
     Settlement --> AtomicSwap
 
-    style Distribution fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Treasury fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Settlement fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Yield fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
+    style Distribution fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Treasury fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Settlement fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Yield fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
 
 `} />
 
@@ -389,7 +411,8 @@ Fixed yield schedule management system for token yield distribution.
 ### Overview
 
 A factory system for creating and managing fixed yield schedules that can be
-attached to tokens for automatic yield distribution.
+attached to tokens for scheduled yield entitlement calculations and claim-based
+distribution.
 
 ### Core features
 
@@ -414,7 +437,7 @@ attached to tokens for automatic yield distribution.
 
 **Distribution timing** - Configurable distribution schedules
 
-**Recipient management** - Automatic distribution to token holders
+**Recipient management** - Entitlement calculation for token holders to claim
 
 **Parameter updates** - Admin-controlled schedule modifications
 
@@ -535,7 +558,8 @@ with specialized functionality for:
   control
 - **Atomic settlements** - Cross-value proposition settlements for complex
   exchanges
-- **Yield management** - Fixed yield schedules for automated distributions
+- **Yield management** - Fixed yield schedules for scheduled entitlement
+  calculations
 
 ### Key benefits
 

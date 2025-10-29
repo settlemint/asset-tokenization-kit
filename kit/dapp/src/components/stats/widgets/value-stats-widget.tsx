@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useSettings } from "@/hooks/use-settings";
-import { DEFAULT_SETTINGS } from "@/lib/db/schemas/settings";
+import { DEFAULT_SETTINGS } from "@/lib/db/schemas/settings.constants";
 import { orpc } from "@/orpc/orpc-client";
 import { bigDecimal } from "@atk/zod/bigdecimal";
 import { createLogger } from "@settlemint/sdk-utils/logging";

@@ -31,18 +31,14 @@
         "type": "النوع",
         "status": "الحالة"
       },
-      "fallback": {
-        "unknown": "غير معروف",
-        "none": "لا شيء"
+      "status": {
+        "registered": "مسجل",
+        "pending": "معلق"
       },
       "type": {
         "admin": "مسؤول",
         "investor": "مستثمر",
         "trustedIssuer": "مُصدِر موثوق"
-      },
-      "status": {
-        "registered": "مسجل",
-        "pending": "التسجيل قيد المعالجة"
       },
       "verifications": {
         "none": "لا تحقق"
@@ -63,6 +59,10 @@
       "errors": {
         "loadFailed": "فشل في تحميل المستخدمين. يرجى المحاولة مرة أخرى.",
         "navigationFailed": "فشل في التنقل إلى تفاصيل المستخدم"
+      },
+      "fallback": {
+        "unknown": "غير معروف",
+        "none": "لا شيء"
       }
     }
   },

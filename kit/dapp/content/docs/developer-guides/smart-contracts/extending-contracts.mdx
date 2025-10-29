@@ -1,0 +1,845 @@
+---
+title: Extending contracts
+description:
+  How-to guide for developers to modify or extend the smart contract layer
+pageTitle: Guide to extending or customizing SMART contracts
+tags: [how-to, smart-contracts, extension, solidity]
+---
+
+This guide shows you how to extend and customize the smart contract layer of the
+Asset Tokenization Kit. You'll learn how to create custom asset types, build
+compliance modules, add features using the addon system, and safely test your
+changes.
+
+## Understanding the contract architecture
+
+The ATK smart contract layer is organized into four main categories:
+
+**System contracts**
+([`kit/contracts/contracts/system/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/system)):
+
+- Core infrastructure for identity, compliance, and token management
+- [`ATKSystemFactory.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/system/ATKSystemFactory.sol)
+  deploys complete tokenization systems
+- Identity registry, compliance framework, and access management
+- Typically extended through configuration rather than code modification
+
+**Asset contracts**
+([`kit/contracts/contracts/assets/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/assets)):
+
+- Token implementations for bonds, equities, funds, stablecoins, and deposits
+- All inherit from `IATKToken` (which combines `ISMART` +
+  `ISMARTTokenAccessManaged`)
+- Follow factory-implementation-proxy pattern for upgradeability
+- Compose SMART extensions for features like burning, pausing, yield, etc.
+
+**SMART extensions**
+([`kit/contracts/contracts/smart/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/smart)):
+
+- Modular building blocks for security token functionality
+- Compliance modules enforce transfer rules (country lists, investor limits,
+  etc.)
+- Extensions add capabilities (pausable, burnable, custodian, yield, capped,
+  etc.)
+- Based on ERC-3643 standard with upgradeable patterns
+
+**Addons**
+([`kit/contracts/contracts/addons/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/addons)):
+
+- Optional modules for airdrops, vaults, settlements, and yield schedules
+- Deployed independently and interact with tokens via standard interfaces
+- See
+  [`/kit/contracts/contracts/addons/README.md`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/README.md)
+  for comprehensive details
+
+## Adding a new asset type
+
+Custom asset types let you create domain-specific tokens beyond the built-in
+bonds, equities, funds, stablecoins, and deposits.
+
+<Steps>
+
+<Step>
+
+### Design your asset requirements
+
+Before writing code, identify what makes your asset unique:
+
+- **Custom state variables**: Does it track maturity dates, dividend schedules,
+  collateral ratios, or other domain-specific data?
+- **Required extensions**: Which SMART extensions do you need (burnable,
+  pausable, custodian, yield, capped, redeemable, historical balances)?
+- **Lifecycle hooks**: Do you need custom logic in `_beforeMint`,
+  `_beforeTransfer`, `_afterRedeem`, or other lifecycle events?
+- **Access control**: What roles are needed (governance, supply management,
+  custodian, emergency)?
+
+</Step>
+
+<Step>
+
+### Create your implementation contract
+
+Create a new file in
+[`kit/contracts/contracts/assets/&lt;your-asset&gt;/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/assets):
+
+```solidity
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
+
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import { ERC20Upgradeable } from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/metatx/ERC2771ContextUpgradeable.sol";
+import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
+
+// Import ATK components
+import { ATKAssetRoles } from "../ATKAssetRoles.sol";
+import { IContractWithIdentity } from "../../system/identity-factory/IContractWithIdentity.sol";
+
+// Import SMART extensions you need
+import { SMARTUpgradeable } from "../../smart/extensions/core/SMARTUpgradeable.sol";
+import { SMARTTokenAccessManagedUpgradeable } from "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
+import { SMARTPausableUpgradeable } from "../../smart/extensions/pausable/SMARTPausableUpgradeable.sol";
+import { SMARTBurnableUpgradeable } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
+import { SMARTHooks } from "../../smart/extensions/common/SMARTHooks.sol";
+import { SMARTComplianceModuleParamPair } from "../../smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+
+contract ATKCustomAssetImplementation is
+    Initializable,
+    IContractWithIdentity,
+    SMARTUpgradeable,
+    SMARTTokenAccessManagedUpgradeable,
+    SMARTPausableUpgradeable,
+    SMARTBurnableUpgradeable,
+    ERC2771ContextUpgradeable
+{
+    // Custom state for your asset
+    uint256 private _customParameter;
+
+    // Constructor with trusted forwarder for meta-transactions
+    constructor(address forwarder_) ERC2771ContextUpgradeable(forwarder_) {
+        _disableInitializers();
+    }
+
+    // Initialize function called by proxy
+    function initialize(
+        string calldata name_,
+        string calldata symbol_,
+        uint8 decimals_,
+        uint256 customParameter_,
+        SMARTComplianceModuleParamPair[] calldata initialModulePairs_,
+        address identityRegistry_,
+        address compliance_,
+        address accessManager_
+    ) external initializer {
+        // Validate custom parameters
+        require(customParameter_ > 0, "Invalid custom parameter");
+
+        // Initialize base SMART functionality
+        __SMART_init(name_, symbol_, decimals_, address(0), identityRegistry_, compliance_, initialModulePairs_);
+        __SMARTTokenAccessManaged_init(accessManager_);
+        __SMARTPausable_init(true);
+        __SMARTBurnable_init();
+
+        // Set custom state
+        _customParameter = customParameter_;
+
+        // Register interfaces
+        _registerInterface(type(IContractWithIdentity).interfaceId);
+    }
+
+    // Implement required SMART functions with access control
+    function mint(address _to, uint256 _amount)
+        external
+        onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
+    {
+        _smart_mint(_to, _amount);
+    }
+
+    function burn(address userAddress, uint256 amount)
+        external
+        onlyAccessManagerRole(ATKAssetRoles.SUPPLY_MANAGEMENT_ROLE)
+    {
+        _smart_burn(userAddress, amount);
+    }
+
+    function pause() external onlyAccessManagerRole(ATKAssetRoles.EMERGENCY_ROLE) {
+        _smart_pause();
+    }
+
+    function unpause() external onlyAccessManagerRole(ATKAssetRoles.EMERGENCY_ROLE) {
+        _smart_unpause();
+    }
+
+    // Custom business logic
+    function getCustomParameter() external view returns (uint256) {
+        return _customParameter;
+    }
+
+    // Hook example: Add custom logic before transfers
+    function _beforeTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal virtual override(SMARTUpgradeable, SMARTHooks) {
+        // Add custom validation here
+        super._beforeTransfer(from, to, amount);
+    }
+
+    // Required context overrides for ERC2771
+    function _msgSender()
+        internal
+        view
+        virtual
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (address)
+    {
+        return ERC2771ContextUpgradeable._msgSender();
+    }
+
+    function _msgData()
+        internal
+        view
+        virtual
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
+        return ERC2771ContextUpgradeable._msgData();
+    }
+
+    function _contextSuffixLength()
+        internal
+        view
+        virtual
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (uint256)
+    {
+        return ERC2771ContextUpgradeable._contextSuffixLength();
+    }
+
+    // Required _update override for SMARTPausable
+    function _update(
+        address from,
+        address to,
+        uint256 value
+    ) internal virtual override(SMARTPausableUpgradeable, SMARTUpgradeable, ERC20Upgradeable) {
+        super._update(from, to, value);
+    }
+}
+```
+
+</Step>
+
+<Step>
+
+### Create the interface
+
+Define your asset's public interface in `IATKCustomAsset.sol`:
+
+```solidity
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
+
+import { IATKToken } from "../../system/tokens/IATKToken.sol";
+
+interface IATKCustomAsset is IATKToken {
+    // Custom initialization parameters struct
+    struct CustomAssetInitParams {
+        uint256 customParameter;
+    }
+
+    // Custom events
+    event CustomParameterUpdated(uint256 oldValue, uint256 newValue);
+
+    // Custom errors
+    error InvalidCustomParameter();
+
+    // Custom view functions
+    function getCustomParameter() external view returns (uint256);
+}
+```
+
+</Step>
+
+<Step>
+
+### Create factory and proxy contracts
+
+Follow the factory-implementation-proxy pattern used by other assets. Create
+`ATKCustomAssetFactoryImplementation.sol` and `ATKCustomAssetProxy.sol`
+following the patterns in
+[`ATKBondFactoryImplementation.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/assets/bond/ATKBondFactoryImplementation.sol)
+and
+[`ATKBondProxy.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/assets/bond/ATKBondProxy.sol).
+
+</Step>
+
+<Step>
+
+### Write comprehensive tests
+
+Create tests in
+[`kit/contracts/test/assets/ATKCustomAsset.t.sol`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/test/assets):
+
+```solidity
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
+
+import { Test } from "forge-std/Test.sol";
+import { ATKCustomAssetImplementation } from "../../contracts/assets/custom-asset/ATKCustomAssetImplementation.sol";
+import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
+
+contract ATKCustomAssetTest is AbstractATKAssetTest {
+    ATKCustomAssetImplementation public customAsset;
+
+    function setUp() public {
+        // Use utility functions from AbstractATKAssetTest
+        _deploySystem();
+        _deployCustomAsset();
+        _setupIdentities();
+    }
+
+    function test_CustomParameter() public {
+        uint256 expected = 1000;
+        assertEq(customAsset.getCustomParameter(), expected);
+    }
+
+    function test_MintRequiresRole() public {
+        vm.expectRevert();
+        vm.prank(address(0x123)); // unauthorized
+        customAsset.mint(alice, 100);
+    }
+
+    // Add tests for lifecycle hooks, compliance integration, etc.
+}
+```
+
+Run tests with:
+
+```bash
+cd kit/contracts
+bun run test:foundry
+```
+
+</Step>
+
+<Step>
+
+### Integrate with the dApp
+
+1. **Generate TypeScript types**: Run `bun run artifacts` to generate contract
+   ABIs and TypeScript bindings
+2. **Add to asset designer**: Update
+   [`kit/dapp/src/lib/assets/asset-types.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/assets/asset-types.ts)
+   to include your new asset
+3. **Create form components**: Build UI for asset-specific parameters
+4. **Build UI components**: Use generated contract hooks with Viem and TanStack
+   Query
+
+</Step>
+
+</Steps>
+
+## Adding a compliance module
+
+Compliance modules enforce transfer restrictions like country allowlists,
+investor caps, or time locks. They implement the `ISMARTComplianceModule`
+
+<Steps>
+
+<Step>
+
+### Understand the module lifecycle
+
+Compliance modules are **stateless logic contracts** that get called by the
+compliance contract during token operations:
+
+1. `canTransfer(token, from, to, value, params)` - Called before every transfer;
+   must revert if transfer violates rules
+2. `transferred(token, from, to, value, params)` - Optional hook called after
+   successful transfers
+3. `created(token, to, value, params)` - Optional hook called after minting
+4. `destroyed(token, from, value, params)` - Optional hook called after burning
+5. `validateParameters(params)` - Validates module configuration during setup
+
+</Step>
+
+<Step>
+
+### Extend the abstract base
+
+Create your module in
+[`kit/contracts/contracts/smart/modules/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/smart/modules):
+
+```solidity
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
+
+import { AbstractComplianceModule } from "./AbstractComplianceModule.sol";
+import { ISMART } from "../interface/ISMART.sol";
+
+/// @title Daily Transfer Limit Compliance Module
+/// @notice Restricts the total amount any address can transfer per day
+contract DailyTransferLimitComplianceModule is AbstractComplianceModule {
+    // State: track transfers per address per day
+    mapping(address token => mapping(address account => mapping(uint256 day => uint256 transferred)))
+        private _dailyTransfers;
+
+    // Module configuration stored per token
+    mapping(address token => uint256 dailyLimit) private _dailyLimits;
+
+    constructor(address _trustedForwarder) AbstractComplianceModule(_trustedForwarder) {}
+
+    /// @inheritdoc ISMARTComplianceModule
+    function name() external pure override returns (string memory) {
+        return "DailyTransferLimitComplianceModule";
+    }
+
+    /// @inheritdoc ISMARTComplianceModule
+    function validateParameters(bytes calldata _params) external pure override {
+        uint256 dailyLimit = abi.decode(_params, (uint256));
+        require(dailyLimit > 0, "Daily limit must be positive");
+    }
+
+    /// @inheritdoc ISMARTComplianceModule
+    function canTransfer(
+        address _token,
+        address _from,
+        address /* _to */,
+        uint256 _value,
+        bytes calldata _params
+    ) external view override {
+        // Decode the daily limit from params
+        uint256 dailyLimit = abi.decode(_params, (uint256));
+
+        // Calculate current day index
+        uint256 currentDay = block.timestamp / 1 days;
+
+        // Check if transfer would exceed daily limit
+        uint256 alreadyTransferred = _dailyTransfers[_token][_from][currentDay];
+        require(alreadyTransferred + _value <= dailyLimit, "Daily transfer limit exceeded");
+    }
+
+    /// @inheritdoc ISMARTComplianceModule
+    function transferred(
+        address _token,
+        address _from,
+        address /* _to */,
+        uint256 _value,
+        bytes calldata /* _params */
+    ) external override onlyTokenOrCompliance(_token) {
+        // Update the daily transfer counter
+        uint256 currentDay = block.timestamp / 1 days;
+        _dailyTransfers[_token][_from][currentDay] += _value;
+    }
+}
+```
+
+</Step>
+
+<Step>
+
+### Test your compliance module
+
+Create tests in
+[`kit/contracts/test/smart/modules/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/test/smart/modules):
+
+```solidity
+// SPDX-License-Identifier: FSL-1.1-MIT
+pragma solidity ^0.8.28;
+
+import { Test } from "forge-std/Test.sol";
+import { DailyTransferLimitComplianceModule } from "../../../contracts/smart/modules/DailyTransferLimitComplianceModule.sol";
+import { AbstractComplianceModuleTest } from "./AbstractComplianceModuleTest.t.sol";
+
+contract DailyTransferLimitComplianceModuleTest is AbstractComplianceModuleTest {
+    DailyTransferLimitComplianceModule public module;
+
+    function setUp() public {
+        module = new DailyTransferLimitComplianceModule(address(forwarder));
+
+        // Deploy system and token
+        _deploySystemAndToken();
+
+        // Add module to token with 1000 daily limit
+        bytes memory params = abi.encode(1000);
+        _addModuleToToken(address(module), params);
+    }
+
+    function test_EnforcesDailyLimit() public {
+        // First transfer of 600 should succeed
+        _transfer(alice, bob, 600);
+
+        // Second transfer of 500 should fail (600 + 500 > 1000)
+        vm.expectRevert("Daily transfer limit exceeded");
+        _transfer(alice, charlie, 500);
+
+        // Transfer of 400 should succeed (600 + 400 = 1000)
+        _transfer(alice, charlie, 400);
+    }
+
+    function test_ResetsAfterDay() public {
+        // Transfer 1000 on day 1
+        _transfer(alice, bob, 1000);
+
+        // Move to next day
+        vm.warp(block.timestamp + 1 days);
+
+        // Should be able to transfer 1000 again
+        _transfer(alice, bob, 1000);
+    }
+}
+```
+
+</Step>
+
+<Step>
+
+### Register and use the module
+
+Compliance modules are registered globally and then added to individual tokens:
+
+```typescript
+// In your dApp or deployment script
+import { viem } from "@/lib/viem";
+
+// 1. Deploy the module
+const moduleAddress = await viem.deployContract({
+  abi: DailyTransferLimitModuleABI,
+  bytecode: "0x...",
+  args: [trustedForwarderAddress],
+});
+
+// 2. Register module globally with the system
+await viem.writeContract({
+  address: complianceModuleRegistry,
+  abi: ComplianceModuleRegistryABI,
+  functionName: "registerModule",
+  args: [moduleAddress],
+});
+
+// 3. Add module to a specific token with parameters
+const dailyLimit = 1000n * 10n ** 18n; // 1000 tokens
+await viem.writeContract({
+  address: tokenAddress,
+  abi: TokenABI,
+  functionName: "addComplianceModule",
+  args: [
+    moduleAddress,
+    encodeAbiParameters([{ type: "uint256" }], [dailyLimit]),
+  ],
+});
+```
+
+</Step>
+
+</Steps>
+
+## Using addons
+
+Addons provide pre-built functionality for airdrops, vaults, settlements, and
+yield schedules. See the comprehensive addon documentation in
+[`kit/contracts/contracts/addons/README.md`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/README.md).
+
+### Example: Deploy a time-bound airdrop
+
+```solidity
+// In a deployment script or test
+import { ATKTimeBoundAirdropFactoryImplementation } from "@contracts/addons/airdrop/time-bound-airdrop/ATKTimeBoundAirdropFactoryImplementation.sol";
+
+// 1. Deploy the factory (usually done once per system)
+ATKTimeBoundAirdropFactoryImplementation factory = new ATKTimeBoundAirdropFactoryImplementation(
+    timeBoundImplementationAddress,
+    trustedForwarder
+);
+
+// 2. Create an airdrop instance
+bytes32 merkleRoot = 0x...; // Generated off-chain from recipient list
+uint256 startTime = block.timestamp + 1 days;
+uint256 endTime = block.timestamp + 30 days;
+
+address airdropAddress = factory.createAirdrop(
+    tokenAddress,
+    merkleRoot,
+    claimTrackerAddress,
+    startTime,
+    endTime
+);
+
+// 3. Fund the airdrop
+IERC20(tokenAddress).transfer(airdropAddress, totalAirdropAmount);
+
+// 4. Users claim with Merkle proofs
+IATKTimeBoundAirdrop(airdropAddress).claim(proof, amount);
+```
+
+## Upgrading contracts
+
+ATK contracts use the UUPS (Universal Upgradeable Proxy Standard) pattern from
+OpenZeppelin. Only implementation contracts can be upgraded; the proxy addresses
+remain constant.
+
+### Safe upgrade checklist
+
+Before upgrading any implementation:
+
+1. **Storage layout compatibility**: New implementations MUST NOT reorder,
+   remove, or change types of existing state variables. Only append new
+   variables.
+2. **Initialize once**: Use `reinitializer(version)` modifier if you need new
+   initialization logic in V2+
+3. **Test thoroughly**: Write upgrade tests that verify state is preserved
+4. **Access control**: Only addresses with appropriate roles can upgrade
+   (typically `GOVERNANCE_ROLE`)
+
+### Example upgrade process
+
+```solidity
+// V1 implementation
+contract ATKBondImplementationV1 {
+    uint256 private _maturityDate;
+    uint256 private _faceValue;
+    // ... existing storage
+}
+
+// V2 implementation - CORRECT
+contract ATKBondImplementationV2 {
+    uint256 private _maturityDate;  // Same order
+    uint256 private _faceValue;     // Same order
+    // ... existing storage
+
+    // NEW variables appended at the end
+    uint256 private _newFeature;
+
+    function initializeV2(uint256 newFeatureValue)
+        external
+        reinitializer(2)
+    {
+        _newFeature = newFeatureValue;
+    }
+}
+
+// Perform the upgrade
+await viem.writeContract({
+  address: bondProxyAddress,
+  abi: UUPSUpgradeableABI,
+  functionName: 'upgradeToAndCall',
+  args: [
+    newImplementationAddress,
+    encodeFunctionData({ abi: BondV2ABI, functionName: 'initializeV2', args: [100n] })
+  ],
+});
+```
+
+### Testing upgrades
+
+```solidity
+function test_UpgradePreservesState() public {
+    // Deploy V1
+    ATKBondImplementationV1 bondV1 = new ATKBondImplementationV1();
+    ERC1967Proxy proxy = new ERC1967Proxy(address(bondV1), initData);
+
+    // Set some state in V1
+    ATKBondImplementationV1(address(proxy)).mint(alice, 1000);
+
+    // Deploy V2
+    ATKBondImplementationV2 bondV2 = new ATKBondImplementationV2();
+
+    // Upgrade
+    ATKBondImplementationV1(address(proxy)).upgradeToAndCall(
+        address(bondV2),
+        abi.encodeCall(ATKBondImplementationV2.initializeV2, (100))
+    );
+
+    // Verify state preserved
+    assertEq(ATKBondImplementationV2(address(proxy)).balanceOf(alice), 1000);
+    assertEq(ATKBondImplementationV2(address(proxy)).getNewFeature(), 100);
+}
+```
+
+## Testing your changes
+
+### Unit tests with Foundry
+
+ATK uses Foundry for Solidity unit and integration tests:
+
+```bash
+cd kit/contracts
+
+# Run all tests
+bun run test:foundry
+
+# Run specific test file
+forge test --match-path test/assets/ATKCustomAsset.t.sol
+
+# Run with gas reporting
+forge test --gas-report
+
+# Run with coverage
+forge coverage
+
+# Run with detailed traces
+forge test -vvvv
+```
+
+Test utilities are in
+[`kit/contracts/test/utils/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/test/utils):
+
+- [`SystemUtils.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/test/utils/SystemUtils.sol) -
+  Deploy ATK systems and modules
+- [`IdentityUtils.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/test/utils/IdentityUtils.sol) -
+  Create identities and claims
+- [`TokenUtils.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/test/utils/TokenUtils.sol) -
+  Token operations and compliance setup
+- [`ClaimUtils.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/test/utils/ClaimUtils.sol) -
+  Generate Merkle proofs for airdrops
+
+### Integration tests with Hardhat
+
+For deployment and upgrade scenarios:
+
+```bash
+cd kit/contracts
+
+# Compile contracts
+bun run compile
+
+# Run Hardhat tests
+bun run test:hardhat
+
+# Deploy to local network
+bun run deploy:local
+```
+
+Deployment scripts are in
+[`kit/contracts/ignition/modules/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/ignition/modules)
+and use Hardhat Ignition for deterministic deployments.
+
+### Test organization
+
+Follow the existing test structure:
+
+```
+test/
+├── assets/          # Asset-specific tests (bonds, equity, etc.)
+├── smart/           # SMART extension and module tests
+├── system/          # System infrastructure tests
+├── addons/          # Addon tests (airdrops, vaults, etc.)
+├── utils/           # Shared test utilities
+└── Constants.sol    # Shared test constants
+```
+
+## Common patterns and pitfalls
+
+### Pattern: Lifecycle hooks
+
+Override SMART hooks to add custom logic at key lifecycle events:
+
+```solidity
+function _beforeMint(address to, uint256 amount)
+    internal
+    virtual
+    override(SMARTUpgradeable, SMARTCappedUpgradeable, SMARTHooks)
+{
+    // Custom pre-mint validation
+    require(to != address(this), "Cannot mint to contract");
+
+    // Always call super to chain extension logic
+    super._beforeMint(to, amount);
+}
+```
+
+### Pattern: Role-based access
+
+Use `onlyAccessManagerRole` modifier for all privileged functions:
+
+```solidity
+function criticalOperation()
+    external
+    onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
+{
+    // Only governance role can call
+}
+```
+
+### Pitfall: Storage layout violations
+
+**NEVER** do this in an upgrade:
+
+```solidity
+// V1
+contract V1 {
+    uint256 private _valueA;
+    uint256 private _valueB;
+}
+
+// V2 - WRONG! Reordered storage
+contract V2 {
+    uint256 private _valueB;  // Now in slot 0 (was slot 1)
+    uint256 private _valueA;  // Now in slot 1 (was slot 0)
+}
+```
+
+**ALWAYS** append new storage:
+
+```solidity
+// V2 - CORRECT! Preserved order, appended new
+contract V2 {
+    uint256 private _valueA;  // Stays in slot 0
+    uint256 private _valueB;  // Stays in slot 1
+    uint256 private _valueC;  // New variable in slot 2
+}
+```
+
+### Pitfall: Missing interface registration
+
+Always register custom interfaces:
+
+```solidity
+function initialize(...) external initializer {
+    __SMART_init(...);
+
+    // Register your custom interface
+    _registerInterface(type(IATKCustomAsset).interfaceId);
+    _registerInterface(type(IContractWithIdentity).interfaceId);
+}
+```
+
+### Pitfall: Incorrect hook chaining
+
+When overriding hooks from multiple extensions, always call `super`:
+
+```solidity
+// CORRECT: Chains all extension logic
+function _beforeTransfer(address from, address to, uint256 amount)
+    internal
+    virtual
+    override(SMARTUpgradeable, SMARTCustodianUpgradeable, SMARTHooks)
+{
+    // Your custom logic first
+    require(someCondition, "Custom validation");
+
+    // Then chain to parent extensions
+    super._beforeTransfer(from, to, amount);
+}
+```
+
+## Next steps
+
+- **Explore compliance modules**: See
+  [`kit/contracts/contracts/smart/modules/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/contracts/smart/modules)
+  for built-in examples
+- **Review addon system**: Read
+  [`kit/contracts/contracts/addons/README.md`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/README.md)
+  for airdrop, vault, and settlement patterns
+- **Study tests**: Look at
+  [`ATKBond.t.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/test/assets/ATKBond.t.sol)
+  for comprehensive asset test examples
+- **Check deployment**: Review
+  [`kit/contracts/ignition/modules/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/contracts/ignition/modules)
+  for production deployment patterns
+- **Read SMART documentation**: Understand extension composition in
+  [`kit/contracts/contracts/smart/README.md`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/README.md)
+
+For API integration and frontend usage of your custom contracts, continue to
+[Using the API](/docs/developer-guides/api-integration/using-api).

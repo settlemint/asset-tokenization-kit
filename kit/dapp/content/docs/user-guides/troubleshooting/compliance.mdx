@@ -1,0 +1,410 @@
+---
+title: Identity & compliance
+description:
+  Solutions for KYC verification, claims, OnchainID, and compliance-related
+  issues
+pageTitle: Identity and compliance troubleshooting
+tags: [troubleshooting, KYC, compliance, identity, claims, OnchainID]
+---
+
+## Overview
+
+This guide covers troubleshooting for identity verification, KYC processes,
+claim management, and compliance-related transaction failures. Learn how to
+resolve common compliance obstacles.
+
+**Primary audience:** Investors, token holders, compliance officers **Related
+guides:**
+[Transaction Troubleshooting](/docs/user-guides/troubleshooting/transactions),
+
+## How to use this guide
+
+1. **Identify the compliance issue** - Determine if problem is KYC, claims, or
+   transfer restrictions
+2. **Check claim status** - Review your OnchainID claims and expiration dates
+3. **Follow resolution steps** - Complete required verification or renewals
+4. **Verify eligibility** - Confirm compliance before attempting transactions
+
+**Tip:** Keep documentation ready for KYC submissions (passport, proof of
+address, etc.).
+
+## KYC verification issues
+
+### KYC verification rejected
+
+**Symptoms:** KYC status shows "Rejected" with reason provided.
+
+**Common rejection reasons and solutions:**
+
+1. **Document quality issues:**
+   - **Blurry or unclear image:** Take new photo in good lighting, ensure text
+     readable
+   - **Document cropped:** Capture entire document with all edges visible
+   - **Glare or shadows:** Use indirect lighting, avoid flash
+   - **Black and white copy:** Submit color scan or photo
+
+2. **Document validity:**
+   - **Expired document:** Submit current, valid document (check expiration
+     date)
+   - **Unsupported document type:** Use passport, national ID, or driver's
+     license
+   - **Document from unsupported country:** Check platform's supported
+     jurisdictions
+
+3. **Information mismatch:**
+   - **Name spelling different:** Ensure name matches exactly across all
+     documents
+   - **Address mismatch:** Proof of address must match profile information
+   - **Date of birth discrepancy:** Verify DOB entered correctly in profile
+
+4. **Selfie verification failed:**
+   - **Face not clearly visible:** Remove glasses, hats; ensure face well-lit
+   - **Face doesn't match document:** Submit selfie with same appearance as ID
+     photo
+   - **Multiple faces detected:** Ensure only you in photo
+
+**Resolution:** Review rejection reason, correct the issue, and resubmit KYC
+with updated documents.
+
+### KYC stuck in pending status
+
+**Symptoms:** KYC status remains "Pending" for extended period (more than 3
+business days).
+
+**Solutions:**
+
+1. **Normal processing time:**
+   - Manual review typically 1-3 business days
+   - Complex cases may take longer
+   - Check during business hours for updates
+
+2. **Additional information requested:**
+   - Check email for requests from compliance team
+   - Look for notifications in platform
+   - Respond promptly to information requests
+
+3. **Processing delays:**
+   - High volume may cause delays
+   - Holiday periods extend processing time
+   - Contact compliance team if &gt; 5 business days
+
+**Status check:** Navigate to **Account** &gt; **Identity** &gt; **KYC Status**
+for current state and messages.
+
+### Document upload fails
+
+**Symptoms:** Cannot upload documents or upload hangs indefinitely.
+
+**Solutions:**
+
+1. **File requirements:**
+   - File size must be &lt; 10 MB
+   - Supported formats: PDF, JPG, PNG
+   - Avoid HEIC/HEIF formats (convert to JPG first)
+
+2. **Browser issues:**
+   - Try different browser (Chrome, Firefox)
+   - Clear browser cache and cookies
+   - Disable browser extensions temporarily
+
+3. **Network problems:**
+   - Check internet connection stable
+   - Try smaller file size (compress image)
+   - Avoid uploading on slow/mobile networks
+
+**Workaround:** If persistent, contact compliance team via email to submit
+documents directly.
+
+## Claims management
+
+### Cannot issue or receive claims
+
+**Symptoms:** "Claim issuance failed" or claims not appearing on OnchainID.
+
+**Solutions:**
+
+1. **OnchainID not deployed:**
+   - Verify OnchainID contract address exists
+   - Deploy OnchainID if missing: **Account** &gt; **OnchainID** &gt; **Create**
+   - Wait for deployment confirmation before receiving claims
+
+2. **Claim issuer permissions:**
+   - Only trusted claim issuers can issue claims
+   - Verify issuer address registered in identity registry
+   - Contact platform administrator to add claim issuer
+
+3. **Invalid claim data:**
+   - Claim data format incorrect (must follow schema)
+   - Claim topic not registered in registry
+   - Expiration date invalid (must be future date)
+
+4. **Transaction failure:**
+   - Check transaction on explorer for revert reason
+   - Insufficient gas for claim issuance
+   - Retry with higher gas limit
+
+**Verification:** Check OnchainID on blockchain explorer to verify claims stored
+correctly.
+
+### Claim expired and cannot transfer tokens
+
+**Symptoms:** "Transfer blocked: missing required claims" despite previously
+having access.
+
+**Solutions:**
+
+1. **Identify expired claims:**
+   - Navigate to **Account** &gt; **Identity** &gt; **Claims**
+   - Check expiration dates on all claims
+   - Note which claims expired or expiring soon
+
+2. **Renew expired claims:**
+   - Submit updated documentation to compliance officer
+   - Request claim renewal through platform
+   - Wait for new claim issuance
+
+**Common claims requiring renewal:**
+
+- **Accredited investor status:** Annually or when financial situation changes
+- **KYC verification:** Periodically (every 12-24 months typically)
+- **Jurisdiction/residency:** When moving to different country
+- **Sanctions screening:** Periodic re-verification
+
+3. **Temporary workaround:**
+   - Cannot transfer until claim renewed
+   - Receiving tokens may still work (depending on compliance rules)
+   - Prioritize claim renewal for full access
+
+**Prevention:** Set calendar reminders 30 days before claim expiration dates.
+
+### Wrong claims or incorrect information
+
+**Symptoms:** Claim contains incorrect data (wrong country, investor type,
+etc.).
+
+**Solutions:**
+
+1. **Update profile information:**
+   - Correct information in **Account** &gt; **Profile**
+   - Submit supporting documentation for changes
+   - Request claim reissuance with correct data
+
+2. **Revoke incorrect claim:**
+   - Contact claim issuer to revoke incorrect claim
+   - Cannot self-revoke claims
+   - Wait for revocation confirmation
+
+3. **Issue corrected claim:**
+   - After revocation, request new claim with correct data
+   - Provide updated documentation
+   - Verify new claim data before accepting
+
+**CRITICAL:** Do not attempt transfers with incorrect claims as they may fail
+compliance checks.
+
+## Identity-related transaction failures
+
+### "Identity not verified" error
+
+**Symptoms:** Transaction fails with identity verification error.
+
+**Meaning:** Sender or recipient lacks verified OnchainID with required claims.
+
+**Solutions:**
+
+1. **Verify you have OnchainID:**
+   - Check **Account** &gt; **OnchainID** shows deployed contract
+   - If not deployed, create OnchainID
+   - Wait for deployment confirmation
+
+2. **Complete KYC:**
+   - Submit KYC documents if not yet verified
+   - Wait for KYC approval
+   - Obtain required compliance claims
+
+3. **Verify recipient:**
+   - Recipient must also have OnchainID
+   - Recipient needs required claims for token
+   - Contact recipient to complete verification
+
+**Next step:** After all parties verified, retry transaction.
+
+### "Account frozen" error
+
+**Symptoms:** All transactions from your account fail with freeze error.
+
+**Meaning:** Your account or address frozen by compliance officer or
+administrator.
+
+**Immediate actions:**
+
+1. **Contact compliance team:**
+   - This is urgent - contact immediately
+   - Provide your wallet address
+   - Request freeze reason and resolution steps
+
+2. **Common freeze reasons:**
+   - Failed sanctions screening
+   - Suspicious activity detected
+   - Regulatory requirement
+   - Outstanding compliance requirements
+
+3. **Resolution process:**
+   - Provide requested documentation
+   - Resolve compliance issues
+   - Wait for compliance officer to unfreeze
+   - Verify unfreeze before attempting transactions
+
+**CRITICAL:** Do not create new account or transfer assets through other means;
+resolve freeze properly.
+
+### "Country restricted" error
+
+**Symptoms:** Transaction fails with jurisdiction or country restriction
+message.
+
+**Meaning:** Token has geographic restrictions and your jurisdiction not
+allowed.
+
+**Solutions:**
+
+1. **Verify your jurisdiction claim:**
+   - Check **Account** &gt; **Identity** &gt; **Claims**
+   - Look for country/jurisdiction claim
+   - Ensure claim data correct
+
+2. **Token restrictions:**
+   - Token may not be available in your country
+   - Check token prospectus for eligible jurisdictions
+   - Contact issuer if you believe eligible
+
+3. **Changed residence:**
+   - If recently moved countries, update profile
+   - Submit proof of new address
+   - Request updated jurisdiction claim
+   - Verify new country is eligible for token
+
+**Note:** Some tokens cannot be held by residents of certain countries due to
+regulations.
+
+## Error messages reference
+
+### "Missing required claim"
+
+**Meaning:** Transaction requires specific claim you don't have.
+
+**Solution:**
+
+1. Check error message for required claim topic (e.g., topic 1 = KYC)
+2. Navigate to **Account** &gt; **Eligible Assets** to see requirements
+3. Contact compliance officer to obtain missing claim
+
+### "Claim expired"
+
+**Meaning:** Required claim expired and no longer valid.
+
+**Solution:** Request claim renewal from compliance officer with updated
+documentation.
+
+### "Invalid claim signature"
+
+**Meaning:** Claim signature verification failed.
+
+**Solution:** Claim may be corrupted or issued by unauthorized party; request
+new claim from authorized issuer.
+
+### "Claim issuer not trusted"
+
+**Meaning:** Claim issued by address not registered as trusted issuer.
+
+**Solution:** Request claim from authorized compliance officer registered in
+identity registry.
+
+### "Identity registry mismatch"
+
+**Meaning:** OnchainID registered in different identity registry than token
+requires.
+
+**Solution:** Contact administrator; this is platform configuration issue
+requiring admin assistance.
+
+## Getting help
+
+If compliance issues persist:
+
+**Gather information:**
+
+- Your wallet address
+- OnchainID contract address
+- Current claims and expiration dates
+- KYC status and submission date
+- Token you're trying to access
+- Error messages received
+
+**Contact compliance team:**
+
+- Email: compliance@platform.example
+- Include all information above
+- Attach relevant documentation
+- Be prepared for identity verification
+
+**For KYC issues:**
+
+- Have identity documents ready
+- Explain rejection reason if resubmitting
+- Provide clear photos/scans
+- Respond promptly to information requests
+
+**For claim issues:**
+
+- Specify which claim needed
+- Explain why you're eligible
+- Provide supporting documentation
+- Note any expiration concerns
+
+**Response times:**
+
+- KYC submissions: 1-3 business days
+- Claim issuance: 1-2 business days
+- Account freeze review: 4-8 business hours
+- General compliance questions: 1-2 business days
+
+## Preventive best practices
+
+**KYC maintenance:**
+
+- Submit high-quality documents initially
+- Keep profile information current
+- Respond promptly to verification requests
+- Maintain valid contact information
+
+**Claims management:**
+
+- Monitor claim expiration dates
+- Set reminders 30 days before expiration
+- Renew claims proactively
+- Verify claims after issuance
+
+**Compliance awareness:**
+
+- Review token requirements before investing
+- Check eligibility before transactions
+- Understand jurisdiction restrictions
+- Keep documentation organized
+
+**Record keeping:**
+
+- Save copies of submitted documents
+- Screenshot claims and expiration dates
+- Record KYC submission dates
+- Keep correspondence with compliance team
+
+**Proactive compliance:**
+
+- Complete KYC as soon as joining platform
+- Request all relevant claims upfront
+- Update information when circumstances change
+- Maintain valid, current claims
+
+By maintaining proactive compliance, you'll minimize transaction failures and
+access issues.

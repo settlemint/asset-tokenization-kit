@@ -4,15 +4,26 @@ import { useAppForm } from "@/hooks/use-app-form";
 import { useCountries } from "@/hooks/use-countries";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
-import { FixedYieldScheduleCreateInput } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create.schema";
+import { FixedYieldScheduleCreateInputSchema } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.create.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { basisPointsToPercentage } from "@atk/zod/basis-points";
+import type { FormValidateOrFn } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import * as z from "zod";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
+
+const FixedYieldScheduleFormSchema = FixedYieldScheduleCreateInputSchema.omit({
+  walletVerification: true,
+  token: true,
+});
+
+type FixedYieldScheduleFormValues = z.infer<
+  typeof FixedYieldScheduleFormSchema
+>;
 
 /**
  * Props for the SetYieldScheduleSheet component.
@@ -69,7 +80,7 @@ export function SetYieldScheduleSheet({
           // Also invalidate any yield schedule queries to ensure they refetch
           qc.invalidateQueries({
             queryKey: orpc.fixedYieldSchedule.read.queryKey({
-              input: { id: tokenResult.yield?.schedule?.id ?? "" },
+              input: { contract: tokenResult.yield?.schedule?.id ?? "" },
             }),
           }),
         ];
@@ -86,7 +97,11 @@ export function SetYieldScheduleSheet({
 
   // Form initialization
   const form = useAppForm({
-    defaultValues: {} as FixedYieldScheduleCreateInput,
+    defaultValues: {} as FixedYieldScheduleFormValues,
+    validators: {
+      onChange:
+        FixedYieldScheduleFormSchema as FormValidateOrFn<FixedYieldScheduleFormValues>,
+    },
   });
 
   // Reset form when sheet opens
@@ -112,7 +127,7 @@ export function SetYieldScheduleSheet({
         startTime: values.startTime,
         endTime: values.endTime,
         token: asset.id,
-        countryCode: values.countryCode.toString(),
+        countryCode: values.countryCode,
         walletVerification: {
           secretVerificationCode: verification.secretVerificationCode,
           verificationType: verification.verificationType || "PINCODE",

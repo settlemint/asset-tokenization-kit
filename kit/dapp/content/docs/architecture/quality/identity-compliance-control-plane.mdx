@@ -1,0 +1,442 @@
+---
+title: Compliance automation
+description:
+  The Asset Tokenization Kit implements a unified identity and compliance
+  control plane that spans smart contracts, off-chain KYC workflows, and API
+  enforcement layers. This architecture ensures that compliance rules defined
+  once propagate consistently across all platform operations.
+pageTitle:
+  Identity & compliance control plane - End-to-end verification architecture
+tags: [architecture, compliance, identity, kyc, onchainid, concept]
+---
+
+## Problem
+
+Traditional tokenization platforms separate identity verification (off-chain KYC
+systems), compliance rules (middleware databases), and transfer enforcement
+(smart contracts). This fragmentation creates synchronization gaps where:
+
+- KYC approvals in the admin panel don't automatically update on-chain
+  permissions
+- Smart contract compliance checks can't access detailed verification documents
+- API-level transfer validation may differ from on-chain enforcement
+- Audit trails fragment across multiple systems with different timestamps
+
+### Solution
+
+ATK's identity and compliance control plane unifies these concerns through:
+
+- **OnchainID integration** - Decentralized identity contracts store verifiable
+  claims on-chain
+- **Shared compliance modules** - Smart contract rules reference the same
+  identity registry as API procedures
+- **Synchronized workflows** - KYC approval in the dApp triggers on-chain claim
+  issuance atomically
+- **Unified audit trail** - All compliance events (off-chain and on-chain) flow
+  into a single event log
+
+### Key concepts
+
+- **Identity registry**: On-chain mapping of wallet addresses to identity
+  contracts containing verifiable claims
+- **Claim topics**: Standardized claim types (KYC_VERIFIED, ACCREDITED_INVESTOR,
+  COUNTRY) that compliance modules check
+- **Compliance orchestration**: Smart contract layer that evaluates multiple
+  module rules before allowing transfers
+- **ORPC enforcement**: API middleware that pre-validates transactions against
+  the same rules before submission
+
+## Architecture layers
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "User Interaction"
+        User(Investor/Issuer)
+        DApp(dApp Interface<br/>KYC Forms & Token Transfers)
+    end
+    
+    subgraph "API Layer (ORPC)"
+        Procedures(ORPC Procedures<br/>Transfer, Mint, Approve KYC)
+        ComplianceCheck(Compliance Check<br/>Pre-flight Validation)
+        IdentityService(Identity Service<br/>Claim Management)
+    end
+    
+    subgraph "Off-Chain Data"
+        KYCDatabase((KYC Applications<br/>Documents & Status))
+        UserDB((User Accounts<br/>Wallet Associations))
+    end
+    
+    subgraph "Smart Contract Layer"
+        IdentityRegistry(Identity Registry<br/>Address → Identity Mapping)
+        Identity(OnchainID Contract<br/>Verifiable Claims)
+        Compliance(Compliance Contract<br/>Module Orchestrator)
+        Token(Token Contract<br/>Transfer Logic)
+    end
+    
+    subgraph "Compliance Modules"
+        CountryModule(Country Allow/Block List)
+        VerificationModule(Identity Verification Module)
+        LimitsModule(Transfer & Supply Limits)
+    end
+    
+    User --> DApp
+    DApp --> Procedures
+    Procedures --> ComplianceCheck
+    Procedures --> IdentityService
+    
+    IdentityService --> KYCDatabase
+    IdentityService --> UserDB
+    IdentityService --> Identity
+    
+    ComplianceCheck --> Compliance
+    Procedures --> Token
+    
+    Token --> Compliance
+    Compliance --> IdentityRegistry
+    Compliance --> CountryModule
+    Compliance --> VerificationModule
+    Compliance --> LimitsModule
+    
+    IdentityRegistry --> Identity
+    
+    style User fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Compliance fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style IdentityRegistry fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Token fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+`}
+/>
+
+### Layer responsibilities
+
+| Layer                  | Components                            | Responsibility                                                       |
+| ---------------------- | ------------------------------------- | -------------------------------------------------------------------- |
+| **User interaction**   | dApp UI, wallet                       | Collect KYC documents, initiate transfers                            |
+| **API layer**          | ORPC procedures, middleware           | Pre-validate compliance, manage KYC workflow state                   |
+| **Off-chain data**     | PostgreSQL databases                  | Store KYC documents, application status, user profiles               |
+| **Smart contracts**    | Identity registry, compliance, tokens | Enforce on-chain compliance rules, store verifiable claims           |
+| **Compliance modules** | Pluggable rule contracts              | Implement specific compliance checks (country, limits, verification) |
+
+## Identity verification flow
+
+### KYC application lifecycle
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant Investor
+    participant DApp
+    participant ORPC
+    participant Database
+    participant Admin
+    participant Portal
+    participant IdentityFactory
+    participant IdentityContract
+    participant ClaimIssuer
+    participant IdentityRegistry
+    
+    Investor->>DApp: Submit KYC application
+    DApp->>ORPC: kyc.submit(documents)
+    ORPC->>Database: Store application & documents
+    Database-->>ORPC: Application ID
+    ORPC-->>DApp: Submission confirmed
+    
+    Admin->>DApp: Review KYC application
+    DApp->>ORPC: kyc.approve(applicationId)
+    ORPC->>Database: Update status = 'approved'
+    
+    Note over ORPC,IdentityContract: Atomic on-chain identity creation
+    
+    ORPC->>Portal: Deploy OnchainID for investor
+    Portal->>IdentityFactory: createIdentity(investorAddress)
+    IdentityFactory->>IdentityContract: Deploy new Identity contract
+    IdentityContract-->>IdentityFactory: Identity address
+    IdentityFactory->>IdentityRegistry: registerIdentity(investorAddress, identityAddress)
+    IdentityRegistry-->>IdentityFactory: Registration confirmed
+    IdentityFactory-->>Portal: Identity deployed
+    
+    ORPC->>Portal: Add KYC claim to identity
+    Portal->>ClaimIssuer: addClaim(identityAddress, KYC_VERIFIED_TOPIC)
+    ClaimIssuer->>IdentityContract: addClaim(topic, data, signature)
+    IdentityContract-->>ClaimIssuer: Claim added
+    ClaimIssuer-->>Portal: Claim confirmation
+    
+    ORPC->>Database: Record on-chain identity address
+    ORPC-->>Admin: KYC approval complete
+    Admin-->>Investor: Notify: You can now transact
+`}
+/>
+
+### Key workflow characteristics
+
+**Atomic operations**: KYC approval triggers multiple on-chain transactions
+within a single API call. If any step fails, the entire operation rolls back and
+the application remains in "pending" status.
+
+**Idempotent retries**: If on-chain deployment succeeds but database update
+fails, retry logic detects existing identity contract and updates the database
+record without duplicating on-chain state.
+
+**Audit completeness**: Every state transition (application submitted, under
+review, approved, identity deployed, claim issued) generates an audit log entry
+with timestamp, actor, and transaction hash.
+
+## Transfer compliance enforcement
+
+### Dual-layer validation
+
+Every token transfer passes through two compliance checks:
+
+**Pre-flight validation (API layer)**: Before submitting a transaction, ORPC
+procedures query the compliance contract to check if the transfer would succeed.
+This prevents wasting gas on transactions that will revert.
+
+**On-chain enforcement (smart contract)**: The token contract's
+`_beforeTokenTransfer` hook calls the compliance contract, which evaluates all
+configured modules. If any module returns false, the transfer reverts.
+
+<Mermaid
+  chart={`flowchart LR
+    subgraph "Pre-flight Check (ORPC)"
+        A(User initiates transfer)
+        B(ORPC: token.transfer)
+        C(Query compliance.canTransfer)
+        D{Rules pass?}
+        E[Submit transaction]
+        F[Return error to user]
+    end
+    
+    subgraph "On-Chain Enforcement"
+        G[Token._transfer called]
+        H[_beforeTokenTransfer hook]
+        I[Compliance.transferred]
+        J{All modules approve?}
+        K[Execute transfer]
+        L[Revert transaction]
+    end
+    
+    A --> B
+    B --> C
+    C --> D
+    D -->|Yes| E
+    D -->|No| F
+    E --> G
+    G --> H
+    H --> I
+    I --> J
+    J -->|Yes| K
+    J -->|No| L
+    
+    style D fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style J fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style K fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style L fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+`}
+/>
+
+### Why dual validation matters
+
+**Gas efficiency**: Pre-flight checks prevent users from spending gas on
+transfers that will fail on-chain compliance.
+
+**Better UX**: Users receive immediate, detailed error messages ("Recipient not
+KYC verified" instead of generic "transfer failed").
+
+**Audit accuracy**: Failed pre-flight checks still log to the audit database
+with reason codes, even though no on-chain transaction occurs.
+
+## Compliance module architecture
+
+### Pluggable module system
+
+The compliance contract acts as an orchestrator that delegates checks to
+individual modules. Each module implements a standard interface:
+
+```solidity
+interface IComplianceModule {
+    function canTransfer(
+        address token,
+        address from,
+        address to,
+        uint256 amount,
+        bytes calldata params
+    ) external view returns (bool);
+
+    function transferred(
+        address from,
+        address to,
+        uint256 amount
+    ) external;
+}
+```
+
+### Standard modules
+
+| Module                       | Purpose                                           | Checks                                        | State Updated        |
+| ---------------------------- | ------------------------------------------------- | --------------------------------------------- | -------------------- |
+| **Identity verification**    | Ensure participants have valid OnchainID claims   | Receiver has required claim topics            | No                   |
+| **Country allow/block list** | Restrict transfers by jurisdiction                | Sender/receiver country claims against lists  | No                   |
+| **Transfer limits**          | Cap per-transaction or daily volumes              | Amount against configured limits              | Yes (daily counters) |
+| **Supply caps**              | Limit total token supply or per-investor holdings | Total supply or receiver balance against caps | No (read-only)       |
+| **Time locks**               | Enforce holding periods                           | Current time against token unlock timestamps  | No                   |
+
+### Module configuration
+
+Modules are configured per-token through ORPC procedures:
+
+```typescript
+// Add a country allow list module
+await orpc.token.addComplianceModule.mutate({
+  tokenAddress: "0x...",
+  moduleAddress: "0xCountryAllowListModule",
+  parameters: encodeAbiParameters(
+    [{ type: "uint16[]", name: "allowedCountries" }],
+    [[840, 276, 826]] // USA, Germany, UK
+  ),
+});
+```
+
+The same module contract instance can be shared across multiple tokens, each
+with different parameters.
+
+## Integration with external KYC providers
+
+### Provider adapter pattern
+
+ATK supports integration with third-party KYC providers through a standardized
+adapter pattern:
+
+<Mermaid
+  chart={`flowchart LR
+    subgraph "ATK Platform"
+        KYCService(KYC Service<br/>ORPC Procedures)
+        Adapter(Provider Adapter<br/>Sumsub/Jumio/Onfido)
+    end
+    
+    subgraph "External Provider"
+        API(KYC Provider API<br/>REST/Webhooks)
+        Dashboard(Provider Dashboard<br/>Manual Review)
+    end
+    
+    subgraph "Smart Contracts"
+        ClaimIssuer(Claim Issuer Contract<br/>Signs Claims)
+        Identity(OnchainID<br/>Stores Claims)
+    end
+    
+    KYCService --> Adapter
+    Adapter -->|Submit application| API
+    API -->|Webhook: status update| Adapter
+    Dashboard -->|Admin approval| API
+    Adapter -->|Sync status| KYCService
+    KYCService -->|Issue claim| ClaimIssuer
+    ClaimIssuer -->|addClaim| Identity
+    
+    style Adapter fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style KYCService fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style ClaimIssuer fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+`}
+/>
+
+### Adapter responsibilities
+
+**Submit applications**: Transform ATK KYC application data into
+provider-specific API format
+
+**Handle webhooks**: Listen for provider status updates and sync to ATK database
+
+**Map verification levels**: Convert provider verification tiers into ATK claim
+topics
+
+**Error handling**: Retry failed API calls, handle rate limits, log provider
+errors
+
+## Audit trail architecture
+
+### Unified event log
+
+All compliance-related events flow into a unified audit log stored in
+PostgreSQL:
+
+| Event Type                    | Source                   | Data Captured                                                 |
+| ----------------------------- | ------------------------ | ------------------------------------------------------------- |
+| **KYC application submitted** | ORPC                     | Application ID, user ID, timestamp, document hashes           |
+| **KYC status changed**        | ORPC                     | Application ID, from status, to status, reviewer ID, reason   |
+| **Identity deployed**         | Smart contract (indexed) | Investor address, identity contract address, transaction hash |
+| **Claim added**               | Smart contract (indexed) | Identity address, claim topic, issuer, expiry timestamp       |
+| **Transfer attempted**        | ORPC                     | Token, from, to, amount, pre-flight result                    |
+| **Transfer completed**        | Smart contract (indexed) | Token, from, to, amount, transaction hash, block number       |
+| **Compliance violation**      | ORPC or Smart contract   | Token, from, to, amount, violated rule, reason code           |
+
+### Query patterns
+
+The audit log supports regulatory reporting queries:
+
+- "Show all transfers for token X in date range Y"
+- "List investors who failed KYC verification"
+- "Identify compliance violations by rule type"
+- "Generate monthly transaction volume report"
+
+All queries execute against PostgreSQL with indexed columns for performance,
+avoiding expensive on-chain log scanning.
+
+## Security considerations
+
+### Claim issuer key management
+
+The claim issuer private key has the authority to add claims to any OnchainID.
+Key security measures:
+
+- **HSM storage**: Private key stored in hardware security module, never in
+  application code
+- **Multi-signature approval**: High-value claims (ACCREDITED_INVESTOR) require
+  multiple issuer signatures
+- **Key rotation**: Claim issuer can be changed by governance, old claims remain
+  valid until expiry
+- **Audit logging**: Every claim issuance logs to immutable audit trail with
+  issuer identity
+
+### ORPC authorization
+
+API procedures that modify identity or compliance state require specific roles:
+
+- `GOVERNANCE_ROLE`: Add/remove compliance modules, change identity registry
+- `COMPLIANCE_OFFICER_ROLE`: Approve/reject KYC applications, issue claims
+- `EMERGENCY_ROLE`: Freeze addresses, pause token operations
+
+Middleware validates roles before executing procedures, preventing unauthorized
+compliance changes.
+
+## Limitations
+
+### On-chain storage costs
+
+Storing detailed KYC documents on-chain is prohibitively expensive. ATK stores
+only verifiable claim hashes on-chain (32 bytes), with full documents in
+off-chain storage.
+
+### Identity recovery complexity
+
+If an investor loses wallet access, identity recovery requires:
+
+1. Identity registry manager initiates recovery to new wallet address
+2. Investor reclaims tokens using the custodian recovery mechanism
+3. All off-chain user accounts must be manually updated to associate with new
+   wallet
+
+This two-step process prevents unauthorized identity transfers but adds
+operational overhead.
+
+### Real-time claim expiry
+
+Compliance modules check claim validity on every transfer, but expired claims
+remain in the identity contract until explicitly removed. This creates a window
+where transfers may succeed with expired claims if not removed promptly.
+
+## See also
+
+- [Identity & compliance smart contracts](../smart-contracts/identity-compliance) -
+  OnchainID and compliance module implementation details
+- [Backend API](../application/backend-api) - ORPC procedures for KYC workflow
+  management
+- [Database model](../data-indexing/database-model) - KYC application and audit
+  log schemas
+- [Compliance certification](./compliance-certification) - Jurisdiction-specific
+  compliance requirements and certification processes

@@ -1,0 +1,166 @@
+---
+title: Frontend & API optimization
+description:
+  Build-time and runtime optimizations for frontend and API efficiency
+pageTitle: Frontend and API optimization
+tags: [architecture, performance, frontend, api, optimization]
+---
+
+Optimizing the frontend and API layers requires coordinated strategies across
+build configuration, runtime behavior, and data access patterns.
+
+## Frontend performance
+
+The dApp frontend is built with TanStack Start, React, and Vite with aggressive
+optimization strategies that keep bundle sizes small and initial loads fast.
+
+### Build-time optimizations
+
+**Code splitting and lazy loading** - The Vite build configuration uses manual
+chunk splitting to separate vendor libraries by usage pattern. Core dependencies
+(React, TanStack Router, TanStack Query) bundle into a shared chunk loaded on
+every route. Feature-specific libraries (Recharts for analytics, Mermaid for
+documentation, TanStack Table for data grids) split into route-level chunks
+loaded only when needed.
+
+**Tree shaking and dead code elimination** - ES modules enable Vite's
+tree-shaking to strip unused exports. The build targets ES2023, allowing modern
+syntax without transpilation bloat. Unused CSS classes are purged by Tailwind's
+JIT compiler.
+
+**Asset optimization** - Images use modern formats (WebP, AVIF) with lazy
+loading via `loading="lazy"`. SVG icons inline when small, external when large.
+Font subsetting reduces WOFF2 files to only the glyphs used in the UI.
+
+**Pre-bundling dependencies** - Vite's `optimizeDeps.include` configuration
+pre-bundles frequently accessed libraries (`@orpc/client`, `viem`, `zod`,
+`date-fns`) during dev server startup. This eliminates cold-start
+re-optimization and improves hot module replacement (HMR) speed.
+
+### Runtime optimizations
+
+**React Compiler** - The frontend uses the experimental React Compiler to
+automatically memoize components and hooks, eliminating manual `useMemo` and
+`useCallback` wrappers. This reduces unnecessary re-renders and improves runtime
+performance without developer overhead.
+
+**TanStack Query caching** - API responses cache in TanStack Query with
+configurable stale times and cache invalidation strategies. Token balances cache
+for 30 seconds (frequent updates expected). Asset metadata caches for 5 minutes
+(relatively stable). Identity verification results cache for 10 minutes (changes
+infrequently).
+
+**Broadcast synchronization** - Multiple browser tabs synchronize cache state
+via the experimental `@tanstack/query-broadcast-client`. When one tab
+invalidates a query (e.g., after minting tokens), all other tabs refetch
+automatically. This prevents stale data without forcing constant background
+polling.
+
+**Virtualized lists** - Large datasets (token holder tables, transaction
+histories) use virtual scrolling to render only visible rows. A 10,000-row table
+renders 20 DOM nodes instead of 10,000, keeping scroll performance smooth.
+
+**Prefetching and preloading** - TanStack Router prefetches route code and data
+when hovering over links. Critical assets (fonts, above-the-fold images) use
+`<link rel="preload">` to prioritize loading.
+
+### Performance monitoring
+
+**Core Web Vitals tracking** - The frontend measures Largest Contentful Paint
+(LCP), First Input Delay (FID), and Cumulative Layout Shift (CLS). These metrics
+feed into production monitoring dashboards and trigger alerts when thresholds
+degrade.
+
+**Bundle size budgets** - CI enforces bundle size limits per chunk. The main
+bundle stays under 200KB gzipped. Vendor chunks target 150KB each. Oversized
+bundles block deployment until developers analyze and reduce them.
+
+**Lighthouse CI integration** - Automated Lighthouse audits run on every pull
+request. Regressions in performance, accessibility, or best practices scores
+block merging until resolved.
+
+## API performance
+
+The ORPC-based API layer prioritizes low latency and high throughput through
+careful architectural choices.
+
+### Type-safe procedure routing
+
+**Zero-overhead abstraction** - ORPC compiles TypeScript procedure definitions
+into minimal runtime code. Unlike REST frameworks with heavyweight routing logic
+and JSON schema validation, ORPC procedures execute with negligible overhead.
+Request validation uses Zod schemas compiled at build time, avoiding runtime
+parsing penalties.
+
+**Procedure batching** - Multiple client requests batch into a single HTTP
+round-trip when possible. Fetching an asset's metadata, holder count, and
+compliance status in one batch reduces latency from 3 × 100ms (serialized) to 1
+× 120ms (parallel execution with network overhead).
+
+**Streaming responses** - Long-running operations (bulk airdrops, compliance
+scans) stream progress updates to the client rather than blocking until
+completion. Users see real-time feedback, and server memory pressure remains
+constant instead of accumulating state.
+
+### Database query optimization
+
+**Connection pooling** - PostgreSQL connections pool via Drizzle ORM with a
+target pool size of 20 connections. Queries reuse idle connections instead of
+incurring connection establishment overhead (typically 50-100ms). Pool
+saturation monitoring alerts when usage exceeds 80%, triggering horizontal
+scaling.
+
+**Query optimization patterns** - Database queries follow strict optimization
+patterns. Always project only needed columns (avoid `SELECT *`). Use indexes on
+foreign keys and frequently filtered columns. Paginate large result sets with
+cursor-based navigation. Batch related queries using `IN` clauses instead of N+1
+queries.
+
+**Read replicas for reporting** - Heavy read workloads (analytics dashboards,
+holder reports) route to read replicas rather than the primary database. This
+offloads the primary for write-heavy operations (minting, transfers, compliance
+updates) and prevents read contention from degrading write performance.
+
+**Prepared statements** - Drizzle ORM generates parameterized queries that
+PostgreSQL prepares and caches. Repeated queries (checking if an address is
+verified, fetching token metadata) execute faster after the first invocation
+because the query plan is cached.
+
+### Caching strategies
+
+**Redis for session and hot data** - Better Auth session tokens cache in Redis
+for sub-millisecond authentication checks. Frequently accessed data (user
+profiles, token summaries) cache with short TTLs (30-120 seconds) to reduce
+database load during bursts.
+
+**Stale-while-revalidate pattern** - API responses include
+`Cache-Control: stale-while-revalidate=30` headers. Clients receive cached data
+immediately while the API asynchronously refreshes the cache in the background.
+This balances freshness with speed—users never wait for slow database queries.
+
+**Cache invalidation coordination** - When blockchain events modify state
+(mints, burns, transfers), the subgraph triggers webhook notifications to the
+API. The API invalidates relevant cache entries (token holder lists, balance
+aggregates) and broadcasts invalidation messages to connected clients via
+TanStack Query's broadcast channel.
+
+### Rate limiting and load shedding
+
+**Per-user rate limits** - Authenticated procedures enforce rate limits (100
+requests per minute per user). Unauthenticated endpoints (public asset data) use
+IP-based limits (500 requests per minute). Rate limiters use Redis sliding
+windows to track usage across API instances.
+
+**Graceful degradation** - Under extreme load, non-critical features degrade
+before core functionality. Analytics dashboards serve cached data. Admin panels
+delay non-urgent updates. Asset minting and transfers remain fast by shedding
+low-priority traffic.
+
+## See also
+
+- [Infrastructure performance](/docs/architecture/performance/infrastructure-performance) -
+  Smart contracts, blockchain, database
+- [Scalability architecture](/docs/architecture/performance/scalability-architecture) -
+  Horizontal scaling patterns
+- [Performance operations](/docs/architecture/performance/performance-operations) -
+  Testing and monitoring

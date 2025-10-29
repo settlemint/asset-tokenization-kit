@@ -1,0 +1,322 @@
+---
+title: Security & validation
+description:
+  Security vulnerabilities that expose private keys end the business. ATK treats
+  security validation as a continuous discipline, not a one-time audit before
+  launch. Automated scanning runs on every commit. Manual reviews catch subtle
+  issues. Penetration testing validates defenses. Incident response minimizes
+  impact when things go wrong.
+pageTitle: Security and validation
+tags: [architecture, security, validation, testing, incident-response, concept]
+---
+
+Related topics:
+[Testing and quality gates](/docs/architecture/quality/testing-quality),
+[Compliance certification](/docs/architecture/quality/compliance-certification)
+
+## Automated security scanning
+
+Automated scanning catches common vulnerabilities before code reaches
+production.
+
+### Secret scanning
+
+**Gitleaks** - Scans every commit for accidentally committed secrets: private
+keys, API tokens, database credentials. Commits containing secrets are rejected
+before reaching the repository.
+
+**Configuration** - The `.gitleaksignore` file allows known false positives
+(test keys, example values). All other secrets trigger immediate failure and
+block the commit.
+
+**Pre-commit hooks** - Local pre-commit hooks run Gitleaks before commits reach
+the remote repository. This prevents accidental secret exposure even in private
+repositories.
+
+### Dependency scanning
+
+**Trivy** - Scans Docker images and npm dependencies for known vulnerabilities
+(CVEs). High and critical vulnerabilities block deployment until patched or
+mitigated.
+
+**Automated updates** - Renovate creates pull requests when dependency updates
+fix security vulnerabilities. Security updates merge within 24 hours after
+automated testing passes.
+
+**Supply chain security** - All dependencies verify via checksums and
+signatures. Unexpected changes to dependency hashes trigger alerts and
+investigation.
+
+### Smart contract static analysis
+
+**Slither** - Analyzes Solidity contracts for common vulnerabilities:
+re-entrancy, unprotected self-destruct, missing access control, integer
+overflows. Findings are triaged and resolved before merging.
+
+**Custom detectors** - ATK implements custom Slither detectors for
+domain-specific risks: missing compliance checks before transfers, unvalidated
+identity claims, incorrect event emissions.
+
+**Continuous analysis** - Slither runs on every pull request. New findings block
+merging until reviewed and resolved. Suppressed findings require documented
+justification.
+
+## Manual security reviews
+
+Automated tools catch obvious issues. Manual reviews catch subtle ones.
+
+### Code review process
+
+Every pull request requires approval from at least one senior engineer.
+Reviewers check for:
+
+- Correct use of cryptographic primitives
+- Proper input validation and sanitization
+- Safe handling of user funds and private data
+- Adherence to the principle of least privilege
+
+### Security-focused reviews
+
+Changes to smart contracts, authentication logic, or cryptographic operations
+trigger additional review by security-focused engineers.
+
+**Contract changes** - All smart contract modifications receive review from
+engineers with security audit experience. Reviewers validate:
+
+- Access control on privileged functions
+- Correct modifier usage and inheritance
+- Safe external calls and re-entrancy protection
+- Event emissions for audit trails
+
+**Authentication changes** - Changes to Better Auth configuration, session
+management, or authorization logic require security team approval. Reviewers
+validate:
+
+- Correct session lifecycle management
+- Secure token generation and validation
+- Appropriate rate limiting and abuse prevention
+- Proper CSRF and XSS protection
+
+**Cryptographic operations** - Changes involving signatures, encryption, or key
+management require cryptography expert review. Reviewers validate:
+
+- Correct algorithm selection for the use case
+- Proper key generation and storage
+- Safe nonce generation and signature verification
+- Timing attack prevention
+
+## Penetration testing
+
+Regular penetration testing validates that defensive measures work as intended.
+
+### Periodic security audits
+
+**Quarterly audits** - External security firms conduct penetration tests
+quarterly. Auditors receive full access to the codebase and test environments.
+
+**Audit scope** - Tests cover:
+
+- Smart contract security (re-entrancy, access control, economic exploits)
+- API security (injection attacks, authorization bypasses)
+- Frontend security (XSS, CSRF, session hijacking)
+- Infrastructure security (network segmentation, secrets management)
+
+**Finding remediation** - Findings are triaged by severity and remediated
+according to SLA:
+
+- Critical (theft of funds possible): 24 hours
+- High (significant impact): 7 days
+- Medium (limited impact): 30 days
+- Low (informational): 90 days
+
+### Bug bounty program
+
+A public bug bounty program incentivizes responsible disclosure.
+
+**Reward structure** - Rewards range based on severity:
+
+- Critical (theft of funds): $10,000 - $50,000
+- High (significant impact): $2,500 - $10,000
+- Medium (limited impact): $500 - $2,500
+- Low (informational): $100 - $500
+
+**Scope and rules** - The program covers production smart contracts, APIs, and
+infrastructure. Researchers must avoid:
+
+- Accessing user data beyond their own accounts
+- Performing denial-of-service attacks
+- Social engineering employees or users
+- Physical attacks on infrastructure
+
+**Disclosure timeline** - Researchers receive acknowledgment within 24 hours.
+Valid findings receive initial triage within 48 hours. Fixes deploy within the
+SLA timeframe. Public disclosure happens after fixes deploy and affected users
+are notified.
+
+## Regulatory compliance testing
+
+Financial regulations impose strict requirements that must be validated through
+testing. See
+[Compliance certification](/docs/architecture/quality/compliance-certification)
+for certification details.
+
+### Transfer restriction enforcement
+
+**ERC-3643 compliance tests** - Every asset type (bond, equity, fund,
+stablecoin, deposit) includes comprehensive transfer restriction tests:
+
+- **Identity verification** - Non-verified addresses cannot receive tokens
+- **Country restrictions** - Transfers to blocked countries revert with a
+  descriptive error
+- **Investor limits** - Transfers exceeding investor caps revert before state
+  changes
+- **Lock-up periods** - Time-locked tokens cannot transfer until the unlock date
+- **Frozen addresses** - Compliance officers can freeze addresses; frozen
+  addresses cannot send or receive tokens
+
+**Compliance module isolation** - Each compliance module tests independently and
+in combination. Tests verify that multiple restrictions compose correctly (e.g.,
+country restrictions AND investor limits both apply).
+
+**Negative testing** - Tests explicitly attempt to bypass restrictions using
+various attack vectors: direct contract calls, multicall batching, flash loans,
+re-entrancy. All attempts must fail with appropriate error messages.
+
+### Identity and KYC validation
+
+**OnchainID integration tests** - Tests verify the complete identity
+verification flow:
+
+1. Create identity contract for new investor
+2. Compliance officer adds KYC claim to identity
+3. Trusted issuer signs claim
+4. Identity registry validates claim signature and issuer trust
+5. Token transfer succeeds only after claim validation passes
+
+**Claim expiration handling** - Tests validate that expired claims trigger
+re-verification. An investor verified in January cannot transfer tokens in
+December if their KYC claim expired in June.
+
+**Claim revocation** - Compliance officers can revoke claims (e.g., investor
+moves to a sanctioned country). Tests verify that revoked claims immediately
+prevent transfers without requiring contract upgrades.
+
+### Audit trail completeness
+
+**Event emission tests** - Every state-changing operation emits events. Tests
+verify:
+
+- Mint operations emit `Transfer(address(0), recipient, amount)`
+- Burn operations emit `Transfer(account, address(0), amount)`
+- Compliance updates emit `ComplianceModuleUpdated` or similar events
+- Identity updates emit `IdentityRegistryUpdated` events
+
+**Event parameter accuracy** - Tests validate that events include all necessary
+data for audit reconstruction: token IDs, amounts, addresses, timestamps,
+transaction hashes.
+
+**Subgraph audit trail** - Integration tests verify that the subgraph correctly
+indexes all events and reconstructs the complete transaction history. Auditors
+can query the subgraph to generate compliance reports without accessing raw
+blockchain data.
+
+### Role-based access control
+
+**Permission boundary tests** - Each role (issuer, compliance officer,
+administrator, investor) has explicit permissions. Tests verify:
+
+- Investors can transfer tokens but cannot mint, burn, or freeze accounts
+- Compliance officers can freeze accounts but cannot mint or burn tokens
+- Issuers can mint and burn but cannot modify compliance rules
+- Administrators can modify compliance rules but follow governance timelock
+  delays
+
+**Permission escalation prevention** - Tests attempt to escalate privileges
+using various techniques: front-running, re-entrancy, signature replay. All
+attempts must fail.
+
+**Multi-signature enforcement** - Critical operations (contract upgrades,
+compliance rule changes) require multi-signature approval. Tests verify that
+operations revert until the required number of signatures accumulate.
+
+## Incident response
+
+When production issues occur despite all preventive measures, a structured
+incident response process minimizes impact.
+
+### Incident detection
+
+**Automated alerts** - Prometheus alerts trigger when metrics exceed thresholds:
+error rate &gt;1%, response time P95 &gt;500ms, database connection pool
+saturation &gt;80%.
+
+**User reports** - A support channel captures user-reported issues. Triage teams
+prioritize reports by severity: funds at risk (P0), feature broken (P1),
+cosmetic issue (P2).
+
+**Security monitoring** - Dedicated security alerts monitor:
+
+- Failed authentication attempts exceeding rate limits
+- Unusual transaction patterns (high value, rapid succession)
+- Smart contract function calls from unexpected addresses
+- Unauthorized access attempts to administrative interfaces
+
+### Incident resolution
+
+**Runbooks** - Common incidents have documented runbooks: database failover, API
+rollback, blockchain re-org handling. Runbooks specify step-by-step
+instructions, expected outcomes, and rollback procedures.
+
+**Security incident runbooks** - Security-specific runbooks cover:
+
+- Smart contract pause and upgrade procedures
+- Private key compromise response
+- Unauthorized access containment
+- Data breach notification and mitigation
+
+**Communication protocols** - During incidents, designated personnel communicate
+with:
+
+- Internal teams (engineering, legal, compliance)
+- External stakeholders (customers, regulators)
+- Security researchers (for responsible disclosures)
+
+### Blameless postmortems
+
+After incidents are resolved, teams conduct blameless postmortems. The goal is
+to understand why systems failed and implement preventive measures, not to
+assign blame to individuals.
+
+**Postmortem template** - Postmortems follow a structured format:
+
+1. Timeline of events
+2. Root cause analysis
+3. Impact assessment (users affected, financial impact)
+4. What went well (detection, response, mitigation)
+5. What went poorly (gaps in monitoring, tooling, documentation)
+6. Action items (preventive measures, monitoring improvements)
+
+**Preventive measures** - Postmortem action items add new tests, improve
+monitoring, update documentation, or redesign systems to prevent recurrence.
+Action items are tracked and prioritized like feature work.
+
+**Knowledge sharing** - Postmortems are shared with the entire engineering
+organization (with sensitive details redacted). Teams learn from incidents and
+apply lessons to their own systems.
+
+## Conclusion
+
+Security validation in ATK is continuous and comprehensive. Automated scanning
+catches common vulnerabilities. Manual reviews catch subtle issues. Penetration
+testing validates defenses. Incident response minimizes impact when things go
+wrong.
+
+This multi-layered approach enables ATK to operate in regulated markets where
+security failures have severe consequences. Security teams trust that
+vulnerabilities are detected and patched quickly. Operations teams trust that
+incidents are handled professionally and systematically.
+
+For broader quality assurance practices, see
+[Testing and quality gates](/docs/architecture/quality/testing-quality). For
+compliance certification requirements, see
+[Compliance certification](/docs/architecture/quality/compliance-certification).

@@ -1,0 +1,981 @@
+---
+title: Developer FAQ
+description:
+  Common developer issues, troubleshooting solutions, and debugging tips for the
+  Asset Tokenization Kit
+---
+
+This FAQ addresses common development issues, error messages, and debugging
+strategies when working with the Asset Tokenization Kit.
+
+## Environment setup
+
+### Port already in use errors
+
+**Q: Docker Compose fails with "port is already allocated" or "address already
+in use"**
+
+**A:** Another service is using the required port. Common conflicts:
+
+| Service    | Default Port | Check Command   |
+| ---------- | ------------ | --------------- |
+| PostgreSQL | 5432         | `lsof -i :5432` |
+| Redis      | 6379         | `lsof -i :6379` |
+| Besu RPC   | 8545         | `lsof -i :8545` |
+| DApp       | 3000         | `lsof -i :3000` |
+| Hasura     | 8080         | `lsof -i :8080` |
+| MinIO      | 9000         | `lsof -i :9000` |
+
+**Solutions**:
+
+1. **Stop conflicting service**:
+
+   ```bash
+   # Find process using port
+   lsof -i :5432
+
+   # Kill process
+   kill -9 &lt;PID&gt;
+   ```
+
+2. **Use different ports** (edit `docker-compose.yml`):
+
+   ```yaml
+   services:
+     postgresql:
+       ports:
+         - "5433:5432" # Host:Container
+   ```
+
+   Update connection strings in `.env.local`:
+
+   ```bash
+   DATABASE_URL="postgresql://postgres:atk@localhost:5433/postgres"
+   ```
+
+3. **Reset Docker networking**:
+
+   ```bash
+   docker network prune
+   docker-compose down --volumes
+   docker-compose up -d
+   ```
+
+### Bun installation fails
+
+**Q: `bun install` fails with "permission denied" or "EACCES"**
+
+**A:** Node modules or cache directories have incorrect permissions.
+
+**Solutions**:
+
+1. **Clear Bun cache**:
+
+   ```bash
+   rm -rf ~/.bun
+   bun install
+   ```
+
+2. **Reset node_modules ownership**:
+
+   ```bash
+   sudo chown -R $(whoami) node_modules
+   ```
+
+3. **Use correct Bun version** (check `.bun-version` file):
+
+   ```bash
+   bun --version
+   # Should match version in .bun-version
+
+   # Install specific version
+   curl -fsSL https://bun.sh/install | bash -s "bun-v1.3.1"
+   ```
+
+### Docker out of memory
+
+**Q: Docker services crash or become unresponsive**
+
+**A:** Docker Desktop memory limit is too low for the full stack.
+
+**Solutions**:
+
+1. **Increase Docker memory** (Docker Desktop → Settings → Resources):
+   - Minimum: 8GB RAM
+   - Recommended: 16GB RAM
+
+2. **Check current limits**:
+
+   ```bash
+   docker info | grep -i memory
+   ```
+
+3. **Reduce services** (disable unused components in `docker-compose.yml`):
+
+   ```yaml
+   # Comment out optional services
+   # ipfs:
+   #   ...
+   # blockscout:
+   #   ...
+   ```
+
+4. **Monitor resource usage**:
+
+   ```bash
+   docker stats
+   ```
+
+### Database connection refused
+
+**Q: DApp fails with "connection refused" or "could not connect to server"**
+
+**A:** PostgreSQL isn't ready or environment variables are incorrect.
+
+**Solutions**:
+
+1. **Wait for PostgreSQL startup**:
+
+   ```bash
+   docker-compose logs postgresql
+   # Look for: "database system is ready to accept connections"
+   ```
+
+2. **Verify connection string** (`.env.local`):
+
+   ```bash
+   # Check format
+   DATABASE_URL="postgresql://postgres:atk@localhost:5432/postgres?sslmode=disable"
+   ```
+
+3. **Test connection manually**:
+
+   ```bash
+   psql -h localhost -U postgres -d postgres
+   # Password: atk (default)
+   ```
+
+4. **Recreate database**:
+
+   ```bash
+   docker-compose down -v
+   docker-compose up -d postgresql
+   # Wait 10 seconds
+   bun run --cwd kit/dapp db:migrate
+   ```
+
+## Smart contracts
+
+### Genesis file issues
+
+**Q: Besu node fails to start with "genesis block mismatch" or "invalid
+genesis"**
+
+**A:** Genesis file is outdated or corrupted after contract changes.
+
+**Solutions**:
+
+1. **Regenerate genesis allocations**:
+
+   ```bash
+   bun run artifacts
+   ```
+
+   This runs:
+   - `compile:forge` (compile contracts)
+   - `codegen:types` (generate TypeScript bindings)
+   - `artifacts:genesis` (create genesis allocations)
+   - `artifacts:abi` (export ABIs)
+
+2. **Reset blockchain state**:
+
+   ```bash
+   bun run dev:reset
+   ```
+
+   This deletes volumes and recreates the environment with fresh genesis.
+
+3. **Verify genesis file exists**:
+
+   ```bash
+   ls -lh kit/contracts/.generated/genesis.json
+   ls -lh kit/contracts/.generated/genesis-allocations.json
+   ```
+
+4. **Check contract addresses** in genesis match subgraph config:
+
+   ```bash
+   # SystemFactory should be at predefined address
+   rg "0x5e771e1417100000000000000000000000020088" kit/subgraph/subgraph.yaml
+   ```
+
+### Contract compilation errors
+
+**Q: `forge build` or `hardhat compile` fails with Solidity errors**
+
+**A:** Syntax errors, version mismatches, or missing dependencies.
+
+**Solutions**:
+
+1. **Check Solidity version** (contracts use `^0.8.28`):
+
+   ```bash
+   forge --version
+   # Should show solc 0.8.28 or compatible
+   ```
+
+2. **Update Foundry**:
+
+   ```bash
+   foundryup
+   ```
+
+3. **Clean build cache**:
+
+   ```bash
+   cd kit/contracts
+   forge clean
+   forge build
+   ```
+
+4. **Check for syntax errors**:
+
+   ```bash
+   bun run lint
+   ```
+
+   Fix issues reported by Solhint.
+
+5. **Verify dependencies** (Foundry uses `soldeer.lock`):
+
+   ```bash
+   forge soldeer update
+   ```
+
+### ABI generation fails
+
+**Q: TypeScript types are missing or outdated after contract changes**
+
+**A:** Code generation step hasn't run or failed silently.
+
+**Solutions**:
+
+1. **Regenerate types**:
+
+   ```bash
+   cd kit/contracts
+   bun run codegen:types
+   ```
+
+2. **Check ABIs exist**:
+
+   ```bash
+   ls kit/contracts/.generated/portal/
+   # Should contain .json files for each contract
+   ```
+
+3. **Verify import paths in DApp**:
+
+   ```typescript
+   import { bondTokenAbi } from "@/contracts/abis/BondToken";
+   // Path should resolve to generated ABI
+   ```
+
+4. **Rebuild DApp after regenerating types**:
+
+   ```bash
+   cd kit/dapp
+   bun run build
+   ```
+
+### Test failures after contract changes
+
+**Q: Foundry tests fail with "call reverted" or "assertion failed"**
+
+**A:** Contract behavior changed without updating tests.
+
+**Solutions**:
+
+1. **Run tests with verbose output**:
+
+   ```bash
+   forge test -vvvv
+   ```
+
+   Shows:
+   - Function calls
+   - Revert reasons
+   - Gas usage
+
+2. **Check specific test**:
+
+   ```bash
+   forge test --match-test test_TransferBond -vvvv
+   ```
+
+3. **Update test expectations**:
+
+   ```solidity
+   // Old expectation
+   vm.expectRevert("Transfer not allowed");
+
+   // New error message after contract change
+   vm.expectRevert("Compliance check failed");
+   ```
+
+4. **Reset test state** (if using fork mode):
+
+   ```bash
+   forge clean
+   forge test
+   ```
+
+## Subgraph
+
+### Subgraph deployment fails
+
+**Q: `graph deploy` fails with "failed to deploy" or "schema validation error"**
+
+**A:** Schema doesn't match entity definitions or addresses are incorrect.
+
+**Solutions**:
+
+1. **Verify contract addresses in `subgraph.yaml`**:
+
+   ```bash
+   cd kit/subgraph
+   rg "address:" subgraph.yaml
+   ```
+
+   Addresses must match genesis allocations.
+
+2. **Regenerate subgraph config**:
+
+   ```bash
+   bun run codegen
+   ```
+
+3. **Check schema syntax**:
+
+   ```bash
+   graph build
+   # Look for validation errors
+   ```
+
+4. **Reset Graph Node**:
+
+   ```bash
+   docker-compose restart graph-node
+   ```
+
+5. **Deploy with correct network**:
+
+   ```bash
+   graph deploy --node http://localhost:8020 --ipfs http://localhost:5001 atk
+   ```
+
+### Subgraph not indexing
+
+**Q: Subgraph deployed but queries return empty results**
+
+**A:** Indexing hasn't started or Graph Node can't reach Besu.
+
+**Solutions**:
+
+1. **Check indexing status**:
+
+   ```bash
+   curl -X POST http://localhost:8030/graphql \
+     -H "Content-Type: application/json" \
+     -d '{"query": "{ indexingStatuses { subgraph health } }"}'
+   ```
+
+2. **View Graph Node logs**:
+
+   ```bash
+   docker-compose logs graph-node | tail -100
+   ```
+
+   Look for:
+   - Connection errors to Besu
+   - Block processing progress
+   - Entity updates
+
+3. **Verify Besu RPC is accessible**:
+
+   ```bash
+   curl -X POST http://localhost:8545 \
+     -H "Content-Type: application/json" \
+     -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+   ```
+
+4. **Trigger events** to index:
+
+   ```bash
+   # Create a test bond to generate events
+   cd kit/dapp
+   # Use UI or API to create asset
+   ```
+
+5. **Redeploy subgraph**:
+
+   ```bash
+   cd kit/subgraph
+   bun run deploy:local
+   ```
+
+### AssemblyScript test failures
+
+**Q: `graph test` fails with compilation errors**
+
+**A:** Test syntax doesn't match AssemblyScript requirements.
+
+**Solutions**:
+
+1. **Use correct assertion methods**:
+
+   ```typescript
+   import { assert } from "matchstick-as";
+
+   // Correct
+   assert.stringEquals(bond.name, "Corporate Bond");
+
+   // Wrong (JavaScript syntax)
+   expect(bond.name).toBe("Corporate Bond");
+   ```
+
+2. **Handle nullable types explicitly**:
+
+   ```typescript
+   // AssemblyScript requires null checks
+   let bond = BondToken.load(bondId);
+   if (bond != null) {
+     assert.bigIntEquals(bond.faceValue, BigInt.fromI32(1000));
+   }
+   ```
+
+3. **Clear test data between runs**:
+
+   ```typescript
+   import { clearStore } from "matchstick-as";
+
+   export function afterEach(): void {
+     clearStore();
+   }
+   ```
+
+## DApp and frontend
+
+### Hot reload not working
+
+**Q: Changes to code don't reflect in browser**
+
+**A:** Vite dev server isn't detecting file changes or cache is stale.
+
+**Solutions**:
+
+1. **Restart dev server**:
+
+   ```bash
+   # Stop (Ctrl+C)
+   bun run dev
+   ```
+
+2. **Clear Vite cache**:
+
+   ```bash
+   rm -rf kit/dapp/.vite
+   bun run dev
+   ```
+
+3. **Check file watcher limits** (Linux):
+
+   ```bash
+   # Increase inotify limits
+   echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
+   sudo sysctl -p
+   ```
+
+4. **Hard refresh browser**:
+   - Chrome/Edge: Ctrl+Shift+R (Windows/Linux) or Cmd+Shift+R (Mac)
+   - Firefox: Ctrl+F5 (Windows/Linux) or Cmd+Shift+R (Mac)
+
+### GraphQL query errors
+
+**Q: Queries fail with "Cannot query field" or "Unknown type"**
+
+**A:** Hasura metadata is out of sync or permissions are incorrect.
+
+**Solutions**:
+
+1. **Reload Hasura metadata**:
+
+   ```bash
+   curl -X POST http://localhost:8080/v1/metadata \
+     -H "x-hasura-admin-secret: atk" \
+     -H "Content-Type: application/json" \
+     -d '{"type": "reload_metadata", "args": {}}'
+   ```
+
+2. **Track tables manually** (Hasura Console at
+   `http://localhost:8080/console`):
+   - Go to "Data" tab
+   - Select "public" schema
+   - Click "Track All" tables
+
+3. **Regenerate Hasura metadata**:
+
+   ```bash
+   cd kit/dapp
+   bun run db:migrate
+   # Restart Hasura
+   docker-compose restart hasura
+   ```
+
+4. **Check permissions**:
+   - Open Hasura Console
+   - Go to table → Permissions
+   - Ensure "user" role has select/insert/update permissions
+
+### Authentication issues
+
+**Q: Login fails or redirects to error page**
+
+**A:** Better Auth configuration is incorrect or session storage failed.
+
+**Solutions**:
+
+1. **Verify `BETTER_AUTH_URL`** in `.env.local`:
+
+   ```bash
+   BETTER_AUTH_URL="http://localhost:3000"
+   # Must match actual host and port
+   ```
+
+2. **Check database connection**:
+
+   Better Auth stores sessions in PostgreSQL. Verify tables exist:
+
+   ```bash
+   psql -h localhost -U postgres -d postgres -c "\dt auth.*"
+   ```
+
+   Should show:
+   - `auth.user`
+   - `auth.session`
+   - `auth.account`
+
+3. **Clear cookies and storage**:
+   - Open browser DevTools (F12)
+   - Application → Clear site data
+   - Refresh and try login again
+
+4. **Check auth logs**:
+
+   ```bash
+   # DApp server logs
+   docker-compose logs dapp | grep -i auth
+   ```
+
+### Build errors with Vite
+
+**Q: `bun run build` fails with module resolution errors**
+
+**A:** Import paths are incorrect or dependencies are missing.
+
+**Solutions**:
+
+1. **Verify path aliases** (`tsconfig.json`):
+
+   ```json
+   {
+     "compilerOptions": {
+       "paths": {
+         "@/*": ["./src/*"],
+         "@schemas/*": ["./src/lib/schemas/*"]
+       }
+     }
+   }
+   ```
+
+2. **Check for circular dependencies**:
+
+   ```bash
+   bunx madge --circular kit/dapp/src
+   ```
+
+3. **Clear build cache**:
+
+   ```bash
+   rm -rf kit/dapp/dist kit/dapp/.vite
+   bun run build
+   ```
+
+4. **Reinstall dependencies**:
+
+   ```bash
+   rm -rf node_modules
+   bun install
+   ```
+
+## Testing
+
+### E2E tests timing out
+
+**Q: Playwright tests fail with "Timeout 30000ms exceeded"**
+
+**A:** Application is slow to respond or selectors are incorrect.
+
+**Solutions**:
+
+1. **Increase timeout** in `playwright.config.ts`:
+
+   ```typescript
+   export default defineConfig({
+     timeout: 60000, // 60 seconds
+   });
+   ```
+
+2. **Wait for specific conditions**:
+
+   ```typescript
+   // Instead of waitForTimeout
+   await page.waitForURL("/bonds/123");
+   await page.waitForSelector('[data-testid="bond-details"]');
+   ```
+
+3. **Check backend services are running**:
+
+   ```bash
+   docker-compose ps
+   # All services should be "Up"
+   ```
+
+4. **Run tests headed to debug**:
+
+   ```bash
+   bun run test:ui:headed
+   ```
+
+5. **Disable animations**:
+
+   ```typescript
+   test.use({
+     hasTouch: false,
+     reducedMotion: "reduce",
+   });
+   ```
+
+### Vitest tests fail with import errors
+
+**Q: Unit tests fail with "Cannot find module" or "Unexpected token"**
+
+**A:** Module resolution or transformation is broken.
+
+**Solutions**:
+
+1. **Check `vitest.config.ts` resolve settings**:
+
+   ```typescript
+   export default defineConfig({
+     resolve: {
+       alias: {
+         "@": "/src",
+       },
+     },
+   });
+   ```
+
+2. **Clear Vitest cache**:
+
+   ```bash
+   rm -rf kit/dapp/node_modules/.vitest
+   bun run test:unit
+   ```
+
+3. **Mock problematic imports**:
+
+   ```typescript
+   // In test file
+   vi.mock("some-esm-only-package", () => ({
+     default: vi.fn(),
+   }));
+   ```
+
+### Forge tests fail with stack too deep
+
+**Q: Contract tests fail with "CompilerError: Stack too deep"**
+
+**A:** Function has too many local variables or complex logic.
+
+**Solutions**:
+
+1. **Enable via-IR compilation** (`foundry.toml`):
+
+   ```toml
+   [profile.default]
+   via-ir = true
+   optimizer = true
+   optimizer-runs = 200
+   ```
+
+2. **Refactor test function**:
+
+   ```solidity
+   // Instead of many variables
+   function test_Transfer() public {
+       uint256 amount = 100;
+       uint256 fee = 10;
+       uint256 balance = 1000;
+       // ...many more variables
+
+   // Extract to helper
+   function test_Transfer() public {
+       TransferParams memory params = _setupTransfer();
+       _executeTransfer(params);
+   }
+   ```
+
+3. **Use structs for parameters**:
+
+   ```solidity
+   struct TestParams {
+       uint256 amount;
+       uint256 fee;
+       address sender;
+   }
+   ```
+
+## Performance
+
+### Slow DApp load times
+
+**Q: Application takes &gt;10 seconds to load**
+
+**A:** Bundle size is too large or database queries are unoptimized.
+
+**Solutions**:
+
+1. **Analyze bundle size**:
+
+   ```bash
+   cd kit/dapp
+   bun run build
+   # Check output for large chunks
+   ```
+
+2. **Lazy load routes**:
+
+   ```typescript
+   // In router config
+   const Route = createFileRoute("/bonds/$bondId")({
+     component: lazy(() => import("./components/BondDetails")),
+   });
+   ```
+
+3. **Check database indexes**:
+
+   ```sql
+   -- Connect to PostgreSQL
+   psql -h localhost -U postgres -d postgres
+
+   -- Check slow queries
+   SELECT query, mean_exec_time
+   FROM pg_stat_statements
+   ORDER BY mean_exec_time DESC
+   LIMIT 10;
+
+   -- Add indexes for common queries
+   CREATE INDEX idx_bonds_issuer ON bonds(issuer_id);
+   ```
+
+4. **Enable response caching** (Redis):
+
+   Verify Hasura caching is enabled in `docker-compose.yml`.
+
+### High memory usage
+
+**Q: Node process uses &gt;4GB RAM during development**
+
+**A:** Memory leak or too many watchers.
+
+**Solutions**:
+
+1. **Restart dev server periodically**:
+
+   ```bash
+   # Stop dev server
+   # Clear node modules cache
+   rm -rf node_modules/.cache
+   bun run dev
+   ```
+
+2. **Reduce Turbo concurrency**:
+
+   ```bash
+   # In package.json scripts
+   "dev": "turbo run dev --concurrency=5"
+   ```
+
+3. **Check for memory leaks** with Chrome DevTools:
+   - Open Performance tab
+   - Record heap snapshots during interaction
+   - Look for detached DOM nodes or growing arrays
+
+## CI/CD
+
+### GitHub Actions workflow fails
+
+**Q: CI pipeline fails at specific step**
+
+**A:** Environment differences or flaky tests.
+
+**Solutions**:
+
+1. **Check workflow logs**:
+   - Open GitHub Actions tab
+   - Click failed workflow run
+   - Expand failed step to view logs
+
+2. **Reproduce locally**:
+
+   ```bash
+   # Run full CI suite
+   bun run ci
+   ```
+
+3. **Common failure points**:
+
+   | Step            | Common Cause          | Fix                               |
+   | --------------- | --------------------- | --------------------------------- |
+   | `bun install`   | Lock file out of sync | `bun install && git add bun.lock` |
+   | `test:ci`       | Flaky E2E tests       | Increase timeouts, add retries    |
+   | `build`         | Type errors           | Fix TypeScript errors locally     |
+   | `chart-testing` | Resource limits       | Check Kubernetes namespace quotas |
+
+4. **Skip tests for draft PRs**:
+
+   GitHub Actions skips expensive tests for draft PRs. Convert to ready for
+   review when tests should run.
+
+### Docker build fails in CI
+
+**Q: `docker build` succeeds locally but fails in GitHub Actions**
+
+**A:** Platform differences (arm64 vs amd64) or build cache issues.
+
+**Solutions**:
+
+1. **Build for correct platform** (GitHub Actions uses amd64):
+
+   ```dockerfile
+   # In Dockerfile
+   FROM --platform=linux/amd64 oven/bun:1.3.1-alpine
+   ```
+
+2. **Clear build cache**:
+
+   ```bash
+   docker builder prune -af
+   ```
+
+3. **Use BuildKit**:
+
+   ```bash
+   # In GitHub Actions workflow
+   env:
+     DOCKER_BUILDKIT: 1
+   ```
+
+4. **Check for large layers**:
+
+   ```bash
+   docker history ghcr.io/settlemint/asset-tokenization-kit:latest
+   ```
+
+## Debugging tips
+
+### Enable debug logging
+
+Add environment variables to `.env.local`:
+
+```bash
+# DApp server logs
+DEBUG=*
+
+# Vite dev server
+VITE_DEBUG=true
+
+# Drizzle ORM queries
+DATABASE_DEBUG=true
+```
+
+### Inspect Docker container
+
+```bash
+# Enter running container
+docker-compose exec dapp sh
+
+# View container logs
+docker-compose logs -f dapp
+
+# Check container resource usage
+docker stats
+```
+
+### Database queries
+
+```bash
+# Connect to PostgreSQL
+docker-compose exec postgresql psql -U postgres
+
+# List tables
+\dt
+
+# View table schema
+\d bonds
+
+# Run query
+SELECT * FROM bonds LIMIT 10;
+```
+
+### Network debugging
+
+```bash
+# Check service connectivity
+docker-compose exec dapp curl http://hasura:8080/healthz
+
+# View Docker network
+docker network inspect asset-tokenization-kit_default
+```
+
+## Getting help
+
+If issues persist:
+
+1. **Search existing issues**:
+   [GitHub Issues](https://github.com/settlemint/asset-tokenization-kit/issues)
+2. **Check documentation**: [Developer Guides](/docs/developer-guides/reference)
+3. **Ask in discussions**:
+   [GitHub Discussions](https://github.com/settlemint/asset-tokenization-kit/discussions)
+4. **Report a bug**:
+   [New Issue](https://github.com/settlemint/asset-tokenization-kit/issues/new/choose)
+
+Include when reporting:
+
+- Error message (full stack trace)
+- Steps to reproduce
+- Environment (OS, Node/Bun version, Docker version)
+- Relevant logs (sanitize secrets)
+
+## Next steps
+
+- Review [Development Environment](/docs/developer-guides/setup) for setup
+  details
+- See [Testing and QA](/docs/developer-guides/quality-assurance) for debugging
+  test failures
+- Explore
+  [Deployment Guide](/docs/developer-guides/deployment-ops/installation-configuration)
+  for production issues
+- Consult [Code Structure](/docs/developer-guides/architecture) for architecture
+  understanding

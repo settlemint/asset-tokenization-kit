@@ -28,11 +28,12 @@ export const TOKEN_PERMISSIONS: Record<
   removeComplianceModule: "governance",
   setCap: "supplyManagement",
   setYieldSchedule: "governance",
+  topUpDenominationAsset: { any: [] }, // Is like a transfer from your own wallet
   withdrawDenominationAsset: "supplyManagement",
   transfer: { any: [] },
   forcedTransfer: "custodian",
   unpause: "emergency",
-  updateCollateral: "governance",
+  updateCollateral: { any: [] }, // No roles required (requires to be a trusted issuer of the collateral claim)
   freezePartial: "custodian",
   unfreezePartial: "custodian",
 };

@@ -1,0 +1,933 @@
+---
+title: Data layer
+description:
+  The data layer manages application state, user data, and file storage that
+  exists outside the blockchain. PostgreSQL stores structured data with ACID
+  guarantees, Redis provides high-speed caching and session management, and
+  MinIO handles binary assets like KYC documents and token metadata. Drizzle ORM
+  provides type-safe database access with automatic TypeScript inference.
+pageTitle: Data layer - Persistent storage and caching architecture
+tags: [architecture, database, postgresql, redis, minio, drizzle]
+---
+
+## Problem
+
+Storing all data on-chain incurs prohibitive transaction costs and exposes
+sensitive information publicly. User preferences, KYC documents, cached exchange
+rates, and session state require fast mutations impossible with blockchain
+confirmation times. Complex queries across relationships and aggregations
+perform poorly when reconstructed from events. Off-chain storage centralizes
+data creating single points of failure without proper replication and backup
+strategies.
+
+### Solution
+
+PostgreSQL serves as authoritative store for application data with mature
+replication and point-in-time recovery. Drizzle ORM generates TypeScript types
+from schema definitions catching data model errors at compile time. Redis caches
+frequently accessed data reducing database load while maintaining
+sub-millisecond response times. MinIO provides S3-compatible object storage with
+encryption at rest and access controls. All storage layers deploy redundantly
+across availability zones with automated failover and backup schedules.
+
+## PostgreSQL database architecture
+
+PostgreSQL stores structured application data requiring strong consistency and
+complex querying capabilities. Primary database for user accounts, KYC
+workflows, settings, and cached reference data.
+
+### Schema organization
+
+Database schemas group related tables by domain:
+
+**Authentication schema** (`kit/dapp/src/lib/db/schemas/auth.ts`) manages users,
+sessions, and OAuth connections via Better Auth. Tables include `users` for
+account identity, `sessions` for active authentication tokens, `accounts` for
+linked OAuth providers, and `verification` for email/phone confirmation codes.
+
+**KYC schema** (`kit/dapp/src/lib/db/schemas/kyc.ts`) tracks identity
+verification lifecycle. `kyc_applications` stores investor information and
+review status. `kyc_documents` references uploaded files in MinIO.
+`kyc_status_history` maintains audit trail of status transitions with timestamps
+and reviewers.
+
+**Settings schema** (`kit/dapp/src/lib/db/schemas/settings.ts`) persists user
+preferences. `user_settings` stores locale, timezone, currency, and theme
+choices. `notification_settings` controls alert delivery per channel (email,
+push, webhook).
+
+**Exchange rates schema** (`kit/dapp/src/lib/db/schemas/exchange-rates.ts`)
+caches currency conversion rates. `exchange_rates` table stores base/quote
+currency pairs with rates and expiration timestamps. Background jobs refresh
+stale rates every 5 minutes.
+
+Domain-focused schemas maintain clear boundaries enabling independent evolution
+without breaking dependencies. Foreign keys enforce referential integrity across
+schemas.
+
+### Type-safe queries with Drizzle ORM
+
+Drizzle generates TypeScript types from schema definitions eliminating runtime
+type errors. Changes to database schema immediately reflected in TypeScript
+compiler feedback.
+
+**Schema definition** declares tables, columns, and relationships:
+
+```typescript
+import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+
+export const users = pgTable("users", {
+  id: text("id").primaryKey(),
+  email: text("email").unique().notNull(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  name: text("name"),
+  walletAddress: text("wallet_address").unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+```
+
+Drizzle column types map to PostgreSQL types while providing TypeScript
+inference. `.notNull()` modifier ensures required fields, `.unique()` adds
+unique constraints, `.defaultNow()` sets default timestamps.
+
+**Type inference** eliminates manual interface definitions:
+
+```typescript
+import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
+
+type User = InferSelectModel<typeof users>;
+type NewUser = InferInsertModel<typeof users>;
+```
+
+`InferSelectModel` produces type for queried rows including all nullable fields.
+`InferInsertModel` produces type for inserts respecting default values and
+optional columns. TypeScript catches missing required fields and type mismatches
+at compile time.
+
+**Query builders** provide SQL-like syntax with full type checking:
+
+```typescript
+import { db } from "@/lib/db";
+import { users } from "@/lib/db/schemas/auth";
+import { eq, and, desc } from "drizzle-orm";
+
+const user = await db
+  .select()
+  .from(users)
+  .where(eq(users.email, email))
+  .limit(1)
+  .execute();
+```
+
+TypeScript validates table names, column references, and filter values. Invalid
+column names or type mismatches produce compile errors. IDE autocomplete
+suggests available columns and operators.
+
+**Joins** connect related tables maintaining type safety:
+
+```typescript
+import { kycApplications, kycDocuments } from "@/lib/db/schemas/kyc";
+
+const applicationsWithDocs = await db
+  .select({
+    application: kycApplications,
+    documents: kycDocuments,
+  })
+  .from(kycApplications)
+  .leftJoin(kycDocuments, eq(kycApplications.id, kycDocuments.applicationId))
+  .where(eq(kycApplications.userId, userId))
+  .execute();
+```
+
+Result type reflects join structure with nested objects. TypeScript ensures
+foreign key references match column types.
+
+**Transactions** maintain atomicity across multiple operations:
+
+```typescript
+await db.transaction(async (tx) => {
+  const application = await tx
+    .update(kycApplications)
+    .set({ status: "approved", reviewedAt: new Date() })
+    .where(eq(kycApplications.id, applicationId))
+    .returning()
+    .execute();
+
+  await tx.insert(kycStatusHistory).values({
+    applicationId,
+    fromStatus: "submitted",
+    toStatus: "approved",
+    changedBy: reviewerId,
+    reason: "All documents verified",
+  });
+});
+```
+
+Transactions automatically roll back on errors ensuring data consistency. All
+operations within transaction see consistent snapshot of database state.
+
+### Migrations
+
+Schema changes apply via migration files tracking incremental modifications.
+Drizzle generates SQL migrations by comparing current schema against database
+state.
+
+**Generate migration** from schema changes:
+
+```bash
+cd kit/dapp
+bun run db:generate
+```
+
+Drizzle analyzes TypeScript schema definitions and produces SQL migration file
+in `drizzle/` directory. Migration includes forward changes (adding columns,
+creating tables) with automatically generated names like
+`0001_add_kyc_expiration.sql`.
+
+**Apply migrations** to database:
+
+```bash
+bun run db:migrate
+```
+
+Drizzle executes pending migrations in order maintaining version table. Each
+migration runs once preventing duplicate application. Failed migrations require
+manual intervention rolling back partial changes.
+
+**Migration best practices**:
+
+- Review generated SQL before applying to production
+- Test migrations in staging environment with production-like data volume
+- Add indexes for new columns used in WHERE or JOIN clauses
+- Use transactions for multi-statement migrations ensuring atomicity
+- Avoid destructive changes (dropping columns) without deprecation period
+- Maintain rollback scripts for emergency reversion
+
+### Performance optimization
+
+Database performance critical for API response times and user experience.
+Optimization focuses on query speed, connection efficiency, and resource
+utilization.
+
+**Indexing strategy** accelerates lookups and joins:
+
+```typescript
+export const kycApplications = pgTable(
+  "kyc_applications",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    status: text("status").notNull(),
+    submittedAt: timestamp("submitted_at"),
+  },
+  (table) => ({
+    userIdIdx: index("kyc_applications_user_id_idx").on(table.userId),
+    statusIdx: index("kyc_applications_status_idx").on(table.status),
+    submittedAtIdx: index("kyc_applications_submitted_at_idx").on(
+      table.submittedAt
+    ),
+    statusSubmittedIdx: index("kyc_status_submitted_idx").on(
+      table.status,
+      table.submittedAt
+    ),
+  })
+);
+```
+
+Single-column indexes speed individual filters. Composite indexes optimize
+queries filtering or sorting by multiple columns. Index creation adds write
+overhead so limit to columns frequently used in queries.
+
+**Connection pooling** maintains persistent connections reducing overhead:
+
+```typescript
+import { Pool } from "pg";
+
+const pool = new Pool({
+  host: process.env.DATABASE_HOST,
+  port: 5432,
+  database: process.env.DATABASE_NAME,
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  max: 100, // Maximum connections in pool
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+```
+
+Pool maintains reusable connections avoiding TCP handshake and authentication
+latency on every query. Size pool based on concurrent request load and available
+database connections. Monitor pool exhaustion indicating undersized
+configuration.
+
+**Query optimization techniques**:
+
+- Use `EXPLAIN ANALYZE` identifying slow queries and missing indexes
+- Avoid `SELECT *` retrieving only needed columns
+- Paginate large result sets with `LIMIT` and `OFFSET`
+- Leverage covering indexes avoiding table lookups
+- Batch inserts reducing round trips:
+  `INSERT INTO table VALUES (row1), (row2), ...`
+- Use `WHERE` clauses reducing scanned rows
+- Consider partial indexes for queries filtering on constant values
+
+### Backup and recovery
+
+Production databases require regular backups and tested recovery procedures.
+
+**Continuous archiving** captures all database changes:
+
+PostgreSQL write-ahead log (WAL) streaming archives transaction logs enabling
+point-in-time recovery. Configure archiving in `postgresql.conf`:
+
+```ini
+wal_level = replica
+archive_mode = on
+archive_command = 'cp %p /backup/wal/%f'
+archive_timeout = 300
+```
+
+WAL files ship to backup location every 5 minutes or when log segments fill.
+Retain WAL files long enough to restore to any point within retention period
+typically 30 days.
+
+**Base backups** establish recovery starting points:
+
+```bash
+pg_basebackup -h localhost -D /backup/base -U postgres -P
+```
+
+Base backup creates consistent snapshot of database cluster. Schedule daily base
+backups during low-traffic periods minimizing performance impact. Compress
+backups reducing storage costs.
+
+**Point-in-time recovery** restores database to specific timestamp:
+
+1. Stop PostgreSQL service
+2. Restore latest base backup before target time
+3. Create `recovery.conf` specifying target time
+4. Replay WAL files up to target timestamp
+5. Restart PostgreSQL completing recovery
+
+Recovery time depends on database size and WAL volume typically completing under
+1 hour for moderate databases.
+
+**Backup verification** ensures restore procedures work:
+
+- Monthly restore tests to separate environment
+- Verify data integrity after restore
+- Measure recovery time meeting RTO objectives
+- Document restore procedures for on-call engineers
+
+## Redis caching layer
+
+Redis provides high-speed in-memory caching reducing database load and
+accelerating frequently accessed data. Sub-millisecond latency enables real-time
+features and improves user experience.
+
+### Caching patterns
+
+**Cache-aside pattern** populates cache on demand:
+
+```typescript
+async function getExchangeRate(base: string, quote: string): Promise<number> {
+  const cacheKey = `rate:${base}:${quote}`;
+
+  // Check cache first
+  const cached = await redis.get(cacheKey);
+  if (cached) return Number.parseFloat(cached);
+
+  // Cache miss - query database
+  const rate = await db
+    .select()
+    .from(exchangeRates)
+    .where(
+      and(
+        eq(exchangeRates.baseCurrency, base),
+        eq(exchangeRates.quoteCurrency, quote)
+      )
+    )
+    .execute();
+
+  // Store in cache with 5 minute TTL
+  await redis.setex(cacheKey, 300, rate.toString());
+
+  return rate;
+}
+```
+
+Application checks cache before database. Cache misses query database and
+populate cache for subsequent requests. Time-to-live (TTL) expires stale data.
+
+**Write-through pattern** updates cache on mutations:
+
+```typescript
+async function updateUserSettings(
+  userId: string,
+  settings: Partial<UserSettings>
+): Promise<void> {
+  const cacheKey = `user:${userId}:settings`;
+
+  // Update database
+  await db
+    .update(userSettings)
+    .set(settings)
+    .where(eq(userSettings.userId, userId))
+    .execute();
+
+  // Update cache
+  const updated = await db
+    .select()
+    .from(userSettings)
+    .where(eq(userSettings.userId, userId))
+    .execute();
+
+  await redis.set(cacheKey, JSON.stringify(updated));
+}
+```
+
+Cache updates synchronously with database writes maintaining consistency.
+Increased write latency trades for cache accuracy.
+
+**Cache invalidation** removes stale entries:
+
+```typescript
+async function invalidateUserCache(userId: string): Promise<void> {
+  const patterns = [
+    `user:${userId}:*`,
+    `session:${userId}:*`,
+    `kyc:${userId}:*`,
+  ];
+
+  for (const pattern of patterns) {
+    const keys = await redis.keys(pattern);
+    if (keys.length > 0) await redis.del(...keys);
+  }
+}
+```
+
+Pattern-based deletion removes related cache entries after mutations. Prefer
+narrow patterns avoiding excessive key scans.
+
+### Session management
+
+Redis stores active user sessions providing fast authentication checks:
+
+```typescript
+interface Session {
+  userId: string;
+  email: string;
+  roles: string[];
+  expiresAt: number;
+}
+
+async function createSession(
+  userId: string,
+  email: string,
+  roles: string[]
+): Promise<string> {
+  const sessionId = generateSecureToken();
+  const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
+
+  const session: Session = { userId, email, roles, expiresAt };
+
+  await redis.setex(
+    `session:${sessionId}`,
+    7 * 24 * 60 * 60, // TTL in seconds
+    JSON.stringify(session)
+  );
+
+  return sessionId;
+}
+
+async function getSession(sessionId: string): Promise<Session | null> {
+  const data = await redis.get(`session:${sessionId}`);
+  if (!data) return null;
+
+  const session: Session = JSON.parse(data);
+
+  // Check expiration
+  if (session.expiresAt < Date.now()) {
+    await redis.del(`session:${sessionId}`);
+    return null;
+  }
+
+  return session;
+}
+```
+
+Session data serialized as JSON stored with key `session:{id}`. Automatic
+expiration via TTL removes inactive sessions. Session checks occur on every API
+request requiring minimal latency.
+
+### Rate limiting
+
+Redis tracks request counts per user or IP address:
+
+```typescript
+async function checkRateLimit(
+  identifier: string,
+  limit: number,
+  windowSeconds: number
+): Promise<{ allowed: boolean; remaining: number }> {
+  const key = `ratelimit:${identifier}`;
+
+  const count = await redis.incr(key);
+
+  if (count === 1) {
+    await redis.expire(key, windowSeconds);
+  }
+
+  const allowed = count <= limit;
+  const remaining = Math.max(0, limit - count);
+
+  return { allowed, remaining };
+}
+```
+
+Sliding window rate limiting tracks requests within time periods. Increment
+counter on each request and compare against threshold. Reset counter after
+window expires.
+
+### Pub/sub messaging
+
+Redis pub/sub enables real-time notifications between services:
+
+```typescript
+// Publisher
+async function notifyTokenTransfer(
+  tokenAddress: string,
+  from: string,
+  to: string,
+  amount: string
+): Promise<void> {
+  await redis.publish(
+    `token:${tokenAddress}:transfers`,
+    JSON.stringify({ from, to, amount, timestamp: Date.now() })
+  );
+}
+
+// Subscriber
+redis.subscribe(`token:*:transfers`, (message, channel) => {
+  const transfer = JSON.parse(message);
+  console.log(`Transfer on ${channel}:`, transfer);
+
+  // Push to connected WebSocket clients
+  websocketServer.broadcast(transfer);
+});
+```
+
+Publishers emit events to channels. Subscribers receive messages matching
+channel patterns. Use for real-time updates like token transfers, KYC approvals,
+and system alerts.
+
+### High availability
+
+Redis Sentinel provides automatic failover for production deployments:
+
+```typescript
+import Redis from "ioredis";
+
+const redis = new Redis({
+  sentinels: [
+    { host: "sentinel1.example.com", port: 26379 },
+    { host: "sentinel2.example.com", port: 26379 },
+    { host: "sentinel3.example.com", port: 26379 },
+  ],
+  name: "mymaster",
+  password: process.env.REDIS_PASSWORD,
+});
+```
+
+Sentinel monitors Redis master and replica nodes. Automatically promotes replica
+to master on failure. Client library reconnects to new master transparently.
+Typical failover completes under 30 seconds.
+
+## MinIO object storage
+
+MinIO provides S3-compatible object storage for binary assets exceeding database
+blob limits. Stores KYC documents, token logos, metadata files, and user uploads
+with encryption and access controls.
+
+### Bucket organization
+
+Buckets separate content by purpose and access policy:
+
+**kyc-documents bucket** stores identity verification files:
+
+- Access: Private, pre-signed URLs with 15-minute expiration
+- Encryption: Server-side AES-256
+- Lifecycle: Retain 7 years for compliance
+- Objects: `{applicationId}/{documentType}/{filename}`
+
+**token-metadata bucket** holds token-specific assets:
+
+- Access: Public read, authenticated write
+- Encryption: Optional
+- Lifecycle: Immutable after token deployment
+- Objects: `{tokenAddress}/logo.png`, `{tokenAddress}/metadata.json`
+
+**user-uploads bucket** temporary storage for form uploads:
+
+- Access: Private, uploader-only read/write
+- Encryption: Server-side AES-256
+- Lifecycle: Auto-delete after 7 days if not moved to permanent bucket
+- Objects: `{userId}/temp/{uploadId}/{filename}`
+
+Bucket policies enforce access restrictions:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": { "AWS": ["*"] },
+      "Action": ["s3:GetObject"],
+      "Resource": ["arn:aws:s3:::token-metadata/*"]
+    },
+    {
+      "Effect": "Deny",
+      "Principal": { "AWS": ["*"] },
+      "Action": ["s3:*"],
+      "Resource": ["arn:aws:s3:::kyc-documents/*"],
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": ["10.0.0.0/8"]
+        }
+      }
+    }
+  ]
+}
+```
+
+### Upload workflow
+
+Application generates pre-signed URLs allowing direct client uploads to MinIO:
+
+```typescript
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+const s3Client = new S3Client({
+  endpoint: process.env.MINIO_ENDPOINT,
+  region: "us-east-1",
+  credentials: {
+    accessKeyId: process.env.MINIO_ACCESS_KEY,
+    secretAccessKey: process.env.MINIO_SECRET_KEY,
+  },
+  forcePathStyle: true, // Required for MinIO
+});
+
+async function generateUploadUrl(
+  bucket: string,
+  key: string,
+  contentType: string
+): Promise<string> {
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    ContentType: contentType,
+  });
+
+  return getSignedUrl(s3Client, command, { expiresIn: 900 }); // 15 minutes
+}
+
+// API endpoint
+app.post("/api/kyc/upload-url", async (req, res) => {
+  const { applicationId, documentType, filename } = req.body;
+
+  const key = `${applicationId}/${documentType}/${filename}`;
+  const url = await generateUploadUrl("kyc-documents", key, "image/jpeg");
+
+  res.json({ uploadUrl: url, key });
+});
+```
+
+Client uploads directly to pre-signed URL:
+
+```typescript
+async function uploadDocument(file: File, uploadUrl: string): Promise<void> {
+  await fetch(uploadUrl, {
+    method: "PUT",
+    body: file,
+    headers: {
+      "Content-Type": file.type,
+    },
+  });
+}
+```
+
+Direct upload reduces API server load and latency. Pre-signed URL expires
+preventing unauthorized uploads.
+
+### Retrieval workflow
+
+Application generates pre-signed download URLs for private content:
+
+```typescript
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+
+async function generateDownloadUrl(
+  bucket: string,
+  key: string
+): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: bucket,
+    Key: key,
+  });
+
+  return getSignedUrl(s3Client, command, { expiresIn: 900 });
+}
+
+// API endpoint
+app.get("/api/kyc/document/:id", async (req, res) => {
+  const { id } = req.params;
+
+  // Verify user authorized to access document
+  const doc = await db
+    .select()
+    .from(kycDocuments)
+    .where(eq(kycDocuments.id, id))
+    .execute();
+
+  if (doc.applicationId !== req.session.userId) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  const url = await generateDownloadUrl("kyc-documents", doc.storageKey);
+  res.json({ downloadUrl: url });
+});
+```
+
+Authorization checked before generating download URL. URL expires after 15
+minutes limiting exposure window.
+
+### Encryption and security
+
+**Server-side encryption** protects data at rest:
+
+```typescript
+const command = new PutObjectCommand({
+  Bucket: bucket,
+  Key: key,
+  Body: fileBuffer,
+  ServerSideEncryption: "AES256",
+});
+
+await s3Client.send(command);
+```
+
+MinIO encrypts objects automatically with AES-256. Keys managed internally by
+MinIO or external KMS.
+
+**Versioning** preserves object history:
+
+```bash
+mc version enable minio/kyc-documents
+```
+
+Versioning retains previous object versions on overwrites. Enables recovery from
+accidental deletions and regulatory compliance requirements.
+
+**Lifecycle policies** automatically delete old objects:
+
+```json
+{
+  "Rules": [
+    {
+      "Expiration": { "Days": 7 },
+      "ID": "DeleteTempUploads",
+      "Filter": { "Prefix": "temp/" },
+      "Status": "Enabled"
+    }
+  ]
+}
+```
+
+Temporary uploads expire after 7 days reducing storage costs.
+
+### Backup and replication
+
+**Cross-region replication** copies objects to secondary location:
+
+```bash
+mc replicate add minio/kyc-documents \
+  --remote-bucket minio-backup/kyc-documents-replica \
+  --priority 1
+```
+
+Replication provides disaster recovery protecting against regional failures.
+Asynchronous replication introduces eventual consistency.
+
+**Periodic snapshots** backup bucket contents:
+
+```bash
+mc mirror --watch minio/kyc-documents /backup/kyc-documents
+```
+
+Mirror command synchronizes bucket to backup location. Schedule hourly snapshots
+during business hours.
+
+## Data consistency strategies
+
+Maintaining consistency across PostgreSQL, Redis, and MinIO requires careful
+coordination.
+
+### Cache invalidation patterns
+
+**Invalidate on write** ensures cache accuracy:
+
+```typescript
+async function approveKYCApplication(applicationId: string): Promise<void> {
+  await db.transaction(async (tx) => {
+    // Update database
+    await tx
+      .update(kycApplications)
+      .set({ status: "approved" })
+      .where(eq(kycApplications.id, applicationId))
+      .execute();
+
+    // Invalidate related caches
+    await redis.del(`kyc:${applicationId}`);
+    await redis.del(`user:${application.userId}:kyc:status`);
+  });
+}
+```
+
+Cache invalidation occurs within database transaction. Failed transaction
+prevents cache deletion maintaining consistency.
+
+**Time-based expiration** handles eventual consistency:
+
+```typescript
+await redis.setex(
+  `exchange:rate:${base}:${quote}`,
+  300, // 5 minute TTL
+  rate.toString()
+);
+```
+
+Short TTLs limit stale data exposure. Background jobs refresh cache before
+expiration maintaining availability.
+
+### Storage references
+
+Database stores MinIO object keys linking to external files:
+
+```typescript
+export const kycDocuments = pgTable("kyc_documents", {
+  id: text("id").primaryKey(),
+  applicationId: text("application_id").notNull(),
+  storageKey: text("storage_key").notNull(), // MinIO object key
+  fileName: text("file_name").notNull(),
+  fileSize: integer("file_size").notNull(),
+  uploadedAt: timestamp("uploaded_at").notNull(),
+});
+```
+
+`storageKey` references object in MinIO enabling lookups without scanning
+buckets. Delete database record and MinIO object atomically:
+
+```typescript
+async function deleteKYCDocument(documentId: string): Promise<void> {
+  const doc = await db
+    .select()
+    .from(kycDocuments)
+    .where(eq(kycDocuments.id, documentId))
+    .execute();
+
+  await db.transaction(async (tx) => {
+    // Delete database record
+    await tx
+      .delete(kycDocuments)
+      .where(eq(kycDocuments.id, documentId))
+      .execute();
+
+    // Delete MinIO object
+    await s3Client.send(
+      new DeleteObjectCommand({
+        Bucket: "kyc-documents",
+        Key: doc.storageKey,
+      })
+    );
+  });
+}
+```
+
+Transaction coordinates database and object storage deletions. Failed object
+deletion rolls back database transaction.
+
+## Monitoring and observability
+
+Production data layer requires comprehensive monitoring detecting issues before
+user impact.
+
+### PostgreSQL monitoring
+
+**Connection pool metrics**:
+
+- Active connections vs pool size
+- Connection wait time
+- Connection acquisition failures
+
+**Query performance**:
+
+- Slow query log (queries exceeding 100ms)
+- Average query duration per endpoint
+- Query count per second
+- Cache hit ratio (buffer cache effectiveness)
+
+**Resource utilization**:
+
+- CPU usage per database operation
+- Disk I/O wait time
+- Memory usage and swap activity
+- Table and index sizes
+
+### Redis monitoring
+
+**Memory usage**:
+
+- Used memory vs max memory
+- Eviction count (keys removed by eviction policy)
+- Fragmentation ratio
+
+**Command statistics**:
+
+- Commands processed per second
+- Average command latency
+- Keyspace hit rate (cache effectiveness)
+
+**Replication lag** (if using Sentinel):
+
+- Seconds behind master
+- Replication offset delta
+
+### MinIO monitoring
+
+**Storage metrics**:
+
+- Total storage used per bucket
+- Object count per bucket
+- Bucket size growth rate
+
+**Request metrics**:
+
+- Upload throughput (MB/s)
+- Download throughput (MB/s)
+- Error rate (4xx, 5xx responses)
+
+**Availability**:
+
+- Node health status
+- Drive failure count
+- Network connectivity
+
+## See also
+
+- [Core components](./core-components) - Overview of all architectural layers
+- [API layer](./api-layer) - ORPC procedures using database
+- [Blockchain layer](./blockchain-layer) - On-chain data and event indexing
+- [Database model](./data-indexing/database-model) - Detailed schema reference

@@ -31,18 +31,14 @@
         "type": "Typ",
         "status": "Status"
       },
-      "fallback": {
-        "unknown": "Unbekannt",
-        "none": "Keine"
+      "status": {
+        "registered": "Registriert",
+        "pending": "Ausstehend"
       },
       "type": {
         "admin": "Administrator",
         "investor": "Investor",
         "trustedIssuer": "Vertrauenswürdiger Emittent"
-      },
-      "status": {
-        "registered": "Registriert",
-        "pending": "Registrierung ausstehend"
       },
       "verifications": {
         "none": "Keine Verifizierungen"
@@ -63,6 +59,10 @@
       "errors": {
         "loadFailed": "Benutzer konnten nicht geladen werden. Bitte erneut versuchen.",
         "navigationFailed": "Navigation zu den Benutzerdetails fehlgeschlagen"
+      },
+      "fallback": {
+        "unknown": "Unbekannt",
+        "none": "Keine"
       }
     }
   },

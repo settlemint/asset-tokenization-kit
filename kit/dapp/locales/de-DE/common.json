@@ -49,6 +49,7 @@
   "yes": "Ja",
   "no": "Nein",
   "timeInterval": {
+    "HOURLY": "Stündlich",
     "DAILY": "Täglich",
     "WEEKLY": "Wöchentlich",
     "MONTHLY": "Monatlich (30 Tage)",

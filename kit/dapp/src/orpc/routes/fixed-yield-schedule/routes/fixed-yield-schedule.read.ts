@@ -55,7 +55,7 @@ const READ_FIXED_YIELD_SCHEDULE_QUERY = theGraphGraphql(
  * ```typescript
  * // Get fixed yield schedule details
  * const schedule = await orpc.fixedYieldSchedule.read.query({
- *   id: "0x1234567890abcdef1234567890abcdef12345678"
+ *   contract: "0x1234567890abcdef1234567890abcdef12345678"
  * });
  *
  * console.log(schedule.rate); // "500" (5% in basis points)
@@ -72,7 +72,7 @@ export const read = authRouter.fixedYieldSchedule.read.handler(
       READ_FIXED_YIELD_SCHEDULE_QUERY,
       {
         input: {
-          id: input.id,
+          id: input.contract,
         },
         output: z.object({
           tokenFixedYieldSchedule: FixedYieldScheduleSchema.nullable(),
@@ -82,7 +82,7 @@ export const read = authRouter.fixedYieldSchedule.read.handler(
 
     if (!response.tokenFixedYieldSchedule) {
       throw errors.NOT_FOUND({
-        message: `Fixed yield schedule not found for address ${input.id}`,
+        message: `Fixed yield schedule not found for address ${input.contract}`,
       });
     }
 

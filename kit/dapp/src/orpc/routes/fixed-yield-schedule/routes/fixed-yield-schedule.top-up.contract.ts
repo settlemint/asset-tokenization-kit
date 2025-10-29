@@ -20,7 +20,7 @@ import {
 export const fixedYieldScheduleTopUpContract = baseContract
   .route({
     method: "POST",
-    path: "/fixed-yield-schedule/top-up",
+    path: "/fixed-yield-schedule/{contract}/top-up",
     description: "Top up the denomination asset in a fixed yield schedule",
     successDescription: "Denomination asset topped up successfully",
     tags: ["fixed-yield-schedule"],

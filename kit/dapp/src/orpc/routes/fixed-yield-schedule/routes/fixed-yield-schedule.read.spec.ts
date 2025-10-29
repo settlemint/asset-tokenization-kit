@@ -93,7 +93,7 @@ describe("Fixed yield schedule read", async () => {
 
   test("can read fixed yield schedule details", async () => {
     const result = await adminClient.fixedYieldSchedule.read({
-      id: yieldSchedule.id,
+      contract: yieldSchedule.id,
     });
 
     expect(result).toBeDefined();
@@ -116,7 +116,7 @@ describe("Fixed yield schedule read", async () => {
     const investorClient = getOrpcClient(headers);
 
     const result = await investorClient.fixedYieldSchedule.read({
-      id: yieldSchedule.id,
+      contract: yieldSchedule.id,
     });
 
     expect(result).toBeDefined();
@@ -129,7 +129,7 @@ describe("Fixed yield schedule read", async () => {
 
   test("yield schedule structure matches expected schema", async () => {
     const result = await adminClient.fixedYieldSchedule.read({
-      id: yieldSchedule.id,
+      contract: yieldSchedule.id,
     });
 
     // Verify the structure matches our Zod schema

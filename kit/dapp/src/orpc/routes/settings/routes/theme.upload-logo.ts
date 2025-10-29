@@ -5,9 +5,18 @@ import { authRouter } from "@/orpc/procedures/auth.router";
 import { env } from "@atk/config/env";
 import { createPresignedUploadUrl } from "@settlemint/sdk-minio";
 import { randomUUID } from "node:crypto";
-import { ThemeLogoUploadSchema } from "./theme.upload-logo.schema";
+import {
+  ThemeLogoUploadSchema,
+  type ThemeLogoMode,
+} from "./theme.upload-logo.schema";
 
 const LOGO_BASE_PATH = "logos";
+const MODE_PATHS: Record<ThemeLogoMode, string> = {
+  light: `${LOGO_BASE_PATH}/light`,
+  dark: `${LOGO_BASE_PATH}/dark`,
+  lightIcon: `${LOGO_BASE_PATH}/light-icon`,
+  darkIcon: `${LOGO_BASE_PATH}/dark-icon`,
+};
 
 const sanitizeFileName = (fileName: string): string => {
   const normalized = fileName.trim().toLowerCase().replaceAll(/\s+/g, "-");
@@ -15,7 +24,7 @@ const sanitizeFileName = (fileName: string): string => {
 };
 
 const resolveObjectKey = (
-  mode: "light" | "dark",
+  mode: ThemeLogoMode,
   fileName: string
 ): {
   objectKey: string;
@@ -25,7 +34,7 @@ const resolveObjectKey = (
   const timestamp = new Date().toISOString().replaceAll(/[:.]/g, "-");
   const unique = randomUUID().slice(0, 8);
   const sanitized = sanitizeFileName(fileName);
-  const pathPrefix = `${LOGO_BASE_PATH}/${mode}`;
+  const pathPrefix = MODE_PATHS[mode];
   const finalizedName = `${timestamp}-${unique}-${sanitized}`;
   return {
     objectKey: `${pathPrefix}/${finalizedName}`,

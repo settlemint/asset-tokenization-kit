@@ -1,0 +1,782 @@
+---
+title: Issue a stablecoin
+description:
+  Stablecoin tokens represent fiat-backed digital currencies with collateral
+  reserves, peg maintenance mechanisms, and regulated issuance/redemption
+  workflows. This guide walks you through deploying compliant stablecoins from
+  configuration through operational reserve management on the platform.
+pageTitle: How to issue a stablecoin (Fiat-pegged token)
+tags: [how-to, stablecoin, fiat, reserve, peg]
+---
+
+**Who should read this:** Financial institutions, payment service providers,
+money transmitters, and digital currency issuers creating fiat-backed
+stablecoins.
+
+**Time required:** 20-25 minutes for stablecoin deployment; additional time for
+reserve and collateral configuration.
+
+**Prerequisites:**
+
+- Completed [Getting started](/docs/user-guides/getting-started) onboarding
+- Stablecoin system factory deployed during onboarding
+- Banking relationships established for fiat reserves
+- Regulatory framework determined (e-money license, money transmitter license,
+  or equivalent)
+- Reserve attestation process configured
+
+<Steps>
+
+<Step>
+
+## Step 1: Navigate to stablecoin creation
+
+From the main dashboard:
+
+1. Click **Asset Management** in the left sidebar
+2. Select **Stablecoins** from the asset type list
+3. Click **Create New Stablecoin** button
+
+![Stablecoin creation navigation](/images/screenshots/placeholder.svg)
+_Screenshot: Asset Management section showing Stablecoins category with existing
+stablecoins list and Create New Stablecoin button_
+
+</Step>
+
+<Step>
+
+## Step 2: Configure stablecoin parameters
+
+### Basic token information
+
+Enter standard token details:
+
+- **Token name** - Full legal name (e.g., "Platform USD Stablecoin")
+- **Token symbol** - Trading symbol (e.g., "PUSD")
+- **Decimals** - Token divisibility (6 for USDC-style, 18 for DAI-style)
+- **Initial supply** - Number of tokens to mint at deployment (typically 0 for
+  stablecoins)
+
+![Stablecoin basic information](/images/screenshots/placeholder.svg)
+_Screenshot: Stablecoin configuration form showing name, symbol, decimals, and
+initial supply fields with validation_
+
+**Naming guidance:** Include currency designation (USD, EUR, GBP) in symbol for
+clear peg identification.
+
+**Decimals consideration:** Most USD stablecoins use 6 decimals matching
+traditional finance cent precision; 18 decimals provides DeFi compatibility.
+
+### Stablecoin-specific parameters
+
+Configure peg and collateral properties:
+
+**Peg currency**
+
+Select fiat currency:
+
+- **USD** - US Dollar (most common)
+- **EUR** - Euro
+- **GBP** - British Pound
+- **JPY** - Japanese Yen
+- **Custom** - Other fiat currencies
+
+**Peg ratio**
+
+Define token-to-fiat relationship:
+
+- **1:1 peg** - Standard stablecoin (1 token = 1 fiat unit)
+- **Custom ratio** - Non-standard peg (e.g., 1 token = 100 fiat units)
+
+**Collateralization model**
+
+The platform requires full collateralization:
+
+- **Fully reserved (required)** - 100% fiat backing (1:1 reserve ratio)
+- **Overcollateralized (optional)** - >100% reserves for added security margin
+
+![Peg and collateral configuration](/images/screenshots/placeholder.svg)
+_Screenshot: Stablecoin parameters showing peg currency dropdown, peg ratio
+input, and collateralization ratio input (minimum 100%)_
+
+**Regulatory requirement:** E-money regulations require 100% or
+overcollateralized reserves. The platform does not support fractional reserve
+stablecoins.
+
+### Reserve management
+
+Configure collateral tracking:
+
+**Reserve wallet**
+
+Specify reserve address for tracking:
+
+- Enter wallet address holding collateral tokens
+- The system tracks reserve balance for transparency
+- Multiple reserve wallets supported for diversification
+
+<Callout type="info" title="Business context">
+  Traditional stablecoin reserve management requires manual reconciliation
+  between custodian reports, bank statements, and internal accounting systems.
+  This reconciliation typically takes 1-3 business days and introduces audit
+  risk. ATK provides real-time reserve visibility through automated balance
+  tracking, reducing reconciliation time by 95% and enabling instant reserve
+  attestation.
+</Callout>
+
+**Collateral composition**
+
+Define accepted reserve assets:
+
+- **Fiat-backed tokens** - USDC, USDT for USD stablecoins
+- **Bank deposits** - Off-chain fiat (requires attestation)
+- **Money market instruments** - Short-term treasuries (requires valuation)
+- **Mixed reserves** - Combination of on-chain and off-chain collateral
+
+For each collateral type, configure:
+
+- Asset address (for on-chain collateral)
+- Haircut percentage (discount factor for risk)
+- Maximum allocation percentage
+
+![Reserve configuration](/images/screenshots/placeholder.svg) _Screenshot:
+Reserve management showing reserve wallet address field and collateral assets
+table with asset, allocation, haircut, and maximum percentage columns_
+
+</Step>
+
+<Step>
+
+## Step 3: Configure issuance and redemption
+
+Stablecoins require regulated mint/burn workflows for peg maintenance.
+
+### Issuance (minting) settings
+
+Define how new stablecoins are created:
+
+**Issuance process**
+
+- **Permissioned issuance** - Only authorized issuers can mint
+- **Proof of reserve required** - Mint only after collateral deposit verified
+- **Minimum issuance** - Minimum mint amount (e.g., $10,000 equivalent)
+- **Issuance fee** - Basis point fee on minting (typically 0-10 bps)
+
+**Authorized issuers**
+
+Add addresses permitted to mint:
+
+1. Click **Add Issuer**
+2. Enter issuer address
+3. Set issuance limits:
+   - Daily mint cap
+   - Single transaction maximum
+4. Assign issuer role
+
+Only authorized issuers with SUPPLY_MANAGEMENT_ROLE can mint tokens.
+
+![Issuance configuration](/images/screenshots/placeholder.svg) _Screenshot:
+Issuance settings showing permissioned toggle, minimum amount input, fee input,
+and authorized issuers list with addresses and limits_
+
+### Redemption (burning) settings
+
+Configure how stablecoins are redeemed for fiat:
+
+**Redemption process**
+
+- **Redemption enabled** - Toggle to allow/disallow redemptions
+- **Minimum redemption** - Minimum burn amount
+- **Redemption fee** - Basis point fee on redemptions
+- **Settlement time** - T+0, T+1, T+2 settlement for fiat payouts
+- **Business hours only** - Restrict redemptions to business days/hours
+
+**Redemption limits**
+
+Set withdrawal constraints:
+
+- **Daily redemption cap** - Maximum daily redemption volume
+- **Per-address redemption limit** - Maximum redemption per user per period
+- **Reserve threshold** - Pause redemptions if reserves drop below percentage
+
+![Redemption configuration](/images/screenshots/placeholder.svg) _Screenshot:
+Redemption settings showing enabled toggle, minimum/fee inputs, settlement time
+selector, and limit configuration fields_
+
+**Circuit breaker:** Configure automatic redemption pause if reserve ratio drops
+below threshold (e.g., 95%).
+
+</Step>
+
+<Step>
+
+## Step 4: Set compliance rules
+
+Stablecoin tokens enforce e-money regulations and AML requirements.
+
+### Regulatory framework selection
+
+Choose applicable regulatory framework:
+
+- **E-Money Directive (EMD2)** - EU electronic money
+- **MiCA** - Markets in Crypto-Assets (EU)
+- **Money Transmitter License** - US state-by-state licensing
+- **Payment Services Directive (PSD2)** - EU payment services
+- **Custom** - Jurisdiction-specific compliance
+
+The platform pre-configures compliance modules for selected framework.
+
+![Compliance framework selection](/images/screenshots/placeholder.svg)
+_Screenshot: Regulatory framework cards showing EMD2, MiCA, MTL, PSD2, and
+Custom options with regulatory requirement summaries_
+
+### Configure compliance modules
+
+Based on selected framework, configure modules:
+
+**Identity verification**
+
+Set OnchainID claim requirements:
+
+- **KYC/AML verification** - Level 1 (basic) or Level 2 (enhanced)
+- **Jurisdiction verification** - Country of residence confirmed
+- **Sanctions screening** - Not on OFAC/EU sanctions lists
+- **PEP screening** - Politically exposed persons status
+- **Business verification** - For institutional holders
+
+All stablecoin holders must have verified OnchainIDs with required claims.
+
+**Transfer restrictions**
+
+Configure transaction monitoring:
+
+- **Transaction limits** - Maximum transfer amount per transaction
+- **Velocity limits** - Maximum volume per address per time period
+- **Blocklist** - Sanctioned addresses cannot hold or transfer
+- **Country restrictions** - Geographic limitations on holders
+
+![Compliance module configuration](/images/screenshots/placeholder.svg)
+_Screenshot: Compliance modules showing Identity Verification requirements,
+Transfer Restrictions, Transaction Limits, and Blocklist management panels_
+
+**AML requirement:** Configure transaction monitoring thresholds per regulatory
+requirements (e.g., $10,000 reporting threshold).
+
+### Transparency and attestation
+
+Configure public reporting:
+
+**Reserve attestation**
+
+Set up periodic reserve verification:
+
+- **Attestation frequency** - Daily, weekly, or monthly attestations
+- **Attestor** - Independent auditor or attestation service
+- **Publication method** - On-chain hash commitment or off-chain reporting
+- **Proof of reserves** - Cryptographic proof mechanism (optional)
+
+**Public transparency**
+
+Enable public data feeds:
+
+- **Total supply** - Publicly visible circulating supply
+- **Reserve balance** - Real-time reserve tracking
+- **Collateralization ratio** - Current backing percentage
+- **Redemption statistics** - Aggregate redemption metrics
+
+![Attestation configuration](/images/screenshots/placeholder.svg) _Screenshot:
+Attestation settings showing frequency selector, attestor address input,
+publication method options, and transparency toggles_
+
+</Step>
+
+<Step>
+
+## Step 5: Assign operational roles
+
+Grant permissions for stablecoin management:
+
+### Role assignments
+
+Assign addresses to stablecoin-specific roles:
+
+**GOVERNANCE_ROLE**
+
+Manages stablecoin policies:
+
+- Configure compliance modules
+- Update reserve requirements
+- Manage attestation schedule
+- Pause/unpause issuance and redemptions
+
+Typically assigned to: Compliance officer or regulatory affairs wallet
+
+**SUPPLY_MANAGEMENT_ROLE**
+
+Controls token supply:
+
+- Mint new stablecoins (proof of reserve required)
+- Burn stablecoins (process redemptions)
+- Manage authorized issuer list
+
+Typically assigned to: Treasury operations wallet
+
+**CUSTODIAN_ROLE**
+
+Handles AML enforcement:
+
+- Freeze sanctioned accounts
+- Execute forced transfers (court/regulatory orders)
+- Recover lost tokens
+- Manage blocklist
+
+Typically assigned to: AML compliance wallet
+
+**EMERGENCY_ROLE**
+
+Emergency interventions:
+
+- Pause all transfers
+- Pause issuance/redemptions
+- Activate circuit breakers
+- Unpause after incident resolution
+
+Typically assigned to: Security operations wallet
+
+![Role assignment interface](/images/screenshots/placeholder.svg) _Screenshot:
+Role assignment form showing four roles with address inputs, role descriptions,
+permission lists, and multisig indicators_
+
+**Critical requirement:** Use multisig wallets for SUPPLY_MANAGEMENT_ROLE and
+EMERGENCY_ROLE to prevent single-point-of-failure.
+
+</Step>
+
+<Step>
+
+## Step 6: Review and deploy
+
+### Pre-deployment checklist
+
+Verify configuration:
+
+- [ ] Token name and symbol match legal entity documentation
+- [ ] Peg currency and ratio correct
+- [ ] Collateralization model meets regulatory requirements
+- [ ] Reserve wallet address verified and secure
+- [ ] Issuance and redemption parameters match operational procedures
+- [ ] Compliance framework aligns with obtained licenses
+- [ ] All operational roles assigned to secure multisig wallets
+- [ ] Attestation schedule configured
+
+![Deployment summary review](/images/screenshots/placeholder.svg) _Screenshot:
+Pre-deployment summary showing stablecoin parameters, peg settings, reserve
+configuration, compliance settings, and roles in organized sections_
+
+### Deploy stablecoin contract
+
+Execute deployment:
+
+1. Click **Deploy Stablecoin**
+2. Review transaction details
+3. Enter your PIN or OTP for authentication
+4. Confirm transaction
+
+The platform:
+
+1. Deploys stablecoin proxy contract (15-20 seconds)
+2. Initializes with your parameters (10 seconds)
+3. Configures reserve tracking (5 seconds)
+4. Assigns roles to specified addresses (5 seconds per role)
+5. Registers with identity registry (10 seconds)
+
+Total deployment time: 60-90 seconds
+
+![Deployment progress](/images/screenshots/placeholder.svg) _Screenshot:
+Deployment progress modal showing step-by-step deployment status with checkmarks
+and timestamps_
+
+</Step>
+
+<Step>
+
+## Step 7: Post-issuance actions
+
+After successful deployment:
+
+### Verify deployment
+
+1. Note the contract address
+2. Click **View Stablecoin** to navigate to details page
+3. Verify configuration:
+   - Token information correct
+   - Peg currency and ratio match
+   - Reserve tracking enabled
+   - Roles assigned correctly
+
+![Stablecoin details overview](/images/screenshots/placeholder.svg) _Screenshot:
+Stablecoin token details page showing key metrics, total supply, reserve
+balance, collateralization ratio, and peg status_
+
+### Fund reserve wallet
+
+Establish initial collateral:
+
+1. Transfer collateral to reserve wallet address:
+   - Fiat-backed stablecoins (USDC, USDT, etc.)
+   - Or coordinate fiat deposit to linked bank account
+2. Verify reserve balance appears on **Reserves** tab
+3. Confirm collateralization ratio shows 100%+ before first mint
+
+**Best practice:** Maintain 105-110% collateralization buffer for operational
+flexibility.
+
+### Configure reserve attestation
+
+Set up independent verification:
+
+**For automated attestation:**
+
+1. Navigate to **Attestation** tab
+2. Click **Configure Attestor**
+3. Enter attestor service address or API endpoint
+4. Set attestation frequency
+5. Test attestation connection
+6. Enable automated attestations
+
+**For manual attestation:**
+
+1. Contract independent auditor or accountant
+2. Provide reserve wallet addresses and bank account information
+3. Schedule periodic attestation reports
+4. Post attestation hashes on-chain via **Attestation** &gt; **Post Report**
+
+![Attestation setup](/images/screenshots/placeholder.svg) _Screenshot:
+Attestation configuration showing attestor service connection, frequency
+settings, and manual report upload interface_
+
+### Enable issuance
+
+Activate stablecoin minting:
+
+1. Navigate to **Settings** tab
+2. Toggle **Issuance Enabled** to on
+3. Confirm reserve wallet funded
+4. Review authorized issuer list
+5. Save changes
+
+Authorized issuers can now mint stablecoins against reserves.
+
+</Step>
+
+<Step>
+
+## Step 8: Operate stablecoin lifecycle
+
+### Process issuance requests
+
+Mint new stablecoins:
+
+**Issuance workflow:**
+
+1. Receive fiat deposit or collateral transfer:
+   - Customer wires fiat to issuer bank account
+   - Or customer transfers USDC/USDT to reserve wallet
+2. Verify deposit cleared and available
+3. Navigate to **Actions** &gt; **Mint Stablecoins**
+4. Enter:
+   - Recipient address (verified OnchainID required)
+   - Mint amount
+   - Collateral reference (transaction hash or wire reference)
+5. Review collateralization ratio after mint
+6. Click **Execute Mint**
+
+**Validation checks:**
+
+- Recipient has verified OnchainID with required claims
+- Reserve balance sufficient for issuance (maintains collateralization ratio)
+- Issuance amount within issuer's daily limit
+- Recipient not on blocklist
+
+The system performs these checks automatically, rejecting invalid issuance
+requests and eliminating manual compliance review delays.
+
+![Issuance interface](/images/screenshots/placeholder.svg) _Screenshot: Mint
+stablecoins form showing recipient address input, amount field, collateral
+reference, pre/post collateralization ratios, and execute button_
+
+**Proof of reserve:** The system records collateral reference, linking each
+issuance to specific reserve deposit for auditing.
+
+<Callout type="default" title="For developers">
+  See [Contract
+  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
+  technical details on cryptographic proof of reserves and collateral linking
+  mechanisms.
+</Callout>
+
+### Process redemption requests
+
+Burn stablecoins and return fiat:
+
+**Redemption workflow:**
+
+1. Customer submits redemption request via dApp:
+   - Enters redemption amount
+   - Selects payout method (wire transfer or stablecoin)
+   - Provides banking details (for fiat redemptions)
+2. Request appears in **Redemptions** &gt; **Pending** queue
+3. Navigate to **Redemptions** tab
+4. Review request details:
+   - Customer identity and KYC status
+   - Redemption amount
+   - Payout method
+   - Settlement date
+5. Process redemption:
+   - Click **Process Redemption**
+   - The system burns tokens from customer address
+   - Initiate fiat wire or transfer collateral stablecoin
+   - Mark redemption as complete
+
+**Settlement:**
+
+- T+0: Same-day settlement (stablecoin collateral payout)
+- T+1: Next business day (wire transfer)
+- T+2: Two business day (international wire)
+
+<Callout type="info" title="Business context">
+  Traditional stablecoin redemption requires manual KYC checks, compliance
+  screening, reserve allocation, wire transfer initiation, and reconciliation
+  confirmation. This manual workflow typically takes 1-3 business days and costs
+  $25-75 per redemption in operational overhead. ATK automates compliance checks
+  and streamlines the process to same-day or T+1 settlement, reducing costs by
+  70-85%.
+</Callout>
+
+![Redemption queue](/images/screenshots/placeholder.svg) _Screenshot: Redemption
+requests table showing pending requests with customer, amount, payout method,
+settlement date, and process button_
+
+**Collateralization maintenance:** Reserve balance decreases proportionally with
+redemptions; monitor ratio stays above minimum. The system alerts you
+automatically when the ratio approaches configured thresholds.
+
+### Monitor collateralization ratio
+
+Track reserve health:
+
+1. Navigate to **Reserves** tab
+2. Review key metrics:
+   - Total supply (circulating stablecoins)
+   - Reserve balance (on-chain and off-chain collateral)
+   - Collateralization ratio percentage
+   - Excess reserves amount
+   - Reserve composition breakdown
+3. Monitor alerts:
+   - Yellow alert: Ratio drops below 102%
+   - Red alert: Ratio drops below 100%
+   - Circuit breaker: Ratio drops below configured threshold (e.g., 95%)
+
+**Collateralization formula:** (Reserve Balance / Total Supply) × 100%
+
+![Reserve dashboard](/images/screenshots/placeholder.svg) _Screenshot: Reserves
+tab showing collateralization ratio gauge, reserve balance chart, composition
+pie chart, and historical ratio trend line_
+
+### Maintain price peg
+
+Monitor and manage peg stability:
+
+**Peg monitoring:**
+
+1. Navigate to **Peg Health** tab
+2. Review peg metrics:
+   - Current market price (from DEX oracles)
+   - Target peg price (1.00 USD)
+   - Deviation percentage
+   - Trading volume across DEXs
+3. Monitor peg history chart for trends
+
+**Peg maintenance actions:**
+
+**If trading above peg (e.g., $1.02):**
+
+- Increase issuance to expand supply
+- Signal willingness to mint at par
+- Provide DEX liquidity
+
+**If trading below peg (e.g., $0.98):**
+
+- Increase redemption accessibility
+- Buy back tokens from market
+- Signal redemption availability
+
+![Peg health dashboard](/images/screenshots/placeholder.svg) _Screenshot: Peg
+health showing current price, target price, deviation gauge, price history
+chart, and recommended actions panel_
+
+**Arbitrage mechanism:** Price deviations create arbitrage opportunities that
+naturally restore peg through redemption/issuance activity. The system's instant
+redemption capability enables efficient arbitrage.
+
+<Callout type="default" title="For developers">
+  See [Contract
+  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
+  technical details on peg stability mechanisms and oracle integration for price
+  monitoring.
+</Callout>
+
+</Step>
+
+</Steps>
+
+## Common workflows
+
+### Handle reserve rebalancing
+
+Adjust collateral composition:
+
+1. Navigate to **Reserves** &gt; **Rebalance**
+2. Review current allocation vs. target allocation
+3. Configure rebalancing:
+   - Reduce asset: Transfer excess from reserve wallet
+   - Increase asset: Transfer to reserve wallet
+4. Execute rebalancing transactions
+5. Verify new allocation percentages
+
+**Example:** Reduce USDT from 60% to 50%, increase USDC from 40% to 50%.
+
+### Implement circuit breaker
+
+Pause operations during stress:
+
+1. Monitor collateralization ratio and market conditions
+2. If ratio drops below threshold or market anomaly detected:
+   - Navigate to **Emergency** &gt; **Circuit Breaker**
+   - Click **Activate**
+3. Circuit breaker actions:
+   - Pauses all issuance
+   - Pauses all redemptions
+   - Allows existing transfers to continue
+4. Investigate cause and restore reserves
+5. Navigate to **Emergency** &gt; **Deactivate Circuit Breaker**
+
+Requires EMERGENCY_ROLE permission.
+
+### Handle sanctioned address
+
+Freeze and recover from prohibited wallet:
+
+1. Identify sanctioned address (OFAC, EU, etc.)
+2. Navigate to **Compliance** &gt; **Blocklist**
+3. Click **Add Address**
+4. Enter address and sanction reason
+5. Click **Freeze and Blocklist**
+6. Platform:
+   - Prevents future transfers to/from address
+   - Optionally freezes current balance
+7. If required, use **Forced Transfer** to move tokens to segregated wallet
+
+Requires CUSTODIAN_ROLE permission.
+
+### Increase redemption limits
+
+Adjust withdrawal caps:
+
+1. Navigate to **Settings** &gt; **Redemptions**
+2. Click **Edit Limits**
+3. Modify parameters:
+   - Daily redemption cap
+   - Per-address limit
+   - Settlement time
+4. Requires GOVERNANCE_ROLE approval
+5. Save changes
+
+**Use case:** Increase limits during market volatility to maintain confidence in
+redemption access.
+
+## Best practices
+
+**Before deployment:**
+
+- Obtain all required money transmitter or e-money licenses
+- Establish banking relationships with multiple institutions
+- Set up independent attestation service
+- Prepare AML/KYC procedures and screening tools
+- Test issuance/redemption workflows in staging environment
+
+**During operations:**
+
+- Maintain collateralization ratio above 105% continuously
+- Execute attestations on consistent schedule (daily/weekly/monthly)
+- Monitor peg health multiple times daily
+- Reconcile on-chain and off-chain reserves daily
+- Review blocklist against updated sanctions lists weekly
+- Maintain operational runway in reserves for redemption capacity
+
+**Reserve management:**
+
+- Diversify reserve holdings across multiple stablecoins and banks
+- Maintain liquidity buffer of 10-20% of supply for redemptions
+- Use reserve management policy with asset allocation limits
+- Conduct stress testing for redemption scenarios
+- Have backup liquidity sources (credit lines) for crisis scenarios
+
+**Compliance:**
+
+- Implement real-time transaction monitoring
+- Screen all new holders against sanctions lists
+- Maintain comprehensive audit trail of all mints/burns
+- File suspicious activity reports (SARs) per AML requirements
+- Update compliance modules for regulatory changes
+
+## Troubleshooting
+
+**Deployment fails with "Invalid collateralization ratio"**
+
+- Verify ratio is 100% or higher
+- Check ratio is reasonable (typically 100-200%)
+- Ensure ratio format is correct (e.g., 100 for 100%, not 1.0)
+
+**Issuance reverts with "Insufficient reserves"**
+
+- Check reserve wallet has adequate collateral balance
+- Verify mint amount would not drop ratio below minimum
+- Ensure collateral tokens are approved for platform use
+- Confirm reserve wallet address is correctly configured
+
+**Redemption processing fails**
+
+- Verify issuer's payout wallet has sufficient fiat tokens
+- Check redemption amount within daily limit
+- Ensure customer holds sufficient stablecoin balance
+- Confirm settlement date is valid business day
+
+**Collateralization ratio showing incorrect value**
+
+- Refresh reserve balance (may have sync delay)
+- Verify off-chain reserve attestation is current
+- Check for pending mints/burns affecting calculation
+- Ensure reserve wallet addresses are all configured
+
+**Peg deviating significantly from target**
+
+- Review redemption accessibility (ensure not paused)
+- Check issuance capacity (sufficient reserves for mints)
+- Monitor DEX liquidity depth
+- Verify arbitrage opportunities are accessible
+- Consider market-making operations to stabilize
+
+For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+
+## Next steps
+
+- **Set up monitoring** - Configure
+  [Fiat bridge](/docs/user-guides/operations/fiat-bridge) for banking
+  integration and redemption processing
+- **Configure compliance** - Review
+  [Manage investors](/docs/user-guides/operations/manage-investors) for KYC/AML
+  workflows
+- **Understand regulations** - Deep dive into
+  [Compliance certification](/docs/architecture/quality/compliance-certification)
+- **Integrate DEXs** - Deploy liquidity pools for secondary market trading

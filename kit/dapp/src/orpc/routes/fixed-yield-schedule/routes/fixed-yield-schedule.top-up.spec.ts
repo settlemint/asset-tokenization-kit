@@ -144,23 +144,22 @@ describe("Fixed yield schedule top up", async () => {
   });
 
   test("can top up denomination asset in fixed yield schedule", async () => {
-    const topUpData = {
+    const result = await adminClient.fixedYieldSchedule.topUp({
       contract: yieldScheduleAddress,
+      tokenAddress: bondToken.id,
       amount: from(10, 18), // 10 tokens with 18 decimals
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE" as const,
       },
-    };
-
-    const result = await adminClient.fixedYieldSchedule.topUp(topUpData);
+    });
 
     expect(result).toBeDefined();
     expect(result.txHash).toBeDefined();
     expect(result.txHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     const readResult = await adminClient.fixedYieldSchedule.read({
-      id: yieldScheduleAddress,
+      contract: yieldScheduleAddress,
     });
 
     expect(readResult).toBeDefined();
@@ -179,23 +178,22 @@ describe("Fixed yield schedule top up", async () => {
   }, 100_000);
 
   test("regular users can top up", async () => {
-    const topUpData = {
+    const result = await investorClient.fixedYieldSchedule.topUp({
       contract: yieldScheduleAddress,
+      tokenAddress: bondToken.id,
       amount: from(10, 18), // 10 tokens with 18 decimals
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE" as const,
       },
-    };
-
-    const result = await investorClient.fixedYieldSchedule.topUp(topUpData);
+    });
 
     expect(result).toBeDefined();
     expect(result.txHash).toBeDefined();
     expect(result.txHash).toMatch(/^0x[a-fA-F0-9]{64}$/);
 
     const readResult = await investorClient.fixedYieldSchedule.read({
-      id: yieldScheduleAddress,
+      contract: yieldScheduleAddress,
     });
 
     expect(readResult).toBeDefined();

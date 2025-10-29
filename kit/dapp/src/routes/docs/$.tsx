@@ -9,9 +9,9 @@ import * as TabsComponents from "@/components/docs/components/tabs";
 import { DocsLayout } from "@/components/docs/docs";
 import { DocsBody, DocsPage } from "@/components/docs/page";
 import { source } from "@/lib/source";
+import { seo } from "@atk/config/metadata";
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import DOMPurify from "isomorphic-dompurify";
 import type * as PageTree from "fumadocs-core/page-tree";
 import { createClientLoader } from "fumadocs-mdx/runtime/vite";
 import defaultMdxComponents from "fumadocs-ui/mdx";
@@ -42,8 +42,37 @@ export const Route = createFileRoute("/docs/$")({
   loader: async ({ params }) => {
     const slugs = params._splat?.split("/") ?? [];
     const data = await loader({ data: slugs });
-    await clientLoader.preload(data.path);
-    return data;
+    const {
+      frontmatter: { title, description, keywords },
+    } = await clientLoader.preload(data.path);
+    return {
+      frontmatter: { title, description, keywords, splat: params._splat },
+      data,
+    };
+  },
+  head: ({ loaderData }) => {
+    const { title, description, keywords, splat } = loaderData?.frontmatter ?? {
+      title: undefined,
+      description: undefined,
+      keywords: undefined,
+    };
+    return {
+      meta: [
+        ...seo({
+          title: title ?? "Documentation",
+          description,
+          keywords,
+        }),
+      ],
+      links: [
+        {
+          rel: "alternate",
+          type: "text/markdown",
+          title: "View in Markdown",
+          href: `/docs/${splat}.mdx`,
+        },
+      ],
+    };
   },
 });
 
@@ -64,7 +93,7 @@ const loader = createServerFn({
 const clientLoader = createClientLoader(docs.doc, {
   id: "docs",
   component({ toc, frontmatter, default: MDX }) {
-    const data = Route.useLoaderData();
+    const { data } = Route.useLoaderData();
     return (
       <DocsPage toc={toc} path={data.path}>
         <div className="space-y-2">
@@ -74,13 +103,13 @@ const clientLoader = createClientLoader(docs.doc, {
               <h1 className="text-3xl font-bold tracking-tight wrap-break-words">
                 {frontmatter.pageTitle ?? frontmatter.title}
               </h1>
-              {frontmatter.description && (
-                <p className="text-sm text-fd-muted-foreground font-light tracking-normal mt-2 wrap-break-words">
-                  {frontmatter.description}
-                </p>
-              )}
             </div>
           </div>
+        </div>
+        <div>
+          <p className="italic mt-2 wrap-break-words">
+            {frontmatter.description}
+          </p>
         </div>
         <DocsBody>
           <MDX
@@ -102,7 +131,7 @@ const clientLoader = createClientLoader(docs.doc, {
 });
 
 function Page() {
-  const data = Route.useLoaderData();
+  const { data } = Route.useLoaderData();
   const Content = clientLoader.getComponent(data.path);
   const tree = useMemo(
     () => transformPageTree(data.tree as PageTree.Folder),
@@ -125,26 +154,7 @@ function transformPageTree(tree: PageTree.Folder): PageTree.Folder {
       icon: (
         <span
           dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(item.icon, {
-              ALLOWED_TAGS: ["svg", "path", "g", "circle", "rect", "line"],
-              ALLOWED_ATTR: [
-                "viewBox",
-                "width",
-                "height",
-                "fill",
-                "stroke",
-                "d",
-                "cx",
-                "cy",
-                "r",
-                "x",
-                "y",
-                "x1",
-                "y1",
-                "x2",
-                "y2",
-              ],
-            }),
+            __html: item.icon,
           }}
         />
       ),

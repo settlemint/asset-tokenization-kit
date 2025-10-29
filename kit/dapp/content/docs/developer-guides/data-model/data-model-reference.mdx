@@ -1,0 +1,913 @@
+---
+title: Data model reference
+description:
+  Technical reference for data schemas - database tables and subgraph entities
+pageTitle: Data model reference (Database & subgraph schema)
+tags: [reference, database, subgraph, schema, drizzle, thegraph]
+---
+
+This reference documents the data models used throughout the Asset Tokenization
+Kit. The platform uses two data layers: a PostgreSQL database managed by Drizzle
+ORM for off-chain data, and a TheGraph subgraph for indexed blockchain data.
+
+## Data architecture overview
+
+```
+Off-Chain Data (PostgreSQL + Drizzle)
+├── Authentication & Users
+├── KYC Profiles
+├── Exchange Rates
+└── Settings
+
+On-Chain Data (TheGraph Subgraph)
+├── Accounts & Identities
+├── Tokens & Balances
+├── Compliance & Access Control
+├── Events & Transactions
+└── Statistics & Analytics
+```
+
+**Data flow**:
+
+1. Blockchain events → TheGraph indexer → GraphQL API → dApp
+2. User actions → dApp → PostgreSQL → API responses
+3. Transaction metadata → Both systems for complete view
+
+## Data schemas
+
+<Tabs items={["Database (PostgreSQL)", "Subgraph (TheGraph)"]}>
+<Tab value="Database (PostgreSQL)">
+
+All database schemas are defined in
+[`kit/dapp/src/lib/db/schemas/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/lib/db/schemas)
+using Drizzle ORM.
+
+### Authentication schema
+
+**Location**:
+[`auth.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/auth.ts)
+
+#### `user` table
+
+Stores user accounts and authentication metadata.
+
+**Schema**:
+
+```typescript
+{
+  id: string; // Primary key (UUID)
+  name: string; // User display name
+  email: string; // Unique email address
+  emailVerified: boolean; // Email verification status
+  image: string | null; // Profile image URL
+  createdAt: Date; // Account creation timestamp
+  updatedAt: Date; // Last update timestamp
+  role: UserRole | null; // 'admin' | 'user'
+  banned: boolean | null; // Ban status
+  banReason: string | null; // Reason for ban
+  banExpires: Date | null; // Ban expiration date
+  wallet: Address | null; // Connected wallet address
+  lastLoginAt: Date | null; // Last login timestamp
+
+  // Multi-factor authentication
+  pincodeEnabled: boolean; // PIN code MFA enabled
+  pincodeVerificationId: string | null;
+  twoFactorEnabled: boolean; // TOTP 2FA enabled
+  twoFactorVerificationId: string | null;
+  secretCodesConfirmed: boolean; // Backup codes confirmed
+  secretCodeVerificationId: string | null;
+}
+```
+
+**Indexes**:
+
+- Primary key: `id`
+- Unique: `email`
+
+**Relationships**:
+
+- `sessions` (one-to-many)
+- `accounts` (one-to-many) - OAuth providers
+- `kycProfiles` (one-to-one)
+- `apikeys` (one-to-many)
+- `passkeys` (one-to-many)
+
+#### `session` table
+
+Active user sessions with device tracking.
+
+**Schema**:
+
+```typescript
+{
+  id: string; // Primary key
+  expiresAt: Date; // Session expiration
+  token: string; // Unique session token
+  createdAt: Date; // Creation timestamp
+  updatedAt: Date; // Last activity timestamp
+  ipAddress: string | null; // Client IP address
+  userAgent: string | null; // Browser/device info
+  userId: string; // FK to user.id
+  impersonatedBy: string | null; // Admin impersonation tracking
+}
+```
+
+**Indexes**:
+
+- Primary key: `id`
+- Unique: `token`
+- Foreign key: `userId` → `user.id` (cascade delete)
+
+#### `account` table
+
+OAuth provider accounts linked to users.
+
+**Schema**:
+
+```typescript
+{
+  id: string; // Primary key
+  accountId: string; // Provider-specific ID
+  providerId: string; // Provider name (google, github, etc.)
+  userId: string; // FK to user.id
+  accessToken: string | null; // OAuth access token
+  refreshToken: string | null; // OAuth refresh token
+  idToken: string | null; // OAuth ID token
+  accessTokenExpiresAt: Date | null;
+  refreshTokenExpiresAt: Date | null;
+  scope: string | null; // OAuth scopes
+  password: string | null; // Hashed password for credentials provider
+  createdAt: Date; // Account link timestamp
+  updatedAt: Date; // Last token refresh
+}
+```
+
+**Foreign keys**: `userId` → `user.id` (cascade delete)
+
+#### `verification` table
+
+Email verification and password reset tokens.
+
+**Schema**:
+
+```typescript
+{
+  id: string; // Primary key
+  identifier: string; // Email or phone number
+  value: string; // Verification code/token
+  expiresAt: Date; // Expiration timestamp
+  createdAt: Date; // Creation timestamp
+  updatedAt: Date; // Last update timestamp
+}
+```
+
+#### `apikey` table
+
+API keys for programmatic access with rate limiting.
+
+**Schema**:
+
+```typescript
+{
+  id: string; // Primary key
+  name: string | null; // Human-readable name
+  start: string | null; // Visible key prefix
+  prefix: string | null; // Key prefix for identification
+  key: string; // Hashed API key
+  userId: string; // FK to user.id
+
+  // Rate limiting
+  refillInterval: number | null; // Token bucket refill interval (ms)
+  refillAmount: number | null; // Tokens added per interval
+  lastRefillAt: Date | null; // Last bucket refill time
+  rateLimitEnabled: boolean; // Rate limiting active
+  rateLimitTimeWindow: number; // Window size (ms, default 60000)
+  rateLimitMax: number; // Max requests per window (default 60)
+  requestCount: number | null; // Current request count
+  remaining: number | null; // Remaining tokens
+  lastRequest: Date | null; // Last request timestamp
+
+  // Lifecycle
+  enabled: boolean; // Key active status
+  expiresAt: Date | null; // Expiration date
+  createdAt: Date; // Creation timestamp
+  updatedAt: Date; // Last update timestamp
+
+  // Metadata
+  permissions: string | null; // JSON permissions array
+  metadata: string | null; // JSON metadata object
+}
+```
+
+**Foreign keys**: `userId` → `user.id` (cascade delete)
+
+#### `passkey` table
+
+WebAuthn passkeys for passwordless authentication.
+
+**Schema**:
+
+```typescript
+{
+  id: string; // Primary key
+  name: string | null; // User-assigned name
+  publicKey: string; // Public key for verification
+  userId: string; // FK to user.id
+  credentialID: string; // Unique credential identifier
+  counter: number; // Signature counter
+  deviceType: string; // 'platform' | 'cross-platform'
+  backedUp: boolean; // Credential backup status
+  transports: string | null; // Supported transports (JSON array)
+  createdAt: Date | null; // Registration timestamp
+  aaguid: string | null; // Authenticator GUID
+}
+```
+
+**Foreign keys**: `userId` → `user.id` (cascade delete)
+
+### KYC schema
+
+**Location**:
+[`kyc.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/kyc.ts)
+
+#### `kyc_profiles` table
+
+User KYC/identity verification data.
+
+**Schema**:
+
+```typescript
+{
+  id: string; // Primary key
+  userId: string; // FK to user.id (unique)
+  firstName: string; // Legal first name
+  lastName: string; // Legal last name
+  dob: Date; // Date of birth
+  country: string; // ISO country code
+  residencyStatus: ResidencyStatus; // 'citizen' | 'permanent_resident' | 'temporary_resident'
+  nationalId: string; // National ID number
+  createdAt: Date; // Profile creation timestamp
+  updatedAt: Date; // Last update timestamp
+}
+```
+
+**Indexes**:
+
+- Primary key: `id`
+- Unique: `userId`
+- Index: `country`, `firstName`, `lastName`
+
+**Foreign keys**: `userId` → `user.id` (cascade delete)
+
+**Types exported**:
+
+- `KycProfile` - Select type
+- `NewKycProfile` - Insert type
+
+### Exchange Rates schema
+
+**Location**:
+[`exchange-rates.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/exchange-rates.ts)
+
+Dual-table design optimized for fast current rate access and historical
+analysis.
+
+#### `currencies` table
+
+ISO-4217 currency reference data.
+
+**Schema**:
+
+```typescript
+{
+  code: string; // Primary key (3-char ISO code)
+  name: string; // Full currency name
+  decimals: string; // Decimal places (0-8, default 2)
+}
+```
+
+#### `fx_rates` table
+
+Time-series exchange rate history.
+
+**Schema**:
+
+```typescript
+{
+  baseCode: string; // FK to currencies.code
+  quoteCode: string; // FK to currencies.code
+  provider: string; // Rate provider ('ECB', 'er-api', 'manual')
+  effectiveAt: Date; // When rate became effective
+  rate: string; // Decimal(38,18) - high precision
+  createdAt: Date; // Record creation time
+}
+```
+
+**Primary key**: `(baseCode, quoteCode, provider, effectiveAt)`
+
+**Indexes**:
+
+- `idx_fx_rates_base_quote_ts`: Forward pair lookups
+- `idx_fx_rates_quote_base_ts`: Reverse pair lookups
+- `idx_fx_rates_provider_ts`: Provider-specific queries
+
+**Design notes**:
+
+- Composite key ensures uniqueness per provider/time
+- Designed for monthly partitioning
+- High-precision rates support both fiat and crypto
+
+#### `fx_rates_latest` table
+
+Current exchange rates cache for O(1) retrieval.
+
+**Schema**:
+
+```typescript
+{
+  baseCode: string; // FK to currencies.code
+  quoteCode: string; // FK to currencies.code
+  provider: string; // Rate provider
+  rate: string; // Current rate (Decimal 38,18)
+  effectiveAt: Date; // When rate became effective
+  updatedAt: Date; // Last update timestamp
+}
+```
+
+**Primary key**: `(baseCode, quoteCode, provider)`
+
+**Indexes**:
+
+- `idx_fx_latest_quote_base`: Reverse lookups
+- `idx_fx_latest_provider`: Provider queries
+
+**Design notes**:
+
+- Small table (&lt;1000 rows) stays in memory
+- UPSERT on rate updates
+- Sub-millisecond p99 latency
+
+### Settings schema
+
+**Location**:
+[`settings.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/settings.ts)
+
+#### `settings` table
+
+Application-wide configuration key-value store.
+
+**Schema**:
+
+```typescript
+{
+  key: string; // Primary key
+  value: string; // Setting value (JSON if complex)
+  lastUpdated: Date; // Last modification timestamp
+}
+```
+
+**Valid keys**:
+
+- `BASE_CURRENCY` - Default currency (default: 'EUR')
+- `SYSTEM_ADDRESS` - Deployed system contract address
+- `SYSTEM_ADDONS_SKIPPED` - User skipped addon setup (default: 'false')
+
+**Default values** defined in `DEFAULT_SETTINGS` constant.
+
+</Tab>
+<Tab value="Subgraph (TheGraph)">
+
+**Location**:
+[`schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
+
+The subgraph indexes all blockchain events and maintains denormalized views for
+efficient querying.
+
+### Core entities
+
+#### `Account`
+
+Represents any Ethereum address (EOA or contract).
+
+**Fields**:
+
+```graphql
+type Account @entity {
+  id: Bytes! # Ethereum address
+  isContract: Boolean! # Smart contract vs EOA
+  contractName: String # Name if known contract
+  balances: [TokenBalance!]! # Token holdings
+  stats: AccountStatsState # Aggregated metrics
+  systemStats: [AccountSystemStatsState!]!
+  tokenFactoryStats: [AccountTokenFactoryStatsState!]!
+  identities: [Identity!]! # Linked identities
+  registeredIdentities: [RegisteredIdentity!]!
+}
+```
+
+**Relationships**:
+
+- One-to-many: `balances`, `identities`, `registeredIdentities`
+- One-to-one: `stats`
+
+#### `Event`
+
+Immutable blockchain event log.
+
+**Fields**:
+
+```graphql
+type Event @entity(immutable: true) {
+  id: Bytes! # txHash + logIndex
+  eventName: String! # Event signature name
+  txIndex: BigInt! # Log index in transaction
+  blockNumber: BigInt! # Block height
+  blockTimestamp: BigInt! # Unix timestamp
+  transactionHash: Bytes! # Transaction hash
+  emitter: Account! # Contract that emitted event
+  sender: Account! # Transaction sender
+  involved: [Account!]! # All accounts in event
+  values: [EventValue!]! # Event parameters
+}
+```
+
+**Derived fields**: `values` from `EventValue.entry`
+
+#### `System`
+
+ATK system deployment with all registries.
+
+**Fields**:
+
+```graphql
+type System @entity {
+  id: Bytes! # System contract address
+  deployedInTransaction: Bytes! # Deployment tx hash
+  account: Account # Account representation
+  compliance: Compliance # Compliance engine
+  identityRegistryStorage: IdentityRegistryStorage
+  identityFactory: IdentityFactory
+  identityRegistry: IdentityRegistry
+  trustedIssuersRegistry: TrustedIssuersRegistry
+  topicSchemeRegistry: TopicSchemeRegistry
+  tokenFactoryRegistry: TokenFactoryRegistry
+  complianceModuleRegistry: ComplianceModuleRegistry
+  systemAddonRegistry: SystemAddonRegistry
+  systemAccessManager: SystemAccessManager
+  organisationIdentity: Identity # Issuer identity
+  systemStats: SystemStatsState # Aggregated metrics
+  tokenTypeStats: [TokenTypeStatsState!]
+  identityStats: IdentityStatsState
+}
+```
+
+### Token entities
+
+#### `Token`
+
+ERC-3643 security token.
+
+**Fields**:
+
+```graphql
+type Token @entity {
+  id: Bytes! # Token contract address
+  name: String! # Token name
+  symbol: String! # Token symbol
+  decimals: Int! # Decimal places
+  tokenType: String! # 'bond' | 'equity' | 'fund' | 'stablecoin' | 'deposit'
+  totalSupply: BigDecimal! # Current total supply
+  cap: BigDecimal # Supply cap (if capped)
+  paused: Boolean! # Pause status
+  compliance: Compliance! # Compliance contract
+  identityRegistry: IdentityRegistry! # Identity registry
+  balances: [TokenBalance!]! # All holder balances
+  transfers: [Transfer!]! # Transfer history
+  mints: [Mint!]! # Mint events
+  burns: [Burn!]! # Burn events
+  complianceModules: [TokenComplianceModule!]!
+
+  # Bond-specific fields
+  maturityDate: BigInt # Unix timestamp
+  faceValue: BigDecimal # Per-unit face value
+  denominationAsset: Token # Denomination currency
+  isMatured: Boolean # Maturity status
+  # Statistics
+  holderCount: BigInt! # Number of unique holders
+  transferCount: BigInt! # Total transfers
+  mintCount: BigInt! # Total mints
+  burnCount: BigInt! # Total burns
+}
+```
+
+#### `TokenBalance`
+
+Account's balance in a specific token.
+
+**Fields**:
+
+```graphql
+type TokenBalance @entity {
+  id: Bytes! # token.id + account.id
+  token: Token! # Token reference
+  account: Account! # Holder reference
+  balance: BigDecimal! # Current balance
+  frozenBalance: BigDecimal! # Frozen amount
+  isFrozen: Boolean! # Full freeze status
+  lastUpdated: BigInt! # Last change timestamp
+}
+```
+
+**Indexes**: Composite ID enables fast token/account lookups
+
+#### `Transfer`
+
+Token transfer event.
+
+**Fields**:
+
+```graphql
+type Transfer @entity(immutable: true) {
+  id: Bytes! # txHash + logIndex
+  token: Token! # Token transferred
+  from: Account! # Sender
+  to: Account! # Recipient
+  value: BigDecimal! # Amount transferred
+  blockNumber: BigInt! # Block height
+  blockTimestamp: BigInt! # Unix timestamp
+  transactionHash: Bytes! # Transaction hash
+}
+```
+
+### Compliance entities
+
+#### `Compliance`
+
+Main compliance contract for a token.
+
+**Fields**:
+
+```graphql
+type Compliance @entity {
+  id: Bytes! # Compliance contract address
+  token: Token! # Associated token
+  modules: [ComplianceModule!]! # Active modules
+  requiredClaimTopics: [BigInt!]! # Required claim topics
+}
+```
+
+#### `ComplianceModule`
+
+Individual compliance rule module.
+
+**Fields**:
+
+```graphql
+type ComplianceModule @entity {
+  id: Bytes! # Module contract address
+  name: String! # Module type name
+  moduleType: String! # Classification
+  isGlobal: Boolean! # System-wide vs token-specific
+  tokens: [TokenComplianceModule!]! # Tokens using module
+}
+```
+
+#### `TokenComplianceModule`
+
+Junction table for token-module relationship.
+
+**Fields**:
+
+```graphql
+type TokenComplianceModule @entity {
+  id: Bytes! # Composite ID
+  token: Token! # Token reference
+  module: ComplianceModule! # Module reference
+  params: Bytes! # ABI-encoded parameters
+  addedAt: BigInt! # Addition timestamp
+  removedAt: BigInt # Removal timestamp (null if active)
+  isActive: Boolean! # Currently active
+}
+```
+
+### Identity entities
+
+#### `Identity`
+
+On-chain identity contract (ERC-734/735).
+
+**Fields**:
+
+```graphql
+type Identity @entity {
+  id: Bytes! # Identity contract address
+  account: Account! # Linked account
+  keys: [IdentityKey!]! # Management keys
+  claims: [IdentityClaim!]! # Attached claims
+  isVerified: Boolean! # Verification status
+  country: Int # Country code (if registered)
+}
+```
+
+#### `IdentityClaim`
+
+Claim attached to an identity (ERC-735).
+
+**Fields**:
+
+```graphql
+type IdentityClaim @entity {
+  id: Bytes! # Claim ID
+  identity: Identity! # Identity owning claim
+  topic: BigInt! # Claim topic
+  scheme: BigInt! # Signature scheme
+  issuer: Account! # Claim issuer
+  signature: Bytes! # Claim signature
+  data: Bytes! # Claim data
+  uri: String! # Claim URI
+  addedAt: BigInt! # Addition timestamp
+  removedAt: BigInt # Removal timestamp
+  isActive: Boolean! # Currently valid
+}
+```
+
+#### `RegisteredIdentity`
+
+Identity registered in the identity registry.
+
+**Fields**:
+
+```graphql
+type RegisteredIdentity @entity {
+  id: Bytes! # Registry address + account
+  account: Account! # Registered account
+  identity: Identity! # Linked identity contract
+  country: Int! # Country code
+  registeredAt: BigInt! # Registration timestamp
+  updatedAt: BigInt! # Last update
+  isVerified: Boolean! # Verification status
+}
+```
+
+### Access control entities
+
+#### `AccessControl`
+
+Role-based access control configuration.
+
+**Fields**:
+
+```graphql
+type AccessControl @entity {
+  id: Bytes! # Access control address
+  system: System! # Owning system
+  roleAdmins: [AccessControlRoleAdmin!]!
+
+  # Core roles
+  admin: [Account!]!
+
+  # People roles
+  systemManager: [Account!]!
+  identityManager: [Account!]!
+  tokenManager: [Account!]!
+  complianceManager: [Account!]!
+  addonManager: [Account!]!
+  claimPolicyManager: [Account!]!
+  claimIssuer: [Account!]!
+  auditor: [Account!]!
+  organisationIdentityManager: [Account!]!
+
+  # System roles
+  systemModule: [Account!]!
+  identityRegistryModule: [Account!]!
+  tokenFactoryRegistryModule: [Account!]!
+  tokenFactoryModule: [Account!]!
+  addonRegistryModule: [Account!]!
+  addonModule: [Account!]!
+
+  # Asset roles
+  governance: [Account!]!
+  supplyManagement: [Account!]!
+  custodian: [Account!]!
+  emergency: [Account!]!
+
+  # Addon roles
+  fundsManager: [Account!]!
+  saleAdmin: [Account!]!
+}
+```
+
+### Statistics entities
+
+#### `SystemStatsState`
+
+Aggregated system-wide metrics.
+
+**Fields**:
+
+```graphql
+type SystemStatsState @entity {
+  id: Bytes! # System address
+  system: System! # System reference
+  totalTokens: BigInt! # Total tokens deployed
+  totalHolders: BigInt! # Unique token holders
+  totalTransfers: BigInt! # All-time transfers
+  totalVolume: BigDecimal! # All-time transfer volume
+  totalIdentities: BigInt! # Registered identities
+  lastUpdated: BigInt! # Last metric update
+}
+```
+
+#### `TokenTypeStatsState`
+
+Metrics by token type.
+
+**Fields**:
+
+```graphql
+type TokenTypeStatsState @entity {
+  id: Bytes! # system.id + tokenType
+  system: System! # System reference
+  tokenType: String! # 'bond' | 'equity' | etc.
+  count: BigInt! # Number of this type
+  totalSupply: BigDecimal! # Combined supply
+  transferCount: BigInt! # Total transfers
+  volume: BigDecimal! # Transfer volume
+}
+```
+
+</Tab>
+</Tabs>
+
+## Querying data
+
+<Tabs items={["Database (Drizzle)", "Subgraph (GraphQL)"]}>
+<Tab value="Database (Drizzle)">
+
+```typescript
+import { db } from "@/lib/db";
+import { user, kycProfiles } from "@/lib/db/schemas";
+import { eq } from "drizzle-orm";
+
+// Get user with KYC profile
+const userWithKyc = await db
+  .select()
+  .from(user)
+  .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
+  .where(eq(user.id, userId))
+  .get();
+
+// Get latest exchange rate
+import { fxRatesLatest } from "@/lib/db/schemas/exchange-rates";
+
+const rate = await db
+  .select()
+  .from(fxRatesLatest)
+  .where(
+    and(
+      eq(fxRatesLatest.baseCode, "USD"),
+      eq(fxRatesLatest.quoteCode, "EUR"),
+      eq(fxRatesLatest.provider, "ECB")
+    )
+  )
+  .get();
+```
+
+</Tab>
+<Tab value="Subgraph (GraphQL)">
+
+```graphql
+# Get token with holders
+query GetToken($id: Bytes!) {
+  token(id: $id) {
+    id
+    name
+    symbol
+    decimals
+    totalSupply
+    holderCount
+    balances(first: 10, orderBy: balance, orderDirection: desc) {
+      account {
+        id
+      }
+      balance
+    }
+  }
+}
+
+# Get account's portfolio
+query GetPortfolio($account: Bytes!) {
+  account(id: $account) {
+    balances(where: { balance_gt: "0" }) {
+      token {
+        id
+        name
+        symbol
+        decimals
+      }
+      balance
+      frozenBalance
+    }
+  }
+}
+
+# Get recent transfers
+query GetRecentTransfers($token: Bytes!) {
+  transfers(
+    where: { token: $token }
+    first: 20
+    orderBy: blockTimestamp
+    orderDirection: desc
+  ) {
+    id
+    from {
+      id
+    }
+    to {
+      id
+    }
+    value
+    blockTimestamp
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+## Data relationships
+
+### Cross-system relationships
+
+1. **User → Wallet → Identity**:
+   - Database: `user.wallet` (Address)
+   - Subgraph: `Account.identities` → `Identity`
+   - Link: `user.wallet === Account.id`
+
+2. **User → KYC → Identity Registration**:
+   - Database: `user.id` → `kycProfiles.userId`
+   - Subgraph: `Account.registeredIdentities` → `RegisteredIdentity`
+   - Sync: KYC approval triggers identity registration on-chain
+
+3. **Token → Holders → Users**:
+   - Subgraph: `Token.balances` → `TokenBalance.account`
+   - Database: `Account.id` → `user.wallet`
+   - Join: Match addresses to get user profiles
+
+## Schema migrations
+
+### Database migrations
+
+Managed by Drizzle Kit in
+[`kit/dapp/drizzle.config.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/drizzle.config.ts).
+
+**Generate migration**:
+
+```bash
+cd kit/dapp
+bun run db:generate
+```
+
+**Apply migration**:
+
+```bash
+bun run db:migrate
+```
+
+**Push schema directly** (dev only):
+
+```bash
+bun run db:push
+```
+
+### Subgraph updates
+
+Subgraph schema changes require redeployment.
+
+**Update schema**:
+
+1. Edit
+   [`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
+2. Run `bun run subgraph:codegen`
+3. Update mappings in
+   [`kit/subgraph/src/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/subgraph/src)
+4. Redeploy: `bun run deploy`
+
+## Next steps
+
+- **Deploy infrastructure**: See
+  [Deployment Guide](/docs/developer-guides/deployment-ops/installation-configuration)
+  for production setup
+- **Query APIs**: Review
+  [API Reference](/docs/developer-guides/api-integration/api-reference) for data
+  access patterns
+- **Contract interactions**: Check
+  [Contract Reference](/docs/developer-guides/smart-contracts/contract-reference)
+  for on-chain operations
+- **Review code**: Explore implementations in
+  [`kit/dapp/src/lib/db/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/lib/db)
+  and
+  [`kit/subgraph/src/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/subgraph/src)
+
+For testing strategies that validate data integrity, continue to
+[Testing & QA](/docs/developer-guides/quality-assurance).

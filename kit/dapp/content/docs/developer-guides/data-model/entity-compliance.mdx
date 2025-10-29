@@ -1,0 +1,473 @@
+---
+title: Compliance entities
+description:
+  Compliance modules, identity claims, access control, and transfer restrictions
+pageTitle: Compliance entity reference (Compliance, Claims, Access Control)
+tags: [compliance, claims, erc-735, access-control, modules]
+---
+
+Compliance entities enforce transfer restrictions, manage identity claims, and
+control access to system functions. These entities are indexed by TheGraph from
+blockchain events.
+
+**Schema location**:
+[`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
+
+## Compliance
+
+Main compliance contract for a token, managing modules and required claim
+topics.
+
+### Fields
+
+```graphql
+type Compliance @entity {
+  id: Bytes! # Compliance contract address
+  token: Token! # Associated token
+  modules: [ComplianceModule!]! # Active modules
+  requiredClaimTopics: [BigInt!]! # Required claim topics
+}
+```
+
+### Relationships
+
+- **One-to-one**:
+  - `token` → Token this compliance applies to
+- **Many-to-many**:
+  - `modules` → Active compliance modules (via TokenComplianceModule junction)
+
+### Required claim topics
+
+Array of claim topic IDs that investors must have to trade the token. Common
+topics:
+
+- `1` - KYC verification
+- `2` - AML check
+- `3` - Accredited investor status
+- `4` - Country of residence
+- `5` - Investor type
+
+### Usage example
+
+```graphql
+query GetTokenCompliance($tokenAddress: Bytes!) {
+  token(id: $tokenAddress) {
+    compliance {
+      id
+      requiredClaimTopics
+      modules {
+        id
+        name
+        moduleType
+      }
+    }
+  }
+}
+```
+
+## ComplianceModule
+
+Individual compliance rule module that enforces transfer restrictions.
+
+### Fields
+
+```graphql
+type ComplianceModule @entity {
+  id: Bytes! # Module contract address
+  name: String! # Module type name
+  moduleType: String! # Classification
+  isGlobal: Boolean! # System-wide vs token-specific
+  tokens: [TokenComplianceModule!]! # Tokens using module
+}
+```
+
+### Module types
+
+Common compliance modules:
+
+- **Transfer restrictions**:
+  - `TimeTransfersLimitsModule` - Daily/monthly transfer limits
+  - `CountryRestrictModule` - Country-based restrictions
+  - `MaxBalanceModule` - Maximum balance per holder
+- **Supply controls**:
+  - `SupplyLimitModule` - Total supply cap
+  - `MaxOwnershipModule` - Maximum ownership percentage
+- **Time-based**:
+  - `TransferCooldownModule` - Minimum time between transfers
+  - `LockupModule` - Time-locked tokens
+
+### Global vs token-specific
+
+- `isGlobal: true` - Module can be reused across multiple tokens
+- `isGlobal: false` - Module deployed for specific token
+
+### Usage example
+
+```graphql
+query GetComplianceModules {
+  complianceModules(where: { isGlobal: true }) {
+    id
+    name
+    moduleType
+    tokens(where: { isActive: true }) {
+      token {
+        name
+        symbol
+      }
+    }
+  }
+}
+```
+
+## TokenComplianceModule
+
+Junction entity linking tokens to compliance modules with configuration
+parameters.
+
+### Fields
+
+```graphql
+type TokenComplianceModule @entity {
+  id: Bytes! # Composite ID (token + module)
+  token: Token! # Token reference
+  module: ComplianceModule! # Module reference
+  params: Bytes! # ABI-encoded parameters
+  addedAt: BigInt! # Addition timestamp
+  removedAt: BigInt # Removal timestamp (null if active)
+  isActive: Boolean! # Currently active
+}
+```
+
+### Module parameters
+
+The `params` field contains ABI-encoded configuration. Examples:
+
+**TimeTransfersLimitsModule**:
+
+```solidity
+struct Params {
+  uint256 dailyLimit;
+  uint256 monthlyLimit;
+}
+```
+
+**CountryRestrictModule**:
+
+```solidity
+struct Params {
+  uint16[] allowedCountries;
+  uint16[] blockedCountries;
+}
+```
+
+### Usage example
+
+```graphql
+query GetTokenModules($tokenAddress: Bytes!) {
+  tokenComplianceModules(where: { token: $tokenAddress, isActive: true }) {
+    module {
+      name
+      moduleType
+    }
+    params
+    addedAt
+  }
+}
+```
+
+## IdentityClaim
+
+ERC-735 claim attached to an identity, signed by a trusted issuer.
+
+### Fields
+
+```graphql
+type IdentityClaim @entity {
+  id: Bytes! # Claim ID
+  identity: Identity! # Identity owning claim
+  topic: BigInt! # Claim topic
+  scheme: BigInt! # Signature scheme
+  issuer: Account! # Claim issuer
+  signature: Bytes! # Claim signature
+  data: Bytes! # Claim data
+  uri: String! # Claim URI
+  addedAt: BigInt! # Addition timestamp
+  removedAt: BigInt # Removal timestamp
+  isActive: Boolean! # Currently valid
+}
+```
+
+### Claim topics
+
+Standard claim topics (aligned with `requiredClaimTopics`):
+
+- `1` - KYC verification
+- `2` - AML check
+- `3` - Accredited investor
+- `4` - Country code
+- `5` - Investor type (retail/institutional)
+
+### Signature schemes
+
+- `1` - ECDSA
+- `2` - RSA
+- `3` - Other
+
+### Relationships
+
+- **Many-to-one**:
+  - `identity` → Identity contract (see
+    [Investor entities](/docs/developer-guides/data-model/entity-investor))
+  - `issuer` → Claim issuer account
+
+### Usage example
+
+```graphql
+query GetIdentityClaims($identityAddress: Bytes!) {
+  identity(id: $identityAddress) {
+    claims(where: { isActive: true }) {
+      topic
+      issuer {
+        id
+        contractName
+      }
+      data
+      addedAt
+    }
+  }
+}
+
+# Check if investor has required claims
+query CheckInvestorCompliance(
+  $identityAddress: Bytes!
+  $requiredTopics: [BigInt!]!
+) {
+  identity(id: $identityAddress) {
+    claims(where: { isActive: true, topic_in: $requiredTopics }) {
+      topic
+      issuer {
+        id
+      }
+    }
+  }
+}
+```
+
+### Claim lifecycle
+
+1. **Issue** - Trusted issuer adds claim to identity
+2. **Verify** - Compliance checks claim signature and issuer
+3. **Revoke** - Issuer or identity owner removes claim (sets `removedAt`)
+4. **Expire** - Claim becomes invalid after time period
+
+## TrustedIssuersRegistry
+
+Registry of authorized claim issuers.
+
+### Fields
+
+```graphql
+type TrustedIssuersRegistry @entity {
+  id: Bytes! # Registry contract address
+  system: System! # Owning system
+  issuers: [TrustedIssuer!]! # Registered issuers
+}
+```
+
+### Usage example
+
+```graphql
+query GetTrustedIssuers($registryAddress: Bytes!) {
+  trustedIssuersRegistry(id: $registryAddress) {
+    issuers {
+      issuer {
+        id
+        contractName
+      }
+      claimTopics
+      isActive
+    }
+  }
+}
+```
+
+## TrustedIssuer
+
+Authorized issuer in the trusted issuers registry.
+
+### Fields
+
+```graphql
+type TrustedIssuer @entity {
+  id: Bytes! # registry + issuer address
+  registry: TrustedIssuersRegistry! # Parent registry
+  issuer: Account! # Issuer identity
+  claimTopics: [BigInt!]! # Topics issuer can certify
+  addedAt: BigInt! # Registration timestamp
+  removedAt: BigInt # Removal timestamp
+  isActive: Boolean! # Currently trusted
+}
+```
+
+### Usage example
+
+```graphql
+query CheckIssuerTrusted($issuerAddress: Bytes!, $topic: BigInt!) {
+  trustedIssuers(
+    where: {
+      issuer: $issuerAddress
+      isActive: true
+      claimTopics_contains: [$topic]
+    }
+  ) {
+    registry {
+      id
+    }
+    claimTopics
+  }
+}
+```
+
+## AccessControl
+
+Role-based access control configuration for the system.
+
+### Fields
+
+```graphql
+type AccessControl @entity {
+  id: Bytes! # Access control address
+  system: System! # Owning system
+  roleAdmins: [AccessControlRoleAdmin!]!
+
+  # Core roles
+  admin: [Account!]!
+
+  # People roles
+  systemManager: [Account!]!
+  identityManager: [Account!]!
+  tokenManager: [Account!]!
+  complianceManager: [Account!]!
+  addonManager: [Account!]!
+  claimPolicyManager: [Account!]!
+  claimIssuer: [Account!]!
+  auditor: [Account!]!
+  organisationIdentityManager: [Account!]!
+
+  # System roles
+  systemModule: [Account!]!
+  identityRegistryModule: [Account!]!
+  tokenFactoryRegistryModule: [Account!]!
+  tokenFactoryModule: [Account!]!
+  addonRegistryModule: [Account!]!
+  addonModule: [Account!]!
+
+  # Asset roles
+  governance: [Account!]!
+  supplyManagement: [Account!]!
+  custodian: [Account!]!
+  emergency: [Account!]!
+
+  # Addon roles
+  fundsManager: [Account!]!
+  saleAdmin: [Account!]!
+}
+```
+
+### Role categories
+
+**Core roles**:
+
+- `admin` - Full system control
+
+**People roles** (human operators):
+
+- `systemManager` - System configuration
+- `identityManager` - Identity registration
+- `tokenManager` - Token deployment
+- `complianceManager` - Compliance configuration
+- `claimIssuer` - Issue identity claims
+
+**System roles** (smart contracts):
+
+- `systemModule` - System contract modules
+- `tokenFactoryModule` - Token factory contracts
+- `addonModule` - Addon contracts
+
+**Asset roles** (token operations):
+
+- `governance` - Protocol governance
+- `supplyManagement` - Mint/burn tokens
+- `custodian` - Custody operations
+- `emergency` - Emergency controls
+
+### Usage example
+
+```graphql
+query GetSystemRoles($systemAddress: Bytes!) {
+  system(id: $systemAddress) {
+    systemAccessManager {
+      admin
+      tokenManager
+      complianceManager
+      claimIssuer
+    }
+  }
+}
+
+# Check if account has role
+query CheckAccountRole($accessControlAddress: Bytes!, $account: Bytes!) {
+  accessControl(id: $accessControlAddress) {
+    admin(where: { id: $account })
+    tokenManager(where: { id: $account })
+    complianceManager(where: { id: $account })
+  }
+}
+```
+
+## Compliance flow
+
+### Transfer compliance check
+
+```
+1. User initiates transfer
+   ↓
+2. Token calls Compliance.canTransfer()
+   ↓
+3. Compliance checks:
+   - Sender has required claims
+   - Recipient has required claims
+   - All active modules approve
+   ↓
+4. Each module validates:
+   - Transfer limits not exceeded
+   - Country restrictions pass
+   - Balance limits not exceeded
+   ↓
+5. Transfer approved or rejected
+```
+
+### Claim verification
+
+```
+1. Check identity has claim for topic
+   ↓
+2. Verify claim issuer is trusted
+   ↓
+3. Verify claim signature
+   ↓
+4. Check claim not removed/expired
+   ↓
+5. Claim valid or invalid
+```
+
+## See also
+
+- **[Token entities](/docs/developer-guides/data-model/entity-token)** - Tokens
+  subject to compliance
+- **[Investor entities](/docs/developer-guides/data-model/entity-investor)** -
+  Identity contracts with claims
+- **[Data model overview](/docs/developer-guides/data-model/data-model-reference)** -
+  Complete data architecture
+- **[Contract reference](/docs/developer-guides/smart-contracts/contract-reference)** -
+  Compliance contract methods

@@ -1,0 +1,718 @@
+---
+title: Blockchain layer
+description:
+  The blockchain layer provides immutable asset ownership, programmable
+  compliance, and transparent transaction history. Built on EVM-compatible
+  networks using Solidity smart contracts, it implements the SMART Protocol
+  (derived from ERC-3643) with modular compliance rules, on-chain identity
+  verification, and event-driven indexing via TheGraph.
+pageTitle: Blockchain layer - Smart contracts and on-chain architecture
+tags: [architecture, blockchain, smart-contracts, thegraph, erc-3643]
+---
+
+## Problem
+
+Traditional asset tokenization requires maintaining two parallel systems: legal
+ownership records in databases and blockchain token balances. Compliance rules
+enforced by centralized servers create single points of failure and regulatory
+gaps. Integration between off-chain applications and blockchain state involves
+complex polling, inconsistent data formats, and delayed updates. Identity
+verification stored in centralized systems exposes personally identifiable
+information and creates privacy risks.
+
+### Solution
+
+SMART Protocol consolidates ownership, compliance, and identity on-chain using
+composable smart contracts. Transfer restrictions execute in consensus layer
+guaranteeing regulatory enforcement even if application servers fail. TheGraph
+subgraph indexes blockchain events into GraphQL APIs providing
+millisecond-latency queries over historical state. OnchainID implements
+ERC-734/735 standards for verifiable credentials separating identity proofs from
+personal data. Modular architecture allows deploying new asset types without
+changing infrastructure while reusing compliance and identity contracts across
+tokens.
+
+## Smart contract architecture
+
+Smart contracts organized into three interconnected layers handling tokens,
+compliance, and identity. Each layer provides focused functionality while
+maintaining clear interfaces between components.
+
+### Token layer - Asset contracts
+
+**Core token contracts** implement ERC-20 interfaces with compliance hooks.
+Every transfer validates against compliance contract before executing state
+changes. Tokens inherit from OpenZeppelin base contracts ensuring battle-tested
+implementations of transfer, approval, and balance tracking logic.
+
+**Asset-specific implementations** extend base token with domain features.
+`SMARTBond` adds maturity dates, interest rates, and coupon payment schedules.
+`SMARTEquity` tracks dividend rights and voting power snapshots. `SMARTDeposit`
+integrates collateral requirements and redemption mechanisms. `SMARTFund`
+manages net asset value calculations and share issuance. `SMARTStableCoin`
+enforces peg maintenance and reserves verification.
+
+**Extension modules** add optional functionality through composition.
+`SMARTBurnable` allows administrators to permanently destroy tokens for
+regulatory compliance. `SMARTRedeemable` enables investors to self-burn tokens
+triggering off-chain redemption workflows. `SMARTYield` schedules dividend
+entitlement calculations with payments claimable proportional to holdings.
+`SMARTPausable` provides emergency stop mechanism during security incidents.
+`SMARTCustodian` implements freeze and force transfer capabilities for legal
+orders. `SMARTHistoricalBalances` maintains balance snapshots for point-in-time
+queries supporting governance and reporting.
+
+**Factory pattern deployment** uses deterministic CREATE2 addresses. Factory
+contracts validate configuration parameters before deploying token instances.
+Each deployment registers token address in central registry enabling discovery
+and verification. Factory upgrades introduce new token types without migrating
+existing assets.
+
+### Compliance layer - Modular rules
+
+**Compliance orchestration contract** coordinates multiple rule modules. Each
+token configures active modules and their parameters. Transfer validation
+queries all enabled modules requiring unanimous approval. Failed transfers
+revert with specific rejection reason identifying violated rule. Successful
+transfers trigger state updates in compliance modules tracking cumulative
+effects.
+
+**Identity verification module** validates sender and receiver identities.
+Queries identity registry confirming both parties possess valid OnchainID
+contracts. Evaluates claim requirements using logical expressions supporting
+AND/OR/NOT operators. Example: `(KYC AND AML) OR ACCREDITED_INVESTOR` allows
+multiple paths to compliance. Receiver verification occurs on every transfer
+while sender verification assumed from prior ownership. Failed identity checks
+return specific missing claim topics guiding investors toward resolution.
+
+**Country restriction modules** enforce jurisdiction limits. `CountryAllowList`
+permits transfers only to addresses with verified nationality claims matching
+allowed countries. `CountryBlockList` denies transfers to sanctioned
+jurisdictions. Both modules query OnchainID nationality claims verified by
+trusted issuers. Support dynamic updates allowing compliance officers to adjust
+restrictions without redeploying tokens.
+
+**Transfer limit modules** prevent concentration and enforce caps.
+`MaxBalanceModule` rejects transfers resulting in receiver exceeding maximum
+token holdings. `MaxSupplyModule` prevents minting beyond total supply cap.
+`InvestorCountLimitModule` blocks transfers creating more unique holders than
+regulatory limit. Modules maintain counters updated after successful transfers
+enabling real-time enforcement.
+
+**Time-based restriction modules** implement lock-up periods. `TimeLockModule`
+prevents transfers before specified unlock dates. `TradingHoursModule` restricts
+transfers to market hours preventing after-hours trading. `CliffVestingModule`
+enforces graduated release schedules. Each module checks block timestamp against
+configured constraints.
+
+**Transfer fee modules** deduct fees during transfers. `ProportionalFeeModule`
+calculates percentage-based fees. `FlatFeeModule` charges fixed amounts per
+transaction. Collected fees route to designated treasury addresses. Support
+exempt addresses for administrative transfers.
+
+**Module configuration per token** enables rule reuse with different parameters.
+Multiple tokens share single compliance contract but configure modules
+independently. Example: Token A allows 50 countries while Token B allows
+different 30 countries using same `CountryAllowList` module with different
+configuration. Reduces deployment costs and simplifies compliance updates.
+
+### Identity layer - OnchainID integration
+
+**Identity registry** maps Ethereum addresses to identity contracts. Single
+registry services all tokens eliminating per-token identity databases. Addresses
+link to OnchainID contracts containing verified claims. Registry tracks
+verification status updated when investors complete KYC workflows. Supports
+multiple addresses per identity accommodating custody arrangements and wallet
+rotations.
+
+**OnchainID contracts** implement ERC-734/735 standards. Each investor deploys
+personal identity contract controlled by their private keys. Contracts store
+claim signatures not actual personal data preserving privacy. Claims
+cryptographically signed by trusted issuers proving attributes without revealing
+underlying documents. Support claim revocation when status changes like expired
+passports or lost accreditation.
+
+**Trusted issuers registry** authorizes claim signers. Registry maintains list
+of KYC providers, governments, and verification services permitted to attest
+claims. Maps claim topics to authorized issuers example only licensed KYC
+providers attest nationality while only CPA firms attest accredited investor
+status. Multi-issuer support per topic provides redundancy when provider
+unavailable. Registry updates allow onboarding new verification providers
+without touching identity contracts.
+
+**Claim topics registry** defines available verification types. Topics
+identified by bytes32 identifiers example `0x01` represents KYC completion while
+`0x02` represents accredited investor status. Registry stores topic metadata
+including display names and verification requirements. Shared across tokens
+enabling ecosystem-wide claim reuse. New topics added via governance proposals.
+
+**Logical expression evaluator** interprets complex verification rules.
+Compliance modules submit expressions combining topics with boolean operators.
+Evaluator recursively queries identity registry checking claim existence and
+validity. Short-circuit evaluation optimizes performance skipping unnecessary
+checks. Expression results cache in Redis avoiding repeated on-chain queries for
+same identity within session.
+
+**Recovery mechanism** handles lost keys without losing identity. Two-step
+process separates identity recovery from asset recovery. Identity registry
+manager approves recovery requests linking new address to existing identity.
+User then reclaims tokens from old address to new address via recovery
+procedure. Prevents unilateral custodian seizure requiring both administrator
+and user actions.
+
+## Contract deployment workflow
+
+Understanding deployment sequence ensures proper configuration and
+interdependencies.
+
+### Initial infrastructure deployment
+
+**Identity infrastructure** deploys first providing foundation for subsequent
+components:
+
+1. Deploy `ClaimTopicsRegistry` defining available verification types
+2. Deploy `TrustedIssuersRegistry` authorizing claim signers
+3. Deploy `IdentityRegistry` linking addresses to identity contracts
+4. Deploy `IdentityRegistryStorage` holding registry data
+5. Deploy `ImplementationAuthority` (if using proxy pattern)
+
+Order matters as each contract references previously deployed addresses during
+initialization.
+
+**Compliance infrastructure** deploys second:
+
+1. Deploy `ModularCompliance` orchestration contract
+2. Deploy individual compliance modules: `MaxBalanceModule`,
+   `CountryAllowListModule`, etc.
+3. Register modules with compliance contract
+4. Configure default module parameters
+
+Compliance contract address required when deploying tokens.
+
+### Token deployment via factory
+
+**Factory preparation** bundles token configuration:
+
+```solidity
+TokenConfig memory config = TokenConfig({
+  name: "Corporate Bond 2025",
+  symbol: "BOND2025",
+  decimals: 18,
+  identityRegistry: identityRegistryAddress,
+  compliance: complianceAddress,
+  initialSupply: 1_000_000 * 10**18
+});
+```
+
+**Factory deployment** validates configuration and deploys token:
+
+```solidity
+address tokenAddress = factory.deployToken(config);
+```
+
+Factory uses CREATE2 generating deterministic address from configuration hash
+enabling counterfactual deployment verification.
+
+**Post-deployment configuration** attaches modules and permissions:
+
+1. Add token to compliance whitelist
+2. Configure compliance modules for token
+3. Grant roles to administrators and agents
+4. Mint initial supply to issuer address
+5. Register token in frontend discovery system
+
+### Module attachment and configuration
+
+**Attach compliance modules** to newly deployed token:
+
+```solidity
+compliance.bindToken(tokenAddress);
+compliance.addModule(countryAllowListAddress, tokenAddress);
+compliance.setModuleParams(
+  countryAllowListAddress,
+  tokenAddress,
+  abi.encode(allowedCountries)
+);
+```
+
+**Configure identity requirements** per token:
+
+```solidity
+identityRegistry.setClaimTopicsForToken(
+  tokenAddress,
+  claimTopics,  // [KYC_TOPIC, AML_TOPIC]
+  logicalExpression  // "topic_0 AND topic_1"
+);
+```
+
+Each token independently configures required claims and verification logic.
+
+### Upgradability considerations
+
+**Proxy pattern support** enables contract upgrades:
+
+- UUPS (Universal Upgradeable Proxy Standard) places upgrade logic in
+  implementation
+- Implementation authority controls upgrade permissions
+- Storage layout compatibility critical for safe upgrades
+- Thorough testing in staging environment before production upgrades
+
+**Immutable deployments** recommended for maximum security:
+
+- No proxy overhead on every call
+- Eliminates centralized upgrade authority
+- Clear audit trail of exact code running
+- New versions deploy as new contracts migrating state gradually
+
+ATK supports both approaches allowing issuers to choose security posture
+matching risk tolerance.
+
+## Event handling and indexing
+
+Smart contracts emit events chronicling all state changes. TheGraph subgraph
+transforms event stream into queryable database.
+
+### Critical events
+
+**Token transfer events** capture all ownership changes:
+
+```solidity
+event Transfer(
+  address indexed from,
+  address indexed to,
+  uint256 value,
+  uint256 blockNumber,
+  bytes32 transactionHash
+);
+```
+
+Indexed parameters enable filtering transfers by sender or receiver address.
+Event data includes transfer amount and blockchain coordinates.
+
+**Compliance update events** track rule changes:
+
+```solidity
+event ComplianceModuleAdded(
+  address indexed token,
+  address indexed module,
+  bytes parameters
+);
+
+event TransferRejected(
+  address indexed token,
+  address indexed from,
+  address indexed to,
+  uint256 amount,
+  string reason
+);
+```
+
+`TransferRejected` events critical for compliance reporting showing attempted
+transfers blocked by rules.
+
+**Identity events** document verification lifecycle:
+
+```solidity
+event IdentityRegistered(
+  address indexed wallet,
+  address indexed identity,
+  uint256 timestamp
+);
+
+event ClaimAdded(
+  address indexed identity,
+  bytes32 indexed claimTopic,
+  address issuer
+);
+
+event ClaimRevoked(
+  address indexed identity,
+  bytes32 indexed claimTopic
+);
+```
+
+Identity events reconstruct complete KYC history for regulatory audits.
+
+**Corporate action events** announce distributions:
+
+```solidity
+event DividendDistributed(
+  address indexed token,
+  uint256 amount,
+  uint256 snapshotBlock,
+  uint256 paymentDate
+);
+
+event TokensBurned(
+  address indexed token,
+  address indexed account,
+  uint256 amount,
+  string reason
+);
+```
+
+### TheGraph subgraph architecture
+
+**Subgraph manifest** (`subgraph.yaml`) declares indexed contracts and events:
+
+```yaml
+dataSources:
+  - kind: ethereum/contract
+    name: SMARTBond
+    network: mainnet
+    source:
+      address: "0x..."
+      abi: SMARTBond
+      startBlock: 18500000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - Transfer
+        - Holder
+      abis:
+        - name: SMARTBond
+          file: ./abis/SMARTBond.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+```
+
+Multiple data sources monitor different contract types.
+
+**Entity schema** (`schema.graphql`) defines queryable data models:
+
+```graphql
+type Token @entity {
+  id: ID!
+  address: Bytes!
+  name: String!
+  symbol: String!
+  totalSupply: BigInt!
+  holders: [Holder!]! @derivedFrom(field: "token")
+  transfers: [Transfer!]! @derivedFrom(field: "token")
+}
+
+type Transfer @entity {
+  id: ID!
+  token: Token!
+  from: Bytes!
+  to: Bytes!
+  value: BigInt!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Holder @entity {
+  id: ID!
+  address: Bytes!
+  token: Token!
+  balance: BigInt!
+  firstTransferBlock: BigInt!
+  transferCount: Int!
+}
+```
+
+Entities support relationships enabling graph traversal queries.
+
+**Event handlers** (`src/mappings/*.ts`) transform events into entities:
+
+```typescript
+export function handleTransfer(event: TransferEvent): void {
+  const transferId =
+    event.transaction.hash.toHex() + "-" + event.logIndex.toString();
+
+  let transfer = new Transfer(transferId);
+  transfer.token = event.address.toHex();
+  transfer.from = event.params.from;
+  transfer.to = event.params.to;
+  transfer.value = event.params.value;
+  transfer.blockNumber = event.block.number;
+  transfer.timestamp = event.block.timestamp;
+  transfer.transactionHash = event.transaction.hash;
+  transfer.save();
+
+  // Update sender balance
+  updateHolderBalance(
+    event.params.from,
+    event.address,
+    event.params.value.neg()
+  );
+
+  // Update receiver balance
+  updateHolderBalance(event.params.to, event.address, event.params.value);
+}
+```
+
+Handlers execute deterministically in Graph Node processing historical and new
+blocks.
+
+### Subgraph deployment lifecycle
+
+**Development deployment** tests handlers locally:
+
+```bash
+cd kit/subgraph
+
+# Generate TypeScript types from schema and ABIs
+bun run codegen
+
+# Build WASM modules
+bun run build
+
+# Deploy to local Graph Node
+bun run create-local
+bun run deploy-local
+```
+
+Local deployment connects to local blockchain instance for rapid iteration.
+
+**Production deployment** publishes to hosted or decentralized Graph Network:
+
+```bash
+# Authenticate with deployment service
+graph auth --product hosted-service <ACCESS_TOKEN>
+
+# Deploy to hosted service
+graph deploy --product hosted-service <SUBGRAPH_NAME>
+```
+
+Production subgraphs synchronize from blockchain genesis or specified start
+block. Initial sync duration proportional to block count and event volume
+typically completing in hours for mainnet deployments.
+
+**Subgraph updates** handle schema or handler changes:
+
+1. Modify schema or mappings
+2. Increment version in `subgraph.yaml`
+3. Test changes with local deployment
+4. Deploy new version creating pending version
+5. Graph Node syncs new version from start block
+6. Pending version becomes current after full sync
+7. Old version remains queryable during transition
+
+Zero-downtime updates maintain service availability during migrations.
+
+### Query optimization
+
+**Indexed fields** enable efficient filtering:
+
+```graphql
+type Transfer @entity {
+  id: ID!
+  from: Bytes! @index
+  to: Bytes! @index
+  blockNumber: BigInt! @index
+}
+```
+
+Indexes accelerate WHERE clause queries but increase storage requirements.
+
+**Pagination best practices** handle large result sets:
+
+```graphql
+{
+  transfers(
+    first: 100
+    skip: 0
+    orderBy: blockNumber
+    orderDirection: desc
+    where: { token: "0x..." }
+  ) {
+    id
+    from
+    to
+    value
+  }
+}
+```
+
+Limit result count with `first` parameter and paginate with `skip`. Always
+specify `orderBy` for consistent pagination across requests.
+
+**Derived fields** avoid redundant queries:
+
+```graphql
+type Token @entity {
+  holders: [Holder!]! @derivedFrom(field: "token")
+}
+```
+
+`@derivedFrom` generates reverse lookup without storing duplicate data. Query
+holders directly from token entity without separate query.
+
+**Aggregations** compute statistics efficiently:
+
+```typescript
+// Calculate total transfer volume in handler
+token.totalVolume = token.totalVolume.plus(event.params.value);
+token.transferCount = token.transferCount + 1;
+token.save();
+```
+
+Pre-compute aggregates during indexing avoiding expensive runtime calculations.
+
+## Contract security practices
+
+Security paramount for immutable smart contracts holding financial assets.
+
+### Access control patterns
+
+**Role-based permissions** using OpenZeppelin AccessControl:
+
+```solidity
+bytes32 public constant ISSUER_ROLE = keccak256("ISSUER_ROLE");
+bytes32 public constant COMPLIANCE_ROLE = keccak256("COMPLIANCE_ROLE");
+
+function mint(address to, uint256 amount)
+  public
+  onlyRole(ISSUER_ROLE)
+{
+  _mint(to, amount);
+}
+```
+
+Separate roles for different capabilities prevents privilege escalation.
+
+**Multi-signature requirements** for critical operations:
+
+```solidity
+mapping(bytes32 => uint256) public approvalCount;
+uint256 public constant REQUIRED_APPROVALS = 3;
+
+function approveAction(bytes32 actionId) public onlyRole(ADMIN_ROLE) {
+  approvalCount[actionId]++;
+}
+
+function executeAction(bytes32 actionId) public {
+  require(approvalCount[actionId] >= REQUIRED_APPROVALS);
+  // Execute sensitive action
+}
+```
+
+Prevents single compromised key from executing destructive changes.
+
+### Input validation
+
+**Parameter bounds checking**:
+
+```solidity
+function setMaxBalance(uint256 maxBalance) public onlyOwner {
+  require(maxBalance > 0, "Max balance must be positive");
+  require(maxBalance <= totalSupply(), "Max balance exceeds supply");
+  _maxBalance = maxBalance;
+}
+```
+
+Validate all inputs preventing invalid state.
+
+**Address verification**:
+
+```solidity
+function whitelistAddress(address investor) public {
+  require(investor != address(0), "Invalid address");
+  require(!_isWhitelisted[investor], "Already whitelisted");
+  _isWhitelisted[investor] = true;
+}
+```
+
+Reject zero address and check state consistency.
+
+### Reentrancy protection
+
+**Use OpenZeppelin ReentrancyGuard**:
+
+```solidity
+function withdraw(uint256 amount) public nonReentrant {
+  require(balanceOf(msg.sender) >= amount);
+  _burn(msg.sender, amount);
+  payable(msg.sender).transfer(amount);
+}
+```
+
+`nonReentrant` modifier prevents recursive calls during external calls.
+
+### Testing strategies
+
+**Unit tests** verify individual functions:
+
+```typescript
+describe("SMARTBond", () => {
+  it("should reject transfer to non-whitelisted address", async () => {
+    await expect(bond.transfer(unauthorized, amount)).to.be.revertedWith(
+      "Address not whitelisted"
+    );
+  });
+});
+```
+
+**Integration tests** validate contract interactions:
+
+```typescript
+it("should enforce country restrictions", async () => {
+  await identityRegistry.setCountry(investor, "US");
+  await countryModule.addAllowedCountry(token.address, "CA");
+
+  await expect(
+    token.connect(issuer).transfer(investor, amount)
+  ).to.be.revertedWith("Country not allowed");
+});
+```
+
+**Fuzzing tests** generate random inputs discovering edge cases:
+
+```typescript
+describe("Fuzz: Token transfers", () => {
+  it("should maintain invariants", async () => {
+    const { from, to, amount } = generateRandomTransfer();
+
+    const totalSupplyBefore = await token.totalSupply();
+    await token.connect(from).transfer(to, amount);
+    const totalSupplyAfter = await token.totalSupply();
+
+    expect(totalSupplyAfter).to.equal(totalSupplyBefore);
+  });
+});
+```
+
+**Gas optimization tests** measure transaction costs:
+
+```typescript
+it("should use acceptable gas for transfer", async () => {
+  const tx = await token.transfer(receiver, amount);
+  const receipt = await tx.wait();
+
+  expect(receipt.gasUsed).to.be.lessThan(100_000);
+});
+```
+
+### Audit requirements
+
+**Pre-deployment audits** by security firms:
+
+- Smart contract security review
+- Business logic verification
+- Compliance validation
+- Gas optimization recommendations
+- Upgrade safety analysis
+
+**Continuous monitoring** post-deployment:
+
+- Transaction monitoring for anomalous patterns
+- Balance reconciliation against expected state
+- Event emission verification
+- Gas usage tracking
+- Failed transaction analysis
+
+## See also
+
+- [Core components](./core-components) - Overview of all architectural layers
+- [Smart Protocol (ERC-3643)](./smart-contracts/smart-protocol) - Detailed
+  protocol specification
+- [Identity & compliance](./smart-contracts/identity-compliance) - OnchainID
+  integration
+- [Addon modules](./smart-contracts/addon-modules) - Extension module reference
+- [Data layer](./data-layer) - Off-chain storage and caching

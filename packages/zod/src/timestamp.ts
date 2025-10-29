@@ -56,7 +56,7 @@ import * as z from "zod";
  */
 export const timestamp = () =>
   z
-    .preprocess((value) => {
+    .preprocess<unknown, z.ZodDate, string | number | Date>((value) => {
       // Handle Date objects - pass through
       if (value instanceof Date) {
         return value;

@@ -546,14 +546,26 @@ export function PropertyFilterTextValueDisplay<TData, TValue>({
   const filter = column.getFilterValue()
     ? (column.getFilterValue() as FilterValue<"text", TData>)
     : undefined;
-
   if (!filter)
     return (
       <span className="text-xs" data-testid="text-value-display">
         empty
       </span>
     );
-  if (filter.values.length === 0 || filter.values[0]?.trim() === "")
+
+  if (typeof filter === "string") {
+    return (
+      <span className="text-xs" data-testid="text-value-display">
+        {filter}
+      </span>
+    );
+  }
+
+  if (
+    !Array.isArray(filter.values) ||
+    filter.values.length === 0 ||
+    filter.values[0]?.trim() === ""
+  )
     return <Ellipsis className="size-3.5" data-testid="text-value-display" />;
 
   const value = filter.values[0];
@@ -597,6 +609,14 @@ export function PropertyFilterNumberValueDisplay<TData, TValue>({
         empty
       </span>
     );
+
+  if (typeof filter === "string") {
+    return (
+      <span className="text-xs" data-testid="number-value-display">
+        {filter}
+      </span>
+    );
+  }
 
   if (
     filter.operator === "is between" ||

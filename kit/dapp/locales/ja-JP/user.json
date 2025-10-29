@@ -31,18 +31,14 @@
         "type": "種類",
         "status": "ステータス"
       },
-      "fallback": {
-        "unknown": "不明",
-        "none": "なし"
+      "status": {
+        "registered": "登録済み",
+        "pending": "保留"
       },
       "type": {
         "admin": "管理者",
         "investor": "投資家",
         "trustedIssuer": "信頼された発行者"
-      },
-      "status": {
-        "registered": "登録済み",
-        "pending": "登録処理中"
       },
       "verifications": {
         "none": "検証なし"
@@ -63,6 +59,10 @@
       "errors": {
         "loadFailed": "ユーザーの読み込みに失敗しました。もう一度お試しください。",
         "navigationFailed": "ユーザー詳細へのナビゲーションに失敗しました"
+      },
+      "fallback": {
+        "unknown": "不明",
+        "none": "なし"
       }
     }
   },

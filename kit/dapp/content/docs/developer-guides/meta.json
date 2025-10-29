@@ -1,15 +1,13 @@
 {
   "title": "Developer guides",
   "pages": [
-    "dev-environment",
-    "code-structure",
-    "extending-contracts",
-    "using-api",
-    "api-reference",
-    "contract-reference",
-    "data-model-reference",
-    "deployment-guide",
-    "testing-qa",
-    "dev-faq"
+    "setup",
+    "architecture",
+    "smart-contracts",
+    "api-integration",
+    "data-model",
+    "deployment-ops",
+    "quality-assurance",
+    "reference"
   ]
 }

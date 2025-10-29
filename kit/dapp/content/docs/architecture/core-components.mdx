@@ -1,0 +1,144 @@
+---
+title: Core component overview
+description:
+  The Asset Tokenization Kit consists of five interconnected layers that deliver
+  a complete digital asset platform with integrated lifecycle management. Each
+  layer serves a distinct role while maintaining tight integration through
+  shared types, unified configuration, and a consistent control plane. While
+  competitors cobble together separate vendors for token creation, custody,
+  settlement, and distributions, ATK provides unified infrastructure where DvP
+  settlement, vault custody, and yield automation are architected as core
+  capabilities, not afterthought integrations.
+pageTitle: Core components and services - Who does what in ATK
+tags: [architecture, components, services, concept]
+---
+
+## Problem
+
+Digital asset platforms typically integrate multiple third-party services—each
+with distinct APIs, data models, and authentication mechanisms. This
+fragmentation requires manual reconciliation, increases operational complexity,
+and creates consistency gaps across the platform lifecycle. Critically,
+fragmented architectures make atomic settlement impossible, disconnect custody
+from compliance, and force manual processing of yield distributions.
+
+## Solution
+
+ATK's layers share a unified data model, type-safe interfaces, and synchronized
+business logic. This architecture reduces integration complexity and maintains
+consistency across operations. **More importantly, it enables lifecycle
+management capabilities that fragmented architectures can't deliver**: atomic
+multi-party settlements through the XvP addon, multi-signature custody through
+vault contracts, and scheduled yield calculations through yield schedules.
+
+## Key concepts
+
+- **Layer modularity**: Each layer handles a distinct concern (UI, API,
+  blockchain, storage, deployment) with well-defined interfaces
+- **Type-safe integration**: Shared TypeScript types flow from contracts through
+  backend to frontend, catching integration errors at compile time
+- **Unified control plane**: All layers reference shared configuration and state
+  rather than maintaining separate copies
+- **Policy consistency**: Compliance rules defined once propagate across all
+  layers—frontend validation, API enforcement, and smart contract logic
+
+## Architecture layers
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Layered Architecture"
+        Frontend("Frontend Layer<br/>Web & Mobile Interfaces")
+        API("API Layer<br/>Business Logic & Orchestration")
+        Blockchain("Blockchain Layer<br/>Smart Contracts & Indexing")
+        Data("Data Layer<br/>Storage & Caching")
+        Deploy("Deployment Layer<br/>Testing & Orchestration")
+    end
+    
+    Frontend --> API
+    API --> Blockchain
+    API --> Data
+    Blockchain --> Data
+    Deploy --> Frontend
+    Deploy --> API
+    Deploy --> Data
+    
+    style Frontend fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style API fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Blockchain fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Data fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Deploy fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
+/>
+
+### 1. [Frontend layer](./frontend-layer)
+
+User-facing interfaces built with TanStack Start, React, and responsive design.
+Includes the Asset Designer Wizard, Portfolio Management Dashboard, Compliance
+Administration, and Admin Control Panel. Server-side rendering delivers
+sub-3-second initial page loads while maintaining client-side interactivity.
+
+### 2. [API layer](./api-layer)
+
+Type-safe ORPC procedures and business services orchestrating asset management,
+investor operations, compliance actions, and token distribution. Better Auth
+provides authentication and RBAC permissions. The service layer coordinates
+cross-cutting concerns like identity verification, notifications, and external
+integrations.
+
+### 3. [Blockchain layer](./blockchain-layer)
+
+Solidity smart contracts implementing SMART Protocol tokens with ERC-3643
+compliance. Includes system contracts (Core, AccessManager, Factories), asset
+tokens (Bond, Equity, Fund, StableCoin, Deposit), and addon modules (Vault,
+Airdrop, XvP, Yield). TheGraph subgraph indexes events into a GraphQL API for
+sub-100ms queries.
+
+### 4. [Data layer](./data-layer)
+
+PostgreSQL stores application state with Drizzle ORM for type-safe queries.
+Redis provides in-memory caching that reduces database load by 70%. MinIO
+handles S3-compatible object storage with optional IPFS pinning for tamper-proof
+document trails. All storage encrypted at rest with AES-256.
+
+### 5. [Deployment layer](./deployment-layer)
+
+Playwright E2E tests validate complete workflows from UI to blockchain with over
+90% code coverage. Helm charts deploy to Kubernetes with horizontal pod
+autoscaling, read replicas, and CDN integration. Prometheus, Loki, and
+OpenTelemetry provide observability.
+
+## Integration example: Bond issuance workflow
+
+ATK's unified architecture delivers consistent state across layers without
+reconciliation steps:
+
+1. **Frontend** - Product lead designs bond in Asset Designer Wizard
+2. **API** - Validates configuration and stores in PostgreSQL with audit log
+3. **Blockchain** - Factory contract deploys bond token with compliance rules
+4. **Data** - TheGraph indexes deployment event within 3 seconds
+5. **Frontend** - Dashboard updates automatically via TanStack Query
+6. **API** - Investor onboards through shared KYC flow creating OnchainID
+7. **Blockchain** - Settlement executes atomic DvP locking tokens and cash
+8. **Data** - Redis caches investor balances for instant portfolio queries
+
+Every layer references the same control plane, eliminating reconciliation
+between issuance, compliance, custody, and settlement.
+
+## Performance targets
+
+| Layer          | Metric                | Target    | Impact               |
+| -------------- | --------------------- | --------- | -------------------- |
+| **Frontend**   | Initial page load     | &lt;3s    | User engagement      |
+| **API**        | Response time (P95)   | &lt;500ms | Real-time operations |
+| **Blockchain** | Block confirmation    | 2-15s     | Settlement speed     |
+| **Data**       | Query response        | &lt;100ms | API performance      |
+| **Deployment** | Test suite completion | &lt;8min  | CI/CD velocity       |
+
+## See also
+
+- [Frontend layer](./frontend-layer) - TanStack Start architecture and React
+  components
+- [API layer](./api-layer) - ORPC procedures and business services
+- [Blockchain layer](./blockchain-layer) - Smart contracts and TheGraph indexing
+- [Data layer](./data-layer) - PostgreSQL, Redis, and MinIO storage
+- [Deployment layer](./deployment-layer) - Kubernetes and E2E testing
+- [System architecture](./system-architecture) - High-level layered architecture

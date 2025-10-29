@@ -142,7 +142,6 @@ export function NavAddons() {
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
-                      tooltip={category.name}
                       className={hasActiveChild ? "font-semibold" : ""}
                     >
                       <category.icon />
