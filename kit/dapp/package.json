@@ -58,7 +58,7 @@
     "gql.tada": "1.8.13",
     "happy-dom": "20.0.8",
     "knip": "5.66.4",
-    "minimatch": "10.0.3",
+    "minimatch": "10.1.1",
     "subgraph": "workspace:*",
     "typescript": "5.9.3",
     "vite": "7.1.12",
