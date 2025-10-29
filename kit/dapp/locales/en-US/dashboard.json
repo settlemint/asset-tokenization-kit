@@ -72,6 +72,13 @@
     "emptyStateMessage": "No registrations yet",
     "emptyStateDescription": "Identity registrations will appear here once users start the verification process"
   },
+  "claimTopicsIssuersOverview": {
+    "title": "Claim Topics and Issuers Overview",
+    "description": "Track active claims, topics, and trusted issuers",
+    "totalActiveClaims": "Active claims",
+    "totalActiveTopics": "Active topics",
+    "totalActiveIssuers": "Active issuers"
+  },
   "portfolioDetails": {
     "name": "Portfolio Details",
     "summary": {

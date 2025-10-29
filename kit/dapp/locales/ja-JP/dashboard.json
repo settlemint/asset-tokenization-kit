@@ -72,6 +72,13 @@
     "emptyStateMessage": "まだ登録はありません",
     "emptyStateDescription": "ユーザーが確認プロセスを開始すると、アイデンティティ登録がここに表示されます"
   },
+  "claimTopicsIssuersOverview": {
+    "title": "クレーム、トピック、発行者の概要",
+    "description": "アクティブなクレーム、トピック、信頼できる発行者を追跡",
+    "totalActiveClaims": "アクティブなクレーム",
+    "totalActiveTopics": "アクティブなトピック",
+    "totalActiveIssuers": "アクティブな発行者"
+  },
   "portfolioDetails": {
     "name": "ポートフォリオの詳細",
     "summary": {

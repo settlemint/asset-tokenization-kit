@@ -72,6 +72,13 @@
     "emptyStateMessage": "Noch keine Registrierungen",
     "emptyStateDescription": "Identity-Registrierungen erscheinen hier, sobald Benutzer den Verifizierungsprozess starten"
   },
+  "claimTopicsIssuersOverview": {
+    "title": "Claims, Themen und Emittenten Übersicht",
+    "description": "Verfolgen Sie aktive Claims, Themen und vertrauenswürdige Emittenten",
+    "totalActiveClaims": "Aktive Claims",
+    "totalActiveTopics": "Aktive Themen",
+    "totalActiveIssuers": "Aktive Emittenten"
+  },
   "portfolioDetails": {
     "name": "Portfolio-Details",
     "summary": {

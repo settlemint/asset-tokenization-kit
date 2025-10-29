@@ -72,6 +72,13 @@
     "emptyStateMessage": "لا توجد تسجيلات بعد",
     "emptyStateDescription": "ستظهر تسجيلات الهوية هنا بمجرد أن يبدأ المستخدمون عملية التحقق"
   },
+  "claimTopicsIssuersOverview": {
+    "title": "نظرة عامة على المطالبات والمواضيع والمصدرين",
+    "description": "تتبع المطالبات النشطة والمواضيع والمصدرين الموثوقين",
+    "totalActiveClaims": "المطالبات النشطة",
+    "totalActiveTopics": "المواضيع النشطة",
+    "totalActiveIssuers": "المصدرين النشطين"
+  },
   "portfolioDetails": {
     "name": "تفاصيل المحفظة",
     "summary": {
