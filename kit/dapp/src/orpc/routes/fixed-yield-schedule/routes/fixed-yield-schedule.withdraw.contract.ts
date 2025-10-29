@@ -20,7 +20,7 @@ import {
 export const fixedYieldScheduleWithdrawContract = baseContract
   .route({
     method: "POST",
-    path: "/fixed-yield-schedule/withdraw",
+    path: "/fixed-yield-schedule/{contract}/withdraw",
     description: "Withdraw the denomination asset from a fixed yield schedule",
     successDescription: "Denomination asset withdrawn successfully",
     tags: ["fixed-yield-schedule"],

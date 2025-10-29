@@ -1,7 +1,9 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
-import { systemRouter } from "@/orpc/procedures/system.router";
+import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
+import { tokenRouter } from "@/orpc/procedures/token.router";
 import { approve } from "@/orpc/routes/token/routes/mutations/approve/token.approve";
+import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call } from "@orpc/server";
 import * as z from "zod";
@@ -94,8 +96,14 @@ const TOP_UP_DENOMINATION_ASSET_MUTATION = portalGraphql(`
  * @see {@link FixedYieldScheduleTopUpOutputSchema} for response structure
  * @see {@link approve} for the approval step
  */
-export const topUp = systemRouter.fixedYieldSchedule.topUp.handler(
-  async ({ input, context, errors }) => {
+export const topUp = tokenRouter.fixedYieldSchedule.topUp
+  .use(
+    tokenPermissionMiddleware({
+      requiredRoles: TOKEN_PERMISSIONS.topUpDenominationAsset,
+      requiredExtensions: ["YIELD"],
+    })
+  )
+  .handler(async ({ input, context, errors }) => {
     const { contract, amount, walletVerification } = input;
     const { auth, system } = context;
 
@@ -166,5 +174,4 @@ export const topUp = systemRouter.fixedYieldSchedule.topUp.handler(
     return {
       txHash,
     };
-  }
-);
+  });

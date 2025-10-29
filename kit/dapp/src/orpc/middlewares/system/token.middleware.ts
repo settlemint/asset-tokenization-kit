@@ -244,6 +244,7 @@ export const tokenMiddleware = baseRouter.middleware<
             unpause: false,
             updateCollateral: false,
             withdrawDenominationAsset: false,
+            topUpDenominationAsset: false,
           };
 
         const userRoleList = Object.entries(userRoles)

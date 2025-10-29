@@ -1,4 +1,5 @@
 import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
+import { invalidateTokenActionQueries } from "@/components/manage-dropdown/core/invalidate-token-action-queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Web3Address } from "@/components/web3/web3-address";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -30,22 +31,11 @@ export function UnfreezePartialSheet({
 
   const { mutateAsync: unfreezePartial, isPending } = useMutation(
     orpc.token.unfreezePartial.mutationOptions({
-      onSuccess: async () => {
-        const invalidationPromises = [
-          qc.invalidateQueries({
-            queryKey: orpc.token.read.queryKey({
-              input: { tokenAddress: asset.id },
-            }),
-          }),
-          qc.invalidateQueries({
-            queryKey: orpc.token.holders.queryKey({
-              input: { tokenAddress: asset.id },
-            }),
-          }),
-        ];
-
-        await Promise.all(invalidationPromises);
-      },
+      onSuccess: (_, variables) =>
+        invalidateTokenActionQueries(qc, {
+          tokenAddress: asset.id,
+          holderAddresses: [variables.userAddress as EthereumAddress],
+        }),
     })
   );
 
