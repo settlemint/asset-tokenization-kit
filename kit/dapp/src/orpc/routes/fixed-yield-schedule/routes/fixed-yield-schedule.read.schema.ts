@@ -16,7 +16,9 @@ import * as z from "zod";
  * - Used as the primary key for querying yield schedule data from TheGraph
  */
 export const FixedYieldScheduleReadInputSchema = z.object({
-  id: ethereumAddress.describe("The fixed yield schedule contract address"),
+  contract: ethereumAddress.describe(
+    "The fixed yield schedule contract address"
+  ),
 });
 
 /**

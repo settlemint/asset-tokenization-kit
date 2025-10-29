@@ -7,6 +7,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { orpc } from "@/orpc/orpc-client";
 import { useQuery } from "@tanstack/react-query";
 import type { LucideIcon } from "lucide-react";
@@ -35,6 +40,7 @@ interface DropdownAction {
   icon: LucideIcon;
   openAction: Action;
   disabled: boolean;
+  disabledMessage: string;
 }
 
 function isCurrentAction({
@@ -79,6 +85,9 @@ export function ManageIdentityDropdown({
         icon: UserPlus,
         openAction: "registerIdentity",
         disabled: identity.isRegistered || !canExecuteRegister,
+        disabledMessage: identity.isRegistered
+          ? t("actions.registerIdentity.alreadyRegistered")
+          : t("actions.registerIdentity.notAuthorized"),
       },
       {
         id: "issue-claim",
@@ -86,6 +95,7 @@ export function ManageIdentityDropdown({
         icon: FilePlus,
         openAction: "issueClaim",
         disabled: !canExecuteIssueClaim,
+        disabledMessage: t("actions.issueClaim.notAuthorized"),
       },
     ];
   }, [t, identity.isRegistered, canExecuteRegister, canExecuteIssueClaim]);
@@ -119,8 +129,24 @@ export function ManageIdentityDropdown({
               disabled={action.disabled}
               className="cursor-pointer"
             >
-              <action.icon className="h-4 w-4" />
-              {action.label}
+              {action.disabled ? (
+                <Tooltip>
+                  <TooltipTrigger className="pointer-events-auto">
+                    <span className="flex items-center gap-2">
+                      <action.icon className="h-4 w-4" />
+                      {action.label}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="left">
+                    {action.disabledMessage}
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <>
+                  <action.icon className="h-4 w-4" />
+                  {action.label}
+                </>
+              )}
             </DropdownMenuItem>
           ))}
           {actions.length > 0 && <DropdownMenuSeparator />}

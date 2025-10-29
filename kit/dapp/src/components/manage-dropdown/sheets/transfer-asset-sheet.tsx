@@ -1,4 +1,5 @@
 import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
+import { invalidateTokenActionQueries } from "@/components/manage-dropdown/core/invalidate-token-action-queries";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Web3Address } from "@/components/web3/web3-address";
@@ -58,42 +59,11 @@ export function TransferAssetSheet({
           ? variables.recipients
           : [variables.recipients];
 
-        const invalidate = [
-          qc.invalidateQueries({ queryKey: orpc.user.assets.queryKey() }),
-          qc.invalidateQueries({
-            queryKey: orpc.token.holders.queryKey({
-              input: { tokenAddress: assetBalance.token.id },
-            }),
-          }),
-        ];
-
-        if (senderWallet) {
-          invalidate.push(
-            qc.invalidateQueries({
-              queryKey: orpc.token.holder.queryKey({
-                input: {
-                  tokenAddress: assetBalance.token.id,
-                  holderAddress: senderWallet,
-                },
-              }),
-            })
-          );
-        }
-
-        recipients.filter(Boolean).forEach((recipient) => {
-          invalidate.push(
-            qc.invalidateQueries({
-              queryKey: orpc.token.holder.queryKey({
-                input: {
-                  tokenAddress: assetBalance.token.id,
-                  holderAddress: recipient,
-                },
-              }),
-            })
-          );
+        await invalidateTokenActionQueries(qc, {
+          tokenAddress: assetBalance.token.id,
+          includeUserAssets: true,
+          holderAddresses: recipients as EthereumAddress[],
         });
-
-        await Promise.all(invalidate);
       },
     })
   );

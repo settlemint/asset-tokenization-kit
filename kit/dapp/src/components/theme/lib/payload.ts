@@ -19,5 +19,11 @@ export const prepareThemePayload = (theme: ThemeConfig): ThemeConfig => {
   const payload = structuredClone(theme);
   payload.logo.lightUrl = sanitizeLogoUrlForPayload(payload.logo.lightUrl);
   payload.logo.darkUrl = sanitizeLogoUrlForPayload(payload.logo.darkUrl);
+  payload.logo.lightIconUrl = sanitizeLogoUrlForPayload(
+    payload.logo.lightIconUrl
+  );
+  payload.logo.darkIconUrl = sanitizeLogoUrlForPayload(
+    payload.logo.darkIconUrl
+  );
   return payload;
 };

@@ -6,6 +6,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSession } from "@/hooks/use-auth";
 import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
@@ -75,13 +80,17 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const { data: session } = useSession();
   const userWallet = session?.user?.wallet;
 
+  const hasTokenPermissions = Object.values(
+    asset.userPermissions?.roles ?? {}
+  ).some(Boolean);
+
   const isPaused = asset.pausable?.paused ?? false;
   const yieldScheduleId = asset.yield?.schedule?.id;
 
   // Fetch yield schedule details when available
   const { data: yieldSchedule } = useQuery(
     orpc.fixedYieldSchedule.read.queryOptions({
-      input: { id: yieldScheduleId ?? "" },
+      input: { contract: yieldScheduleId ?? "" },
       enabled: !!yieldScheduleId,
     })
   );
@@ -115,14 +124,6 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   const denominationAssetAvailable =
     yieldScheduleBalance?.holder?.available?.[0] ?? 0n;
   const hasWithdrawableAmount = greaterThan(denominationAssetAvailable, 0n);
-
-  // Check if user has denomination assets to top up
-  const userDenominationAssetBalanceAvailable =
-    userDenominationAssetBalance?.holder?.available ?? 0n;
-  const hasTopUpableAmount = greaterThan(
-    userDenominationAssetBalanceAvailable,
-    0n
-  );
 
   const { data: userAssetBalanceResult } = useQuery(
     orpc.token.holder.queryOptions({
@@ -164,78 +165,88 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     userHolderBalance,
   ]);
 
-  const canTransfer =
-    Boolean(asset.userPermissions?.actions?.transfer) &&
-    Boolean(userWallet) &&
-    !isPaused;
-  const hasTransferableAmount = (transferSheetAsset?.available?.[0] ?? 0n) > 0n;
-
   const actions = useMemo(() => {
-    // Check if asset has pausable capability (handles both null and undefined)
-    const hasPausableCapability = asset.pausable != null;
     const arr: Array<{
       id: string;
       label: string;
       icon: ComponentType<{ className?: string }>;
       openAction: Action;
       disabled: boolean;
+      disabledMessage: string;
     }> = [];
 
-    if (hasPausableCapability) {
-      const canUnpause = asset.userPermissions?.actions?.unpause ?? false;
-      const canPause = asset.userPermissions?.actions?.pause ?? false;
-      arr.push({
-        id: isPaused ? "unpause" : "pause",
-        label: isPaused
-          ? t("tokens:actions.unpause.label")
-          : t("tokens:actions.pause.label"),
-        icon: isPaused ? Play : Pause,
-        openAction: isPaused ? "unpause" : "pause",
-        disabled: isPaused ? !canUnpause : !canPause,
-      });
-    }
+    if (hasTokenPermissions) {
+      // Check if asset has pausable capability (handles both null and undefined)
+      const hasPausableCapability = asset.pausable != null;
+      if (hasPausableCapability) {
+        const canUnpause = asset.userPermissions?.actions?.unpause ?? false;
+        const canPause = asset.userPermissions?.actions?.pause ?? false;
+        arr.push({
+          id: isPaused ? "unpause" : "pause",
+          label: isPaused
+            ? t("tokens:actions.unpause.label")
+            : t("tokens:actions.pause.label"),
+          icon: isPaused ? Play : Pause,
+          openAction: isPaused ? "unpause" : "pause",
+          disabled: isPaused ? !canUnpause : !canPause,
+          disabledMessage: isPaused
+            ? t("tokens:actions.unpause.notAuthorized")
+            : t("tokens:actions.pause.notAuthorized"),
+        });
+      }
 
-    // Mint only visible if user can mint and token is not paused
-    const canMint = asset.userPermissions?.actions?.mint && !isPaused;
-    if (canMint) {
+      // Mint only visible if user can mint and token is not paused
+      const canMint = asset.userPermissions?.actions?.mint;
       arr.push({
         id: "mint",
         label: t("tokens:actions.mint.label"),
         icon: Plus,
         openAction: "mint",
-        disabled: false,
+        disabled: isPaused || !canMint,
+        disabledMessage: canMint
+          ? t("tokens:actions.tokenPaused")
+          : t("tokens:actions.mint.notAuthorized"),
       });
+
+      // Freeze Tokens - only visible for tokens with custodian extension and permissions
+      const hasCustodianCapability = asset.extensions.includes(
+        AssetExtensionEnum.CUSTODIAN
+      );
+      const canFreezePartial = asset.userPermissions?.actions?.freezePartial;
+      if (hasCustodianCapability) {
+        arr.push({
+          id: "freezePartial",
+          label: t("tokens:actions.freezePartial.label"),
+          icon: Lock,
+          openAction: "freezePartial",
+          disabled: isPaused || !canFreezePartial,
+          disabledMessage: canFreezePartial
+            ? t("tokens:actions.tokenPaused")
+            : t("tokens:actions.freezePartial.notAuthorized"),
+        });
+      }
+
+      // Unfreeze Tokens - only visible for tokens with custodian extension and permissions
+      const canUnfreezePartial =
+        asset.userPermissions?.actions?.unfreezePartial;
+      if (hasCustodianCapability) {
+        arr.push({
+          id: "unfreezePartial",
+          label: t("tokens:actions.unfreezePartial.label"),
+          icon: Unlock,
+          openAction: "unfreezePartial",
+          disabled: isPaused || !canUnfreezePartial,
+          disabledMessage: canUnfreezePartial
+            ? t("tokens:actions.tokenPaused")
+            : t("tokens:actions.unfreezePartial.notAuthorized"),
+        });
+      }
     }
 
-    // Freeze Tokens - only visible for tokens with custodian extension and permissions
-    const hasCustodianCapability = asset.extensions.includes(
-      AssetExtensionEnum.CUSTODIAN
-    );
-    const canFreezePartial =
-      asset.userPermissions?.actions?.freezePartial && !isPaused;
-    if (hasCustodianCapability && canFreezePartial) {
-      arr.push({
-        id: "freezePartial",
-        label: t("tokens:actions.freezePartial.label"),
-        icon: Lock,
-        openAction: "freezePartial",
-        disabled: false,
-      });
-    }
-
-    // Unfreeze Tokens - only visible for tokens with custodian extension and permissions
-    const canUnfreezePartial =
-      asset.userPermissions?.actions?.unfreezePartial && !isPaused;
-    if (hasCustodianCapability && canUnfreezePartial) {
-      arr.push({
-        id: "unfreezePartial",
-        label: t("tokens:actions.unfreezePartial.label"),
-        icon: Unlock,
-        openAction: "unfreezePartial",
-        disabled: false,
-      });
-    }
-
+    const canTransfer =
+      Boolean(asset.userPermissions?.actions?.transfer) && Boolean(userWallet);
+    const hasTransferableAmount =
+      (transferSheetAsset?.available?.[0] ?? 0n) > 0n;
     if (canTransfer) {
       arr.push({
         id: "transfer",
@@ -243,86 +254,115 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         icon: Send,
         openAction: "transfer",
         disabled: !hasTransferableAmount,
+        disabledMessage: t("tokens:actions.transfer.noBalance", {
+          symbol: asset.symbol,
+        }),
       });
     }
 
-    // Set yield schedule only visible for bond tokens without existing schedule
-    const canSetYieldSchedule =
-      asset.extensions.includes(AssetExtensionEnum.YIELD) &&
-      !asset.yield?.schedule &&
-      asset.userPermissions?.actions?.setYieldSchedule &&
-      !isPaused;
-    if (canSetYieldSchedule) {
-      arr.push({
-        id: "setYieldSchedule",
-        label: t("tokens:actions.setYieldSchedule.label"),
-        icon: TrendingUp,
-        openAction: "setYieldSchedule",
-        disabled: false,
-      });
-    }
+    if (hasTokenPermissions) {
+      // Set yield schedule only visible for bond tokens without existing schedule
+      const hasYieldScheduleCapability = asset.extensions.includes(
+        AssetExtensionEnum.YIELD
+      );
+      const canSetYieldSchedule =
+        asset.userPermissions?.actions?.setYieldSchedule;
+      if (hasYieldScheduleCapability && !asset.yield?.schedule) {
+        arr.push({
+          id: "setYieldSchedule",
+          label: t("tokens:actions.setYieldSchedule.label"),
+          icon: TrendingUp,
+          openAction: "setYieldSchedule",
+          disabled: isPaused || !canSetYieldSchedule,
+          disabledMessage: canSetYieldSchedule
+            ? t("tokens:actions.tokenPaused")
+            : t("tokens:actions.setYieldSchedule.notAuthorized"),
+        });
+      }
 
-    // Top up denomination asset option
-    if (hasTopUpableAmount) {
-      arr.push({
-        id: "topUpDenominationAsset",
-        label: t("tokens:actions.topUpDenominationAsset.label"),
-        icon: TrendingUp,
-        openAction: "topUpDenominationAsset",
-        disabled: false,
-      });
-    }
+      // Top up denomination asset option
+      // Check if user has denomination assets to top up
+      const userDenominationAssetBalanceAvailable =
+        userDenominationAssetBalance?.holder?.available ?? 0n;
+      const hasTopUpableAmount = greaterThan(
+        userDenominationAssetBalanceAvailable,
+        0n
+      );
+      if (hasYieldScheduleCapability) {
+        arr.push({
+          id: "topUpDenominationAsset",
+          label: t("tokens:actions.topUpDenominationAsset.label"),
+          icon: TrendingUp,
+          openAction: "topUpDenominationAsset",
+          disabled: !hasTopUpableAmount,
+          disabledMessage: t(
+            "tokens:actions.topUpDenominationAsset.noBalance",
+            {
+              symbol: asset.yield?.schedule?.denominationAsset?.symbol ?? "",
+            }
+          ),
+        });
+      }
 
-    // Withdraw denomination asset option
-    const canWithdrawDenominationAsset =
-      asset.userPermissions?.actions?.withdrawDenominationAsset &&
-      hasWithdrawableAmount;
-    if (canWithdrawDenominationAsset) {
-      arr.push({
-        id: "withdrawDenominationAsset",
-        label: t("tokens:actions.withdrawDenominationAsset.label"),
-        icon: Minus,
-        openAction: "withdrawDenominationAsset",
-        disabled: !hasWithdrawableAmount,
-      });
-    }
+      // Withdraw denomination asset option
+      const canWithdrawDenominationAsset =
+        asset.userPermissions?.actions?.withdrawDenominationAsset;
+      if (hasYieldScheduleCapability) {
+        arr.push({
+          id: "withdrawDenominationAsset",
+          label: t("tokens:actions.withdrawDenominationAsset.label"),
+          icon: Minus,
+          openAction: "withdrawDenominationAsset",
+          disabled: !hasWithdrawableAmount || !canWithdrawDenominationAsset,
+          disabledMessage: canWithdrawDenominationAsset
+            ? t("tokens:actions.withdrawDenominationAsset.noBalance", {
+                symbol: yieldSchedule?.denominationAsset?.symbol ?? "",
+              })
+            : t("tokens:actions.withdrawDenominationAsset.notAuthorized"),
+        });
+      }
 
-    // Collateral management
-    const hasCollateralCapability = asset.collateral != null;
-    const hasCollateralPermission =
-      asset.userPermissions?.actions?.updateCollateral === true;
-    if (hasCollateralCapability) {
-      arr.push({
-        id: "collateral",
-        label: t("tokens:actions.collateral.label"),
-        icon: Shield,
-        openAction: "collateral",
-        disabled: !hasCollateralPermission,
-      });
-    }
+      // Collateral management
+      const hasCollateralCapability = asset.collateral != null;
+      const hasCollateralPermission =
+        asset.userPermissions?.actions?.updateCollateral === true;
+      if (hasCollateralCapability) {
+        arr.push({
+          id: "collateral",
+          label: t("tokens:actions.collateral.label"),
+          icon: Shield,
+          openAction: "collateral",
+          disabled: !hasCollateralPermission,
+          disabledMessage: t("tokens:actions.collateral.notAuthorized"),
+        });
+      }
 
-    // Mature bond only visible for bond tokens that can be matured
-    const canMatureBond =
-      asset.extensions.includes(AssetExtensionEnum.BOND) &&
-      asset.bond &&
-      !asset.bond.isMatured &&
-      asset.bond.maturityDate &&
-      isAfter(new Date(), asset.bond.maturityDate) &&
-      asset.userPermissions?.actions?.mature &&
-      !isPaused;
-    if (canMatureBond) {
-      arr.push({
-        id: "mature",
-        label: t("tokens:actions.mature.label"),
-        icon: CheckCircle,
-        openAction: "mature",
-        disabled: false,
-      });
+      // Mature bond only visible for bond tokens that can be matured
+      const hasBondCapability =
+        asset.extensions.includes(AssetExtensionEnum.BOND) && asset.bond;
+      const isReadyToMature =
+        !asset.bond?.isMatured &&
+        asset.bond?.maturityDate &&
+        isAfter(new Date(), asset.bond.maturityDate);
+      const canMatureBond = asset.userPermissions?.actions?.mature;
+      if (hasBondCapability && isReadyToMature) {
+        arr.push({
+          id: "mature",
+          label: t("tokens:actions.mature.label"),
+          icon: CheckCircle,
+          openAction: "mature",
+          disabled: !canMatureBond || isPaused,
+          disabledMessage: canMatureBond
+            ? t("tokens:actions.tokenPaused")
+            : t("tokens:actions.mature.notAuthorized"),
+        });
+      }
     }
 
     return arr;
   }, [
     t,
+    hasTokenPermissions,
     asset.pausable,
     asset.extensions,
     asset.yield?.schedule,
@@ -331,9 +371,8 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
     asset.bond,
     isPaused,
     hasWithdrawableAmount,
-    hasTopUpableAmount,
-    canTransfer,
-    hasTransferableAmount,
+    yieldSchedule,
+    userDenominationAssetBalance,
   ]);
 
   const onActionOpenChange = (open: boolean) => {
@@ -360,11 +399,27 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
               onSelect={() => {
                 setOpenAction(action.openAction);
               }}
-              disabled={action.disabled}
               className="cursor-pointer"
+              disabled={action.disabled}
             >
-              <action.icon className="h-4 w-4" />
-              {action.label}
+              {action.disabled ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-2 pointer-events-auto">
+                      <action.icon className="h-4 w-4" />
+                      {action.label}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="left">
+                    {action.disabledMessage}
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <>
+                  <action.icon className="h-4 w-4" />
+                  {action.label}
+                </>
+              )}
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />

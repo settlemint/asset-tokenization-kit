@@ -1,4 +1,5 @@
 import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
+import { invalidateTokenActionQueries } from "@/components/manage-dropdown/core/invalidate-token-action-queries";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Web3Address } from "@/components/web3/web3-address";
@@ -49,38 +50,10 @@ export function BurnSheet({
           ? variables.addresses
           : [variables.addresses];
 
-        // PERFORMANCE: Run all query invalidations in parallel
-        const invalidationPromises = [
-          // Refresh token data to show updated supply and balances
-          qc.invalidateQueries({
-            queryKey: orpc.token.read.queryKey({
-              input: { tokenAddress: asset.id },
-            }),
-          }),
-          // Refresh holders data to show updated balances
-          qc.invalidateQueries({
-            queryKey: orpc.token.holders.queryKey({
-              input: { tokenAddress: asset.id },
-            }),
-          }),
-        ];
-
-        // Add individual holder queries for burned addresses if we have addresses
-        if (addresses && addresses.length > 0) {
-          const holderInvalidations = addresses.map((holderAddress: string) =>
-            qc.invalidateQueries({
-              queryKey: orpc.token.holder.queryKey({
-                input: {
-                  tokenAddress: asset.id,
-                  holderAddress: holderAddress,
-                },
-              }),
-            })
-          );
-          invalidationPromises.push(...holderInvalidations);
-        }
-
-        await Promise.all(invalidationPromises);
+        await invalidateTokenActionQueries(qc, {
+          tokenAddress: asset.id,
+          holderAddresses: addresses as EthereumAddress[],
+        });
       },
     })
   );

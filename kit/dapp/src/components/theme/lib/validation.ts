@@ -60,9 +60,12 @@ export function validateThemeLimits(
     });
   }
 
-  const logoUrls = [theme.logo.lightUrl, theme.logo.darkUrl].filter(
-    (url): url is string => typeof url === "string" && url.length > 0
-  );
+  const logoUrls = [
+    theme.logo.lightUrl,
+    theme.logo.darkUrl,
+    theme.logo.lightIconUrl,
+    theme.logo.darkIconUrl,
+  ].filter((url): url is string => typeof url === "string" && url.length > 0);
 
   for (const url of logoUrls) {
     const size = calculateDataUrlSize(url);

@@ -80,7 +80,7 @@ export function SetYieldScheduleSheet({
           // Also invalidate any yield schedule queries to ensure they refetch
           qc.invalidateQueries({
             queryKey: orpc.fixedYieldSchedule.read.queryKey({
-              input: { id: tokenResult.yield?.schedule?.id ?? "" },
+              input: { contract: tokenResult.yield?.schedule?.id ?? "" },
             }),
           }),
         ];
