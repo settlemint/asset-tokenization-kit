@@ -126,6 +126,15 @@
         "description": "最初の資産を受け取ると、ここにポートフォリオの価値が表示されます"
       }
     },
+    "activeClaims": {
+      "title": "有効な認証情報",
+      "description": "現在有効な本人確認情報の数を確認",
+      "label": "有効な認証情報",
+      "empty": {
+        "title": "まだ認証情報はありません",
+        "description": "認証情報を発行すると、ここに表示されます"
+      }
+    },
     "portfolio": {
       "summary": {
         "title": "ポートフォリオの概要",

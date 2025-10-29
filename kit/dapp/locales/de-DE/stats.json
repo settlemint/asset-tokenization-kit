@@ -126,6 +126,15 @@
         "description": "Sie werden Ihren Portfoliowert hier sehen, sobald Sie Ihre ersten Vermögenswerte erhalten"
       }
     },
+    "activeClaims": {
+      "title": "Aktive Ansprüche",
+      "description": "Verfolgen Sie, wie viele Identitätsansprüche aktiv sind",
+      "label": "Aktive Ansprüche",
+      "empty": {
+        "title": "Noch keine Ansprüche",
+        "description": "Aktive Ansprüche werden hier erscheinen, sobald Sie sie ausstellen"
+      }
+    },
     "portfolio": {
       "summary": {
         "title": "Portfolio-Zusammenfassung",
