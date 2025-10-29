@@ -261,6 +261,11 @@ export const RawTokenSchema = z.object({
                 .describe(
                   "Whether the user can execute the withdrawDenominationAsset action"
                 ),
+              topUpDenominationAsset: z
+                .boolean()
+                .describe(
+                  "Whether the user can execute the topUpDenominationAsset action"
+                ),
             };
             return actionsSchema;
           })()

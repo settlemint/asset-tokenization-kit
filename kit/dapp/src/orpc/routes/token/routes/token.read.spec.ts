@@ -224,6 +224,7 @@ describe("Token read", () => {
         unpause: true,
         updateCollateral: true,
         withdrawDenominationAsset: true,
+        topUpDenominationAsset: true,
       },
     };
     expect(tokenInfo.userPermissions).toEqual(expectedPermissions);
@@ -266,8 +267,9 @@ describe("Token read", () => {
         transfer: true,
         forcedTransfer: false,
         unpause: false,
-        updateCollateral: false,
+        updateCollateral: true,
         withdrawDenominationAsset: false,
+        topUpDenominationAsset: true,
       },
     };
     expect(tokenInfo.userPermissions).toEqual(expectedPermissions);

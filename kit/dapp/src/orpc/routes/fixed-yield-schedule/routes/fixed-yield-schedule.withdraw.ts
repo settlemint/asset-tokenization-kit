@@ -81,7 +81,7 @@ export const withdraw = tokenRouter.fixedYieldSchedule.withdraw
     })
   )
   .handler(async ({ input, context, errors }) => {
-    const { amount, to, yieldSchedule, walletVerification } = input;
+    const { amount, to, contract, walletVerification } = input;
     const { auth, system } = context;
 
     if (!system) {
@@ -97,7 +97,7 @@ export const withdraw = tokenRouter.fixedYieldSchedule.withdraw
     const txHash = await context.portalClient.mutate(
       WITHDRAW_DENOMINATION_ASSET_MUTATION,
       {
-        address: yieldSchedule,
+        address: contract,
         from: sender.wallet,
         amount: amount.toString(),
         to: to,

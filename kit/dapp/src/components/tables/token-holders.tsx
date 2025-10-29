@@ -92,6 +92,10 @@ export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
     })
   );
 
+  const hasTokenPermissions = Object.values(
+    token.userPermissions?.roles ?? {}
+  ).some(Boolean);
+
   // Extract holders data with defensive null checking to prevent runtime errors
   // The API may return partial data during loading states or network issues
   const holders = holdersResponse.token?.balances ?? [];
@@ -101,7 +105,7 @@ export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
   const isPaused = token.pausable?.paused ?? false;
   // Burn operations require explicit permission AND token must not be paused
   // This dual-check prevents unauthorized token destruction and operations during emergency pauses
-  const canBurn = (token.userPermissions?.actions?.burn ?? false) && !isPaused;
+  const canBurn = token.userPermissions?.actions?.burn ?? false;
 
   // Burn target state manages the modal for burning tokens from specific holders
   // Stores both address and available balance to pre-populate the burn form
@@ -146,7 +150,7 @@ export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
       // Burn action only appears when user has permission, token isn't paused,
       // and holder has available (non-frozen) tokens to burn
       // This prevents UI clutter and invalid burn attempts
-      ...(canBurn && row.original.available[0] > 0n
+      ...(hasTokenPermissions && row.original.available[0] > 0n
         ? [
             {
               label: t("tokens:holders.actions.burn"),
@@ -157,6 +161,10 @@ export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
                   available: row.original.available,
                 });
               },
+              disabled: isPaused || !canBurn,
+              disabledMessage: canBurn
+                ? t("tokens:actions.tokenPaused")
+                : t("tokens:actions.burn.notAuthorized"),
             } satisfies ActionItem,
           ]
         : []),
@@ -167,7 +175,7 @@ export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
         separator: "before",
       },
     ],
-    [t, canBurn]
+    [t, canBurn, hasTokenPermissions, isPaused]
   );
 
   /**

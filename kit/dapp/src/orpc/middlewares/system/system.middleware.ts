@@ -246,6 +246,7 @@ export function getSystemPermissions(
     claimList: false,
     claimRevoke: false,
     complianceModuleCreate: false,
+    fixedYieldScheduleCreate: false,
     grantRole: false,
     identityCreate: false,
     identityRead: false,

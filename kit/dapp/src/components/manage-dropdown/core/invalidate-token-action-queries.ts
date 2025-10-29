@@ -37,9 +37,17 @@ export async function invalidateTokenActionQueries(
       }).queryKey,
     }),
     queryClient.invalidateQueries({
+      queryKey: orpc.token.list.key(),
+    }),
+    queryClient.invalidateQueries({
       queryKey: orpc.token.read.queryOptions({
         input: { tokenAddress },
       }).queryKey,
+    }),
+    queryClient.invalidateQueries({
+      queryKey: orpc.token.holders.queryKey({
+        input: { tokenAddress },
+      }),
     }),
   ];
 

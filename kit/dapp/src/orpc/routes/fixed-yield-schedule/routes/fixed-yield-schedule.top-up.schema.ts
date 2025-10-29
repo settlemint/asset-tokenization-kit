@@ -2,6 +2,7 @@ import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
 import { apiBigInt } from "@atk/zod/bigint";
 import { z } from "zod";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 
 /**
  * Input schema for topping up denomination asset in a fixed yield schedule.
@@ -17,6 +18,9 @@ import { z } from "zod";
 export const FixedYieldScheduleTopUpInputSchema =
   MutationInputSchemaWithContract.extend({
     amount: apiBigInt.describe("The amount of denomination asset to top up"),
+    tokenAddress: ethereumAddress.describe(
+      "The token contract address that uses this yield schedule"
+    ),
   });
 
 /**

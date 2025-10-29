@@ -6,15 +6,6 @@ import { z } from "zod";
 
 /**
  * Input schema for withdrawing denomination asset from a fixed yield schedule.
- *
- * This schema validates the request parameters for withdrawing the denomination asset
- * from an existing fixed yield schedule contract, ensuring proper validation of the
- * amount, recipient address, and contract address.
- *
- * @property {string} contract - The fixed yield schedule contract address
- * @property {string} amount - The amount of denomination asset to withdraw
- * @property {string} to - The recipient address for the withdrawn denomination asset
- * @property {Object} walletVerification - Wallet verification details for transaction signing
  */
 export const FixedYieldScheduleWithdrawInputSchema =
   MutationInputSchemaWithContract.extend({
@@ -22,8 +13,8 @@ export const FixedYieldScheduleWithdrawInputSchema =
     to: ethereumAddress.describe(
       "The recipient address for the withdrawn denomination asset"
     ),
-    yieldSchedule: ethereumAddress.describe(
-      "The yield schedule contract address"
+    tokenAddress: ethereumAddress.describe(
+      "The token contract address that uses this yield schedule"
     ),
   });
 

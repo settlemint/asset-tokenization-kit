@@ -244,6 +244,7 @@ const createMockToken = (overrides?: Partial<Token>): Token =>
     collateral: null,
     accessControl: undefined,
     userPermissions: {
+      roles: ["tokenManager"],
       actions: {
         pause: true,
         unpause: true,

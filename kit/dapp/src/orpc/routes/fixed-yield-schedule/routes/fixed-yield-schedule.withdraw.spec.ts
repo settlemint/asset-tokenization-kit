@@ -138,6 +138,7 @@ describe("Fixed yield schedule withdraw", async () => {
     // Top up the yield schedule with 50 tokens so there's something to withdraw
     await adminClient.fixedYieldSchedule.topUp({
       contract: yieldScheduleAddress,
+      tokenAddress: bondToken.id,
       amount: from(50, 18), // 50 tokens with 18 decimals
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
@@ -148,8 +149,8 @@ describe("Fixed yield schedule withdraw", async () => {
 
   test("can withdraw denomination asset from fixed yield schedule", async () => {
     const withdrawData = {
-      contract: bondToken.id, // Bond token address (use to check permissions in token permissions middleware)
-      yieldSchedule: yieldScheduleAddress, // Yield schedule contract address
+      contract: yieldScheduleAddress, // Yield schedule contract address
+      tokenAddress: bondToken.id, // Bond token address (use to check permissions in token permissions middleware)
       amount: from(10, 18), // 10 tokens with 18 decimals
       to: adminWalletAddress, // Recipient address
       walletVerification: {
@@ -179,8 +180,8 @@ describe("Fixed yield schedule withdraw", async () => {
 
   test("user without supplyManagement roles cannot withdraw", async () => {
     const withdrawData = {
-      contract: bondToken.id, // Bond token address (not yield schedule address)
-      yieldSchedule: yieldScheduleAddress, // Yield schedule contract address
+      contract: yieldScheduleAddress, // Yield schedule contract address
+      tokenAddress: bondToken.id, // Bond token address (use to check permissions in token permissions middleware)
       amount: from(5, 18), // 5 tokens with 18 decimals
       to: investorWalletAddress, // Recipient address
       walletVerification: {
@@ -201,8 +202,8 @@ describe("Fixed yield schedule withdraw", async () => {
 
   test("admin can withdraw to a different recipient address", async () => {
     const withdrawData = {
-      contract: bondToken.id, // Bond token address (not yield schedule address)
-      yieldSchedule: yieldScheduleAddress, // Yield schedule contract address
+      contract: yieldScheduleAddress, // Yield schedule contract address
+      tokenAddress: bondToken.id, // Bond token address (use to check permissions in token permissions middleware)
       amount: from(15, 18), // 15 tokens with 18 decimals
       to: investorWalletAddress, // Withdraw to investor's wallet
       walletVerification: {
