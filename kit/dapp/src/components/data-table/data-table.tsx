@@ -25,6 +25,7 @@ import {
   type PaginationState,
   type RowData,
   type SortingState,
+  type TableState,
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table";
@@ -255,8 +256,10 @@ function DataTableComponent<TData>({
     }),
     [initialPageSize]
   );
+  const [localPagination, setLocalPagination] =
+    useState<PaginationState>(defaultPagination);
 
-  const currentState = React.useMemo(() => {
+  const currentState = React.useMemo<Partial<TableState>>(() => {
     if (isUsingUrlState && urlState?.routePath) {
       return tableState.tableOptions.state;
     }
@@ -268,7 +271,7 @@ function DataTableComponent<TData>({
         columnFilters: localColumnFilters,
         columnVisibility: localColumnVisibility,
         globalFilter: externalGlobalFilter ?? localGlobalFilter,
-        pagination: externalPagination ?? defaultPagination,
+        pagination: externalPagination ?? localPagination,
       };
     }
 
@@ -278,7 +281,7 @@ function DataTableComponent<TData>({
       columnFilters: localColumnFilters,
       columnVisibility: localColumnVisibility,
       globalFilter: localGlobalFilter,
-      pagination: defaultPagination,
+      pagination: localPagination,
     };
   }, [
     defaultPagination,
@@ -292,6 +295,7 @@ function DataTableComponent<TData>({
     localGlobalFilter,
     localRowSelection,
     localSorting,
+    localPagination,
     tableState.tableOptions.state,
     urlState?.routePath,
   ]);
@@ -362,7 +366,7 @@ function DataTableComponent<TData>({
         onColumnVisibilityChange: setLocalColumnVisibility,
         onGlobalFilterChange:
           debouncedExternalGlobalFilterChange ?? setLocalGlobalFilter,
-        onPaginationChange: externalOnPaginationChange ?? noopPaginationChange,
+        onPaginationChange: externalOnPaginationChange ?? setLocalPagination,
       };
     }
 
@@ -372,7 +376,7 @@ function DataTableComponent<TData>({
       onColumnFiltersChange: setLocalColumnFilters,
       onColumnVisibilityChange: setLocalColumnVisibility,
       onGlobalFilterChange: setLocalGlobalFilter,
-      onPaginationChange: noopPaginationChange,
+      onPaginationChange: setLocalPagination,
     };
   }, [
     debouncedExternalGlobalFilterChange,
@@ -386,6 +390,7 @@ function DataTableComponent<TData>({
     setLocalGlobalFilter,
     setLocalRowSelection,
     setLocalSorting,
+    setLocalPagination,
     tableState.setColumnFilters,
     tableState.setColumnVisibility,
     tableState.setGlobalFilter,
@@ -395,6 +400,7 @@ function DataTableComponent<TData>({
     urlState?.routePath,
   ]);
 
+  const pageSize = currentState.pagination?.pageSize ?? initialPageSize ?? 10;
   const table = useReactTable({
     data,
     columns,
@@ -414,9 +420,7 @@ function DataTableComponent<TData>({
     manualPagination: serverSidePagination?.enabled ?? false,
     manualSorting: serverSidePagination?.enabled ?? false,
     pageCount: serverSidePagination?.enabled
-      ? Math.ceil(
-          serverSidePagination.totalCount / currentState.pagination.pageSize
-        )
+      ? Math.ceil(serverSidePagination.totalCount / pageSize)
       : undefined,
 
     initialState: {
@@ -437,11 +441,8 @@ function DataTableComponent<TData>({
 
   // Bulk actions state and handlers (after table creation)
   const isBulkActionsEnabled = bulkActions?.enabled ?? false;
-  const selectedRowIds = Object.keys(currentState.rowSelection).filter(
-    (key) =>
-      currentState.rowSelection[
-        key as keyof typeof currentState.rowSelection
-      ] === true
+  const selectedRowIds = Object.keys(currentState.rowSelection ?? {}).filter(
+    (key) => currentState.rowSelection?.[key] ?? false
   );
   const selectedRows =
     isBulkActionsEnabled && selectedRowIds.length > 0
@@ -552,13 +553,13 @@ function DataTableComponent<TData>({
               <p className="text-sm font-medium">{t("noResults")}</p>
               <p className="text-xs text-muted-foreground/70">
                 {currentState.globalFilter ||
-                currentState.columnFilters.length > 0
+                (currentState.columnFilters?.length ?? 0) > 0
                   ? t("tryAdjustingFilters")
                   : t("noDataAvailable")}
               </p>
             </div>
             {(currentState.globalFilter ||
-              currentState.columnFilters.length > 0) && (
+              (currentState.columnFilters?.length ?? 0) > 0) && (
               <button
                 onClick={handleClearFilters}
                 className="mt-2 text-xs font-medium text-primary hover:underline"
@@ -578,12 +579,12 @@ function DataTableComponent<TData>({
     <div className="space-y-4">
       {shouldUseAdvancedToolbar ? (
         <DataTableAdvancedToolbar
-          table={table}
+          table={{ ...table }}
           {...(advancedToolbar ?? {})}
           {...(toolbar?.useAdvanced ? toolbar : {})}
         />
       ) : (
-        <DataTableToolbar table={table} {...toolbar} />
+        <DataTableToolbar table={{ ...table }} {...toolbar} />
       )}
       {data.length === 0 && customEmptyState ? (
         <DataTableEmptyState {...customEmptyState} />
@@ -626,8 +627,8 @@ function DataTableComponent<TData>({
           </Table>
         </div>
       )}
-      {table.getRowModel().rows.length > 0 && (
-        <DataTablePagination table={table} {...pagination} />
+      {pagination?.enablePagination && (
+        <DataTablePagination {...pagination} table={{ ...table }} />
       )}
 
       {/* Bulk Actions Bar */}
@@ -635,7 +636,7 @@ function DataTableComponent<TData>({
         <DataTableActionBar
           selectedRowIds={selectedRowIds}
           selectedRows={selectedRows}
-          table={table}
+          table={{ ...table }}
           actions={bulkActions?.actions}
           actionGroups={bulkActions?.actionGroups}
           onSelectionClear={handleSelectionClear}
