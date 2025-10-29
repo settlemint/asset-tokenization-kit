@@ -64,8 +64,7 @@ function Home() {
       {system.userIdentity?.registered && <PortfolioDetails />}
       {system.userPermissions?.roles.tokenManager && <AssetOverviewSection />}
       {system.userPermissions?.roles.identityManager && <IdentityMetrics />}
-      {(system.userPermissions?.roles.claimPolicyManager ||
-        system.userPermissions?.roles.claimIssuer) && (
+      {system.userPermissions?.roles.claimPolicyManager && (
         <ClaimTopicsIssuersOverview />
       )}
       <LatestEvents />

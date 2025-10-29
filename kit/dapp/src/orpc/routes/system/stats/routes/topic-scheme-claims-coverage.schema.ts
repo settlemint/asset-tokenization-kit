@@ -9,12 +9,16 @@ import * as z from "zod";
  */
 export const StatsTopicSchemeClaimsCoverageOutputSchema = z.object({
   /**
-   * Total number of active topic schemes in the registry.
+   * Total number of active (enabled) topic schemes in the registry.
+   * Used to calculate coverage percentage.
    */
   totalActiveTopicSchemes: z.number(),
   /**
    * List of topic schemes that have zero active claims.
    * These represent gaps in claim coverage that may need attention.
+   * Includes topics that either:
+   * - Have never had any claims issued (no stats record)
+   * - Had claims issued but they were all removed/revoked (totalActiveClaims = 0)
    */
   missingTopics: z.array(TopicSchemeSchema.omit({ registry: true })),
 });

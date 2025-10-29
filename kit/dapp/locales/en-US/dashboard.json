@@ -79,6 +79,19 @@
     "totalActiveTopics": "Active topics",
     "totalActiveIssuers": "Active issuers"
   },
+  "claimTopicsCoverage": {
+    "title": "Claim Topics Coverage",
+    "coverage": "Coverage",
+    "missingCoverage_one": "{{count}} topic needs claims",
+    "missingCoverage_other": "{{count}} topics need claims",
+    "missingCoverageDescription": "These claim topics have no active claims. Users can't transact tokens that require these topics until claims are issued.",
+    "covered_one": "{{count}} covered",
+    "covered_other": "{{count}} covered",
+    "missing_one": "{{count}} missing",
+    "missing_other": "{{count}} missing",
+    "missingTopicsLabel": "Topics without claims:",
+    "manageClaimTopics": "Manage claim topics"
+  },
   "portfolioDetails": {
     "name": "Portfolio Details",
     "summary": {

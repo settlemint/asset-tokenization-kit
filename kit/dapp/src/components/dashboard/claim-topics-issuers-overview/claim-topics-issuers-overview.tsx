@@ -1,3 +1,4 @@
+import { ClaimTopicsCoverage } from "@/components/dashboard/claim-topics-coverage/claim-topics-coverage";
 import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
 import { SectionTitle } from "@/components/dashboard/section-title";
 import { StatCard } from "@/components/stats/widgets/stat-widget";
@@ -111,6 +112,7 @@ export function ClaimTopicsIssuersOverview() {
           icon={CheckCircle2}
         />
       </div>
+      <ClaimTopicsCoverage />
     </div>
   );
 }
