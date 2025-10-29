@@ -175,7 +175,7 @@ export const TokenHoldersTable = withErrorBoundary(function TokenHoldersTable({
         separator: "before",
       },
     ],
-    [t, canBurn]
+    [t, canBurn, hasTokenPermissions, isPaused]
   );
 
   /**
