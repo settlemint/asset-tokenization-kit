@@ -134,6 +134,10 @@ export const Route = createRootRouteWithContext<{
       ...seo({}),
     ];
 
+    // Use custom favicon from theme if available, otherwise use defaults
+    const faviconUrl = loaderData?.theme?.images?.faviconUrl ?? "/favicon.ico";
+    const useCustomFavicon = loaderData?.theme?.images?.faviconUrl !== undefined;
+
     const baseLinks = [
       {
         rel: "stylesheet",
@@ -144,18 +148,29 @@ export const Route = createRootRouteWithContext<{
         sizes: "180x180",
         href: "/apple-touch-icon.png",
       },
-      {
-        rel: "icon",
-        type: "image/png",
-        sizes: "96x96",
-        href: "/favicon-96x96.png",
-      },
-      {
-        rel: "icon",
-        type: "image/svg+xml",
-        href: "/favicon.svg",
-      },
-      { rel: "shortcut icon", href: "/favicon.ico" },
+      // Use custom favicon if configured, otherwise use default multi-format favicons
+      ...(useCustomFavicon
+        ? [
+            {
+              rel: "icon" as const,
+              href: faviconUrl,
+            },
+            { rel: "shortcut icon" as const, href: faviconUrl },
+          ]
+        : [
+            {
+              rel: "icon" as const,
+              type: "image/png",
+              sizes: "96x96",
+              href: "/favicon-96x96.png",
+            },
+            {
+              rel: "icon" as const,
+              type: "image/svg+xml",
+              href: "/favicon.svg",
+            },
+            { rel: "shortcut icon" as const, href: "/favicon.ico" },
+          ]),
       { rel: "manifest", href: "/site.webmanifest", color: "#ffffff" },
     ];
 

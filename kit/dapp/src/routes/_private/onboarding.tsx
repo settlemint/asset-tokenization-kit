@@ -2,6 +2,7 @@ import { LanguageSwitcher } from "@/components/language/language-switcher";
 import { DialogCardLayout } from "@/components/layout/dialog-card-layout";
 import { Logo } from "@/components/logo/logo";
 import { ThemeToggle } from "@/components/theme/components/theme-toggle";
+import { useThemeAssets } from "@/components/theme/hooks/use-theme-assets";
 import { cn } from "@/lib/utils";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
@@ -10,8 +11,30 @@ export const Route = createFileRoute("/_private/onboarding")({
 });
 
 function OnboardingLayout() {
+  const { images } = useThemeAssets();
+
+  const backgroundLightUrl =
+    images.backgroundLightUrl ?? "/backgrounds/background-lm.svg";
+  const backgroundDarkUrl =
+    images.backgroundDarkUrl ?? "/backgrounds/background-dm.svg";
+
   return (
-    <div className="h-screen w-screen bg-[url('/backgrounds/background-lm.svg')] dark:bg-[url('/backgrounds/background-dm.svg')] bg-no-repeat bg-cover">
+    <div
+      className="h-screen w-screen bg-no-repeat bg-cover"
+      style={{
+        backgroundImage: `var(--onboarding-bg-image, url('${backgroundLightUrl}'))`,
+      }}
+    >
+      <style>
+        {`
+          :root {
+            --onboarding-bg-image: url('${backgroundLightUrl}');
+          }
+          .dark {
+            --onboarding-bg-image: url('${backgroundDarkUrl}');
+          }
+        `}
+      </style>
       <DialogCardLayout
         header={
           <div className="h-24">
