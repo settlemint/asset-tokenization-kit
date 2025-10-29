@@ -9,7 +9,7 @@ import {
 import { Link } from "@tanstack/react-router";
 
 /**
- * Sidebar logo component that displays the SettleMint logo and app name.
+ * Sidebar logo switches between full and icon variants with sidebar state.
  */
 export function SidebarLogo() {
   const { logo } = useThemeAssets();
@@ -26,7 +26,14 @@ export function SidebarLogo() {
           asChild
         >
           <Link to="/" aria-label={brandLabel} title={brandLabel}>
-            <Logo variant="horizontal" className="h-8" />
+            <Logo
+              variant="horizontal"
+              className="h-8 group-data-[collapsible=icon]:hidden"
+            />
+            <Logo
+              variant="icon"
+              className="hidden size-8 group-data-[collapsible=icon]:inline-flex"
+            />
           </Link>
         </SidebarMenuButton>
       </SidebarMenuItem>

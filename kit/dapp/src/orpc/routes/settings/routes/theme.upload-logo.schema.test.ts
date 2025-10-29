@@ -29,6 +29,17 @@ describe("theme logo upload schema", () => {
     expect(parsed.success).toBe(false);
   });
 
+  it("accepts icon mode payload", () => {
+    const input = {
+      mode: "lightIcon" as const,
+      fileName: "logo-icon.svg",
+      contentType: "image/svg+xml" as const,
+      fileSize: 2048,
+    };
+    const parsed = ThemeLogoUploadSchema.safeParse(input);
+    expect(parsed.success).toBe(true);
+  });
+
   it("validates output payload", () => {
     const bucket = "atk";
     const output = {
