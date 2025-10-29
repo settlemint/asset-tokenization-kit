@@ -90,7 +90,7 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
   // Fetch yield schedule details when available
   const { data: yieldSchedule } = useQuery(
     orpc.fixedYieldSchedule.read.queryOptions({
-      input: { id: yieldScheduleId ?? "" },
+      input: { contract: yieldScheduleId ?? "" },
       enabled: !!yieldScheduleId,
     })
   );

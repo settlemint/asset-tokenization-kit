@@ -90,10 +90,10 @@ describe("Token update collateral", () => {
         },
         {
           context: {
-            skipLoggingFor: [CUSTOM_ERROR_CODES.USER_NOT_AUTHORIZED],
+            skipLoggingFor: [CUSTOM_ERROR_CODES.FORBIDDEN],
           },
         }
       )
-    ).rejects.toThrow();
+    ).rejects.toThrow("You are not a trusted issuer for topic(s): collateral");
   });
 });

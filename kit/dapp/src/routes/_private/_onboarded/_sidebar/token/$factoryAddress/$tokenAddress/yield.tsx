@@ -56,7 +56,7 @@ function RouteComponent() {
   // Fetch yield schedule details if available
   const { data: yieldSchedule } = useQuery(
     orpc.fixedYieldSchedule.read.queryOptions({
-      input: { id: yieldScheduleId ?? "" },
+      input: { contract: yieldScheduleId ?? "" },
       enabled: !!yieldScheduleId,
     })
   );

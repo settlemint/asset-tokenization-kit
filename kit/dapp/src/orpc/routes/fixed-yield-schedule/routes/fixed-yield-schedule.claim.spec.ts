@@ -149,7 +149,7 @@ describe(
         processedPeriods++;
 
         const schedule = await adminClient.fixedYieldSchedule.read({
-          id: yieldSchedule.id,
+          contract: yieldSchedule.id,
         });
         expect(schedule).toBeDefined();
         expect(schedule.currentPeriod?.id ?? null).toBe(

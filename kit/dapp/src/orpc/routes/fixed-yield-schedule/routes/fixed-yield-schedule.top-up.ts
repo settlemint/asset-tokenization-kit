@@ -1,7 +1,7 @@
 import { portalGraphql } from "@/lib/settlemint/portal";
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
-import { systemRouter } from "@/orpc/procedures/system.router";
+import { tokenRouter } from "@/orpc/procedures/token.router";
 import { approve } from "@/orpc/routes/token/routes/mutations/approve/token.approve";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
@@ -96,7 +96,7 @@ const TOP_UP_DENOMINATION_ASSET_MUTATION = portalGraphql(`
  * @see {@link FixedYieldScheduleTopUpOutputSchema} for response structure
  * @see {@link approve} for the approval step
  */
-export const topUp = systemRouter.fixedYieldSchedule.topUp
+export const topUp = tokenRouter.fixedYieldSchedule.topUp
   .use(
     tokenPermissionMiddleware({
       requiredRoles: TOKEN_PERMISSIONS.topUpDenominationAsset,

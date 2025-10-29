@@ -202,7 +202,7 @@ export const create = systemRouter.fixedYieldSchedule.create
     return await call(
       read,
       {
-        id: schedule,
+        contract: schedule,
       },
       { context }
     );

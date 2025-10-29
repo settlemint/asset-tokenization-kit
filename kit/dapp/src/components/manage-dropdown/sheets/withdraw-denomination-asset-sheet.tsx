@@ -52,7 +52,7 @@ export function WithdrawDenominationAssetSheet({
 
   const { data: yieldSchedule } = useQuery(
     orpc.fixedYieldSchedule.read.queryOptions({
-      input: { id: yieldScheduleId ?? "" },
+      input: { contract: yieldScheduleId ?? "" },
       enabled: !!yieldScheduleId,
     })
   );
@@ -238,8 +238,8 @@ export function WithdrawDenominationAssetSheet({
               const amount = form.getFieldValue("amount");
               const to = form.getFieldValue("to");
               const promise = withdraw({
-                contract: asset.id, // Use asset ID as in the test
-                yieldSchedule: yieldSchedule?.id ?? "",
+                contract: yieldSchedule?.id ?? "",
+                tokenAddress: asset.id, // Use asset ID as in the test
                 amount: amount,
                 to: to,
                 walletVerification: verification,

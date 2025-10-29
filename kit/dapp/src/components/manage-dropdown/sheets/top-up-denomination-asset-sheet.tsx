@@ -51,7 +51,7 @@ export function TopUpDenominationAssetSheet({
 
   const { data: yieldSchedule } = useQuery(
     orpc.fixedYieldSchedule.read.queryOptions({
-      input: { id: yieldScheduleId ?? "" },
+      input: { contract: yieldScheduleId ?? "" },
       enabled: !!yieldScheduleId,
     })
   );
@@ -237,6 +237,7 @@ export function TopUpDenominationAssetSheet({
               const promise = topUp({
                 amount: amount,
                 contract: yieldSchedule?.id ?? "",
+                tokenAddress: asset.id,
                 walletVerification: verification,
               });
 

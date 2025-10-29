@@ -21,7 +21,7 @@ import {
 export const fixedYieldScheduleReadContract = baseContract
   .route({
     method: "GET",
-    path: "/fixed-yield-schedule/{id}",
+    path: "/fixed-yield-schedule/{contract}",
     description: "Get a fixed yield schedule by contract address",
     successDescription: "Fixed yield schedule details",
     tags: ["fixed-yield-schedule"],
