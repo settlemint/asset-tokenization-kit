@@ -14,6 +14,7 @@ import {
 import { useQueries } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { buildChartRangeDescription } from "./chart-range-description";
 
 export interface IdentityGrowthAreaChartProps {
   defaultRange?: StatsRangePreset;
@@ -39,7 +40,7 @@ export const IdentityGrowthAreaChart = withErrorBoundary(
       [t]
     );
 
-    const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
+    const queriesResults = useQueries({
       queries: statsRangePresets.map((preset) =>
         orpc.system.stats.identityStatsOverTime.queryOptions({
           input: preset,
@@ -48,10 +49,12 @@ export const IdentityGrowthAreaChart = withErrorBoundary(
       ),
     });
 
-    const rawData =
-      selectedRange === "trailing24Hours"
-        ? trailing24HrRangeData?.data
-        : trailing7DaysRangeData?.data;
+    // Map results to presets to avoid positional coupling
+    const dataByPreset = new Map(
+      statsRangePresets.map((preset, index) => [preset, queriesResults[index]])
+    );
+
+    const rawData = dataByPreset.get(selectedRange)?.data;
 
     const fallbackRange = useMemo<StatsResolvedRange>(() => {
       return resolveStatsRange(selectedRange);
@@ -63,12 +66,21 @@ export const IdentityGrowthAreaChart = withErrorBoundary(
 
     const timeseries = rawData?.identityStats ?? [];
 
+    const overRange = buildChartRangeDescription({
+      range: resolvedRange,
+      t,
+    });
+
+    const description = t("charts.identityGrowth.description", {
+      overRange,
+    });
+
     const dataKeys = ["activeUserIdentitiesCount"];
 
     return (
       <InteractiveChartComponent
         title={t("charts.identityGrowth.title")}
-        description={t("charts.identityGrowth.description")}
+        description={description}
         interval={chartInterval}
         data={timeseries}
         config={chartConfig}

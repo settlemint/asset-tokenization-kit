@@ -79,6 +79,20 @@
     "totalActiveTopics": "المواضيع النشطة",
     "totalActiveIssuers": "المصدرين النشطين"
   },
+  "claimTopicsCoverage": {
+    "title": "تغطية موضوعات المطالبات",
+    "coverage": "التغطية",
+    "allTopicsCovered": "جميع المواضيع لديها مطالبات نشطة",
+    "missingCoverage_one": "{{count}} موضوع يحتاج إلى مطالبات",
+    "missingCoverage_other": "{{count}} موضوع يحتاج إلى مطالبات",
+    "missingCoverageDescription": "هذه المواضيع ليس لديها مطالبات نشطة. لا يمكن للمستخدمين تداول الرموز التي تتطلب هذه المواضيع حتى يتم إصدار المطالبات.",
+    "covered_one": "{{count}} مغطى",
+    "covered_other": "{{count}} مغطاة",
+    "missing_one": "{{count}} مفقود",
+    "missing_other": "{{count}} مفقودة",
+    "missingTopicsLabel": "المواضيع بدون مطالبات:",
+    "manageClaimTopics": "إدارة موضوعات المطالبات"
+  },
   "portfolioDetails": {
     "name": "تفاصيل المحفظة",
     "summary": {

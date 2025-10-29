@@ -79,6 +79,20 @@
     "totalActiveTopics": "アクティブなトピック",
     "totalActiveIssuers": "アクティブな発行者"
   },
+  "claimTopicsCoverage": {
+    "title": "クレームトピックのカバレッジ",
+    "coverage": "カバレッジ",
+    "allTopicsCovered": "すべてのトピックにアクティブなクレームがあります",
+    "missingCoverage_one": "{{count}}件のトピックにクレームが必要です",
+    "missingCoverage_other": "{{count}}件のトピックにクレームが必要です",
+    "missingCoverageDescription": "これらのクレームトピックにはアクティブなクレームがありません。クレームが発行されるまで、これらのトピックを必要とするトークンの取引はできません。",
+    "covered_one": "{{count}}件カバー済み",
+    "covered_other": "{{count}}件カバー済み",
+    "missing_one": "{{count}}件不足",
+    "missing_other": "{{count}}件不足",
+    "missingTopicsLabel": "クレームのないトピック：",
+    "manageClaimTopics": "クレームトピックを管理"
+  },
   "portfolioDetails": {
     "name": "ポートフォリオの詳細",
     "summary": {

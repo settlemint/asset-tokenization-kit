@@ -20,11 +20,10 @@ export function fetchTopicScheme(
     topicScheme.signature = "";
     topicScheme.enabled = true;
     topicScheme.deployedInTransaction = Bytes.empty();
-
-    // Ensure the topic scheme claims state is initialized
-    fetchTopicSchemeClaimsState(topicScheme.id);
-
     topicScheme.save();
+
+    // Ensure the topic scheme claims state is initialized after saving the parent entity
+    fetchTopicSchemeClaimsState(topicScheme.id);
   }
 
   return topicScheme;

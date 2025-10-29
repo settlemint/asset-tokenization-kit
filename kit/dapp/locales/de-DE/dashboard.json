@@ -73,11 +73,25 @@
     "emptyStateDescription": "Identity-Registrierungen erscheinen hier, sobald Benutzer den Verifizierungsprozess starten"
   },
   "claimTopicsIssuersOverview": {
-    "title": "Claims, Themen und Emittenten Übersicht",
-    "description": "Verfolgen Sie aktive Claims, Themen und vertrauenswürdige Emittenten",
-    "totalActiveClaims": "Aktive Claims",
+    "title": "Ansprüche, Themen und Emittenten Übersicht",
+    "description": "Verfolgen Sie aktive Ansprüche, Themen und vertrauenswürdige Emittenten",
+    "totalActiveClaims": "Aktive Ansprüche",
     "totalActiveTopics": "Aktive Themen",
     "totalActiveIssuers": "Aktive Emittenten"
+  },
+  "claimTopicsCoverage": {
+    "title": "Anspruchsthemen-Abdeckung",
+    "coverage": "Abdeckung",
+    "allTopicsCovered": "Alle Themen haben aktive Ansprüche",
+    "missingCoverage_one": "{{count}} Thema benötigt Ansprüche",
+    "missingCoverage_other": "{{count}} Themen benötigen Ansprüche",
+    "missingCoverageDescription": "Diese Anspruchsthemen haben keine aktiven Ansprüche. Benutzer können keine Token handeln, die diese Themen erfordern, bis Ansprüche ausgestellt werden.",
+    "covered_one": "{{count}} abgedeckt",
+    "covered_other": "{{count}} abgedeckt",
+    "missing_one": "{{count}} fehlend",
+    "missing_other": "{{count}} fehlend",
+    "missingTopicsLabel": "Themen ohne Ansprüche:",
+    "manageClaimTopics": "Anspruchsthemen verwalten"
   },
   "portfolioDetails": {
     "name": "Portfolio-Details",

@@ -80,7 +80,11 @@ export function ClaimTopicsCoverage() {
                 <div
                   className="absolute left-0 top-0 flex h-full items-center justify-center bg-green-600 text-xs font-medium text-white transition-all dark:bg-green-500"
                   style={{
-                    width: `${(coveredCount / totalActiveTopicSchemes) * 100}%`,
+                    width: `${
+                      totalActiveTopicSchemes > 0
+                        ? (coveredCount / totalActiveTopicSchemes) * 100
+                        : 0
+                    }%`,
                   }}
                 >
                   <span className="px-2">
@@ -96,7 +100,11 @@ export function ClaimTopicsCoverage() {
                 <div
                   className="absolute right-0 top-0 flex h-full items-center justify-center bg-amber-500 text-xs font-medium text-white transition-all dark:bg-amber-600"
                   style={{
-                    width: `${(missingCount / totalActiveTopicSchemes) * 100}%`,
+                    width: `${
+                      totalActiveTopicSchemes > 0
+                        ? (missingCount / totalActiveTopicSchemes) * 100
+                        : 0
+                    }%`,
                   }}
                 >
                   <span className="px-2">

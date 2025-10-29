@@ -37,7 +37,7 @@ function getTrendColor(change: number): string {
 // Format percentage with sign: +23.5%, -12.8%, or 0%
 function formatPercentageChange(change: number): string {
   if (change > 0) return `+${change}%`;
-  if (change < 0) return `-${change}%`;
+  if (change < 0) return `-${Math.abs(change)}%`;
   return "0%";
 }
 
@@ -83,7 +83,7 @@ export function StatCard({
             <Icon className="h-4 w-4" />
             {title}
           </div>
-          {percentageChange && (
+          {percentageChange !== null && (
             <span
               className={cn(
                 "font-medium tabular-nums",
