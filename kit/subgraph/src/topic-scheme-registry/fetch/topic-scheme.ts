@@ -1,7 +1,7 @@
 import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { TopicScheme } from "../../../generated/schema";
+import { fetchTopicSchemeClaimsState } from "../../stats/topic-scheme-claims";
 import { fetchTopicSchemeRegistry } from "./topic-scheme-registry";
-
 export function fetchTopicScheme(
   topicId: BigInt,
   topicSchemeRegistryAddress: Address
@@ -20,6 +20,10 @@ export function fetchTopicScheme(
     topicScheme.signature = "";
     topicScheme.enabled = true;
     topicScheme.deployedInTransaction = Bytes.empty();
+
+    // Ensure the topic scheme claims state is initialized
+    fetchTopicSchemeClaimsState(topicScheme.id);
+
     topicScheme.save();
   }
 
