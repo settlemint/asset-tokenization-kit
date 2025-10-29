@@ -90,7 +90,7 @@ function LayoutComponent() {
             <img
               src={images.authLightUrl}
               alt="Authentication"
-              className="hidden light:block w-full h-full object-cover opacity-50"
+              className="block dark:hidden w-full h-full object-cover opacity-50"
             />
           ) : null}
           {images.authDarkUrl ? (
