@@ -17,22 +17,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ImageIcon, UploadCloud } from "lucide-react";
-import type { RefObject } from "react";
 import type { ThemeFormApi, ThemeTranslateFn } from "../lib/types";
 import type { ThemeLogoMode } from "@/orpc/routes/settings/routes/theme.upload-logo.schema";
+import { Upload } from "@better-upload/react";
 
 type LogoSettingsCardProps = {
   sectionId: string;
   form: ThemeFormApi;
   draft: ThemeConfig;
   baseTheme: ThemeConfig;
-  onPickFile: (mode: ThemeLogoMode) => void;
-  onFileSelected: (mode: ThemeLogoMode, file: File | null) => void;
-  lightInputRef: RefObject<HTMLInputElement | null>;
-  darkInputRef: RefObject<HTMLInputElement | null>;
-  lightIconInputRef: RefObject<HTMLInputElement | null>;
-  darkIconInputRef: RefObject<HTMLInputElement | null>;
-  uploadStatus: Record<ThemeLogoMode, boolean>;
   t: ThemeTranslateFn;
 };
 
@@ -41,13 +34,6 @@ export function LogoSettingsCard({
   form,
   draft,
   baseTheme,
-  onPickFile,
-  onFileSelected,
-  lightInputRef,
-  darkInputRef,
-  lightIconInputRef,
-  darkIconInputRef,
-  uploadStatus,
   t,
 }: LogoSettingsCardProps) {
   const resolveLogoField = (
@@ -71,7 +57,6 @@ export function LogoSettingsCard({
     description: string;
     backgroundClass: string;
     fallback: string;
-    inputRef: RefObject<HTMLInputElement | null>;
   }> = [
     {
       mode: "light",
@@ -79,7 +64,6 @@ export function LogoSettingsCard({
       description: t("logoLightDescription"),
       backgroundClass: "bg-white border border-border",
       fallback: "/logos/settlemint-logo-h-lm.svg",
-      inputRef: lightInputRef,
     },
     {
       mode: "dark",
@@ -87,7 +71,6 @@ export function LogoSettingsCard({
       description: t("logoDarkDescription"),
       backgroundClass: "bg-zinc-900 border border-zinc-700",
       fallback: "/logos/settlemint-logo-h-dm.svg",
-      inputRef: darkInputRef,
     },
     // Icon variants feed favicons and other compact surfaces.
     {
@@ -96,7 +79,6 @@ export function LogoSettingsCard({
       description: t("logoLightIconDescription"),
       backgroundClass: "bg-white border border-border",
       fallback: "/logos/settlemint-logo-i-lm.svg",
-      inputRef: lightIconInputRef,
     },
     {
       mode: "darkIcon",
@@ -104,7 +86,6 @@ export function LogoSettingsCard({
       description: t("logoDarkIconDescription"),
       backgroundClass: "bg-zinc-900 border border-zinc-700",
       fallback: "/logos/settlemint-logo-i-dm.svg",
-      inputRef: darkIconInputRef,
     },
   ];
 
@@ -151,18 +132,9 @@ export function LogoSettingsCard({
 
         <div className="space-y-6">
           {logoModes.map(
-            ({
-              mode,
-              title,
-              description,
-              backgroundClass,
-              fallback,
-              inputRef,
-            }) => {
+            ({ mode, title, description, backgroundClass, fallback }) => {
               const logoField = resolveLogoField(mode);
               const fieldName = `logo.${logoField}` as const;
-              const fileInputRef = inputRef;
-              const isUploading = uploadStatus[mode] ?? false;
               return (
                 <form.Field key={mode} name={fieldName}>
                   {(field) => {
@@ -192,17 +164,30 @@ export function LogoSettingsCard({
                               placeholder={t("logoUrlPlaceholder")}
                             />
                             <div className="flex flex-wrap items-center gap-2">
-                              <Button
-                                type="button"
-                                size="sm"
-                                onClick={() => {
-                                  onPickFile(mode);
+                              <Upload
+                                endpoint="/api/upload"
+                                onUploadComplete={(file) => {
+                                  if (file?.url) {
+                                    field.handleChange(file.url);
+                                  }
                                 }}
-                                disabled={isUploading}
+                                onUploadError={(error) => {
+                                  console.error("Upload error:", error);
+                                }}
+                                className="inline-flex"
                               >
-                                <UploadCloud className="mr-2 size-4" />
-                                {t("logoUploadButton")}
-                              </Button>
+                                {({ openFilePicker, isUploading }) => (
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={openFilePicker}
+                                    disabled={isUploading}
+                                  >
+                                    <UploadCloud className="mr-2 size-4" />
+                                    {isUploading ? "Uploading..." : t("logoUploadButton")}
+                                  </Button>
+                                )}
+                              </Upload>
                               <Button
                                 type="button"
                                 size="sm"
@@ -213,18 +198,6 @@ export function LogoSettingsCard({
                               >
                                 {t("logoResetButton")}
                               </Button>
-                              <input
-                                ref={fileInputRef}
-                                className="hidden"
-                                type="file"
-                                accept="image/svg+xml,image/png,image/webp"
-                                disabled={isUploading}
-                                onChange={(event) => {
-                                  const file = event.target.files?.[0] ?? null;
-                                  onFileSelected(mode, file);
-                                  event.target.value = "";
-                                }}
-                              />
                             </div>
                           </div>
                           <div className="space-y-2">

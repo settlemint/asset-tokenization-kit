@@ -43,11 +43,6 @@ import {
 } from "@/lib/utils/format-validation-error";
 import { localStorageService } from "@/lib/utils/local-storage";
 import { orpc } from "@/orpc/orpc-client";
-import type {
-  ThemeLogoMode,
-  ThemeLogoUploadInput,
-  ThemeLogoUploadOutput,
-} from "@/orpc/routes/settings/routes/theme.upload-logo.schema";
 import { useStore } from "@tanstack/react-form";
 import {
   useMutation,
@@ -151,9 +146,6 @@ function ThemeSettingsPage() {
         restoreThemeOverridesCss(context?.previousStyle);
       },
     });
-  const { mutateAsync: uploadLogoMutation } = useMutation({
-    ...orpc.settings.theme.uploadLogo.mutationOptions(),
-  });
   const storageKey = `theme-editor:${userId}`;
 
   const form = useAppForm({
@@ -162,20 +154,7 @@ function ThemeSettingsPage() {
   const [validationSummary, setValidationSummary] = useState<string | null>(
     null
   );
-  const [logoUploadStatus, setLogoUploadStatus] = useState<
-    Record<ThemeLogoMode, boolean>
-  >({
-    light: false,
-    dark: false,
-    lightIcon: false,
-    darkIcon: false,
-  });
 
-  const logoObjectUrls = useRef<Partial<Record<ThemeLogoMode, string>>>({});
-  const lightLogoInputRef = useRef<HTMLInputElement | null>(null);
-  const darkLogoInputRef = useRef<HTMLInputElement | null>(null);
-  const lightIconLogoInputRef = useRef<HTMLInputElement | null>(null);
-  const darkIconLogoInputRef = useRef<HTMLInputElement | null>(null);
   const lastSavedDraftRef = useRef<string | null>(null);
   const previewStyleElementRef = useRef<HTMLStyleElement | null>(null);
 
@@ -255,13 +234,6 @@ function ThemeSettingsPage() {
   const idleCallbackRef = useRef<IdleHandle | null>(null);
   const compileRequestIdRef = useRef(0);
 
-  const clearLogoObjectUrls = () => {
-    Object.values(logoObjectUrls.current).forEach((url) => {
-      if (url) URL.revokeObjectURL(url);
-    });
-    logoObjectUrls.current = {};
-  };
-
   const getDraftSnapshot = () =>
     cloneThemeConfig(form.state.values as ThemeConfig);
 
@@ -271,13 +243,6 @@ function ThemeSettingsPage() {
     setPreviewDraft(cloned);
     setCompiledCss(precompiledCss ?? compileThemeCSS(cloned));
     setIsCompiling(false);
-    setLogoUploadStatus({
-      light: false,
-      dark: false,
-      lightIcon: false,
-      darkIcon: false,
-    });
-    clearLogoObjectUrls();
   };
 
   const handlePostUpdate = (theme: ThemeConfig) => {
@@ -455,158 +420,6 @@ function ThemeSettingsPage() {
   const draftSerialized = useMemo(() => JSON.stringify(draft), [draft]);
   const baseSerialized = useMemo(() => JSON.stringify(baseTheme), [baseTheme]);
   const hasUnsavedChanges = draftSerialized !== baseSerialized;
-  const hasPendingLogoUpload = Object.values(logoUploadStatus).some(Boolean);
-
-  const resolveLogoFieldKey = (
-    mode: ThemeLogoMode
-  ): "lightUrl" | "darkUrl" | "lightIconUrl" | "darkIconUrl" => {
-    switch (mode) {
-      case "light":
-        return "lightUrl";
-      case "dark":
-        return "darkUrl";
-      case "lightIcon":
-        return "lightIconUrl";
-      case "darkIcon":
-        return "darkIconUrl";
-    }
-  };
-
-  const resolveFallbackLogo = (mode: ThemeLogoMode): string => {
-    switch (mode) {
-      case "light":
-        return "/logos/settlemint-logo-h-lm.svg";
-      case "dark":
-        return "/logos/settlemint-logo-h-dm.svg";
-      case "lightIcon":
-        return "/logos/settlemint-logo-i-lm.svg";
-      case "darkIcon":
-        return "/logos/settlemint-logo-i-dm.svg";
-    }
-  };
-
-  const handleLogoFile = (mode: ThemeLogoMode, file: File | null) => {
-    if (!file) {
-      return;
-    }
-
-    const fieldKey = resolveLogoFieldKey(mode);
-    const fieldPath = `logo.${fieldKey}` as const;
-    const currentValues = form.state.values as ThemeConfig;
-    const previousValue = currentValues.logo[fieldKey];
-
-    const previousObjectUrl = logoObjectUrls.current[mode];
-    if (previousObjectUrl) {
-      URL.revokeObjectURL(previousObjectUrl);
-    }
-
-    const objectUrl = URL.createObjectURL(file);
-    logoObjectUrls.current[mode] = objectUrl;
-    form.setFieldValue(fieldPath, objectUrl);
-
-    const optimisticDraft = cloneThemeConfig(draft);
-    optimisticDraft.logo[fieldKey] = objectUrl;
-    updatePreviewDraft(optimisticDraft);
-
-    setLogoUploadStatus((state) => ({ ...state, [mode]: true }));
-
-    const previousSanitized = sanitizeLogoUrlForPayload(
-      typeof previousValue === "string" ? previousValue : undefined
-    );
-
-    const fallbackUrl =
-      (typeof previousValue === "string" && previousValue.length > 0
-        ? previousValue
-        : (() => {
-            const baseUrl = baseTheme.logo[fieldKey] ?? "";
-            if (baseUrl.length > 0) {
-              return baseUrl;
-            }
-            return resolveFallbackLogo(mode);
-          })()) ?? resolveFallbackLogo(mode);
-
-    const contentType = file.type as ThemeLogoUploadInput["contentType"];
-
-    const uploadPromise = uploadLogoMutation({
-      mode,
-      fileName: file.name,
-      contentType,
-      fileSize: file.size,
-      previousUrl: previousSanitized,
-    }).then(async (result: ThemeLogoUploadOutput) => {
-      const headers = new Headers(result.headers ?? {});
-      if (!headers.has("Content-Type")) {
-        headers.set("Content-Type", contentType);
-      }
-
-      const response = await fetch(result.uploadUrl, {
-        method: result.method,
-        headers,
-        body: file,
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `Upload failed with status ${response.status} ${response.statusText}`
-        );
-      }
-
-      const etag =
-        response.headers.get("etag") ?? response.headers.get("ETag") ?? "";
-      const uploadedAt = new Date().toISOString();
-
-      return { result, etag, uploadedAt };
-    });
-
-    uploadPromise
-      .then(({ result, etag, uploadedAt }) => {
-        const nextDraft = getDraftSnapshot();
-        nextDraft.logo[fieldKey] = result.publicUrl;
-        nextDraft.logo.etag = etag.length > 0 ? etag : nextDraft.logo.etag;
-        nextDraft.logo.updatedAt = uploadedAt;
-        updatePreviewDraft(nextDraft);
-        form.setFieldValue(fieldPath, result.publicUrl);
-        if (etag.length > 0) {
-          form.setFieldValue("logo.etag", etag);
-        }
-        form.setFieldValue("logo.updatedAt", uploadedAt);
-        toast.success(tTheme("logoUploadSuccess"));
-      })
-      .catch((error: unknown) => {
-        const fallbackDraft = getDraftSnapshot();
-        fallbackDraft.logo[fieldKey] = fallbackUrl;
-        updatePreviewDraft(fallbackDraft);
-        form.setFieldValue(fieldPath, fallbackUrl);
-        toast.error(error instanceof Error ? error.message : String(error));
-      })
-      .finally(() => {
-        setLogoUploadStatus((state) => ({ ...state, [mode]: false }));
-        URL.revokeObjectURL(objectUrl);
-        logoObjectUrls.current[mode] = undefined;
-      });
-  };
-
-  const openLogoFileDialog = (mode: ThemeLogoMode) => {
-    const target = (() => {
-      switch (mode) {
-        case "light":
-          return lightLogoInputRef.current;
-        case "dark":
-          return darkLogoInputRef.current;
-        case "lightIcon":
-          return lightIconLogoInputRef.current;
-        case "darkIcon":
-          return darkIconLogoInputRef.current;
-      }
-    })();
-    target?.click();
-  };
-
-  useEffect(() => {
-    return () => {
-      clearLogoObjectUrls();
-    };
-  }, []);
 
   const draftFontsSignature = useMemo(() => {
     return JSON.stringify(previewDraft.fonts);
@@ -870,11 +683,7 @@ function ThemeSettingsPage() {
             onClick={() => {
               void handleSaveTheme();
             }}
-            disabled={
-              isThemeMutationPending ||
-              !hasUnsavedChanges ||
-              hasPendingLogoUpload
-            }
+            disabled={isThemeMutationPending || !hasUnsavedChanges}
           >
             {isThemeMutationPending
               ? tTheme("savingButton")
@@ -915,13 +724,6 @@ function ThemeSettingsPage() {
                   form={form}
                   draft={draft}
                   baseTheme={baseTheme}
-                  onPickFile={openLogoFileDialog}
-                  onFileSelected={handleLogoFile}
-                  lightInputRef={lightLogoInputRef}
-                  darkInputRef={darkLogoInputRef}
-                  lightIconInputRef={lightIconLogoInputRef}
-                  darkIconInputRef={darkIconLogoInputRef}
-                  uploadStatus={logoUploadStatus}
                   t={tTheme}
                 />
               </TabsContent>

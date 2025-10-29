@@ -28,8 +28,8 @@ export const ThemeLogoUploadOutputSchema = z.object({
   bucket: z.string(),
   objectKey: z.string(),
   publicUrl: z.string(),
-  uploadUrl: z.url(),
-  method: z.literal("PUT"),
+  uploadUrl: z.string(),
+  method: z.enum(["PUT", "POST"]),
   headers: z.record(z.string(), z.string()).optional(),
   expiresAt: z.string().optional(),
 });
