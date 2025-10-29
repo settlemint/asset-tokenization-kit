@@ -7,10 +7,15 @@ import {
   type ReactNode,
 } from "react";
 
-import { useNavigate, Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface TileContextValue {
@@ -26,9 +31,6 @@ export function useTileContext() {
 
 interface TileDetailOptions {
   detailLabel?: string;
-  detailTo?: string;
-  detailParams?: Record<string, unknown>;
-  detailSearch?: Record<string, unknown>;
   onOpenDetail?: () => void;
 }
 
@@ -42,40 +44,25 @@ export function Tile({
   className,
   children,
   detailLabel,
-  detailTo,
-  detailParams,
-  detailSearch,
   onOpenDetail,
   ...props
 }: TileProps) {
-  const navigate = useNavigate();
-
   const openDetail = useCallback(() => {
-    if (onOpenDetail) {
-      onOpenDetail();
-      return;
-    }
-
-    if (detailTo) {
-      navigate({ to: detailTo, params: detailParams, search: detailSearch });
-    }
-  }, [detailParams, detailSearch, detailTo, navigate, onOpenDetail]);
+    onOpenDetail?.();
+  }, [onOpenDetail]);
 
   const contextValue = useMemo<TileContextValue>(
     () => ({
-      openDetail: detailTo || onOpenDetail ? openDetail : undefined,
+      // Default CTA stays disabled until a custom detail handler is provided.
+      openDetail: onOpenDetail ? openDetail : undefined,
       detailLabel,
     }),
-    [detailLabel, detailTo, onOpenDetail, openDetail]
+    [detailLabel, onOpenDetail, openDetail]
   );
 
   return (
     <TileContext.Provider value={contextValue}>
-      <Card
-        data-slot="tile"
-        className={cn("flex h-full flex-col gap-6 px-6", className)}
-        {...props}
-      >
+      <Card data-slot="tile" className={cn("h-full", className)} {...props}>
         {children}
       </Card>
     </TileContext.Provider>
@@ -85,11 +72,11 @@ export function Tile({
 export function TileHeader({
   className,
   ...props
-}: ComponentPropsWithoutRef<"div">) {
+}: ComponentPropsWithoutRef<typeof CardHeader>) {
   return (
-    <div
+    <CardHeader
       data-slot="tile-header"
-      className={cn("flex flex-col gap-1", className)}
+      className={cn("gap-1", className)}
       {...props}
     />
   );
@@ -124,9 +111,9 @@ export function TileSubtitle({
 export function TileContent({
   className,
   ...props
-}: ComponentPropsWithoutRef<"div">) {
+}: ComponentPropsWithoutRef<typeof CardContent>) {
   return (
-    <div
+    <CardContent
       data-slot="tile-content"
       className={cn("flex flex-1 flex-col gap-4", className)}
       {...props}
@@ -138,21 +125,21 @@ export function TileFooter({
   className,
   children,
   ...props
-}: ComponentPropsWithoutRef<"div">) {
+}: ComponentPropsWithoutRef<typeof CardFooter>) {
   const context = useTileContext();
   const shouldRenderDefaultAction = !children && context?.openDetail;
 
   return (
-    <div
+    <CardFooter
       data-slot="tile-footer"
       className={cn(
-        "mt-auto flex items-center justify-end gap-3 border-t border-border/60 pt-4",
+        "mt-auto flex items-center justify-end gap-3 border-t border-border/60 pt-6",
         className
       )}
       {...props}
     >
       {shouldRenderDefaultAction ? <TileFooterAction /> : children}
-    </div>
+    </CardFooter>
   );
 }
 
@@ -176,7 +163,7 @@ export function TileFooterAction({
   const context = useTileContext();
   const navigate = useNavigate();
 
-  const handleClick: NonNullable<TileFooterActionProps["onClick"]> = (
+  const handleClick: NonNullable<TileFooterActionProps["onClick"]> = async (
     event
   ) => {
     onClick?.(event);
@@ -190,7 +177,7 @@ export function TileFooterAction({
     }
 
     if (to) {
-      navigate({ to, params, search });
+      await navigate({ to, params, search });
     }
   };
 
