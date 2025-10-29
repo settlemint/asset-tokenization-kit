@@ -24,7 +24,6 @@
     "db:check": "drizzle-kit check",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio",
     "db:auth:generate": "bunx @better-auth/cli generate -y --config=src/lib/auth/index.ts --output=src/lib/db/schemas/auth.ts",
     "test:unit": "vitest run --project unit",
     "test:unit:watch": "vitest  --project unit",

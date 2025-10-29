@@ -238,6 +238,7 @@ This command:
 | **portal**              | 7700 | SettleMint blockchain portal              |
 | **blockscout-backend**  | 4000 | Blockchain explorer API                   |
 | **blockscout-frontend** | 4001 | Blockchain explorer UI                    |
+| **drizzle-gateway**     | 4983 | Drizzle Studio database gateway           |
 
 **Wait for services to be healthy:**
 
@@ -312,6 +313,16 @@ bun run db:migrate
 ```
 
 **Expected:** No errors, migrations apply successfully.
+
+**Database management UI:**
+
+Access Drizzle Studio for database inspection and management:
+
+- **URL**: http://localhost:4983
+
+The Drizzle Gateway provides a web interface to browse tables, run queries, and
+inspect your database schema. Connect to your database using the connection
+string from your environment configuration.
 
 ### 3. Subgraph indexing
 

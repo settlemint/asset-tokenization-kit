@@ -9,6 +9,8 @@ volumes:
     driver: local
   atk-hasura:
     driver: local
+  atk-drizzle-gateway:
+    driver: local
 services:
   anvil:
     image: ghcr.io/settlemint/btp-anvil-test-node:v7.7.14
@@ -349,3 +351,29 @@ services:
       NEXT_PUBLIC_API_SPEC_URL: https://raw.githubusercontent.com/blockscout/blockscout-api-v2-swagger/main/swagger.yaml
     ports:
       - "${BLOCKSCOUT_FRONTEND_PORT:-4001}:3000"
+  drizzle-gateway:
+    image: ghcr.io/drizzle-team/gateway:latest
+    container_name: ${CONTAINER_PREFIX:-atk}-drizzle-gateway
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: "4983"
+      STORE_PATH: "/app"
+      MASTERPASS: ${DRIZZLE_GATEWAY_MASTERPASS:-drizzle}
+    ports:
+      - "${DRIZZLE_GATEWAY_PORT:-4983}:4983"
+    volumes:
+      - atk-drizzle-gateway:/app
+    healthcheck:
+      test: [
+          "CMD-SHELL",
+          "if timeout 1 bash -c '</dev/tcp/localhost/4983'; then echo 'Drizzle
+          Gateway health check: SUCCESS'; else echo 'Drizzle Gateway health
+          check: FAILED'; exit 1; fi",
+        ]
+      interval: 2s
+      timeout: 2s
+      retries: 5
+      start_period: 1s
