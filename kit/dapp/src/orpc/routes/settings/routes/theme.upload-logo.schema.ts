@@ -6,7 +6,17 @@ const ALLOWED_CONTENT_TYPES = [
   "image/webp",
 ] as const;
 
-const LOGO_MODES = ["light", "dark", "lightIcon", "darkIcon"] as const;
+const LOGO_MODES = [
+  "light",
+  "dark",
+  "lightIcon",
+  "darkIcon",
+  "authLight",
+  "authDark",
+  "backgroundLight",
+  "backgroundDark",
+  "favicon",
+] as const;
 
 export const ThemeLogoUploadSchema = z.object({
   mode: z.enum(LOGO_MODES),

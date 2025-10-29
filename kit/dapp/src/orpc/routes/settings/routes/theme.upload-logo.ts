@@ -11,11 +11,20 @@ import {
 } from "./theme.upload-logo.schema";
 
 const LOGO_BASE_PATH = "logos";
+const AUTH_BASE_PATH = "auth";
+const BACKGROUND_BASE_PATH = "backgrounds";
+const FAVICON_BASE_PATH = "favicons";
+
 const MODE_PATHS: Record<ThemeLogoMode, string> = {
   light: `${LOGO_BASE_PATH}/light`,
   dark: `${LOGO_BASE_PATH}/dark`,
   lightIcon: `${LOGO_BASE_PATH}/light-icon`,
   darkIcon: `${LOGO_BASE_PATH}/dark-icon`,
+  authLight: `${AUTH_BASE_PATH}/light`,
+  authDark: `${AUTH_BASE_PATH}/dark`,
+  backgroundLight: `${BACKGROUND_BASE_PATH}/light`,
+  backgroundDark: `${BACKGROUND_BASE_PATH}/dark`,
+  favicon: FAVICON_BASE_PATH,
 };
 
 const sanitizeFileName = (fileName: string): string => {

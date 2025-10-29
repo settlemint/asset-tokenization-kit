@@ -1,6 +1,7 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { FontSettingsCard } from "@/components/theme/components/font-settings-card";
+import { ImagesSettingsCard } from "@/components/theme/components/images-settings-card";
 import { LogoSettingsCard } from "@/components/theme/components/logo-settings-card";
 import { PaletteCard } from "@/components/theme/components/palette-card";
 import { StatusBanner } from "@/components/theme/components/status-banner";
@@ -169,6 +170,11 @@ function ThemeSettingsPage() {
     dark: false,
     lightIcon: false,
     darkIcon: false,
+    authLight: false,
+    authDark: false,
+    backgroundLight: false,
+    backgroundDark: false,
+    favicon: false,
   });
 
   const logoObjectUrls = useRef<Partial<Record<ThemeLogoMode, string>>>({});
@@ -176,6 +182,11 @@ function ThemeSettingsPage() {
   const darkLogoInputRef = useRef<HTMLInputElement | null>(null);
   const lightIconLogoInputRef = useRef<HTMLInputElement | null>(null);
   const darkIconLogoInputRef = useRef<HTMLInputElement | null>(null);
+  const authLightInputRef = useRef<HTMLInputElement | null>(null);
+  const authDarkInputRef = useRef<HTMLInputElement | null>(null);
+  const backgroundLightInputRef = useRef<HTMLInputElement | null>(null);
+  const backgroundDarkInputRef = useRef<HTMLInputElement | null>(null);
+  const faviconInputRef = useRef<HTMLInputElement | null>(null);
   const lastSavedDraftRef = useRef<string | null>(null);
   const previewStyleElementRef = useRef<HTMLStyleElement | null>(null);
 
@@ -276,6 +287,11 @@ function ThemeSettingsPage() {
       dark: false,
       lightIcon: false,
       darkIcon: false,
+      authLight: false,
+      authDark: false,
+      backgroundLight: false,
+      backgroundDark: false,
+      favicon: false,
     });
     clearLogoObjectUrls();
   };
@@ -459,7 +475,16 @@ function ThemeSettingsPage() {
 
   const resolveLogoFieldKey = (
     mode: ThemeLogoMode
-  ): "lightUrl" | "darkUrl" | "lightIconUrl" | "darkIconUrl" => {
+  ):
+    | "lightUrl"
+    | "darkUrl"
+    | "lightIconUrl"
+    | "darkIconUrl"
+    | "authLightUrl"
+    | "authDarkUrl"
+    | "backgroundLightUrl"
+    | "backgroundDarkUrl"
+    | "faviconUrl" => {
     switch (mode) {
       case "light":
         return "lightUrl";
@@ -469,10 +494,20 @@ function ThemeSettingsPage() {
         return "lightIconUrl";
       case "darkIcon":
         return "darkIconUrl";
+      case "authLight":
+        return "authLightUrl";
+      case "authDark":
+        return "authDarkUrl";
+      case "backgroundLight":
+        return "backgroundLightUrl";
+      case "backgroundDark":
+        return "backgroundDarkUrl";
+      case "favicon":
+        return "faviconUrl";
     }
   };
 
-  const resolveFallbackLogo = (mode: ThemeLogoMode): string => {
+  const resolveFallbackLogo = (mode: ThemeLogoMode): string | undefined => {
     switch (mode) {
       case "light":
         return "/logos/settlemint-logo-h-lm.svg";
@@ -482,6 +517,16 @@ function ThemeSettingsPage() {
         return "/logos/settlemint-logo-i-lm.svg";
       case "darkIcon":
         return "/logos/settlemint-logo-i-dm.svg";
+      case "authLight":
+        return undefined;
+      case "authDark":
+        return undefined;
+      case "backgroundLight":
+        return "/backgrounds/background-lm.svg";
+      case "backgroundDark":
+        return "/backgrounds/background-dm.svg";
+      case "favicon":
+        return "/favicon.ico";
     }
   };
 
@@ -491,9 +536,21 @@ function ThemeSettingsPage() {
     }
 
     const fieldKey = resolveLogoFieldKey(mode);
-    const fieldPath = `logo.${fieldKey}` as const;
+    const isImageField =
+      mode === "authLight" ||
+      mode === "authDark" ||
+      mode === "backgroundLight" ||
+      mode === "backgroundDark" ||
+      mode === "favicon";
+    const fieldPath = isImageField
+      ? (`images.${fieldKey}` as const)
+      : (`logo.${fieldKey}` as const);
     const currentValues = form.state.values as ThemeConfig;
-    const previousValue = currentValues.logo[fieldKey];
+    const previousValue = isImageField
+      ? currentValues.images[
+          fieldKey as keyof typeof currentValues.images
+        ]
+      : currentValues.logo[fieldKey as keyof typeof currentValues.logo];
 
     const previousObjectUrl = logoObjectUrls.current[mode];
     if (previousObjectUrl) {
@@ -505,7 +562,14 @@ function ThemeSettingsPage() {
     form.setFieldValue(fieldPath, objectUrl);
 
     const optimisticDraft = cloneThemeConfig(draft);
-    optimisticDraft.logo[fieldKey] = objectUrl;
+    if (isImageField) {
+      optimisticDraft.images[
+        fieldKey as keyof typeof optimisticDraft.images
+      ] = objectUrl;
+    } else {
+      optimisticDraft.logo[fieldKey as keyof typeof optimisticDraft.logo] =
+        objectUrl;
+    }
     updatePreviewDraft(optimisticDraft);
 
     setLogoUploadStatus((state) => ({ ...state, [mode]: true }));
@@ -518,12 +582,16 @@ function ThemeSettingsPage() {
       (typeof previousValue === "string" && previousValue.length > 0
         ? previousValue
         : (() => {
-            const baseUrl = baseTheme.logo[fieldKey] ?? "";
+            const baseUrl = isImageField
+              ? baseTheme.images[
+                  fieldKey as keyof typeof baseTheme.images
+                ] ?? ""
+              : baseTheme.logo[fieldKey as keyof typeof baseTheme.logo] ?? "";
             if (baseUrl.length > 0) {
               return baseUrl;
             }
             return resolveFallbackLogo(mode);
-          })()) ?? resolveFallbackLogo(mode);
+          })()) ?? resolveFallbackLogo(mode) ?? "";
 
     const contentType = file.type as ThemeLogoUploadInput["contentType"];
 
@@ -561,20 +629,38 @@ function ThemeSettingsPage() {
     uploadPromise
       .then(({ result, etag, uploadedAt }) => {
         const nextDraft = getDraftSnapshot();
-        nextDraft.logo[fieldKey] = result.publicUrl;
-        nextDraft.logo.etag = etag.length > 0 ? etag : nextDraft.logo.etag;
-        nextDraft.logo.updatedAt = uploadedAt;
+        if (isImageField) {
+          nextDraft.images[fieldKey as keyof typeof nextDraft.images] =
+            result.publicUrl;
+          nextDraft.images.etag = etag.length > 0 ? etag : nextDraft.images.etag;
+          nextDraft.images.updatedAt = uploadedAt;
+          if (etag.length > 0) {
+            form.setFieldValue("images.etag", etag);
+          }
+          form.setFieldValue("images.updatedAt", uploadedAt);
+        } else {
+          nextDraft.logo[fieldKey as keyof typeof nextDraft.logo] =
+            result.publicUrl;
+          nextDraft.logo.etag = etag.length > 0 ? etag : nextDraft.logo.etag;
+          nextDraft.logo.updatedAt = uploadedAt;
+          if (etag.length > 0) {
+            form.setFieldValue("logo.etag", etag);
+          }
+          form.setFieldValue("logo.updatedAt", uploadedAt);
+        }
         updatePreviewDraft(nextDraft);
         form.setFieldValue(fieldPath, result.publicUrl);
-        if (etag.length > 0) {
-          form.setFieldValue("logo.etag", etag);
-        }
-        form.setFieldValue("logo.updatedAt", uploadedAt);
         toast.success(tTheme("logoUploadSuccess"));
       })
       .catch((error: unknown) => {
         const fallbackDraft = getDraftSnapshot();
-        fallbackDraft.logo[fieldKey] = fallbackUrl;
+        if (isImageField) {
+          fallbackDraft.images[fieldKey as keyof typeof fallbackDraft.images] =
+            fallbackUrl;
+        } else {
+          fallbackDraft.logo[fieldKey as keyof typeof fallbackDraft.logo] =
+            fallbackUrl;
+        }
         updatePreviewDraft(fallbackDraft);
         form.setFieldValue(fieldPath, fallbackUrl);
         toast.error(error instanceof Error ? error.message : String(error));
@@ -597,6 +683,16 @@ function ThemeSettingsPage() {
           return lightIconLogoInputRef.current;
         case "darkIcon":
           return darkIconLogoInputRef.current;
+        case "authLight":
+          return authLightInputRef.current;
+        case "authDark":
+          return authDarkInputRef.current;
+        case "backgroundLight":
+          return backgroundLightInputRef.current;
+        case "backgroundDark":
+          return backgroundDarkInputRef.current;
+        case "favicon":
+          return faviconInputRef.current;
       }
     })();
     target?.click();
@@ -814,6 +910,11 @@ function ThemeSettingsPage() {
         description: tTheme("logoSectionDescription"),
       },
       {
+        value: "images",
+        label: tTheme("imagesSectionTitle"),
+        description: tTheme("imagesSectionDescription"),
+      },
+      {
         value: "fonts",
         label: tTheme("fontsTitle"),
         description: tTheme("fontsDescription"),
@@ -921,6 +1022,24 @@ function ThemeSettingsPage() {
                   darkInputRef={darkLogoInputRef}
                   lightIconInputRef={lightIconLogoInputRef}
                   darkIconInputRef={darkIconLogoInputRef}
+                  uploadStatus={logoUploadStatus}
+                  t={tTheme}
+                />
+              </TabsContent>
+
+              <TabsContent value="images" className="space-y-4">
+                <ImagesSettingsCard
+                  sectionId="theme-images"
+                  form={form}
+                  draft={draft}
+                  baseTheme={baseTheme}
+                  onPickFile={openLogoFileDialog}
+                  onFileSelected={handleLogoFile}
+                  authLightInputRef={authLightInputRef}
+                  authDarkInputRef={authDarkInputRef}
+                  backgroundLightInputRef={backgroundLightInputRef}
+                  backgroundDarkInputRef={backgroundDarkInputRef}
+                  faviconInputRef={faviconInputRef}
                   uploadStatus={logoUploadStatus}
                   t={tTheme}
                 />

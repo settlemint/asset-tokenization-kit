@@ -100,6 +100,19 @@ const logoSchema = z.object({
 });
 
 /**
+ * Images configuration for various platform surfaces
+ */
+const imagesSchema = z.object({
+  authLightUrl: themeAssetURL.optional(),
+  authDarkUrl: themeAssetURL.optional(),
+  backgroundLightUrl: themeAssetURL.optional(),
+  backgroundDarkUrl: themeAssetURL.optional(),
+  faviconUrl: themeAssetURL.optional(),
+  etag: z.string().optional(),
+  updatedAt: isoDateTime.optional(),
+});
+
+/**
  * Theme metadata
  */
 const metadataSchema = z.object({
@@ -114,6 +127,7 @@ const metadataSchema = z.object({
  */
 export const themeConfigSchema = z.object({
   logo: logoSchema,
+  images: imagesSchema,
   fonts: z.object({
     sans: fontSchema,
     mono: fontSchema,
@@ -127,6 +141,7 @@ export const themeConfigSchema = z.object({
 
 export const themeConfigPartialSchema = z.object({
   logo: logoSchema.partial().optional(),
+  images: imagesSchema.partial().optional(),
   fonts: z
     .object({
       sans: fontSchema.partial().optional(),
@@ -149,6 +164,7 @@ export type ThemeConfig = z.infer<typeof themeConfigSchema>;
 export type ThemeVars = z.infer<typeof themeVarsSchema>;
 export type FontConfig = z.infer<typeof fontSchema>;
 export type LogoConfig = z.infer<typeof logoSchema>;
+export type ImagesConfig = z.infer<typeof imagesSchema>;
 export type ThemeMetadata = z.infer<typeof metadataSchema>;
 
 /**
@@ -194,6 +210,7 @@ export function cloneThemeConfig(theme: ThemeConfig): ThemeConfig {
   }
   return {
     logo: { ...theme.logo },
+    images: { ...theme.images },
     fonts: {
       sans: { ...theme.fonts.sans },
       mono: { ...theme.fonts.mono },
@@ -216,6 +233,13 @@ export const DEFAULT_THEME: ThemeConfig = {
     darkUrl: "/logos/settlemint-logo-h-dm.svg",
     lightIconUrl: "/logos/settlemint-logo-i-lm.svg",
     darkIconUrl: "/logos/settlemint-logo-i-dm.svg",
+  },
+  images: {
+    authLightUrl: undefined,
+    authDarkUrl: undefined,
+    backgroundLightUrl: "/backgrounds/background-lm.svg",
+    backgroundDarkUrl: "/backgrounds/background-dm.svg",
+    faviconUrl: "/favicon.ico",
   },
   fonts: {
     sans: {
