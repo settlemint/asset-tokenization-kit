@@ -31,15 +31,16 @@
  * @see {@link https://tanstack.com/table/latest} - TanStack Table
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type {
   ColumnFiltersState,
   PaginationState,
   RowSelectionState,
   SortingState,
+  TableState,
   VisibilityState,
 } from "@tanstack/react-table";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   deserializeDataTableState,
@@ -111,14 +112,7 @@ export interface DataTableStateReturn {
   resetState: () => void;
   /** TanStack Table configuration object */
   tableOptions: {
-    state: {
-      pagination: PaginationState;
-      sorting: SortingState;
-      columnFilters: ColumnFiltersState;
-      globalFilter: string;
-      columnVisibility: VisibilityState;
-      rowSelection: RowSelectionState;
-    };
+    state: Partial<TableState>;
     onPaginationChange: (
       updater: PaginationState | ((old: PaginationState) => PaginationState)
     ) => void;
