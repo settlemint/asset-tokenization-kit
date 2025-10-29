@@ -4,7 +4,9 @@ import { Logo } from "@/components/logo/logo";
 import { ThemeToggle } from "@/components/theme/components/theme-toggle";
 import { useThemeAssets } from "@/components/theme/hooks/use-theme-assets";
 import { cn } from "@/lib/utils";
+import { safeCssBackgroundImage } from "@/lib/utils/css-url";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/_private/onboarding")({
   component: OnboardingLayout,
@@ -18,23 +20,37 @@ function OnboardingLayout() {
   const backgroundDarkUrl =
     images.backgroundDarkUrl ?? "/backgrounds/background-dm.svg";
 
+  const safeBackgroundLightUrl = useMemo(
+    () => safeCssBackgroundImage(backgroundLightUrl),
+    [backgroundLightUrl]
+  );
+  const safeBackgroundDarkUrl = useMemo(
+    () => safeCssBackgroundImage(backgroundDarkUrl),
+    [backgroundDarkUrl]
+  );
+
+  const backgroundStyles = useMemo(
+    () => `
+      :root {
+        --onboarding-bg-image: ${safeBackgroundLightUrl};
+      }
+      .dark {
+        --onboarding-bg-image: ${safeBackgroundDarkUrl};
+      }
+    `,
+    [safeBackgroundLightUrl, safeBackgroundDarkUrl]
+  );
+
+  const inlineStyle = useMemo(
+    () => ({
+      backgroundImage: `var(--onboarding-bg-image, ${safeBackgroundLightUrl})`,
+    }),
+    [safeBackgroundLightUrl]
+  );
+
   return (
-    <div
-      className="h-screen w-screen bg-no-repeat bg-cover"
-      style={{
-        backgroundImage: `var(--onboarding-bg-image, url('${backgroundLightUrl}'))`,
-      }}
-    >
-      <style>
-        {`
-          :root {
-            --onboarding-bg-image: url('${backgroundLightUrl}');
-          }
-          .dark {
-            --onboarding-bg-image: url('${backgroundDarkUrl}');
-          }
-        `}
-      </style>
+    <div className="h-screen w-screen bg-no-repeat bg-cover" style={inlineStyle}>
+      <style dangerouslySetInnerHTML={{ __html: backgroundStyles }} />
       <DialogCardLayout
         header={
           <div className="h-24">

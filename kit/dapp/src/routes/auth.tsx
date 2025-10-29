@@ -21,7 +21,9 @@ import { Logo } from "@/components/logo/logo";
 import { ThemeToggle } from "@/components/theme/components/theme-toggle";
 import { useThemeAssets } from "@/components/theme/hooks/use-theme-assets";
 import { cn } from "@/lib/utils";
+import { safeCssBackgroundImage } from "@/lib/utils/css-url";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/auth")({
   component: LayoutComponent,
@@ -48,24 +50,38 @@ function LayoutComponent() {
   const backgroundDarkUrl =
     images.backgroundDarkUrl ?? "/backgrounds/background-dm.svg";
 
+  const safeBackgroundLightUrl = useMemo(
+    () => safeCssBackgroundImage(backgroundLightUrl),
+    [backgroundLightUrl]
+  );
+  const safeBackgroundDarkUrl = useMemo(
+    () => safeCssBackgroundImage(backgroundDarkUrl),
+    [backgroundDarkUrl]
+  );
+
+  const backgroundStyles = useMemo(
+    () => `
+      :root {
+        --auth-bg-image: ${safeBackgroundLightUrl};
+      }
+      .dark {
+        --auth-bg-image: ${safeBackgroundDarkUrl};
+      }
+    `,
+    [safeBackgroundLightUrl, safeBackgroundDarkUrl]
+  );
+
+  const inlineStyle = useMemo(
+    () => ({
+      backgroundImage: `var(--auth-bg-image, ${safeBackgroundLightUrl})`,
+    }),
+    [safeBackgroundLightUrl]
+  );
+
   return (
     // Full-screen container with theme-aware background images
-    <div
-      className="min-h-screen w-full bg-center bg-cover"
-      style={{
-        backgroundImage: `var(--auth-bg-image, url('${backgroundLightUrl}'))`,
-      }}
-    >
-      <style>
-        {`
-          :root {
-            --auth-bg-image: url('${backgroundLightUrl}');
-          }
-          .dark {
-            --auth-bg-image: url('${backgroundDarkUrl}');
-          }
-        `}
-      </style>
+    <div className="min-h-screen w-full bg-center bg-cover" style={inlineStyle}>
+      <style dangerouslySetInnerHTML={{ __html: backgroundStyles }} />
 
       {/* Optional auth page image overlay */}
       {(images.authLightUrl ?? images.authDarkUrl) ? (
