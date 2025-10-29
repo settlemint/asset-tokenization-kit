@@ -505,7 +505,7 @@ type TopicScheme @entity(immutable: false) {
   name: String!
   # Numeric ID of the topic
   topicId: BigInt!
-  # Function signature for verification
+  # Claim data ABI types for verification
   signature: String!
   # Whether this scheme is currently active
   enabled: Boolean!

@@ -15,7 +15,7 @@ export const TopicCreateInputSchema = MutationInputSchema.extend({
   signature: z
     .string()
     .min(1, "Signature is required")
-    .describe("Function signature for claim verification"),
+    .describe("Claim data ABI types for claim verification"),
 });
 
 export type TopicCreateInput = z.infer<typeof TopicCreateInputSchema>;

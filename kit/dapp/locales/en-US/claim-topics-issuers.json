@@ -45,8 +45,8 @@
           "description": "A unique, human-readable name for this claim topic. E.g., Professional License"
         },
         "signature": {
-          "label": "Function signature",
-          "description": "Function signature for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)"
+          "label": "Claim data ABI types",
+          "description": "Claim data ABI types for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)"
         }
       },
       "verification": {
@@ -68,8 +68,8 @@
           "description": "Topic ID: {{topicId}} • Topic name cannot be changed"
         },
         "signature": {
-          "label": "Function signature",
-          "description": "Function signature for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)",
+          "label": "Claim data ABI types",
+          "description": "Claim data ABI types for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)",
           "current": "Current: {{signature}}"
         }
       },

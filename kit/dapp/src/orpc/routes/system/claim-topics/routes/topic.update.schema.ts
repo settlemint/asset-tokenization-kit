@@ -18,7 +18,7 @@ export const TopicUpdateInputSchema = MutationInputSchema.extend({
       /^[a-zA-Z_][a-zA-Z0-9_]*\([^)]*\)$/,
       "Signature must be a valid function selector (e.g., 'isOver18(address,bytes32)')"
     )
-    .describe("New function signature for claim verification"),
+    .describe("New claim data ABI types for claim verification"),
 });
 
 export type TopicUpdateInput = z.infer<typeof TopicUpdateInputSchema>;

@@ -23,7 +23,7 @@ const EditTopicFormSchema = z.object({
   signature: z
     .string()
     .min(1, "Signature is required")
-    .describe("New function signature for claim verification"),
+    .describe("New claim data ABI types for claim verification"),
   walletVerification: z.object({
     secretVerificationCode: z.string(),
     verificationType: z.enum(["PINCODE", "OTP", "SECRET_CODES"]),
