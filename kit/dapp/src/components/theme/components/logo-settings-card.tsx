@@ -20,6 +20,10 @@ import { ImageIcon, UploadCloud } from "lucide-react";
 import type { ThemeFormApi, ThemeTranslateFn } from "../lib/types";
 import type { ThemeLogoMode } from "@/orpc/routes/settings/routes/theme.upload-logo.schema";
 import { Upload } from "@better-upload/react";
+import { orpc } from "@/orpc/orpc-client";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useState } from "react";
 
 type LogoSettingsCardProps = {
   sectionId: string;
@@ -36,6 +40,12 @@ export function LogoSettingsCard({
   baseTheme,
   t,
 }: LogoSettingsCardProps) {
+  const [uploadingMode, setUploadingMode] = useState<ThemeLogoMode | null>(null);
+
+  const { mutateAsync: getUploadUrl } = useMutation({
+    ...orpc.settings.theme.uploadLogo.mutationOptions(),
+  });
+
   const resolveLogoField = (
     mode: ThemeLogoMode
   ): "lightUrl" | "darkUrl" | "lightIconUrl" | "darkIconUrl" => {
@@ -48,6 +58,54 @@ export function LogoSettingsCard({
         return "lightIconUrl";
       case "darkIcon":
         return "darkIconUrl";
+    }
+  };
+
+  const handleFileUpload = async (mode: ThemeLogoMode, file: File) => {
+    setUploadingMode(mode);
+    const logoField = resolveLogoField(mode);
+    const fieldPath = `logo.${logoField}` as const;
+
+    try {
+      // Step 1: Get presigned upload URL from backend
+      const uploadInfo = await getUploadUrl({
+        mode,
+        fileName: file.name,
+        contentType: file.type as "image/svg+xml" | "image/png" | "image/webp",
+        fileSize: file.size,
+      });
+
+      // Step 2: Upload file to MinIO using presigned URL
+      const uploadResponse = await fetch(uploadInfo.uploadUrl, {
+        method: uploadInfo.method,
+        headers: uploadInfo.headers ?? {},
+        body: file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error(
+          `Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`
+        );
+      }
+
+      // Step 3: Update form with public URL
+      form.setFieldValue(fieldPath, uploadInfo.publicUrl);
+      const uploadedAt = new Date().toISOString();
+      form.setFieldValue("logo.updatedAt", uploadedAt);
+
+      const etag = uploadResponse.headers.get("etag") ?? uploadResponse.headers.get("ETag") ?? "";
+      if (etag) {
+        form.setFieldValue("logo.etag", etag);
+      }
+
+      toast.success(t("logoUploadSuccess"));
+      return { url: uploadInfo.publicUrl };
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error(error instanceof Error ? error.message : "Upload failed");
+      throw error;
+    } finally {
+      setUploadingMode(null);
     }
   };
 
@@ -135,6 +193,7 @@ export function LogoSettingsCard({
             ({ mode, title, description, backgroundClass, fallback }) => {
               const logoField = resolveLogoField(mode);
               const fieldName = `logo.${logoField}` as const;
+              const isUploading = uploadingMode === mode;
               return (
                 <form.Field key={mode} name={fieldName}>
                   {(field) => {
@@ -165,18 +224,17 @@ export function LogoSettingsCard({
                             />
                             <div className="flex flex-wrap items-center gap-2">
                               <Upload
-                                endpoint="/api/upload"
-                                onUploadComplete={(file) => {
-                                  if (file?.url) {
-                                    field.handleChange(file.url);
-                                  }
+                                onFileSelect={async (file) => {
+                                  await handleFileUpload(mode, file);
                                 }}
-                                onUploadError={(error) => {
+                                onError={(error) => {
                                   console.error("Upload error:", error);
+                                  toast.error("Failed to upload file");
                                 }}
-                                className="inline-flex"
+                                accept="image/svg+xml,image/png,image/webp"
+                                maxSize={5 * 1024 * 1024}
                               >
-                                {({ openFilePicker, isUploading }) => (
+                                {({ openFilePicker }) => (
                                   <Button
                                     type="button"
                                     size="sm"
