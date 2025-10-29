@@ -37,15 +37,16 @@ function getTrendColor(change: number): string {
 // Format percentage with sign: +23.5%, -12.8%, or 0%
 function formatPercentageChange(change: number): string {
   if (change > 0) return `+${change}%`;
-  if (change < 0) return `${change}%`;
+  if (change < 0) return `-${change}%`;
   return "0%";
 }
 
 // Format absolute difference with sign: +250, -50, or 0
 function formatAbsoluteDifference(change: number | null): string | null {
   if (change === null) return null;
-  if (change > 0) return `+${Math.abs(change)}`;
-  if (change < 0) return `${Math.abs(change)}`;
+  const absoluteChange = Math.abs(change);
+  if (change > 0) return `+${absoluteChange}`;
+  if (change < 0) return `-${absoluteChange}`;
   return "0";
 }
 
