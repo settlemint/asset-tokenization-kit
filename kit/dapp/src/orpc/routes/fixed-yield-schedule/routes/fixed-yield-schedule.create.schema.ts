@@ -13,7 +13,7 @@ import * as z from "zod";
  * contract, ensuring all required configuration is provided with proper validation.
  *
  * @property {string} yieldRate - The yield rate in basis points (1% = 100)
- * @property {string} paymentInterval - The payment interval (DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)
+ * @property {string} paymentInterval - The payment interval (HOURLY, DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)
  * @property {string} startTime - The start time for yield payments as Unix timestamp
  * @property {string} endTime - The end time for yield payments as Unix timestamp
  * @property {string} token - The token contract address that will use this yield schedule
@@ -27,7 +27,7 @@ export const FixedYieldScheduleCreateInputSchema = MutationInputSchema.extend({
   paymentInterval: z
     .union([
       timeInterval().describe(
-        "The payment interval (DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)"
+        "The payment interval (HOURLY, DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)"
       ),
       z.int().positive().describe("The payment interval in seconds"),
     ])
@@ -44,6 +44,14 @@ export const FixedYieldScheduleCreateInputSchema = MutationInputSchema.extend({
   countryCode: isoCountryCodeNumeric.describe(
     "ISO 3166-1 numeric country code for jurisdiction"
   ),
+}).superRefine((value, ctx) => {
+  if (value.endTime < value.startTime) {
+    ctx.addIssue({
+      code: "custom",
+      message: "End time cannot be before start time",
+      path: ["endTime"],
+    });
+  }
 });
 
 /**

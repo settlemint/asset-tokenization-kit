@@ -12,6 +12,7 @@ import * as z from "zod";
  * Tuple of valid time intervals for type-safe iteration.
  * @remarks
  * Standard time intervals for various use cases:
+ * - `HOURLY`: Hourly intervals for hourly yield calculations
  * - `DAILY`: Daily intervals for daily yield calculations
  * - `WEEKLY`: Weekly intervals for weekly distributions
  * - `MONTHLY`: Monthly intervals for monthly payments
@@ -19,6 +20,7 @@ import * as z from "zod";
  * - `YEARLY`: Yearly intervals for annual distributions
  */
 export const timeIntervals = [
+  "HOURLY",
   "DAILY",
   "WEEKLY",
   "MONTHLY",
@@ -48,6 +50,7 @@ export const timeIntervals = [
  * ```
  */
 export const TimeIntervalEnum = {
+  HOURLY: "HOURLY",
   DAILY: "DAILY",
   WEEKLY: "WEEKLY",
   MONTHLY: "MONTHLY",
@@ -63,13 +66,14 @@ export const TimeIntervalEnum = {
  * const schema = timeInterval();
  *
  * // Valid time intervals
+ * schema.parse("HOURLY");     // For hourly calculations
  * schema.parse("DAILY");      // For daily calculations
  * schema.parse("WEEKLY");     // For weekly distributions
  * schema.parse("MONTHLY");    // For monthly payments
  * schema.parse("YEARLY");     // For annual distributions
  *
  * // Invalid interval
- * schema.parse("HOURLY");     // Throws ZodError
+ * schema.parse("INVALID");     // Throws ZodError
  * ```
  */
 export const timeInterval = () =>
@@ -128,6 +132,7 @@ export function getTimeInterval(value: unknown): TimeInterval {
  * - `YEARLY`: 31,536,000 seconds (365 days)
  */
 export const TIME_INTERVAL_SECONDS: Record<TimeInterval, number> = {
+  HOURLY: 3600, // 1 hour
   DAILY: 86_400, // 1 day
   WEEKLY: 604_800, // 7 days
   MONTHLY: 2_592_000, // 30 days
