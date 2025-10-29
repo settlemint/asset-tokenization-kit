@@ -1,27 +1,15 @@
 ---
 title: Issue a fund token
 description:
-  Guide to creating a fund token and managing fund-specific operations like NAV
-  updates and fees
+  Fund tokens represent shares in investment vehicles with automated NAV
+  calculations, yield distribution, and portfolio management. This guide walks
+  you through deploying open-end, closed-end, or interval fund tokens with
+  subscription/redemption workflows, management fee automation, and performance
+  tracking. DALP vaults secure fund assets while yield management automates fee
+  distributions.
 pageTitle: How to issue a fund token (Investment fund units)
 tags: [how-to, fund, NAV, fees, fund-management]
 ---
-
-## Overview
-
-Deploy compliant fund tokens representing ownership units in investment funds
-with net asset value (NAV) tracking, management fees, and
-subscription/redemption workflows. Manage open-end, closed-end, or interval
-funds through the platform.
-
-**Primary audience:** Fund administrators, asset managers  
-**Secondary audience:** Investment operations teams, financial product managers
-
-<Mermaid
-  chart={
-    "graph TB\n    A(Configure Fund<br/>Parameters) --> B(Set NAV<br/>Tracking)\n    B --> C(Configure Subscription<br/>Redemption)\n    C --> D(Set Compliance<br/>Rules)\n    D --> E(Assign Operational<br/>Roles)\n    E --> F(Deploy Fund<br/>Contract)\n    F --> G(Post Initial<br/>NAV)\n    G --> H(Enable<br/>Subscriptions)\n    H --> I(Process Subscription<br/>Requests)\n    I --> J(Update NAV<br/>Regularly)\n    J --> K(Process Redemption<br/>Requests)\n    K --> L(Collect Management<br/>Fees)\n    L --> M(Monitor Fund<br/>Operations)\n    M --> J\n    style A fill:#0EA5E9\n    style F fill:#0EA5E9\n    style G fill:#0EA5E9\n    style I fill:#10B981\n    style J fill:#10B981\n    style K fill:#10B981\n    style L fill:#6366F1"
-  }
-/>
 
 ## Before you start
 
