@@ -82,6 +82,7 @@
   "claimTopicsCoverage": {
     "title": "Claim Topics Coverage",
     "coverage": "Coverage",
+    "allTopicsCovered": "All topics have active claims",
     "missingCoverage_one": "{{count}} topic needs claims",
     "missingCoverage_other": "{{count}} topics need claims",
     "missingCoverageDescription": "These claim topics have no active claims. Users can't transact tokens that require these topics until claims are issued.",

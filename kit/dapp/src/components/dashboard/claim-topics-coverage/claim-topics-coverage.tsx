@@ -41,8 +41,8 @@ export function ClaimTopicsCoverage() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Alert for missing coverage */}
-        {hasMissingTopics && (
+        {/* Alert for coverage status */}
+        {hasMissingTopics ? (
           <Alert className="border-warning/50 text-warning">
             <AlertCircle className="size-4" />
             <AlertTitle>
@@ -54,62 +54,61 @@ export function ClaimTopicsCoverage() {
               {t("claimTopicsCoverage.missingCoverageDescription")}
             </AlertDescription>
           </Alert>
+        ) : (
+          <Alert className="border-green-500/50 bg-green-500/5 text-green-700 dark:text-green-400">
+            <CircleCheck className="size-4" />
+            <AlertTitle>{t("claimTopicsCoverage.allTopicsCovered")}</AlertTitle>
+          </Alert>
         )}
 
-        {/* Coverage stats */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground text-sm">
-              {t("claimTopicsCoverage.coverage")}
-            </span>
-            <span className="text-lg font-semibold">
-              {coveragePercentage.toFixed(1)}%
-            </span>
-          </div>
+        {/* Coverage stats - only show when there are missing topics */}
+        {hasMissingTopics && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground text-sm">
+                {t("claimTopicsCoverage.coverage")}
+              </span>
+              <span className="text-lg font-semibold">
+                {coveragePercentage.toFixed(1)}%
+              </span>
+            </div>
 
-          {/* Progress bar with segments */}
-          <div className="relative h-8 overflow-hidden rounded-md border bg-muted">
-            {hasMissingTopics ? (
-              <>
-                {/* Covered segment (success) */}
-                {coveredCount > 0 && (
-                  <div
-                    className="absolute left-0 top-0 flex h-full items-center justify-center bg-green-600 text-xs font-medium text-white transition-all dark:bg-green-500"
-                    style={{
-                      width: `${(coveredCount / totalActiveTopicSchemes) * 100}%`,
-                    }}
-                  >
-                    <span className="px-2">
-                      {t("claimTopicsCoverage.covered", {
-                        count: coveredCount,
-                      })}
-                    </span>
-                  </div>
-                )}
+            {/* Progress bar with segments */}
+            <div className="relative h-8 overflow-hidden rounded-md border bg-muted">
+              {/* Covered segment (success) */}
+              {coveredCount > 0 && (
+                <div
+                  className="absolute left-0 top-0 flex h-full items-center justify-center bg-green-600 text-xs font-medium text-white transition-all dark:bg-green-500"
+                  style={{
+                    width: `${(coveredCount / totalActiveTopicSchemes) * 100}%`,
+                  }}
+                >
+                  <span className="px-2">
+                    {t("claimTopicsCoverage.covered", {
+                      count: coveredCount,
+                    })}
+                  </span>
+                </div>
+              )}
 
-                {/* Missing segment (warning) */}
-                {missingCount > 0 && (
-                  <div
-                    className="absolute right-0 top-0 flex h-full items-center justify-center bg-amber-500 text-xs font-medium text-white transition-all dark:bg-amber-600"
-                    style={{
-                      width: `${(missingCount / totalActiveTopicSchemes) * 100}%`,
-                    }}
-                  >
-                    <span className="px-2">
-                      {t("claimTopicsCoverage.missing", {
-                        count: missingCount,
-                      })}
-                    </span>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="flex h-full items-center justify-center text-muted-foreground text-xs">
-                No topics configured
-              </div>
-            )}
+              {/* Missing segment (warning) */}
+              {missingCount > 0 && (
+                <div
+                  className="absolute right-0 top-0 flex h-full items-center justify-center bg-amber-500 text-xs font-medium text-white transition-all dark:bg-amber-600"
+                  style={{
+                    width: `${(missingCount / totalActiveTopicSchemes) * 100}%`,
+                  }}
+                >
+                  <span className="px-2">
+                    {t("claimTopicsCoverage.missing", {
+                      count: missingCount,
+                    })}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Missing topics list */}
         {hasMissingTopics && (
