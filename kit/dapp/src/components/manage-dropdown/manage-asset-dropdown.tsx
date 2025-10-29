@@ -16,7 +16,9 @@ import { orpc } from "@/orpc/orpc-client";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
 import { AssetExtensionEnum } from "@atk/zod/asset-extensions";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 import { isAfter } from "date-fns";
 import { greaterThan } from "dnum";
 import {
@@ -46,6 +48,7 @@ import { UnfreezePartialSheet } from "./sheets/unfreeze-partial-sheet";
 import { WithdrawDenominationAssetSheet } from "./sheets/withdraw-denomination-asset-sheet";
 
 interface ManageAssetDropdownProps {
+  factoryAddress: EthereumAddress;
   asset: Token; // Keep Token type to maintain API compatibility
 }
 
@@ -73,10 +76,13 @@ function isCurrentAction({
   return target === current;
 }
 
-export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
+export function ManageAssetDropdown({
+  asset,
+  factoryAddress,
+}: ManageAssetDropdownProps) {
   const { t } = useTranslation(["tokens", "common"]);
   const [openAction, setOpenAction] = useState<Action | null>(null);
-
+  const router = useRouter();
   const { data: session } = useSession();
   const userWallet = session?.user?.wallet;
 
@@ -253,10 +259,12 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
         label: t("tokens:actions.transfer.label"),
         icon: Send,
         openAction: "transfer",
-        disabled: !hasTransferableAmount,
-        disabledMessage: t("tokens:actions.transfer.noBalance", {
-          symbol: asset.symbol,
-        }),
+        disabled: isPaused || !hasTransferableAmount,
+        disabledMessage: hasTransferableAmount
+          ? t("tokens:actions.tokenPaused")
+          : t("tokens:actions.transfer.noBalance", {
+              symbol: asset.symbol,
+            }),
       });
     }
 
@@ -273,10 +281,8 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
           label: t("tokens:actions.setYieldSchedule.label"),
           icon: TrendingUp,
           openAction: "setYieldSchedule",
-          disabled: isPaused || !canSetYieldSchedule,
-          disabledMessage: canSetYieldSchedule
-            ? t("tokens:actions.tokenPaused")
-            : t("tokens:actions.setYieldSchedule.notAuthorized"),
+          disabled: !canSetYieldSchedule,
+          disabledMessage: t("tokens:actions.setYieldSchedule.notAuthorized"),
         });
       }
 
@@ -423,7 +429,17 @@ export function ManageAssetDropdown({ asset }: ManageAssetDropdownProps) {
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          <DropdownMenuItem disabled>
+          <DropdownMenuItem
+            onSelect={() => {
+              void router.navigate({
+                to: "/token/$factoryAddress/$tokenAddress/events",
+                params: {
+                  factoryAddress: factoryAddress,
+                  tokenAddress: asset.id,
+                },
+              });
+            }}
+          >
             {t("tokens:actions.viewEvents")}
           </DropdownMenuItem>
         </DropdownMenuContent>

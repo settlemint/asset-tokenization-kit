@@ -121,7 +121,7 @@ function RouteComponent() {
             <h1 className="text-3xl font-bold tracking-tight">{asset.name}</h1>
             <AssetStatusBadge paused={asset.pausable.paused} />
           </div>
-          <ManageAssetDropdown asset={asset} />
+          <ManageAssetDropdown asset={asset} factoryAddress={factoryAddress} />
         </div>
       </div>
 

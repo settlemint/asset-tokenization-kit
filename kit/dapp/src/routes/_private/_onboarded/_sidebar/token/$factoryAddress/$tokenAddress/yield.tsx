@@ -4,6 +4,11 @@ import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary"
 import { SetYieldScheduleSheet } from "@/components/manage-dropdown/sheets/set-yield-schedule-sheet";
 import { FixedYieldSchedulePeriodsTable } from "@/components/tables/fixed-yield-schedule-periods";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useTokenLoaderQuery } from "@/hooks/use-token-loader-query";
 import { orpc } from "@/orpc/orpc-client";
 import { TIME_INTERVAL_SECONDS } from "@atk/zod/src/time-interval";
@@ -74,6 +79,8 @@ function RouteComponent() {
 
   // Show empty state if no yield schedule exists
   if (!yieldScheduleId) {
+    const canSetYieldSchedule =
+      asset.userPermissions?.actions?.setYieldSchedule ?? false;
     return (
       <>
         <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
@@ -86,13 +93,26 @@ function RouteComponent() {
           <p className="text-muted-foreground max-w-md mb-6">
             {t("tokens:yield.emptyState.description")}
           </p>
-          <Button
-            onClick={() => {
-              setIsYieldScheduleSheetOpen(true);
-            }}
-          >
-            {t("tokens:yield.emptyState.setScheduleButton")}
-          </Button>
+          {canSetYieldSchedule ? (
+            <Button
+              onClick={() => {
+                setIsYieldScheduleSheetOpen(true);
+              }}
+            >
+              {t("tokens:yield.emptyState.setScheduleButton")}
+            </Button>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger className="pointer-events-auto">
+                <Button disabled={true}>
+                  {t("tokens:yield.emptyState.setScheduleButton")}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t("tokens:actions.setYieldSchedule.notAuthorized")}
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
 
         {/* Set Yield Schedule Sheet */}

@@ -208,7 +208,6 @@ export default defineConfig({
       "lodash.capitalize",
       "date-fns/locale",
       "i18n-iso-countries",
-      "currency-codes",
     ],
     esbuildOptions: {
       target: "es2023",
