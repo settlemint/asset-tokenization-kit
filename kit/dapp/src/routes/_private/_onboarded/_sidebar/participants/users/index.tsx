@@ -35,9 +35,10 @@ function UserManagementPage() {
   const { t } = useTranslation(["navigation", "user"]);
   const { canViewUsers } = Route.useLoaderData();
 
+  // Keep participant management views unconstrained for large tables and alerts.
   if (!canViewUsers) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="w-full p-6">
         <RouterBreadcrumb />
         <div className="mt-6 rounded-lg border bg-card p-6">
           <h1 className="text-2xl font-semibold">
@@ -52,7 +53,7 @@ function UserManagementPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="w-full p-6">
       <RouterBreadcrumb />
       <div className="mb-8 mt-4">
         <h1 className="text-3xl font-bold">{t("userManagement")}</h1>
