@@ -54,7 +54,7 @@ function ClaimTopicsIssuersPage() {
   const canManageClaimTopicsIssuers = Boolean(roles?.claimPolicyManager);
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="w-full p-6">
       <RouterBreadcrumb />
       <div className="mb-8 mt-4">
         <h1 className="text-3xl font-bold">

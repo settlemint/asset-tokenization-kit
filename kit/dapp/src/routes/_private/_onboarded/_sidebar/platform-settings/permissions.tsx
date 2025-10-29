@@ -1,7 +1,7 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { Alert, AlertTitle } from "@/components/ui/alert";
 import { UsersPermissionsTable } from "@/components/participants/users/users-permissions-table";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -32,7 +32,7 @@ function PermissionsPage() {
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="w-full p-6">
       <RouterBreadcrumb />
 
       <div className="mb-8 mt-4">
