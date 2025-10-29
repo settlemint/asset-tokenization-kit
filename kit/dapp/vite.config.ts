@@ -22,6 +22,9 @@ export default defineConfig({
     target: "es2023",
     sourcemap: true,
     rollupOptions: {
+      /*
+      Manual chunking is disabled as it is not working when bundling for production.
+      It gives all kind of race issues in the module loading logic resulting into "undefined" / TypeError errors.
       output: {
         manualChunks: (id: string) => {
           // Skip node_modules processing for non-vendor chunks
@@ -153,6 +156,7 @@ export default defineConfig({
           return "vendor";
         },
       },
+      */
       onwarn(
         warning: MinimalRollupWarning,
         warn: (warning: MinimalRollupWarning) => void
