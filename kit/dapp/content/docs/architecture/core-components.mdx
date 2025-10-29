@@ -54,11 +54,11 @@ vault contracts, and scheduled yield calculations through yield schedules.
 <Mermaid
   chart={`flowchart TB
     subgraph "Layered Architecture"
-        Frontend["Frontend Layer<br/>Web & Mobile Interfaces"]
-        API["API Layer<br/>Business Logic & Orchestration"]
-        Blockchain["Blockchain Layer<br/>Smart Contracts & Indexing"]
-        Data["Data Layer<br/>Storage & Caching"]
-        Deploy["Deployment Layer<br/>Testing & Orchestration"]
+        Frontend("Frontend Layer<br/>Web & Mobile Interfaces")
+        API("API Layer<br/>Business Logic & Orchestration")
+        Blockchain("Blockchain Layer<br/>Smart Contracts & Indexing")
+        Data("Data Layer<br/>Storage & Caching")
+        Deploy("Deployment Layer<br/>Testing & Orchestration")
     end
     
     Frontend --> API

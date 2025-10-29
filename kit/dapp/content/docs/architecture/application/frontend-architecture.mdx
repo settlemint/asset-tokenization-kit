@@ -230,26 +230,26 @@ Multi-step token creation interface at
 <Mermaid
   chart={`
 flowchart TB
-    Start["Select Asset Type
-    (Bond, Equity, Fund, StableCoin)"]
+    Start("Select Asset Type
+    (Bond, Equity, Fund, StableCoin)")
 
-    Details["Configure Details
-    (Name, symbol, supply)"]
+    Details("Configure Details
+    (Name, symbol, supply)")
 
-    Compliance["Set Compliance Rules
-    (KYC, country filters, caps)"]
+    Compliance("Set Compliance Rules
+    (KYC, country filters, caps)")
 
-    Extensions["Add Extensions
-    (Pausable, yield, voting)"]
+    Extensions("Add Extensions
+    (Pausable, yield, voting)")
 
-    Review["Review & Deploy
-    (Gas estimation, preview)"]
+    Review("Review & Deploy
+    (Gas estimation, preview)")
 
-    Deploy["Deploy Transaction
-    (Monitor status)"]
+    Deploy("Deploy Transaction
+    (Monitor status)")
 
-    Complete["Asset Created
-    (Navigate to token page)"]
+    Complete("Asset Created
+    (Navigate to token page)")
 
     Start --> Details
     Details --> Compliance
@@ -257,6 +257,14 @@ flowchart TB
     Extensions --> Review
     Review --> Deploy
     Deploy --> Complete
+
+    style Start fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Details fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Compliance fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Extensions fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Review fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Deploy fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Complete fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
 
     style Start fill:#6ba4d4,stroke:#4a7ba8,color:#fff
     style Details fill:#6ba4d4,stroke:#4a7ba8,color:#fff

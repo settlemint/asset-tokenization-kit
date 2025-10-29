@@ -40,6 +40,16 @@ export function DocsPage({ toc = [], path, ...props }: DocsPageProps) {
                 className="w-full"
               />
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              asChild
+              className="w-full mb-4 text-muted"
+            >
+              <a href="/llms-full.txt" target="_blank">
+                llms-full.txt
+              </a>
+            </Button>
             <p className="text-sm text-fd-muted-foreground mb-2">
               On this page
             </p>
@@ -69,10 +79,7 @@ function TocItem({ item }: { item: TOCItemType }) {
   return (
     <a
       href={item.url}
-      className={cn(
-        "text-sm text-fd-foreground/80 py-1",
-        isActive && "text-fd-primary"
-      )}
+      className={cn("text-sm text-muted py-1", isActive && "text-fd-primary")}
       style={{
         paddingLeft: Math.max(0, item.depth - 2) * 16,
       }}

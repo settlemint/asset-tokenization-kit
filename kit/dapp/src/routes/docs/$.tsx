@@ -74,13 +74,13 @@ const clientLoader = createClientLoader(docs.doc, {
               <h1 className="text-3xl font-bold tracking-tight wrap-break-words">
                 {frontmatter.pageTitle ?? frontmatter.title}
               </h1>
-              {frontmatter.description && (
-                <p className="text-sm text-fd-muted-foreground font-light tracking-normal mt-2 wrap-break-words">
-                  {frontmatter.description}
-                </p>
-              )}
             </div>
           </div>
+        </div>
+        <div>
+          <p className="italic mt-2 wrap-break-words">
+            {frontmatter.description}
+          </p>
         </div>
         <DocsBody>
           <MDX

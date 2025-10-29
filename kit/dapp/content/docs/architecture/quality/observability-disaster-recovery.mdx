@@ -97,8 +97,8 @@ operations:**
     end
     
     subgraph "Data Layer"
-        Postgres((PostgreSQL<br/>Query metrics))
-        Redis((Redis<br/>Cache hit rate))
+        Postgres(PostgreSQL<br/>Query metrics)
+        Redis(Redis<br/>Cache hit rate)
         GraphNode(TheGraph Node<br/>Sync status)
     end
     
@@ -143,9 +143,21 @@ operations:**
     Alertmanager --> PagerDuty
     PagerDuty --> Runbooks
     
+    style DApp fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style API fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Portal fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Postgres fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Redis fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style GraphNode fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Network fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Contracts fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
     style Prometheus fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Loki fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Tempo fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
     style Grafana fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
     style Alertmanager fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style PagerDuty fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Runbooks fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
 `}
 />
 
@@ -331,15 +343,15 @@ Alertmanager routes alerts based on severity and service:
 <Mermaid
   chart={`flowchart TB
     subgraph "Production Environment"
-        ProdData((Production Data<br/>Live state))
+        ProdData(Production Data<br/>Live state)
         ProdBC(Blockchain<br/>Immutable ledger)
     end
     
     subgraph "Backup Storage"
-        DBBackup((Database Backups<br/>Daily + WAL))
-        FileBackup((File Storage Backups<br/>MinIO snapshots))
-        ConfigBackup((Configuration Backups<br/>Git + Secrets))
-        BCSnapshot((Blockchain Snapshots<br/>Validator data))
+        DBBackup(Database Backups<br/>Daily + WAL)
+        FileBackup(File Storage Backups<br/>MinIO snapshots)
+        ConfigBackup(Configuration Backups<br/>Git + Secrets)
+        BCSnapshot(Blockchain Snapshots<br/>Validator data)
     end
     
     subgraph "Recovery Procedures"
@@ -359,7 +371,14 @@ Alertmanager routes alerts based on severity and service:
     ConfigBackup --> Runbook4
     
     style ProdData fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style ProdBC fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
     style DBBackup fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style FileBackup fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style ConfigBackup fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style BCSnapshot fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Runbook1 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Runbook2 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Runbook3 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
     style Runbook4 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 `}
 />
@@ -514,7 +533,11 @@ work as designed.
     Mitigate -.If unsuccessful.-> Investigate
     
     style Alert fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Ack fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Investigate fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Mitigate fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
     style Verify fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Postmortem fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
 `}
 />
 
@@ -576,8 +599,8 @@ cost of storage.
 
 ## See also
 
-- [Performance & scalability](./performance-scalability) - Capacity planning and
-  optimization techniques
+- [Scalability patterns](../performance/scalability-architecture) - Capacity
+  planning and optimization techniques
 - [Deployment operations](../integration-operations/deployment-operations) -
   Production deployment patterns and infrastructure
 - [Database model](../data-indexing/database-model) - Database backup and

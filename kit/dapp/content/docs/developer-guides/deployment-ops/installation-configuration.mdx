@@ -700,20 +700,21 @@ Default resource allocations with full stack enabled:
 | dapp                                  | 1        | 100m             | 3000m             | 1024Mi               | 2048Mi                | -                 |
 | support.ingress-nginx                 | 1        | 120m             | 720m              | 256Mi                | 512Mi                 | -                 |
 | support.redis                         | 1        | 40m              | 240m              | 64Mi                 | 128Mi                 | 1Gi               |
-| support.postgresql                    | 1        | -                | -                 | -                    | -                     | -                 |
+| support.postgresql                    | 1        | 80m              | 480m              | 256Mi                | 512Mi                 | 8Gi               |
 | support.minio                         | 1        | 50m              | 300m              | 256Mi                | 512Mi                 | -                 |
 | observability.grafana                 | 1        | 60m              | 360m              | 256Mi                | 512Mi                 | -                 |
 | observability.loki                    | 1        | 200m             | 1200m             | 512Mi                | 1024Mi                | 10Gi              |
 | observability.victoria-metrics-single | 1        | 60m              | 360m              | 256Mi                | 512Mi                 | 10Gi              |
 | observability.alloy                   | 1        | 120m             | 720m              | 512Mi                | 1024Mi                | -                 |
-| **Totals**                            | -        | **1.45 cores**   | **10.7 cores**    | **6.2Gi**            | **12.9Gi**            | **61Gi**          |
+| **Totals**                            | -        | **1.43 cores**   | **11.0 cores**    | **6.8Gi**            | **13.6Gi**            | **69Gi**          |
 
 These totals represent the minimum cluster capacity required. Add overhead for
 system components (kube-system, DNS, etc.).
 
 ## See also
 
-- [Production operations](./production-operations) - Production best practices,
-  monitoring, and troubleshooting
-- [Testing and QA](./testing-qa) - Running tests against deployed environments
-- [Development FAQ](./dev-faq) - Common deployment issues
+- [Production operations](/docs/developer-guides/deployment-ops/production-operations) -
+  Production best practices, monitoring, and troubleshooting
+- [Testing and QA](/docs/developer-guides/quality-assurance) - Running tests
+  against deployed environments
+- [Development FAQ](/docs/developer-guides/setup) - Common deployment issues

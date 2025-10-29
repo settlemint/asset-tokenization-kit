@@ -174,7 +174,7 @@ type Account @entity {
 
 - **One-to-many**:
   - `balances` → Token holdings (see
-    [Token entities](/developer-guides/data-model/entity-token))
+    [Token entities](/docs/developer-guides/data-model/entity-token))
   - `identities` → Identity contracts owned
   - `registeredIdentities` → Registry entries
 - **One-to-one**:
@@ -227,7 +227,7 @@ type Identity @entity {
 - **One-to-many**:
   - `keys` → Management and action keys
   - `claims` → Identity claims (see
-    [Compliance entities](/developer-guides/data-model/entity-compliance))
+    [Compliance entities](/docs/developer-guides/data-model/entity-compliance))
 
 #### Usage example
 
@@ -416,11 +416,11 @@ const onChainData = await graphqlClient.query({
 
 ## See also
 
-- **[Token entities](/developer-guides/data-model/entity-token)** - Query
+- **[Token entities](/docs/developer-guides/data-model/entity-token)** - Query
   investor token holdings
-- **[Compliance entities](/developer-guides/data-model/entity-compliance)** -
+- **[Compliance entities](/docs/developer-guides/data-model/entity-compliance)** -
   Identity claims and access control
-- **[Data model overview](/developer-guides/data-model/)** - Complete data
-  architecture
-- **[Authentication guide](/developer-guides/api-integration/authentication)** -
+- **[Data model overview](/docs/developer-guides/data-model/data-model-reference)** -
+  Complete data architecture
+- **[Authentication guide](/docs/developer-guides/api-integration/api-reference#authentication)** -
   User login and wallet connection
