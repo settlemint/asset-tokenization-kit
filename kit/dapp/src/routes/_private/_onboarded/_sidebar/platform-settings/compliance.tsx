@@ -22,7 +22,6 @@ export const Route = createFileRoute(
 function CompliancePage() {
   const { t } = useTranslation("navigation");
 
-  // Full-width layout keeps compliance messaging consistent with other settings panels.
   return (
     <div className="w-full p-6">
       <RouterBreadcrumb />

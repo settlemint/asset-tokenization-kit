@@ -53,7 +53,6 @@ function ClaimTopicsIssuersPage() {
   const roles = system.userPermissions?.roles;
   const canManageClaimTopicsIssuers = Boolean(roles?.claimPolicyManager);
 
-  // Full-width layout keeps claim topic and issuer tables aligned with surrounding actions.
   return (
     <div className="w-full p-6">
       <RouterBreadcrumb />

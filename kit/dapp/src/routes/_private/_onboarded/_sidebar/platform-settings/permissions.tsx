@@ -1,7 +1,7 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
-import { Alert, AlertTitle } from "@/components/ui/alert";
 import { UsersPermissionsTable } from "@/components/participants/users/users-permissions-table";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -31,7 +31,6 @@ function PermissionsPage() {
   // Get current user data with roles
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
 
-  // Full-width layout keeps permission tables and alerts aligned with participant views.
   return (
     <div className="w-full p-6">
       <RouterBreadcrumb />

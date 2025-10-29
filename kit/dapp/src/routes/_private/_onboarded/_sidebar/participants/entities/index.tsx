@@ -37,7 +37,6 @@ function EntityManagementPage() {
   const { t } = useTranslation(["entities", "navigation"]);
   const { canViewEntities } = Route.useLoaderData();
 
-  // Keep participant management views unconstrained for large tables and alerts.
   if (!canViewEntities) {
     return (
       <div className="w-full p-6">

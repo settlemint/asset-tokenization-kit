@@ -23,7 +23,6 @@ export const Route = createFileRoute(
 function AddonsSettingsPage() {
   const { t } = useTranslation("navigation");
 
-  // Full-width layout keeps addon cards aligned with the rest of platform settings.
   return (
     <div className="w-full p-6">
       <RouterBreadcrumb />

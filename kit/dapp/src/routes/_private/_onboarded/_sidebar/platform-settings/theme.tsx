@@ -839,7 +839,6 @@ function ThemeSettingsPage() {
     return tabs;
   }, [t, lightTokens.length, darkTokens.length]);
 
-  // Full-width layout keeps the editor and preview unconstrained.
   return (
     <div className="w-full p-6 space-y-6">
       <RouterBreadcrumb />

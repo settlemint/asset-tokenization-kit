@@ -23,7 +23,6 @@ export const Route = createFileRoute(
 function AssetTypesSettingsPage() {
   const { t } = useTranslation("navigation");
 
-  // Full-width layout keeps asset type grids aligned with the broader settings pages.
   return (
     <div className="w-full p-6">
       <RouterBreadcrumb />
