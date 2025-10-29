@@ -132,8 +132,8 @@ function RouteComponent() {
   return (
     <div className="space-y-6 p-6">
       {/* Header Section */}
-      <RouterBreadcrumb />
-      <div className="space-y-1">
+      <div className="space-y-2">
+        <RouterBreadcrumb />
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-3xl font-bold tracking-tight mr-2">
             {displayName || user.email}
