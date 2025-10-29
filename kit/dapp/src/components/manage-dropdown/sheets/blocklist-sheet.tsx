@@ -148,7 +148,7 @@ export function BlocklistSheet({
                   contract: asset.id,
                   walletVerification: verification,
                   userAddress: addr,
-                  freeze: mode === "add" ? true : false,
+                  freeze: mode === "add",
                 });
                 await Promise.all([
                   queryClient.invalidateQueries({

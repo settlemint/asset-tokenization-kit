@@ -42,6 +42,7 @@ vi.mock("@/orpc/middlewares/auth/offchain-permissions.middleware", () => ({
 
 installAuthRouterCaptureMock();
 
+// oxlint-disable-next-line no-unassigned-import
 import "./theme.update";
 
 type ThemeUpdateOutput = { theme: ThemeConfig; success: boolean };

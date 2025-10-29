@@ -20,15 +20,16 @@
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+// oxlint-disable-next-line no-unassigned-import
 import "./types";
 
 // Import all en-US translations synchronously for SSR
 import enUSAccessibility from "@/locales/en-US/accessibility.json";
+import enUSActions from "@/locales/en-US/actions.json";
 import enUSAssetClass from "@/locales/en-US/asset-class.json";
 import enUSAssetDesigner from "@/locales/en-US/asset-designer.json";
 import enUSAssetExtensions from "@/locales/en-US/asset-extensions.json";
 import enUSAssetTypes from "@/locales/en-US/asset-types.json";
-import enUSActions from "@/locales/en-US/actions.json";
 import enUSAssets from "@/locales/en-US/assets.json";
 import enUSAuth from "@/locales/en-US/auth.json";
 import enUSBlockchain from "@/locales/en-US/blockchain.json";
@@ -41,13 +42,13 @@ import enUSDashboard from "@/locales/en-US/dashboard.json";
 import enUSDataTable from "@/locales/en-US/data-table.json";
 import enUSDepositsTable from "@/locales/en-US/deposits-table.json";
 import enUSDetailGrid from "@/locales/en-US/detail-grid.json";
+import enUSEntities from "@/locales/en-US/entities.json";
 import enUSErrors from "@/locales/en-US/errors.json";
 import enUSExchangeRates from "@/locales/en-US/exchange-rates.json";
 import enUSForm from "@/locales/en-US/form.json";
 import enUSFormats from "@/locales/en-US/formats.json";
 import enUSGeneral from "@/locales/en-US/general.json";
 import enUSIdentities from "@/locales/en-US/identities.json";
-import enUSEntities from "@/locales/en-US/entities.json";
 import enUSIssuerDashboard from "@/locales/en-US/issuer-dashboard.json";
 import enUSLanguage from "@/locales/en-US/language.json";
 import enUSNavigation from "@/locales/en-US/navigation.json";
@@ -399,8 +400,10 @@ const lazyLoadBackend = {
  * The void operator is used to explicitly discard the promise,
  * as initialization happens synchronously for our use case.
  */
+// oxlint-disable-next-line no-named-as-default-member
 i18n.use(lazyLoadBackend).use(initReactI18next);
 
+// oxlint-disable-next-line no-named-as-default-member
 void i18n.init({
   resources: {
     "en-US": {

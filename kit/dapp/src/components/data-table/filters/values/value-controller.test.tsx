@@ -2,15 +2,15 @@
  * @vitest-environment happy-dom
  */
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
-import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createMockColumn,
   generateMockData,
   renderWithProviders,
   type TestDataItem,
 } from "@test/helpers/test-utils";
+import { screen } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDataType } from "../types/column-types";
 import {
   PropertyFilterOptionValueDisplay,

@@ -496,7 +496,7 @@ const MultipleSelector = ({
             onFocus={(event) => {
               setOpen(true);
               if (triggerSearchOnFocus) {
-                onSearch?.(debouncedSearchTerm);
+                void onSearch?.(debouncedSearchTerm);
               }
               inputProps?.onFocus?.(event);
             }}

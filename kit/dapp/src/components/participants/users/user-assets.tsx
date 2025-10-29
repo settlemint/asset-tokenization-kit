@@ -3,7 +3,6 @@ import {
   ActionsCell,
 } from "@/components/data-table/cells/actions-cell";
 import { DataTable } from "@/components/data-table/data-table";
-import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
@@ -14,6 +13,7 @@ import { useSession } from "@/hooks/use-auth";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import type { TokenBalance } from "@/orpc/routes/user/routes/user.assets.schema";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -34,7 +34,6 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAddress } from "viem";
-import type { EthereumAddress } from "@atk/zod/ethereum-address";
 
 const columnHelper = createStrictColumnHelper<TokenBalance>();
 

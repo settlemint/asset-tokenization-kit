@@ -30,7 +30,7 @@ export default defineConfig({
       reporter: ["text-summary", "json", "json-summary", "lcov"],
       reportOnFailure: true,
       reportsDirectory: "./coverage",
-      enabled: process.env.CI ? true : false,
+      enabled: !!process.env.CI,
       include: ["src/**/*.{ts,tsx,js,jsx}", "src/**/*.mjs"],
       exclude: [
         "**/node_modules/**",

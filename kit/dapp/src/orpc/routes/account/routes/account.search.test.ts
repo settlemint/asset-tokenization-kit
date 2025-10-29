@@ -39,6 +39,7 @@ vi.mock("@/orpc/routes/user/routes/user.read", () => ({
 }));
 
 // Import route to register handler with mocked router
+// oxlint-disable-next-line no-unassigned-import
 import "./account.search";
 
 describe("account.search (unit)", () => {

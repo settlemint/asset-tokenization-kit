@@ -14,6 +14,7 @@ declare global {
  */
 export function patchBigIntToJSON() {
   if (typeof BigInt.prototype.toJSON !== "function") {
+    // oxlint-disable-next-line no-extend-native
     BigInt.prototype.toJSON = function () {
       return this.toString();
     };

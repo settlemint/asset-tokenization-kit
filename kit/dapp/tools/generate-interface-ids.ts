@@ -102,7 +102,7 @@ async function extractInterfaceMetadata(
   const seenInterfaces = new Set<string>();
 
   // Focus on SMART protocol interfaces that are likely to be used
-  const relevantInterfaces = [
+  const relevantInterfaces = new Set([
     "IERC20",
     "IERC165",
     "IERC3643",
@@ -118,13 +118,13 @@ async function extractInterfaceMetadata(
     "ICompliance",
     "IIdentityRegistry",
     "IIdentity",
-  ];
+  ]);
 
   for (const file of interfaceFiles) {
     const interfaceName = basename(file, ".sol");
 
     // Skip if not in our relevant list
-    if (!relevantInterfaces.includes(interfaceName)) {
+    if (!relevantInterfaces.has(interfaceName)) {
       continue;
     }
 
@@ -250,7 +250,7 @@ async function calculateInterfaceIds(
     } else {
       logger.error("Unknown error:", error);
     }
-    throw new Error("Failed to calculate interface IDs");
+    throw new Error("Failed to calculate interface IDs", { cause: error });
   }
 }
 

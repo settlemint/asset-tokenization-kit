@@ -1,10 +1,10 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@test/helpers/test-utils";
+import { screen } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DebouncedInput } from "./debounced-input";
 
 describe("DebouncedInput", () => {
@@ -257,7 +257,7 @@ describe("DebouncedInput", () => {
 
       // Start typing to create a timeout
       const input = screen.getByRole("textbox");
-      user.type(input, "test");
+      void user.type(input, "test");
 
       // Unmount before timeout completes
       unmount();

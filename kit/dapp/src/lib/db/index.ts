@@ -56,7 +56,9 @@ export const migrateDatabase = async () => {
     const error = error_ as Error;
     logger.error(`Error migrating the database: ${error.message}`, error);
     // If migration fails the app will not function properly
-    throw new Error(`Database migration failed: ${error.message}`, error);
+    throw new Error(`Database migration failed: ${error.message}`, {
+      cause: error_,
+    });
   }
 
   try {

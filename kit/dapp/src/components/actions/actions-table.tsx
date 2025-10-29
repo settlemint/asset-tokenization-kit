@@ -3,7 +3,7 @@
 import { ActionStatusBadge } from "@/components/actions/action-status-badge";
 import { DataTable } from "@/components/data-table/data-table";
 import type { ColumnOption } from "@/components/data-table/filters/types/column-types";
-import "@/components/data-table/filters/types/table-extensions";
+
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { ClaimYieldSheet } from "@/components/manage-dropdown/sheets/claim-yield-sheet";

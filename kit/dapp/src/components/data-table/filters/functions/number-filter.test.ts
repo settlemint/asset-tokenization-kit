@@ -1,10 +1,10 @@
 /**
  * @vitest-environment node
  */
-import { describe, it, expect, vi } from "vitest";
 import type { Row } from "@tanstack/react-table";
-import { numberFilterFn, __numberFilterFn } from "./number-filter";
+import { describe, expect, it, vi } from "vitest";
 import type { FilterValue, NumberFilterOperator } from "../types/filter-types";
+import { __numberFilterFn, numberFilterFn } from "./number-filter";
 // Define test data type
 interface TestData {
   id: string;
@@ -88,6 +88,7 @@ describe("number-filter", () => {
         };
 
         expect(__numberFilterFn(3.14, filterValue)).toBe(true);
+        // oxlint-disable-next-line approx-constant
         expect(__numberFilterFn(3.141, filterValue)).toBe(false);
       });
     });

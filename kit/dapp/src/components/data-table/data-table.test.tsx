@@ -1,10 +1,6 @@
 /**
  * @vitest-environment happy-dom
  */
-import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { Search } from "lucide-react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   type ColumnFiltersState,
   type SortingState,
@@ -18,6 +14,10 @@ import {
   renderWithProviders,
   type TestDataItem,
 } from "@test/helpers/test-utils";
+import { screen } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
+import { Search } from "lucide-react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DataTable } from "./data-table";
 
 // Mock react-i18next

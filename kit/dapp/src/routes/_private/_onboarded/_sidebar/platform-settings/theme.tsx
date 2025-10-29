@@ -106,6 +106,7 @@ function ThemeSettingsPage() {
   const { isAdmin, userId } = Route.useLoaderData();
 
   const normalizeFieldPath = (path: string): string =>
+    // oxlint-disable-next-line no-useless-concat
     path.replaceAll(/\[(\w+)\]/g, "." + "$1").replace(/^[.]+/, "");
 
   if (!isAdmin) {

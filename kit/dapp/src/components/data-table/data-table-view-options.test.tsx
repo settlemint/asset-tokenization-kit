@@ -1,8 +1,8 @@
 import type { Column, Table } from "@tanstack/react-table";
-import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@test/helpers/test-utils";
+import { screen } from "@testing-library/react";
+import { userEvent } from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { DataTableViewOptions } from "./data-table-view-options";
 
 // Mock translations

@@ -1,14 +1,8 @@
-import { DataTable } from "@/components/data-table/data-table";
-import "@/components/data-table/filters/types/table-extensions";
-import type { EthereumAddress } from "@atk/zod/ethereum-address";
-import { Shield } from "lucide-react";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-//
 import {
   type ActionItem,
   ActionsCell,
 } from "@/components/data-table/cells/actions-cell";
+import { DataTable } from "@/components/data-table/data-table";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
@@ -17,6 +11,10 @@ import { Button } from "@/components/ui/button";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
+import type { EthereumAddress } from "@atk/zod/ethereum-address";
+import { Shield } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type PermissionRow = {
   id: string;

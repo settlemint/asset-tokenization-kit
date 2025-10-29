@@ -1,5 +1,5 @@
 import { DataTable } from "@/components/data-table/data-table";
-import "@/components/data-table/filters/types/table-extensions";
+
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { Badge } from "@/components/ui/badge";

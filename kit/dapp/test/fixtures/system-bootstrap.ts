@@ -128,9 +128,15 @@ export async function bootstrapTokenFactories(orpClient: OrpcClient) {
   });
 
   const allTokenFactories = await orpClient.system.factory.list({});
-  for (const factory of allTokenFactories) {
-    const { id: address, typeId, name } = factory;
-    const isContract = await isContractAddress(address);
+  // Parallelize contract address checks to avoid await inside loop
+  const factoryContractChecks = await Promise.all(
+    allTokenFactories.map(async ({ id: address, typeId, name }) => {
+      const isContract = await isContractAddress(address);
+      return { address, typeId, name, isContract };
+    })
+  );
+
+  factoryContractChecks.forEach(({ address, typeId, name, isContract }) => {
     if (!isContract) {
       logger.info(
         `Token factory ${name} (${typeId}) at ${address} is not a contract`
@@ -140,7 +146,7 @@ export async function bootstrapTokenFactories(orpClient: OrpcClient) {
         `Token factory ${name} (${typeId}) at ${address} is a contract`
       );
     }
-  }
+  });
 }
 
 export async function bootstrapAddons(orpClient: OrpcClient) {

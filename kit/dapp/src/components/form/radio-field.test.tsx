@@ -2,7 +2,7 @@ import { RadioField } from "@/components/form/radio-field";
 import { fieldContext, formContext } from "@/hooks/use-form-contexts";
 import { createFormHook, formOptions } from "@tanstack/react-form";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import type { FC } from "react";
 import { describe, expect, it } from "vitest";
 

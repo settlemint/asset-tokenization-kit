@@ -6,11 +6,11 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { renderWithProviders } from "@test/helpers/test-utils";
 import { screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders } from "@test/helpers/test-utils";
 import {
   createBasicSelectionColumn,
   createSelectionColumn,

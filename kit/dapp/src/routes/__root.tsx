@@ -37,7 +37,9 @@ import type { orpc } from "@/orpc/orpc-client";
 import { Providers } from "@/providers";
 import appCss from "@/styles/app.css?url";
 import { seo } from "@atk/config/metadata";
+// oxlint-disable-next-line no-unassigned-import
 import "@fontsource-variable/figtree";
+// oxlint-disable-next-line no-unassigned-import
 import "@fontsource-variable/roboto-mono";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { FormDevtools } from "@tanstack/react-form-devtools";

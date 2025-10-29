@@ -35,7 +35,10 @@ export async function getTransactionReceipt(transactionHash: string) {
     // Log the actual error for debugging
     logger.error("Getting transaction receipt failed:", error);
     throw new Error(
-      `Portal query failed: ${error instanceof Error ? error.message : String(error)}`
+      `Portal query failed: ${error instanceof Error ? error.message : String(error)}`,
+      {
+        cause: error,
+      }
     );
   }
 }

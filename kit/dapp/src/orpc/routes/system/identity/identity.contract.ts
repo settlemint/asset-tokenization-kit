@@ -1,5 +1,5 @@
 import { baseContract } from "@/orpc/procedures/base.contract";
-import claimsContract from "@/orpc/routes/system/identity/claims/claims.contract";
+import { claimsContract } from "@/orpc/routes/system/identity/claims/claims.contract";
 import { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
 import {
   IdentityListInputSchema,

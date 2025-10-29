@@ -8,11 +8,13 @@
     "vitest",
     "import"
   ],
-  "categories": {},
+  "categories": {
+    "perf": "error",
+    "suspicious": "warn"
+  },
   "rules": {
     "restrict-template-expressions": "off",
     "unbound-method": "off",
-    "no-floating-promises": "off",
     "require-array-sort-compare": "off",
     "no-standalone-expect": "off",
     "no-conditional-expect": "off",
@@ -20,12 +22,45 @@
     "expect-expect": "off",
     "require-to-throw-message": "off",
     "valid-describe-callback": "off",
-    "no-children-prop": "off"
+    "no-children-prop": "off",
+    "jsx-no-new-object-as-prop": "off",
+    "jsx-no-new-array-as-prop": "off",
+    "jsx-no-jsx-as-prop": "off",
+    "jsx-no-new-function-as-prop": "off",
+    "no-array-index-key": "off",
+    "no-unsafe-type-assertion": "off",
+    "no-unnecessary-type-assertion": "off",
+    "react-in-jsx-scope": "off",
+    "consistent-function-scoping": "off",
+    "no-array-sort": "off",
+    "require-post-message-target-origin": "off"
   },
   "settings": {},
   "env": {
     "builtin": true
   },
   "globals": {},
-  "ignorePatterns": []
+  "ignorePatterns": [],
+  "overrides": [
+    {
+      "files": [
+        "test/**",
+        "**/*.spec.ts",
+        "**/*.test.ts",
+        "**/*.spec.tsx",
+        "**/*.test.tsx"
+      ],
+      "rules": {
+        "no-await-in-loop": "off",
+        "no-unassigned-import": "off",
+        "require-module-specifiers": "off"
+      }
+    },
+    {
+      "files": ["**/*", "**/should-be-fixed.ts"],
+      "rules": {
+        "no-await-in-loop": "allow"
+      }
+    }
+  ]
 }

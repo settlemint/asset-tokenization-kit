@@ -148,7 +148,8 @@ export const setupUser = (user: User) =>
               }
             );
             throw new Error(
-              `Failed to create wallet: ${error instanceof Error ? error.message : "Unknown error"}`
+              `Failed to create wallet: ${error instanceof Error ? error.message : "Unknown error"}`,
+              { cause: error }
             );
           }
         }
