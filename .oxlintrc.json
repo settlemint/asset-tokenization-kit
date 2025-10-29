@@ -54,7 +54,8 @@
     "prefer-default-export": "off",
     "new-cap": "off",
     "no-set-state": "off",
-    "no-await-expression-member": "off"
+    "no-await-expression-member": "off",
+    "exhaustive-deps": "off"
   },
   "settings": {},
   "env": {

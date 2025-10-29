@@ -111,7 +111,7 @@ export function useOnboardingNavigation() {
         to: `/onboarding/${nextStep}` as const,
       });
     },
-    [refreshUserState, refreshSession, navigate, steps, queryClient]
+    [refreshUserState, refreshSession, navigate, steps]
   );
 
   /**
