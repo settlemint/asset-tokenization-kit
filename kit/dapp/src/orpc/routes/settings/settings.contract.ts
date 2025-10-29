@@ -1,5 +1,6 @@
+import { themeConfigSchema } from "@/components/theme/lib/schema";
 import { baseContract } from "@/orpc/procedures/base.contract";
-import * as z from "zod";
+import { z } from "zod";
 import { SettingsDeleteSchema } from "./routes/settings.delete.schema";
 import {
   SettingsListOutputSchema,
@@ -9,14 +10,13 @@ import { SettingsReadSchema } from "./routes/settings.read.schema";
 import { SettingsUpsertSchema } from "./routes/settings.upsert.schema";
 import { ThemeGetSchema } from "./routes/theme.get.schema";
 import {
-  ThemeUpdateOutputSchema,
-  ThemeUpdateSchema,
-} from "./routes/theme.update.schema";
-import {
   ThemePreviewOutputSchema,
   ThemePreviewSchema,
 } from "./routes/theme.preview.schema";
-import { themeConfigSchema } from "@/components/theme/lib/schema";
+import {
+  ThemeUpdateOutputSchema,
+  ThemeUpdateSchema,
+} from "./routes/theme.update.schema";
 import {
   ThemeLogoUploadOutputSchema,
   ThemeLogoUploadSchema,

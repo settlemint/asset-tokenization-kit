@@ -4,7 +4,7 @@ import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permiss
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
-import * as z from "zod";
+import { z } from "zod";
 import { read } from "../../token.read";
 
 const TOKEN_REDEEM_FOR_MUTATION = portalGraphql(`

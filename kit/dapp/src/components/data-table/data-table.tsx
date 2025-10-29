@@ -29,8 +29,15 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table";
 import { PackageOpen } from "lucide-react";
-import * as React from "react";
-import { type ComponentType, useCallback, useMemo, useState } from "react";
+import type { MouseEvent } from "react";
+import {
+  type ComponentType,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { DataTableActionBar } from "./data-table-action-bar";
 import {
@@ -248,7 +255,7 @@ function DataTableComponent<TData>({
   const externalOnGlobalFilterChange = externalState?.onGlobalFilterChange;
   const externalOnSortingChange = externalState?.onSortingChange;
 
-  const defaultPagination = React.useMemo(
+  const defaultPagination = useMemo(
     () => ({
       pageIndex: 0,
       pageSize: initialPageSize ?? 10,
@@ -256,7 +263,7 @@ function DataTableComponent<TData>({
     [initialPageSize]
   );
 
-  const currentState = React.useMemo(() => {
+  const currentState = useMemo(() => {
     if (isUsingUrlState && urlState?.routePath) {
       return tableState.tableOptions.state;
     }
@@ -297,25 +304,25 @@ function DataTableComponent<TData>({
   ]);
 
   // Track latest external filter state for stable debounce updates.
-  const externalGlobalFilterRef = React.useRef<string | undefined>(
+  const externalGlobalFilterRef = useRef<string | undefined>(
     externalGlobalFilter
   );
-  const externalGlobalFilterChangeRef = React.useRef<
+  const externalGlobalFilterChangeRef = useRef<
     ((updater: string | ((old: string) => string)) => void) | null
   >(externalOnGlobalFilterChange ?? null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     externalGlobalFilterRef.current = externalGlobalFilter;
   }, [externalGlobalFilter]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     externalGlobalFilterChangeRef.current =
       externalOnGlobalFilterChange ?? null;
   }, [externalOnGlobalFilterChange]);
 
   const hasExternalGlobalFilterChange = Boolean(externalOnGlobalFilterChange);
 
-  const debouncedExternalGlobalFilterChange = React.useMemo(() => {
+  const debouncedExternalGlobalFilterChange = useMemo(() => {
     if (!hasExternalGlobalFilterChange) {
       return null;
     }
@@ -334,7 +341,7 @@ function DataTableComponent<TData>({
     return debounce(handler, urlState?.debounceMs ?? 300);
   }, [hasExternalGlobalFilterChange, urlState?.debounceMs]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       debouncedExternalGlobalFilterChange?.cancel();
     };
@@ -466,7 +473,7 @@ function DataTableComponent<TData>({
    * @returns Event handler function
    */
   const createRowClickHandler =
-    (row: TData) => (e: React.MouseEvent<HTMLTableRowElement>) => {
+    (row: TData) => (e: MouseEvent<HTMLTableRowElement>) => {
       // Don't trigger row click if clicking on interactive elements
       const target = e.target as HTMLElement;
       const isInteractiveElement = !!(

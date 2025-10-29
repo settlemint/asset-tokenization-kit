@@ -11,7 +11,7 @@ import { getEthereumAddress } from "@atk/zod/ethereum-address";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import * as z from "zod";
+import { z } from "zod";
 
 const routeParamsSchema = z.object({
   address: z.string().min(1),

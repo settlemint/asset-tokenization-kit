@@ -6,21 +6,21 @@
  * in digital asset platforms and stablecoin systems.
  * @module FiatCurrencyValidation
  */
-import * as cc from "currency-codes";
-import * as z from "zod";
+import { code, codes } from "currency-codes";
+import { z } from "zod";
 
 /**
  * Get all valid ISO 4217 currency codes.
  * Filters out cryptocurrencies and test currencies.
  */
 function getValidFiatCurrencies(): string[] {
-  return cc.codes().filter((code) => {
-    const currency = cc.code(code);
+  return codes().filter((ccode) => {
+    const currency = code(ccode);
     if (!currency) return false;
 
     // Exclude test currencies (XTS), precious metals (XAU, XAG, etc.),
     // and special drawing rights (XDR)
-    if (code.startsWith("X")) return false;
+    if (ccode.startsWith("X")) return false;
 
     // Exclude currencies without decimal information
     return typeof currency.digits === "number";
@@ -56,9 +56,9 @@ export const fiatCurrencies = [
  * @returns Currency metadata or undefined
  */
 export function getCurrencyMetadata(
-  code: string
+  ccode: string
 ): { name: string; decimals: number } | undefined {
-  const currency = cc.code(code);
+  const currency = code(ccode);
   if (!currency) return undefined;
 
   return {

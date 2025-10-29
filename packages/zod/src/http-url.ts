@@ -5,7 +5,7 @@
  * ensuring they conform to valid URL syntax and use secure protocols.
  * @module HTTPURLValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Validates that a string is a valid HTTP or HTTPS URL

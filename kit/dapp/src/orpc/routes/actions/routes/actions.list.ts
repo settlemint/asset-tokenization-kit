@@ -2,7 +2,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
 import { getUnixTime } from "date-fns";
-import * as z from "zod";
+import { z } from "zod";
 import {
   ActionSchema,
   type ActionsListResponse,

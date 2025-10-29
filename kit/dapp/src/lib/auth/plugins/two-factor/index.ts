@@ -10,7 +10,7 @@ import {
   createAuthEndpoint,
   sessionMiddleware,
 } from "better-auth/api";
-import * as z from "zod";
+import { z } from "zod";
 import { isOnboarded, updateSession, validatePassword } from "../utils";
 
 const OTP_DIGITS = 6;

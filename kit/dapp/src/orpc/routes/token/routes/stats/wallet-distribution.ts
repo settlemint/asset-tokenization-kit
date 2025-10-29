@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * GraphQL query to fetch token distribution statistics from subgraph

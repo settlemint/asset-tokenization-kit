@@ -4,9 +4,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { cn } from "@/lib/utils";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { OTPInputContext } from "input-otp";
-import * as React from "react";
+import { OTPInputContext, REGEXP_ONLY_DIGITS } from "input-otp";
 
 type PincodeInputProps = Omit<
   Parameters<typeof InputOTP>[0],

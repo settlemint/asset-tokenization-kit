@@ -1,5 +1,5 @@
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for token search input parameters.

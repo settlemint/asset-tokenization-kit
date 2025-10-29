@@ -7,6 +7,7 @@ import type {
   AccordionMultipleProps,
   AccordionSingleProps,
 } from "@radix-ui/react-accordion";
+// oxlint-disable-next-line no-namespace
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { useCopyButton } from "fumadocs-ui/utils/use-copy-button";
 import { Check, ChevronRight, Link as LinkIcon } from "lucide-react";

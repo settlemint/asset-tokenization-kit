@@ -1,6 +1,6 @@
 import { StatsResolvedRangeSchema } from "@atk/zod/stats-range";
 import { timestamp } from "@atk/zod/timestamp";
-import * as z from "zod";
+import { z } from "zod";
 
 export const StatsTopicSchemesStatsOutputSchema = z.object({
   range: StatsResolvedRangeSchema,

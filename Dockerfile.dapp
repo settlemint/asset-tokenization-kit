@@ -5,7 +5,6 @@ COPY package.json .
 COPY bun.lock .
 COPY packages/config/package.json packages/config/
 COPY packages/zod/package.json packages/zod/
-COPY tools/eslint-config/package.json tools/eslint-config/
 COPY tools/typescript-config/package.json tools/typescript-config/
 COPY kit/dapp/package.json kit/dapp/
 COPY kit/contracts/package.json kit/contracts/

@@ -15,7 +15,7 @@ import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumCompositeId } from "@atk/zod/ethereum-composite-id";
 import { timestamp } from "@atk/zod/timestamp";
 import { from } from "dnum";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Zod schema for token details with user permissions

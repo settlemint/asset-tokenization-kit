@@ -1,6 +1,6 @@
 import { Command as CommandPrimitive, useCommandState } from "cmdk";
 import { XIcon } from "lucide-react";
-import * as React from "react";
+
 import { useEffect } from "react";
 
 import {

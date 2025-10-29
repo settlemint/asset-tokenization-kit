@@ -71,10 +71,10 @@ animations
 - Favor inferred return types; keep server functions JSON-serializable
 - Export shared enums/types from `src/types`
 
-### ESLint/Prettier deltas from root
+### Oxlint/Prettier deltas from root
 
 - React hooks and TanStack Router rules active; zero lint warnings permitted
-- ESLint cache stored locally (`.eslintcache`)
+- Oxlint cache stored locally (`.eslintcache`)
 - Prettier enforces 2-space indentation, single quotes, trailing commas
 
 ### Test locations

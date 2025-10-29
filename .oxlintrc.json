@@ -1,0 +1,124 @@
+{
+  "plugins": [
+    "unicorn",
+    "typescript",
+    "oxc",
+    "react",
+    "react-perf",
+    "vitest",
+    "import"
+  ],
+  "categories": {
+    "perf": "error",
+    "suspicious": "error",
+    "correctness": "error",
+    "style": "warn"
+  },
+  "rules": {
+    "restrict-template-expressions": "off",
+    "unbound-method": "off",
+    "require-array-sort-compare": "off",
+    "no-standalone-expect": "off",
+    "no-conditional-expect": "off",
+    "no-disabled-tests": "off",
+    "expect-expect": "off",
+    "require-to-throw-message": "off",
+    "valid-describe-callback": "off",
+    "no-children-prop": "off",
+    "jsx-no-new-object-as-prop": "off",
+    "jsx-no-new-array-as-prop": "off",
+    "jsx-no-jsx-as-prop": "off",
+    "jsx-no-new-function-as-prop": "off",
+    "no-array-index-key": "off",
+    "no-unsafe-type-assertion": "off",
+    "no-unnecessary-type-assertion": "off",
+    "react-in-jsx-scope": "off",
+    "consistent-function-scoping": "off",
+    "no-array-sort": "off",
+    "require-post-message-target-origin": "off",
+    "no-magic-numbers": "off",
+    "id-length": "off",
+    "no-null": "off",
+    "func-style": "off",
+    "init-declarations": "off",
+    "no-continue": "off",
+    "no-ternary": "off",
+    "no-nested-ternary": "off",
+    "consistent-type-specifier-style": ["error", "prefer-top-level"],
+    "jsx-boolean-value": ["error", "always"],
+    "max-params": "off",
+    "jsx-handler-names": "off",
+    "exports-last": "off",
+    "no-named-export": "off",
+    "group-exports": "off",
+    "prefer-default-export": "off",
+    "new-cap": "off",
+    "no-set-state": "off",
+    "no-await-expression-member": "off"
+  },
+  "settings": {},
+  "env": {
+    "builtin": true
+  },
+  "globals": {},
+  "ignorePatterns": [
+    "kit/dapp/src/components/ui/",
+    "kit/dapp/src/routeTree.gen.ts"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "kit/dapp/test/**",
+        "**/*.spec.ts",
+        "**/*.test.ts",
+        "**/*.spec.tsx",
+        "**/*.test.tsx"
+      ],
+      "rules": {
+        "no-await-in-loop": "off",
+        "no-unassigned-import": "off",
+        "require-module-specifiers": "off",
+        "first": "off",
+        "prefer-to-be-falsy": "off",
+        "prefer-to-be-truthy": "off",
+        "func-names": "off",
+        "jsx-curly-brace-presence": "off",
+        "no-script-url": "off",
+        "no-useless-concat": "off"
+      }
+    },
+    {
+      "files": ["**/*", "**/should-be-fixed.ts"],
+      "rules": {
+        "no-await-in-loop": "allow",
+        "curly": "off",
+        "sort-imports": "off",
+        "sort-keys": "off",
+        "prefer-template": "off",
+        "prefer-string-raw": "off",
+        "array-type": "off",
+        "consistent-type-specifier-style": "off",
+        "jsx-boolean-value": "off",
+        "prefer-destructuring": "off",
+        "consistent-type-imports": "off",
+        "arrow-body-style": "off",
+        "no-duplicate-imports": "off",
+        "switch-case-braces": "off",
+        "unicorn/no-nested-ternary": "off",
+        "catch-error-name": "off",
+        "consistent-type-definitions": "off",
+        "no-duplicates": "off",
+        "filename-case": "off",
+        "prefer-object-has-own": "off",
+        "jsx-curly-brace-presence": "off",
+        "self-closing-comp": "off",
+        "no-inferrable-types": "off",
+        "consistent-generic-constructors": "off",
+        "prefer-exponentiation-operator": "off",
+        "numeric-separators-style": "off",
+        "prefer-spread": "off",
+        "prefer-global-this": "off"
+      }
+    }
+  ]
+}

@@ -26,7 +26,8 @@
   "biome.enabled": false,
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
-    "source.organizeImports": "explicit"
+    "source.organizeImports": "explicit",
+    "source.fixAll.oxc": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.fontLigatures": true,
@@ -64,7 +65,6 @@
     "api.tsx": "api.tsx, ${capture}.handler.ts, ${capture}.middleware.ts, ${capture}.schema.ts",
     "__root.tsx": "__root.tsx, _layout.tsx, ${capture}.component.tsx, ${capture}.loader.ts"
   },
-  "extensions.ignoreRecommendations": true,
   "files.associations": {
     "*.css": "tailwindcss",
     ".env*": "dotenv"
@@ -142,7 +142,8 @@
   "workbench.tree.enableStickyScroll": true,
   "typescript.experimental.useTsgo": false,
   "oxc.enable": true,
-  "oxc.typeAware": true,
+  "oxc.typeAware": false,
   "oxc.unusedDisableDirectives": "warn",
-  "oxc.requireConfig": true
+  "oxc.requireConfig": true,
+  "github.copilot.chat.languageContext.fix.typescript.enabled": true
 }

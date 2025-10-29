@@ -55,7 +55,7 @@ accuracy
 - Generated types from contract ABIs
 - Strong typing for all entity fields
 
-### ESLint/Prettier deltas from root
+### Oxlint/Prettier deltas from root
 
 - AssemblyScript-specific linting rules
 - GraphQL schema formatting

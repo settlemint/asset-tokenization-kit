@@ -4,7 +4,7 @@ import { systemRouter } from "@/orpc/procedures/system.router";
 import { approve } from "@/orpc/routes/token/routes/mutations/approve/token.approve";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call } from "@orpc/server";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Minimal GraphQL query to get only the denomination asset from a fixed yield schedule.

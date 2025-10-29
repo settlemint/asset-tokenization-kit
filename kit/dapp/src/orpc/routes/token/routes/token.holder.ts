@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { assetBalance } from "@atk/zod/asset-balance";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * GraphQL query for retrieving a specific holder's balance for a token.

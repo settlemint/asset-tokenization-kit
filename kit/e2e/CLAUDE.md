@@ -48,9 +48,9 @@ accessibility
 - Type-safe selectors and assertions
 - Async/await for all browser interactions
 
-### ESLint/Prettier deltas from root
+### Oxlint/Prettier deltas from root
 
-- Playwright-specific ESLint rules
+- Playwright-specific Oxlint rules
 - Test file naming convention: `*.spec.ts`
 
 ### Test locations

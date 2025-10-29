@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for sorting a list of items.

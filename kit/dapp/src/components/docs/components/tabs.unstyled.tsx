@@ -1,6 +1,7 @@
 "use client";
 
 import { mergeRefs } from "@/lib/merge-refs";
+// oxlint-disable-next-line no-namespace
 import * as Primitive from "@radix-ui/react-tabs";
 import { useEffectEvent } from "fumadocs-core/utils/use-effect-event";
 import {

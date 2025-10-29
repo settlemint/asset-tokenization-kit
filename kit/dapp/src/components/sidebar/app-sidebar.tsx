@@ -19,7 +19,6 @@ import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ClipboardList, HomeIcon } from "lucide-react";
-import * as React from "react";
 import { useTranslation } from "react-i18next";
 
 /**

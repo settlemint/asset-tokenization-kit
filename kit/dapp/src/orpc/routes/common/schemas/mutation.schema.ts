@@ -27,7 +27,7 @@
 
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 export const MutationInputSchema = z.object({
   /**

@@ -4,7 +4,7 @@ import type { AvailableOutput } from "@/orpc/routes/system/token-factory/routes/
 import { factoryPredictAddress } from "@/orpc/routes/system/token-factory/routes/factory.predict-address";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { call } from "@orpc/server";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * GraphQL query to check if an AccessControl entity exists at a given address.

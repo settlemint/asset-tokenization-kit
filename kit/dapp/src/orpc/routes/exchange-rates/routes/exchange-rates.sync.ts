@@ -5,6 +5,7 @@
  * @module ExchangeRatesSync
  */
 
+// oxlint-disable-next-line no-namespace
 import type * as schema from "@/lib/db/schema";
 import {
   currencies,

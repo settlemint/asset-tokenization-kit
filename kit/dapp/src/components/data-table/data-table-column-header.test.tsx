@@ -478,9 +478,7 @@ describe("DataTableColumnHeader", () => {
     it("should handle empty children", () => {
       (mockColumn.getCanSort as ReturnType<typeof vi.fn>).mockReturnValue(true);
 
-      renderWithProviders(
-        <DataTableColumnHeader column={mockColumn}></DataTableColumnHeader>
-      );
+      renderWithProviders(<DataTableColumnHeader column={mockColumn} />);
 
       const button = screen.getByRole("button");
       expect(button).toBeInTheDocument();

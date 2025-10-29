@@ -37,7 +37,7 @@ import type { TadaDocumentNode } from "gql.tada";
 import { Kind, parse } from "graphql";
 import { ClientError } from "graphql-request";
 import { beforeEach, describe, expect, type Mock, test, vi } from "vitest";
-import * as z from "zod";
+import { z } from "zod";
 // Import from the mocked module - vitest config alias handles this
 import { portalClient } from "@/lib/settlemint/portal";
 import { print } from "graphql";

@@ -1,7 +1,7 @@
 import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Input schema for updating a trusted issuer's topics

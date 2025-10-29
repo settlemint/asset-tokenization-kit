@@ -8,7 +8,7 @@
 
 import { UserSchema } from "@/orpc/routes/user/routes/user.me.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Input schema for user read endpoint.

@@ -21,7 +21,7 @@ import { assetSymbol } from "@atk/zod/asset-symbol";
 import { assetType } from "@atk/zod/asset-types";
 import { decimals } from "@atk/zod/decimals";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Predict access manager address input schema.

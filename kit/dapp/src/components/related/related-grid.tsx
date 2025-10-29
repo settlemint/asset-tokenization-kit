@@ -1,7 +1,7 @@
-import * as React from "react";
+import { cn } from "@/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { Children, cloneElement, isValidElement } from "react";
 
 /* -------------------------------------------------------------------------- */
 /*                             RelatedGrid Container                          */
@@ -150,17 +150,14 @@ function RelatedGridContent({
 
   // Add animation classes to children if animate is true
   const animatedChildren = animate
-    ? React.Children.map(children, (child) =>
-        React.isValidElement(child)
-          ? React.cloneElement(
-              child as React.ReactElement<{ className?: string }>,
-              {
-                className: cn(
-                  (child.props as { className?: string }).className,
-                  "animate-in-grid"
-                ),
-              }
-            )
+    ? Children.map(children, (child) =>
+        isValidElement(child)
+          ? cloneElement(child as React.ReactElement<{ className?: string }>, {
+              className: cn(
+                (child.props as { className?: string }).className,
+                "animate-in-grid"
+              ),
+            })
           : child
       )
     : children;
@@ -347,17 +344,17 @@ function RelatedGridItemFooter({
 
 export {
   RelatedGrid,
-  RelatedGridHeader,
-  RelatedGridTitle,
-  RelatedGridDescription,
   RelatedGridContent,
+  relatedGridContentVariants,
+  RelatedGridDescription,
+  RelatedGridHeader,
   RelatedGridItem,
+  RelatedGridItemContent,
+  RelatedGridItemDescription,
+  RelatedGridItemFooter,
   RelatedGridItemHeader,
   RelatedGridItemTitle,
-  RelatedGridItemDescription,
-  RelatedGridItemContent,
-  RelatedGridItemFooter,
-  relatedGridVariants,
-  relatedGridContentVariants,
   relatedGridItemVariants,
+  RelatedGridTitle,
+  relatedGridVariants,
 };

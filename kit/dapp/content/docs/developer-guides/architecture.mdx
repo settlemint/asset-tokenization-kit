@@ -25,7 +25,6 @@ asset-tokenization-kit/
 │   ├── config/      # Shared configuration utilities
 │   └── zod/         # Shared Zod schemas
 ├── tools/           # Build and development tooling
-│   ├── eslint-config/
 │   ├── i18n/
 │   └── typescript-config/
 ├── .github/         # CI/CD workflows and actions
@@ -44,15 +43,15 @@ asset-tokenization-kit/
     A -->|imports| E(packages/config)
     A -->|imports| F(packages/zod)
     C -->|imports| E
-    
+
     style A fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
     style B fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
     style C fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
     style D fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
     style E fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
     style F fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-`}
-/>
+
+`} />
 
 Packages use workspace protocol for internal dependencies:
 
@@ -544,7 +543,6 @@ node_modules/      # Dependencies
 dist/              # Package build outputs
 drizzle/           # Database migrations (tracked)
 coverage/          # Test coverage reports
-.eslintcache       # ESLint cache
 ```
 
 **Note:** `drizzle/` migrations are tracked in Git to ensure schema consistency

@@ -1,6 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
+import { renderWithProviders } from "@test/helpers/test-utils";
 import { screen, within } from "@testing-library/react";
 import {
   AlertCircle,
@@ -13,9 +14,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { describe, expect, it } from "vitest";
-import { renderWithProviders } from "@test/helpers/test-utils";
-import type { DataTableEmptyStateProps } from "./data-table-empty-state";
-import { DataTableEmptyState } from "./data-table-empty-state";
+import {
+  DataTableEmptyState,
+  DataTableEmptyStateProps,
+} from "./data-table-empty-state";
 
 describe("DataTableEmptyState", () => {
   describe("Basic Rendering", () => {

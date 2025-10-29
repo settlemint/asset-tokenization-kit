@@ -10,7 +10,7 @@ import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumCompositeId } from "@atk/zod/ethereum-composite-id";
 import { ethereumHex } from "@atk/zod/ethereum-hex";
 import { isoCountryCode } from "@atk/zod/iso-country-code";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for token factory entries

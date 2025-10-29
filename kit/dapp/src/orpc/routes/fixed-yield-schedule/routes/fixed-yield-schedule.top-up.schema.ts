@@ -1,7 +1,7 @@
 import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
 import { apiBigInt } from "@atk/zod/bigint";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Input schema for topping up denomination asset in a fixed yield schedule.

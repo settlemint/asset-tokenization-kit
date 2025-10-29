@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { FormatPercentage } from "@/lib/utils/format-value/format-percentage";
+// oxlint-disable-next-line no-namespace
 import * as ProgressPrimitive from "@radix-ui/react-progress";
 
 interface PercentageProgressBarProps {

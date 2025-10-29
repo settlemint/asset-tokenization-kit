@@ -3,6 +3,7 @@
 import { LLMCopyButton, ViewOptions } from "@/components/docs/open-in-dropdown";
 import { Button } from "@/components/ui/button";
 import { Link, usePathname } from "fumadocs-core/framework";
+// oxlint-disable-next-line no-namespace
 import type * as PageTree from "fumadocs-core/page-tree";
 import {
   AnchorProvider,

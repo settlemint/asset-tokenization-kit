@@ -7,7 +7,7 @@ import {
   createAuthEndpoint,
   sessionMiddleware,
 } from "better-auth/api";
-import * as z from "zod";
+import { z } from "zod";
 import { updateSession } from "../utils";
 
 const GENERATE_SECRET_CODES_MUTATION = portalGraphql(`

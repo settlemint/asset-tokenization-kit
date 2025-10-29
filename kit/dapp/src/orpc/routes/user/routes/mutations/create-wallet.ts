@@ -24,7 +24,10 @@ const logger = createLogger();
 
 export const createWallet = authRouter.user.createWallet
   .use(databaseMiddleware)
-  .handler(async function ({ context: { auth, db, portalClient }, errors }) {
+  .handler(async function handler({
+    context: { auth, db, portalClient },
+    errors,
+  }) {
     if (auth.user.wallet !== zeroAddress) {
       throw errors.CONFLICT({
         message: "Wallet already created",

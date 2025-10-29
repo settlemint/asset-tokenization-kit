@@ -6,7 +6,7 @@
  * with proper format validation and checksum verification capabilities.
  * @module ISINValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Validates an ISIN using the Luhn algorithm checksum.

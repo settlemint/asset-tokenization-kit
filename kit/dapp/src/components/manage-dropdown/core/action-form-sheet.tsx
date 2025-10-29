@@ -202,7 +202,7 @@ export function ActionFormSheet({
                     canContinue ? !canContinue({ isDirty, errors }) : false
                   }
                 >
-                  {"Continue"}
+                  Continue
                 </button>
               )}
             </form.Subscribe>

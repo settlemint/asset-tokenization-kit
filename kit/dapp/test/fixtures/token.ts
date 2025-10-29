@@ -52,7 +52,9 @@ export async function createToken(
     : [];
 
   if (unpause) {
-    rolesToGrant = Array.from(new Set([...rolesToGrant, "emergency"]));
+    rolesToGrant = [
+      ...new Set([...rolesToGrant, "emergency"]),
+    ] as AssetAccessControlRoles[];
   }
 
   if (rolesToGrant.length > 0) {

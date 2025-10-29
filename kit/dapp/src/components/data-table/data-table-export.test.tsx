@@ -36,7 +36,6 @@ const mockLink = {
 
 describe("DataTableExport", () => {
   // Store original createElement
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
   const originalCreateElement = document.createElement.bind(document);
 
   beforeEach(() => {
@@ -52,7 +51,6 @@ describe("DataTableExport", () => {
     URL.revokeObjectURL = vi.fn();
 
     // Mock document.createElement
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
     document.createElement = vi.fn((tagName: string) => {
       if (tagName === "a") {
         return mockLink as unknown as HTMLAnchorElement;
@@ -66,7 +64,6 @@ describe("DataTableExport", () => {
 
   afterEach(() => {
     // Restore original createElement
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
     document.createElement = originalCreateElement;
     vi.restoreAllMocks();
   });
@@ -298,6 +295,7 @@ describe("DataTableExport", () => {
       const text = await blobCall.text();
 
       // BOM character should be at the start
+      // oxlint-disable-next-line number-literal-case
       const BOM_CHARACTER = 0xfe_ff; // Byte Order Mark for UTF-16
       expect(text.codePointAt(0)).toBe(BOM_CHARACTER);
     });

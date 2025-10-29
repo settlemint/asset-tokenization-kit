@@ -7,7 +7,7 @@
  * @module TopicsValidation
  */
 import { encodePacked, keccak256 } from "viem";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Tuple of valid ATK topic identifiers for type-safe iteration.

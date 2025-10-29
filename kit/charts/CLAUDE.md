@@ -35,7 +35,7 @@ charts/
 - TypeScript tools in `tools/` directory for packaging
 - Validated with JSON schemas
 
-### ESLint/Prettier deltas from root
+### Oxlint/Prettier deltas from root
 - YAML formatting for Helm templates
 - Schema validation for values files
 

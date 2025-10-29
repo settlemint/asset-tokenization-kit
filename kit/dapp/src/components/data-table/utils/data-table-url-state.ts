@@ -6,7 +6,7 @@
  * filtering, and complex filter structures.
  */
 
-import * as z from "zod";
+import { z } from "zod";
 import type { DataTableSearchParams } from "./search-params";
 import { dataTableSearchParamsSchema } from "./search-params";
 

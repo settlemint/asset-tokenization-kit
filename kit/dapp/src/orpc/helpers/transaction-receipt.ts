@@ -1,6 +1,6 @@
 import { portalClient, portalGraphql } from "@/lib/settlemint/portal";
 import { logger } from "better-auth";
-import * as z from "zod";
+import { z } from "zod";
 
 const GET_TRANSACTION_RECEIPT_QUERY = portalGraphql(`
   query GetTransactionReceipt($transactionHash: String!) {

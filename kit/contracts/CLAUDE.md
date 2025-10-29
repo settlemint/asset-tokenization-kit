@@ -55,7 +55,7 @@ operations where possible
 - Leverage Viem for type-safe contract interactions in scripts
 - Generate TypeScript types from ABIs via codegen
 
-### ESLint/Prettier deltas from root
+### Oxlint/Prettier deltas from root
 
 - Solhint for Solidity linting with max warnings = 0
 - Forge formatter for consistent Solidity style

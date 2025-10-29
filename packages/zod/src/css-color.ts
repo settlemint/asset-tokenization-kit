@@ -6,7 +6,7 @@
  * injection patterns like url(), javascript:, and script tags.
  * @module CSSColorValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Validates that a CSS value doesn't contain dangerous patterns
@@ -17,6 +17,7 @@ function isDangerousCSS(value: string): boolean {
   return (
     lower.includes("url(") ||
     lower.includes("<") ||
+    // oxlint-disable-next-line no-script-url
     lower.includes("javascript:") ||
     lower.includes("expression(") ||
     lower.includes("import")

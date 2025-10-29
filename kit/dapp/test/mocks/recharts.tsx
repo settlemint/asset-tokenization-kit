@@ -13,4 +13,3 @@ vi.mock("recharts", async () => {
 });
 
 // Export empty object to make this a module
-export {};

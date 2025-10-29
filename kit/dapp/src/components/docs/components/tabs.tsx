@@ -1,8 +1,9 @@
 "use client";
 
+// oxlint-disable-next-line no-namespace
 import * as Unstyled from "@/components/docs/components/tabs.unstyled";
 import { cn } from "@/lib/cn";
-import * as React from "react";
+
 import {
   type ComponentProps,
   createContext,

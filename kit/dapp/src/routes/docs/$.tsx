@@ -1,3 +1,5 @@
+// oxlint-disable no-namespace
+// oxlint-disable jsx-pascal-case
 import { docs } from "@/.source";
 import * as AccordionComponents from "@/components/docs/components/accordion";
 import * as BannerComponents from "@/components/docs/components/banner";

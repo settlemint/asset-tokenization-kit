@@ -35,7 +35,7 @@
 
 import type { ClaimData } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
 import { ClaimDataSchema } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Configuration for a single form field, generated from a Zod schema property

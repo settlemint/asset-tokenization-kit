@@ -30,7 +30,7 @@ graph TD
     D --> D1(Playwright UI Tests)
     D --> D2(API Tests)
 
-    E --> E1(ESLint/Solhint)
+    E --> E1(Oxlint/Solhint)
     E --> E2(Prettier)
     E --> E3(TypeScript)
 
@@ -73,7 +73,7 @@ This executes:
 1. Format checking (Prettier)
 2. TypeScript compilation
 3. Code generation (contract types, subgraph schemas)
-4. Linting (ESLint, Solhint)
+4. Linting (Oxlint, Solhint)
 5. Type checking
 6. Unit tests (all packages)
 7. Build verification
@@ -624,7 +624,7 @@ bun run lint
 
 This runs:
 
-- **ESLint** for TypeScript/JavaScript
+- **Oxlint** for TypeScript/JavaScript
 - **Solhint** for Solidity
 - **Prettier** (check mode)
 - **Fumadocs link validation** to fail builds on broken doc URLs
@@ -656,7 +656,7 @@ cd kit/dapp
 bun run lint
 ```
 
-ESLint configuration in `eslint.config.ts` enforces:
+Oxlint configuration in `eslint.config.ts` enforces:
 
 - React best practices
 - Accessibility rules (jsx-a11y)
@@ -724,7 +724,7 @@ request and push to main.
 
 3. **Quality checks**:
    - Format verification (Prettier)
-   - Linting (ESLint, Solhint)
+   - Linting (Oxlint, Solhint)
    - Type checking (TypeScript)
 
 4. **Test execution**:

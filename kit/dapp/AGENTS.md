@@ -68,10 +68,10 @@ wrap Radix primitives inside `src/components/ui`; keep animations respecting
 - Favor inferred return types; export shared types from `src/types`
 - Server functions must return JSON-serializable payloads
 
-### ESLint/Prettier deltas from root
+### Oxlint/Prettier deltas from root
 
 - React hooks, TanStack Router, and boundaries rules enforced
-- ESLint cache stored locally (`.eslintcache`)
+- Oxlint cache stored locally (`.eslintcache`)
 - Formatting via root Prettier config (2 spaces, single quotes)
 
 ### Test locations

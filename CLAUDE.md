@@ -24,7 +24,7 @@ Kubernetes, Helm, Vitest, Playwright
 - `bun run dev:reset` - Clean and restart Docker Compose with fresh state
 - `bun run build` - Build all packages in dependency order
 - `bun run test` - Run unit tests across all packages
-- `bun run lint` - Lint all packages with ESLint
+- `bun run lint` - Lint all packages with Oxlint
 - `bun run format` - Format code with Prettier
 - `bun run typecheck` - Type-check all TypeScript code
 - `bun run ci` - Full CI pipeline (format, compile, codegen, lint, typecheck,
@@ -63,22 +63,28 @@ e2e → dapp (testing UI/API)
 
 **CRITICAL: For ANY code change, PR, task, or changeset, you MUST:**
 
-1. **Validate** existing documentation in `kit/dapp/content/docs/` against your changes
-2. **Update** affected documentation pages to reflect new behavior, APIs, or architecture
+1. **Validate** existing documentation in `kit/dapp/content/docs/` against your
+   changes
+2. **Update** affected documentation pages to reflect new behavior, APIs, or
+   architecture
 3. **Extend** documentation with new sections for new features or capabilities
 4. **Improve** clarity, accuracy, and completeness based on what you've learned
 
-**This is not optional. Documentation updates are REQUIRED as part of every task.**
+**This is not optional. Documentation updates are REQUIRED as part of every
+task.**
 
 **Process:**
+
 - After implementing code changes, identify impacted documentation pages
-- Update technical accuracy (API signatures, component props, contract interfaces)
+- Update technical accuracy (API signatures, component props, contract
+  interfaces)
 - Add examples demonstrating new functionality
 - Update architecture diagrams if structure changed
 - Ensure consistency with style guide in `kit/dapp/content/AGENTS.md`
 - Cross-reference related pages that should link to new content
 
 **Examples of documentation that must be updated:**
+
 - Smart contract changes → Update contract reference and architecture docs
 - API changes → Update API reference and developer guides
 - New features → Update user guides, use cases, and feature documentation
@@ -116,10 +122,10 @@ leverage build cache; minimize final image size with distroless/alpine bases
 - **TypeScript**: Strict mode enabled with `noImplicitAny`, `strictNullChecks`,
   `noUncheckedIndexedAccess`
 - **Module resolution**: `bundler` mode with ESM-first approach, path aliases
-  configured (@/*, @schemas/*, @test/*)
+  configured (@/_, @schemas/_, @test/\*)
 - **Formatting**: Prettier with 2-space indentation, trailing commas, single
   quotes for strings
-- **Linting**: ESLint with React/TypeScript rules, max warnings = 0, boundaries
+- **Linting**: Oxlint with React/TypeScript rules, max warnings = 0, boundaries
   plugin for package isolation
 - **Component patterns**: Functional components with hooks, avoid class
   components, use composition over inheritance
@@ -149,7 +155,7 @@ leverage build cache; minimize final image size with distroless/alpine bases
 - Format validation (Prettier)
 - Compilation (Foundry + Hardhat for contracts, TypeScript for apps)
 - Code generation (GraphQL types, contract types, SDK bindings)
-- Linting (ESLint, Solhint for Solidity)
+- Linting (Oxlint, Solhint for Solidity)
 - Type checking (TypeScript strict mode)
 - Unit tests (Vitest, Foundry tests)
 - Coverage reporting (Coveralls integration)

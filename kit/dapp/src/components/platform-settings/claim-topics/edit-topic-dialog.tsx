@@ -16,7 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import * as z from "zod";
+import { z } from "zod";
 
 // Form schema with only editable fields
 const EditTopicFormSchema = z.object({

@@ -22,6 +22,7 @@ import { createLogger } from "@settlemint/sdk-utils/logging";
 import { createServerOnlyFn } from "@tanstack/react-start";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
+// oxlint-disable-next-line no-namespace
 import * as schemas from "./schema";
 
 const logger = createLogger();

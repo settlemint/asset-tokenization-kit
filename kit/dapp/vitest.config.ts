@@ -50,7 +50,7 @@ export default defineConfig({
         "**/.turbo/**",
         "**/.vite/**",
         "**/.vitest/**",
-        "**/.eslintrc.js",
+        "**/.oxlintrc.json",
         "**/.prettierrc.js",
         "**/*.d.ts",
         "**/*.gen.ts",

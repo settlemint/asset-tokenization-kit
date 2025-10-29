@@ -5,7 +5,7 @@
  * @module ExchangeRatesUpdateSchema
  */
 import { fiatCurrency } from "@atk/zod/fiat-currency";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for updating an exchange rate.

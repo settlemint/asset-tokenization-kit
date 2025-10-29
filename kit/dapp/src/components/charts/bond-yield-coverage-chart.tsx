@@ -114,7 +114,7 @@ const BondYieldCoverageChartLoader = withErrorBoundary(
           title={title}
           description={description}
           className={className}
-          emptyMessage={"No yield schedule configured"}
+          emptyMessage="No yield schedule configured"
           emptyDescription="This bond has no yield schedule configured"
         />
       );
@@ -126,7 +126,7 @@ const BondYieldCoverageChartLoader = withErrorBoundary(
           title={title}
           description={description}
           className={className}
-          emptyMessage={"Yield schedule is not active"}
+          emptyMessage="Yield schedule is not active"
           emptyDescription="Yield schedule is not currently active"
         />
       );

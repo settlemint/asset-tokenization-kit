@@ -70,12 +70,10 @@
       "dependsOn": ["codegen", "docs:validate-links"],
       "inputs": [
         "src/**/*.{js,jsx,ts,tsx}",
-        ".eslintrc*",
-        "eslint.config.*",
+        ".oxlintrc*",
         "package.json",
         "tsconfig.json"
-      ],
-      "outputs": [".eslintcache"]
+      ]
     },
     "docs:validate-links": {
       "inputs": ["content/docs/**/*", "tools/validate-doc-links.ts"],

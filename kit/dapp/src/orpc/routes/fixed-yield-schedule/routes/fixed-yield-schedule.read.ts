@@ -2,7 +2,7 @@ import { TokenFixedYieldScheduleFragment } from "@/lib/fragments/the-graph/fixed
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { FixedYieldScheduleSchema } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read.schema";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * GraphQL query for retrieving a specific fixed yield schedule from TheGraph.

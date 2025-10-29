@@ -1,6 +1,5 @@
-import * as React from "react";
-import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CheckIcon } from "lucide-react";
 
 interface TimelineContextType {
   defaultValue?: number;
@@ -159,11 +158,11 @@ function TimelineContent({
 
 export {
   Timeline,
-  TimelineItem,
-  TimelineHeader,
-  TimelineSeparator,
-  TimelineDate,
-  TimelineTitle,
-  TimelineIndicator,
   TimelineContent,
+  TimelineDate,
+  TimelineHeader,
+  TimelineIndicator,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineTitle,
 };

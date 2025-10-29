@@ -41,7 +41,7 @@ flowchart TB
         E2E("End-to-End Tests<br/>18+ scenarios<br/>Full user workflows")
         Integration("Integration Tests<br/>API + Database + Blockchain<br/>Multi-component interactions")
         Unit("Unit Tests<br/>1,000+ tests<br/>Component isolation")
-        Static("Static Analysis<br/>TypeScript, Solhint, ESLint<br/>Code quality")
+        Static("Static Analysis<br/>TypeScript, Solhint, Oxlint<br/>Code quality")
     end
 
     Unit --> Integration
@@ -125,7 +125,7 @@ mode enabled (`strict: true`, `noUncheckedIndexedAccess`, `noImplicitAny`). This
 eliminates entire classes of runtime errors (null reference errors, undefined
 property access, type mismatches) at compile time.
 
-**ESLint and Solhint** - Linters enforce code quality rules across TypeScript
+**Oxlint and Solhint** - Linters enforce code quality rules across TypeScript
 and Solidity. Rules prevent common mistakes (unused variables, missing return
 types, dangerous patterns). The CI pipeline fails when lint warnings exceed
 zero.
@@ -196,7 +196,7 @@ Each pull request must pass these gates before merging:
 | **TypeScript compile**  | `bun run typecheck`          | Zero errors            | ✅            |
 | **Solidity compile**    | Foundry + Hardhat            | Zero errors            | ✅            |
 | **Code generation**     | GraphQL Codegen, ABI exports | Zero errors            | ✅            |
-| **Linting**             | ESLint (TS), Solhint (Sol)   | Zero warnings          | ✅            |
+| **Linting**             | Oxlint (TS), Solhint (Sol)   | Zero warnings          | ✅            |
 | **Type checking**       | TypeScript strict mode       | Zero errors            | ✅            |
 | **Build**               | Turborepo build task         | All packages succeed   | ✅            |
 | **Unit tests**          | Vitest (frontend), Foundry   | 100% passing           | ✅            |

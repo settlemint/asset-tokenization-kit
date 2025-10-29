@@ -24,6 +24,7 @@ import {
 import { cn } from "@/lib/cn";
 import { usePathname } from "fumadocs-core/framework";
 import Link from "fumadocs-core/link";
+// oxlint-disable-next-line no-namespace
 import type * as PageTree from "fumadocs-core/page-tree";
 import { useSearchContext } from "fumadocs-ui/contexts/search";
 import { TreeContextProvider, useTreeContext } from "fumadocs-ui/contexts/tree";

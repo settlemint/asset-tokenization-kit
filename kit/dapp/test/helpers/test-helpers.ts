@@ -26,7 +26,7 @@ export function expectDnum(
     exactly?: number;
   }
 ): void {
-  expect(isDnum(value)).toBe(true);
+  expect(isDnum(value)).toBeTruthy();
 
   if (options && isDnum(value)) {
     const numericValue = toNumber(value);

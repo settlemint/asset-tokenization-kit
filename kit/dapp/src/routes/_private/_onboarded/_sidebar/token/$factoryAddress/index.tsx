@@ -14,7 +14,7 @@ import {
 } from "@atk/zod/asset-types";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { createFileRoute } from "@tanstack/react-router";
-import * as z from "zod";
+import { z } from "zod";
 
 const routeParamsSchema = z.object({
   factoryAddress: ethereumAddress,

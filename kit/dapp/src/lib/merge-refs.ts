@@ -1,8 +1,6 @@
-import type * as React from "react";
+import type { Ref, RefCallback } from "react";
 
-export function mergeRefs<T>(
-  ...refs: (React.Ref<T> | undefined)[]
-): React.RefCallback<T> {
+export function mergeRefs<T>(...refs: (Ref<T> | undefined)[]): RefCallback<T> {
   return (value) => {
     refs.forEach((ref) => {
       if (typeof ref === "function") {

@@ -26,6 +26,7 @@ import {
   userRole,
 } from "@/lib/auth/utils/permissions";
 import { kycProfiles } from "@/lib/db/schema";
+// oxlint-disable-next-line no-namespace
 import * as authSchema from "@/lib/db/schemas/auth";
 import { env } from "@atk/config/env";
 import { metadata } from "@atk/config/metadata";

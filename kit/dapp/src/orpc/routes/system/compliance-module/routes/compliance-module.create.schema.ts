@@ -4,7 +4,7 @@ import {
   ethereumAddress,
   type EthereumAddress,
 } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Default implementation addresses for each compliance module type
