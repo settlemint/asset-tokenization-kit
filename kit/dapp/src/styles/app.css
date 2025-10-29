@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "fumadocs-ui/css/shadcn.css";
 @import "fumadocs-ui/css/preset.css";
-/* @import "fumadocs-openapi/css/preset.css"; */
+@import "fumadocs-openapi/css/preset.css";
 @import "@daveyplate/better-auth-ui/css";
 
 /* Scope dark utilities to the nearest theme container so light previews stay isolated */
