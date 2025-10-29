@@ -1,0 +1,9 @@
+{
+  "title": "Performance",
+  "pages": [
+    "frontend-api-optimization",
+    "infrastructure-performance",
+    "scalability-architecture",
+    "performance-operations"
+  ]
+}

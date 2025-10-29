@@ -1,0 +1,11 @@
+{
+  "title": "Asset issuance",
+  "pages": [
+    "issue-bond",
+    "issue-equity",
+    "issue-fund",
+    "issue-stablecoin",
+    "issue-deposit",
+    "corporate-actions"
+  ]
+}

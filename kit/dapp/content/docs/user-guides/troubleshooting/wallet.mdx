@@ -1,0 +1,320 @@
+---
+title: Wallet & accounts
+description:
+  Solutions for wallet connection, account access, and balance display problems
+pageTitle: Wallet and account troubleshooting
+tags: [troubleshooting, wallet, account, connection, recovery]
+---
+
+## Overview
+
+This guide covers troubleshooting for wallet connections, account access, and
+balance-related issues. Follow the step-by-step solutions to resolve common
+wallet and account problems.
+
+**Primary audience:** All platform users **Related guides:**
+[Onboarding Guide](/docs/user-guides/getting-started),
+
+## How to use this guide
+
+1. **Identify your issue** - Find the section matching your problem
+2. **Try solutions in order** - Work through each solution sequentially
+3. **Check error messages** - Reference the Error Messages section for specific
+   errors
+4. **Escalate if unresolved** - Contact support with diagnostic information
+
+**Tip:** Keep your transaction hash and wallet address ready when seeking
+support.
+
+## Wallet connection issues
+
+### Wallet not connecting or disconnecting frequently
+
+**Symptoms:** Wallet connection fails, disconnects randomly, or shows wrong
+network.
+
+**Solutions:**
+
+1. **Check wallet installation:**
+   - Ensure MetaMask or compatible wallet installed
+   - Update wallet to latest version
+   - Enable wallet browser extension
+
+2. **Network mismatch:**
+   - Verify wallet connected to correct network
+   - Platform shows expected network (e.g., "Ethereum Mainnet")
+   - Switch network in wallet to match platform
+
+3. **Connection permissions:**
+   - Check site permissions in wallet
+   - Re-connect wallet via **Connect Wallet** button
+   - Clear wallet cache (Settings &gt; Advanced &gt; Reset)
+
+4. **Multiple wallets:**
+   - Disable other wallet extensions
+   - Select correct wallet in connection modal
+   - Ensure only one wallet active at a time
+
+**Verification:** Check that the wallet address displayed on the platform
+matches your wallet extension.
+
+### Wallet creation fails during onboarding
+
+**Symptoms:** "Wallet creation failed" or wallet deployment transaction reverts.
+
+**Solutions:**
+
+1. **Check network status:**
+   - Verify blockchain network operational (check network status page)
+   - Wait for network congestion to subside
+   - Retry after 5-10 minutes
+
+2. **Browser issues:**
+   - Clear site data: Settings &gt; Privacy &gt; Site Settings &gt; Clear Data
+   - Disable browser extensions temporarily
+   - Try incognito/private browsing mode
+
+3. **Platform gas balance:**
+   - Ensure platform has sufficient native tokens for deployment
+   - Contact administrator if persistent
+
+**Workaround:** Use existing wallet by selecting "Import Wallet" instead of
+"Create New".
+
+### Cannot access platform or login fails
+
+**Symptoms:** Login page doesn't load, credentials rejected, or unable to
+authenticate.
+
+**Solutions:**
+
+1. **Check browser compatibility:**
+   - Use Chrome, Firefox, Edge, or Safari (latest versions)
+   - Enable JavaScript
+   - Disable ad blockers that may interfere
+   - Clear browser cache and cookies
+
+2. **Verify network connection:**
+   - Check internet connectivity
+   - Ensure firewall not blocking platform domain
+   - Try different network (mobile hotspot) to isolate issue
+
+3. **Password issues:**
+   - Use **Forgot Password** to reset
+   - Check caps lock is off
+   - Ensure password meets requirements (if creating new account)
+
+4. **2FA problems:**
+   - Verify authenticator app time synchronized
+   - Use backup codes if 2FA lost
+   - Contact administrator to reset 2FA
+
+**Still not working?** Contact platform support with browser console error
+messages (F12 &gt; Console tab).
+
+## Account recovery
+
+### Lost access to wallet or forgot recovery codes
+
+**Symptoms:** Cannot access wallet, recovery codes lost or invalid.
+
+**Solutions:**
+
+1. **Wallet recovery:**
+   - Use wallet's seed phrase recovery if available
+   - Check password manager for saved recovery codes
+   - Look for recovery codes email sent during wallet creation
+
+2. **Request new wallet:**
+   - If primary wallet lost, contact platform administrator
+   - Administrator can link new wallet to your OnchainID
+   - Requires identity verification
+
+3. **Recovery service:**
+   - Navigate to **Account** &gt; **Wallet Recovery**
+   - Submit recovery request with proof of identity
+   - Administrator initiates recovery process
+
+**Prevention:** Always store recovery codes securely offline (not in email or
+cloud storage).
+
+**CRITICAL:** Never share your seed phrase or private keys with anyone,
+including support staff.
+
+## Balance and transaction display
+
+### Cannot see wallet balance or transactions not showing
+
+**Symptoms:** Token balance shows zero despite owning tokens, or recent
+transactions missing.
+
+**Solutions:**
+
+1. **Refresh balance:**
+   - Click **Refresh** button on account page
+   - Wait 30 seconds for blockchain sync
+   - Check blockchain explorer to verify balance on-chain
+
+2. **Network sync issues:**
+   - Platform may be syncing with blockchain
+   - Check network status indicator (top right)
+   - Wait a few minutes and refresh page
+
+3. **Wrong wallet connected:**
+   - Verify correct wallet address connected
+   - Check if you have multiple wallets
+   - Switch to wallet that holds tokens
+
+4. **Custom token not added:**
+   - Platform should automatically display tokens
+   - If missing, add token custom contract address in wallet
+
+**Verification:** Always verify your balance on a blockchain explorer for the
+source of truth.
+
+## OnchainID issues
+
+### OnchainID deployment stuck or fails
+
+**Symptoms:** OnchainID deployment pending forever or transaction fails.
+
+**Solutions:**
+
+1. **Verify wallet has gas:**
+   - Although platform pays for deployment, check wallet connection
+   - Retry deployment after ensuring wallet connected
+
+2. **Network issues:**
+   - Check blockchain explorer for transaction status
+   - Transaction may be pending due to low gas price
+   - Wait for transaction confirmation or retry
+
+3. **Duplicate OnchainID:**
+   - Each address can only have one OnchainID
+   - If you already have OnchainID, deployment fails
+   - Check if OnchainID already exists on profile page
+
+**Resolution:** Navigate to **Account** &gt; **OnchainID** and click **Retry
+Deployment** if status shows failed.
+
+### Cannot complete onboarding - stuck on system deployment step
+
+**Symptoms:** System deployment screen shows indefinite loading or some
+contracts fail to deploy.
+
+**Solutions:**
+
+1. **Wait for all deployments:**
+   - System deployment takes 3-5 minutes
+   - Don't close browser or navigate away
+   - Progress bar shows deployment status
+
+2. **Check for failed contracts:**
+   - If specific contract fails, note which one
+   - Click **Retry Failed Deployments**
+   - Contact administrator if repeated failures
+
+3. **Network timeouts:**
+   - Slow network may timeout deployments
+   - Retry deployment from **Account** &gt; **System Setup**
+   - Deployments resume from last successful step
+
+**Critical:** Do not create new account; use **Resume Onboarding** to continue
+from checkpoint.
+
+## Error messages reference
+
+### "Wallet not detected"
+
+**Meaning:** No wallet extension found in browser.
+
+**Solution:** Install MetaMask or compatible wallet extension and refresh page.
+
+### "Network mismatch"
+
+**Meaning:** Wallet connected to different network than platform requires.
+
+**Solution:** Switch wallet network to match platform (check platform header for
+required network).
+
+### "Insufficient gas"
+
+**Meaning:** Wallet lacks native tokens to pay transaction gas fees.
+
+**Solution:** Add native tokens (ETH, MATIC, etc.) to wallet and retry.
+
+### "User rejected request"
+
+**Meaning:** Transaction or connection cancelled in wallet.
+
+**Solution:** Retry operation and approve in wallet when prompted.
+
+### "OnchainID already exists"
+
+**Meaning:** Wallet address already has an OnchainID deployed.
+
+**Solution:** No action needed; existing OnchainID will be used. Check
+**Account** &gt; **OnchainID** to verify.
+
+## Getting help
+
+If solutions don't resolve your issue:
+
+**Gather diagnostic information:**
+
+- Wallet address
+- Network name
+- Transaction hash (if applicable)
+- Browser console errors (F12 &gt; Console)
+- Screenshots of error messages
+
+**Contact support:**
+
+- Email: support@platform.example (check your platform's support email)
+- Include all diagnostic information gathered above
+- Specify which solutions you've already tried
+
+**Emergency scenarios:**
+
+- **Lost access during transaction:** Contact support immediately with
+  transaction hash
+- **Security concerns:** Report to security team immediately
+- **Suspected unauthorized access:** Freeze account and contact administrator
+
+**Response times:**
+
+- Wallet connection issues: 4-8 business hours
+- Account recovery: 1-2 business days (requires identity verification)
+- Critical security issues: 1-2 hours
+
+## Preventive best practices
+
+**Wallet security:**
+
+- Store seed phrase offline in secure location
+- Never share private keys or seed phrase
+- Use hardware wallet for large holdings
+- Enable wallet password/biometric protection
+
+**Account management:**
+
+- Bookmark official platform URL
+- Enable 2FA on platform account
+- Keep wallet extension updated
+- Regularly backup recovery codes
+
+**Connection hygiene:**
+
+- Only connect to trusted sites
+- Verify site URL before connecting wallet
+- Disconnect wallet when not using platform
+- Review connected sites in wallet settings
+
+**Monitoring:**
+
+- Regularly check wallet balance on blockchain explorer
+- Review transaction history for unauthorized activity
+- Set up wallet alerts for large transactions
+- Monitor gas prices before transactions
+
+By following these practices, you'll minimize wallet and account issues.

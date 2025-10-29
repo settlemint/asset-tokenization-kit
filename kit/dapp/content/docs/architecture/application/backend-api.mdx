@@ -1,16 +1,13 @@
 ---
 title: Backend API
 description:
-  Type-safe ORPC architecture with middleware-based authentication, validation,
-  and integration
+  The Asset Tokenization Kit backend exposes a type-safe RPC API built with ORPC
+  (Object RPC), providing end-to-end type safety from server to client with
+  automatic TypeScript inference. The architecture uses composable middleware to
+  build specialized routers for different security and context requirements.
 pageTitle: Backend API - ORPC architecture and middleware
 tags: [architecture, backend, api, orpc, middleware, rpc]
 ---
-
-The Asset Tokenization Kit backend exposes a type-safe RPC API built with ORPC
-(Object RPC), providing end-to-end type safety from server to client with
-automatic TypeScript inference. The architecture uses composable middleware to
-build specialized routers for different security and context requirements.
 
 ## ORPC architecture overview
 
@@ -62,11 +59,11 @@ flowchart TB
     Handler --> Response
     Response --> Client
 
-    style Client fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Route fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Middleware fill:#d97706,stroke:#92400e,color:#fff
-    style Handler fill:#10b981,stroke:#047857,color:#fff
-    style Services fill:#10b981,stroke:#047857,color:#fff
+    style Client fill:#8571d9,stroke:#654bad,color:#fff
+    style Route fill:#6ba4d4,stroke:#4a7ba8,color:#fff
+    style Middleware fill:#b661d9,stroke:#8a3fb3,color:#fff
+    style Handler fill:#5fc9bf,stroke:#3a9d96,color:#fff
+    style Services fill:#5fc9bf,stroke:#3a9d96,color:#fff
 
 `} />
 
@@ -102,11 +99,11 @@ flowchart TB
     Auth --> Onboarded
     Auth --> Token
 
-    style Base fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Public fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Auth fill:#d97706,stroke:#92400e,color:#fff
-    style Onboarded fill:#10b981,stroke:#047857,color:#fff
-    style Token fill:#10b981,stroke:#047857,color:#fff
+    style Base fill:#8571d9,stroke:#654bad,color:#fff
+    style Public fill:#6ba4d4,stroke:#4a7ba8,color:#fff
+    style Auth fill:#b661d9,stroke:#8a3fb3,color:#fff
+    style Onboarded fill:#5fc9bf,stroke:#3a9d96,color:#fff
+    style Token fill:#5fc9bf,stroke:#3a9d96,color:#fff
 
 `} />
 
@@ -740,5 +737,5 @@ All procedures are instrumented with:
 - **Error rates** - Alert on elevated error rates
 - **Usage metrics** - Track most-called endpoints
 
-See [Performance & scalability](../quality-performance/performance-scalability)
-for detailed optimization strategies.
+See [Scalability patterns](../performance/scalability-architecture) for detailed
+optimization strategies.

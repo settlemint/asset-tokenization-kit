@@ -1,11 +1,21 @@
 ---
 title: Private equity
 pageTitle: Private equity fund tokenization
-description: Fund tokenization with NAV tracking and LP servicing
+description:
+  Private equity fund tokenization through ATK automates LP servicing, NAV
+  tracking, and distribution processing. The platform reduces fund
+  administration costs while enabling secondary liquidity for limited partners.
 tags: [use-case, funds, private-equity, NAV, LP-management]
 ---
 
-## The scenario
+**Who should read this:** General partners, fund administrators, and investor
+relations teams managing institutional LP relationships.
+
+**Business value:** Cut fund administration costs by 60%, enable real-time
+performance visibility, calculate distribution entitlements with on-demand
+claiming, and facilitate compliant secondary transfers.
+
+## Business challenge
 
 Apex Capital runs a $200 million venture fund with 80 institutional LPs.
 Traditional fund administration is expensive, slow, and opaque. Quarterly
@@ -18,18 +28,18 @@ nearly impossible due to paperwork complexity.
 <Mermaid
   chart={`
 flowchart TB
-    FUND[Fund Launch]
-    ADMIN[Fund Administrator<br/>High Quarterly Fees]
-    NAV[NAV Calculation<br/>2-3 Weeks Delay]
-    DIST[Distribution Processing<br/>Wire to 80 Banks]
-    FEES[Fee Collection<br/>Manual Invoicing]
-    SECONDARY[Secondary Transfers<br/>90 Days + Legal Costs]
-    REPORT[LP Reporting<br/>Quarterly Statements]
-    ISSUES[Common Issues]
+    FUND(Fund Launch)
+    ADMIN(Fund Administrator<br/>High Quarterly Fees)
+    NAV(NAV Calculation<br/>2-3 Weeks Delay)
+    DIST(Distribution Processing<br/>Wire to 80 Banks)
+    FEES(Fee Collection<br/>Manual Invoicing)
+    SECONDARY(Secondary Transfers<br/>90 Days + Legal Costs)
+    REPORT(LP Reporting<br/>Quarterly Statements)
+    ISSUES(Common Issues)
     
-    ERROR[Calculation Errors]
-    DELAY[Payment Delays]
-    ILLIQUID[No Liquidity]
+    ERROR(Calculation Errors)
+    DELAY(Payment Delays)
+    ILLIQUID(No Liquidity)
     
     FUND --> ADMIN
     ADMIN --> NAV
@@ -44,77 +54,117 @@ flowchart TB
     ISSUES --> DELAY
     ISSUES --> ILLIQUID
     
-    style FUND fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style ADMIN fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style NAV fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style DIST fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style FEES fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style SECONDARY fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style REPORT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style ISSUES fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style ERROR fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style DELAY fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style ILLIQUID fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style FUND fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ADMIN fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style NAV fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style DIST fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style FEES fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style SECONDARY fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style REPORT fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style ISSUES fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style ERROR fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style DELAY fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style ILLIQUID fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 `}
 />
 
-## How ATK handles it
+## How ATK solves it
 
-**Fund unit creation**: Apex tokenizes their fund structure as equity tokens
-representing limited partner units. Each token carries ownership rights, profit
-sharing, and governance participation. The fund's operating agreement is
-cryptographically linked to the token metadata.
+### Fund unit creation
 
-**LP onboarding**: Institutional investors complete accredited investor
-verification and qualified purchaser checks through the platform's identity
-system. Their verified status enables participation across multiple Apex funds
-without re-verification.
+Apex tokenizes their fund structure as equity tokens representing limited
+partner units. Each token carries ownership rights, profit sharing, and
+governance participation. The fund's operating agreement is cryptographically
+linked to the token metadata.
 
-**Subscription processing**: When LPs commit capital, Apex issues fund tokens
-representing their percentage ownership. The platform tracks committed versus
-called capital, maintaining complex waterfall calculations that traditional fund
-administrators charge quarterly fees to manage.
+### LP onboarding
 
-**NAV updates and performance tracking**: Monthly or quarterly, Apex updates the
-net asset value in the platform. The NAV per token updates automatically for all
-holders. Performance metrics—IRR, MOIC, quartile rankings—calculate
-programmatically from on-chain transaction history.
+Institutional investors complete accredited investor verification and qualified
+purchaser checks through the platform's identity system. Their verified status
+enables participation across multiple Apex funds without re-verification.
 
-**Automated distributions**: When portfolio companies exit or pay dividends,
-Apex distributes proceeds proportionally to all token holders through automated
-workflows. What used to require wire instructions to 80 different banks now
-executes through programmable distribution with instant settlement.
+### Subscription processing and capital tracking
 
-**Management fee collection**: The platform automatically calculates management
-fees based on committed capital or NAV according to the fund terms, deducts the
-appropriate amount, and handles the transfer to Apex's treasury. No manual
-invoicing or collection processes.
+When LPs commit capital, Apex issues fund tokens representing their percentage
+ownership. The platform tracks committed versus called capital through on-chain
+records.
 
-**Secondary trading among LPs**: When an LP wants to exit early, the platform
-facilitates transfer to another qualified institutional investor. Compliance
-checks ensure the buyer meets requirements. Settlement happens atomically.
-Transfer restrictions in the fund documents are enforced programmatically, so
-limited transfer windows or ROFR rights execute automatically.
+Note: The ATK fund implementation supports proportional (pro-rata) distributions
+based on token holdings. Complex waterfall logic (preferred returns, catch-up
+provisions, carried interest tiers) requires custom addon development or
+off-chain calculation with on-chain distribution execution.
 
-## The outcomes
+### NAV updates and performance tracking
 
-### With ATK
+Monthly or quarterly, Apex updates the net asset value through the admin portal.
+The NAV per token updates automatically for all holders. Performance
+metrics—IRR, MOIC, quartile rankings—can be calculated from on-chain transaction
+history via subgraph queries or dapp dashboards.
+
+### Scheduled distributions
+
+When portfolio companies exit or pay dividends, Apex calculates entitlements
+proportionally for all token holders. Token holders claim their proceeds
+on-demand through the smart contract. What used to require wire instructions to
+80 different banks now executes through claim-based distribution with instant
+settlement (via tokenized cash) or configured payment adapters (for fiat
+settlement).
+
+### Management fee collection
+
+The platform calculates management fees based on committed capital or NAV
+according to fund terms, deducts the appropriate amount, and handles the
+transfer to Apex's treasury. Fee schedules are configured in the fund token's
+parameters.
+
+### Secondary trading among LPs
+
+When an LP wants to exit early, the platform facilitates transfer to another
+qualified institutional investor. Compliance checks ensure the buyer meets
+requirements. Settlement happens atomically. Transfer restrictions in the fund
+documents are enforced programmatically, so limited transfer windows or ROFR
+rights execute automatically via compliance modules.
+
+## Key capabilities
+
+| Capability                  | Traditional                         | With ATK                                    |
+| --------------------------- | ----------------------------------- | ------------------------------------------- |
+| **Fund administration**     | Quarterly fees to third-party admin | On-chain tracking reduces overhead          |
+| **NAV distribution**        | 2-3 weeks delay                     | Real-time update to all LPs                 |
+| **Distribution processing** | Wire to 80 banks, days of work      | Calculated entitlements, on-demand claiming |
+| **Fee collection**          | Manual invoicing & payment          | Programmatic deduction and transfer         |
+| **Secondary transfers**     | 90 days + legal costs               | Hours with embedded compliance              |
+| **LP reporting**            | Quarterly statements                | Real-time dashboard access                  |
+
+## Measurable outcomes
+
+**Operational efficiency** – Fund administration costs drop by approximately 60%
+because NAV calculations, distributions, fee collection, and LP reporting are
+automated or significantly streamlined.
+
+**LP satisfaction** – Real-time holdings visibility and on-demand distribution
+claiming improve investor experience. Support inquiries about "where's my
+distribution?" are eliminated.
+
+**Secondary liquidity** – What used to take 90 days and significant legal costs
+now settles in hours with compliance built in. LPs value liquidity options, even
+if used rarely.
 
 <Mermaid
   chart={`
 flowchart TB
-    FUND[Fund Launch]
-    TOKEN[Tokenized Fund Units<br/>Smart Contract]
-    NAV[NAV Updates<br/>Automatic Calculation]
-    DIST[Automated Distributions<br/>Instant Settlement]
-    FEES[Fee Collection<br/>Programmatic]
-    SECONDARY[Secondary Trading<br/>Hours with Compliance]
-    REALTIME[Real-time Visibility<br/>LP Dashboard]
-    BENEFITS[Key Benefits]
+    FUND(Fund Launch)
+    TOKEN(Tokenized Fund Units<br/>Smart Contract)
+    NAV(NAV Updates<br/>Admin Portal Entry)
+    DIST(Scheduled Distributions<br/>Claim-based Settlement)
+    FEES(Fee Collection<br/>Programmatic)
+    SECONDARY(Secondary Trading<br/>Compliant Transfer)
+    REALTIME(Real-time Visibility<br/>LP Dashboard)
+    BENEFITS(Key Benefits)
     
-    EFFICIENT[60% Cost Reduction]
-    INSTANT[Instant Distributions]
-    LIQUID[Secondary Liquidity]
+    EFFICIENT(60% Admin Cost Cut)
+    INSTANT(Instant Distributions)
+    LIQUID(Secondary Liquidity)
     
     FUND --> TOKEN
     TOKEN --> NAV
@@ -129,27 +179,66 @@ flowchart TB
     BENEFITS --> INSTANT
     BENEFITS --> LIQUID
     
-    style FUND fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style TOKEN fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style NAV fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style DIST fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style FEES fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style SECONDARY fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style REALTIME fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style BENEFITS fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style EFFICIENT fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style INSTANT fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style LIQUID fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style FUND fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style TOKEN fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style NAV fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style DIST fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style FEES fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style SECONDARY fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style REALTIME fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style BENEFITS fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style EFFICIENT fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style INSTANT fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style LIQUID fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
 `}
 />
 
-**Operational efficiency**: Fund administration costs dropped by 60% because NAV
-calculations, distributions, fee collection, and LP reporting are automated.
+The diagram above shows the ATK fund lifecycle, from tokenization through
+automated servicing to secondary liquidity.
 
-**LP satisfaction**: Real-time holdings visibility and instant distributions
-improved investor experience. Support inquiries about "where's my distribution?"
-disappeared.
+## Compliance considerations
 
-**Secondary liquidity**: What used to take 90 days and significant legal costs
-now settles in hours with compliance built in. LPs value liquidity options, even
-if used rarely.
+Private equity fund tokens operate under securities regulations requiring:
+
+- **Qualified purchaser verification** – Enforced via OnchainID claims
+- **Holding periods and lock-ups** – Configured via time-lock compliance modules
+- **Transfer restrictions** – ROFR rights, limited transfer windows, GP approval
+  workflows
+- **Jurisdiction controls** – Investment restrictions by geography
+- **Audit trails** – Full transaction history for regulatory reporting
+
+For detailed compliance architecture, see
+[Compliance & Security](/docs/executive-overview/compliance-security).
+
+## Implementation checklist
+
+1. Define fund structure (equity tokens, percentage ownership model)
+2. Select compliance template (qualified purchaser, accredited investor, or
+   custom)
+3. Integrate KYC/AML provider for institutional LP verification
+4. Configure NAV update workflow and admin portal access
+5. Set up distribution schedule and payment adapters
+6. Configure management fee calculation parameters
+7. Upload fund documents (LPA, operating agreement) and link to token metadata
+8. Deploy smart contract and conduct initial capital call
+9. Test distribution workflow and secondary transfer restrictions
+
+## Limitations and considerations
+
+- **Waterfall complexity** – Out-of-the-box implementation supports pro-rata
+  distributions; custom waterfall logic (preferred returns, catch-up, carried
+  interest tiers) requires addon development
+- **NAV data source** – NAV updates are manual entries via admin portal;
+  integration with portfolio valuation systems requires custom API development
+- **Regulatory approval** – GP and LP legal counsel should review tokenized
+  structure for compatibility with existing fund documents and regulatory
+  frameworks
+
+## Next steps
+
+- Review
+  [SMART Protocol architecture](/docs/architecture/smart-contracts/smart-protocol)
+  to understand embedded compliance
+- Explore [Developer Documentation](/docs/developer-guides/reference) for custom
+  addon development guidance
+- Contact your SettleMint representative to discuss a fund tokenization pilot

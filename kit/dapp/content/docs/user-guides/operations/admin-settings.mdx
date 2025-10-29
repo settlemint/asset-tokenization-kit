@@ -1,0 +1,323 @@
+---
+title: Platform settings
+description:
+  Guide for platform administrators to configure global settings, roles, and
+  optional modules
+pageTitle: Admin guide - Configuring platform settings and modules
+tags: [how-to, admin, settings, configuration, roles]
+---
+
+## Overview
+
+Platform administration involves configuring system-wide settings, managing
+roles and permissions, deploying addon modules, and maintaining system health.
+This guide walks you through platform configuration and operational maintenance.
+
+**Primary role:** Platform administrators, DevOps engineers
+
+**Secondary readers:** System operators, IT managers responsible for platform
+configuration and maintenance
+
+## Before you start
+
+Make sure you have:
+
+- Platform admin role with required permissions
+- Completed system deployment during onboarding
+- Understanding of organizational structure and role assignments
+- Familiarity with blockchain networks and gas management
+
+**Time required:** 30-60 minutes for initial configuration; ongoing maintenance
+is periodic
+
+<Mermaid
+  chart={`flowchart TB
+  Access(Access Admin Settings) --> Roles(Configure Roles)
+  Roles --> Assets(Manage Asset Types)
+  Assets --> Addons(Deploy Addon Modules)
+  Addons --> Claims(Configure Claim Topics)
+  Claims --> Monitor(Monitor System Health)
+  Monitor --> Maintain(Ongoing Maintenance)
+  
+  style Access fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+  style Roles fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+  style Assets fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+  style Addons fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+  style Monitor fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
+/>
+
+## Step 1: Access admin settings
+
+Navigate to administrative controls:
+
+1. Log in to platform with administrator account
+2. Click **Platform Settings** in the left sidebar
+3. Administrative dashboard appears with configuration sections:
+   - Access control
+   - Asset types and factories
+   - Addon modules
+   - Claim topics and issuers
+   - Theme customization
+
+**Permission check:** Admin settings are only visible to users with platform
+administrator roles.
+
+## Step 2: Manage access control
+
+Configure roles and permissions.
+
+### System roles overview
+
+Platform uses role-based access control (RBAC) with predefined roles:
+
+**Platform-level roles:**
+
+Navigate to **Platform Settings** &gt; **Permissions**:
+
+- **Platform Admin** - Full system administrator
+- **Identity Manager** - Manage identity registry
+- **Claim Issuer** - Issue identity claims
+
+**Token-level roles:**
+
+Assigned per individual token:
+
+- **GOVERNANCE_ROLE** - Token compliance and parameters
+- **SUPPLY_MANAGEMENT_ROLE** - Mint and burn tokens
+- **CUSTODIAN_ROLE** - Freeze and recover tokens
+- **EMERGENCY_ROLE** - Pause token transfers
+
+### Assign platform roles
+
+Grant platform-level permissions:
+
+1. Navigate to **Platform Settings** &gt; **Permissions**
+2. Review current role assignments in the users table
+3. Use your organization's access management system to grant roles
+
+**Role assignment:**
+
+- Platform Admin: Assign to 2-3 trusted administrators using multisig wallets
+- Identity Manager: Assign to compliance team members
+- Claim Issuer: Assign to KYC provider or compliance system
+
+**Best practice:** Use multisig wallets for critical roles to prevent
+single-point-of-failure.
+
+## Step 3: Manage asset types
+
+Configure which asset types are available.
+
+### Asset type registry
+
+View enabled asset types:
+
+Navigate to **Platform Settings** &gt; **Asset Types**:
+
+Platform shows enabled asset types:
+
+- **Bonds** - Debt instruments
+- **Equity** - Company shares
+- **Funds** - Investment fund units
+- **Stablecoins** - Fiat-pegged tokens
+- **Deposits** - Certificate of deposit tokens
+
+Each asset type shows:
+
+- Factory contract address
+- Number of deployed tokens
+- Status (enabled/disabled)
+
+### Enable new asset type
+
+Add asset type to platform:
+
+If asset type was not deployed during onboarding:
+
+1. Navigate to **Platform Settings** &gt; **Asset Types**
+2. Click **Enable Asset Type** for the desired type
+3. Review deployment parameters
+4. Enter your PIN or OTP when prompted
+5. Click **Deploy Factory**
+6. Platform:
+   - Deploys factory implementation contract
+   - Deploys factory proxy
+   - Registers factory in factory registry
+   - Enables asset type in platform UI
+7. Asset type now available for token creation
+
+**Cost:** Factory deployment consumes gas. Plan deployment during low-congestion
+periods.
+
+## Step 4: Manage addon modules
+
+Configure optional platform addons.
+
+### Addon registry
+
+View available addons:
+
+Navigate to **Platform Settings** &gt; **Addons**:
+
+Platform shows addon categories:
+
+**Yield distribution:**
+
+- Yield - Scheduled interest/dividend calculations (required for bonds)
+
+**Note:** Additional addon types will be available in future releases.
+
+Each addon shows deployment status and usage statistics.
+
+### Deploy addon factory
+
+Enable addon for platform use:
+
+1. Navigate to **Platform Settings** &gt; **Addons**
+2. Find addon to deploy (for example, "Yield")
+3. Click **Deploy Factory**
+4. Review addon parameters and permissions
+5. Click **Confirm Deployment**
+6. Enter your PIN or OTP when prompted
+7. Platform:
+   - Deploys addon factory contract
+   - Registers in addon registry
+   - Makes available in token creation and management UI
+8. Addon now available for use with compatible tokens
+
+**Selective deployment:** The Yield addon is automatically selected during
+onboarding if you enable Bond tokens, as bonds require yield functionality.
+
+## Step 5: Configure claim topics and issuers
+
+Manage identity claim framework.
+
+### Claim topics
+
+Navigate to **Platform Settings** &gt; **Claim Topics & Issuers**:
+
+View registered claim topics:
+
+- CLAIM_TOPIC_KYC (Topic 1)
+- CLAIM_TOPIC_ACCREDITED_INVESTOR (Topic 2)
+- CLAIM_TOPIC_JURISDICTION (Topic 3)
+- CLAIM_TOPIC_INVESTOR_TYPE (Topic 4)
+
+**Add custom claim topic:**
+
+Custom claim topic creation requires smart contract development and deployment.
+Contact your technical team for assistance.
+
+### Trusted claim issuers
+
+View registered claim issuers:
+
+- Platform claim issuer (default)
+- External KYC provider integrations
+
+**Add trusted issuer:**
+
+Adding trusted issuers requires smart contract configuration. Work with your
+technical team to register additional claim issuers.
+
+## Step 6: Customize theme
+
+Configure platform appearance:
+
+Navigate to **Platform Settings** &gt; **Theme**:
+
+You can customize:
+
+- Primary brand color
+- Logo upload
+- Favicon
+
+Changes apply immediately across the platform.
+
+## Common workflows
+
+### Monitor system health
+
+Track platform metrics:
+
+1. Navigate to dashboard
+2. Review key metrics:
+   - Total tokens deployed
+   - Active users
+   - Recent transactions
+
+### Review audit logs
+
+Track system events:
+
+1. Use blockchain explorer to review on-chain events
+2. Monitor key contract interactions
+3. Track token deployments and transfers
+
+**Event types:**
+
+- User access events
+- Role assignment changes
+- Token deployments
+- Claim issuance/revocation
+
+### Handle system maintenance
+
+Coordinate with your technical team for:
+
+- Contract upgrades
+- Network migrations
+- Emergency pauses
+
+## Best practices
+
+**Access control:**
+
+- Use multisig wallets for all platform admin roles
+- Review role assignments quarterly
+- Revoke unnecessary permissions (least privilege)
+- Maintain role assignment documentation
+
+**System monitoring:**
+
+- Review platform activity regularly
+- Monitor token deployment trends for capacity planning
+- Track blockchain node health continuously
+
+**Maintenance:**
+
+- Coordinate platform upgrades with technical team during low-traffic periods
+- Test all upgrades in staging environment first
+- Document all configuration changes
+- Perform quarterly disaster recovery drills
+
+## Troubleshooting
+
+**Cannot access admin settings**
+
+- Verify your address has platform administrator role
+- Check wallet connection and network
+- Clear browser cache and reload
+- Ensure using admin account
+
+**Asset type deployment fails**
+
+- Check sufficient platform balance for factory deployment
+- Verify network connectivity
+- Review deployment transaction on block explorer
+- Retry after network congestion clears
+
+**Addon factory deployment reverts**
+
+- Verify sufficient gas for deployment
+- Check network status
+- Ensure addon compatible with system version
+- Review transaction revert reason on block explorer
+
+For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+
+## Next steps
+
+- **Asset deployment** - Review asset-specific deployment guides
+- **Compliance configuration** - Configure
+  [Manage investors](/docs/user-guides/operations/manage-investors) workflows

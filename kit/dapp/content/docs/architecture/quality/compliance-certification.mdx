@@ -1,0 +1,354 @@
+---
+title: Compliance & certification
+description:
+  Operating in regulated markets requires more than technical correctness—it
+  requires provable compliance with regulatory frameworks. ATK is designed to
+  facilitate regulatory audits and certifications, with comprehensive audit
+  trails, documented controls, and alignment with industry standards.
+pageTitle: Compliance and certification
+tags: [architecture, compliance, certification, regulatory, audit, concept]
+---
+
+Related topics:
+[Testing and quality gates](/docs/architecture/quality/testing-quality),
+[Security validation](/docs/architecture/quality/security-validation)
+
+## Regulatory compliance validation
+
+Financial regulations impose strict requirements on asset tokenization
+platforms. ATK validates compliance through automated testing and comprehensive
+audit trails.
+
+### Transfer restriction compliance
+
+Tokenized securities must enforce transfer restrictions mandated by securities
+regulations. ATK implements and tests these restrictions comprehensively.
+
+**ERC-3643 standard compliance** - All security tokens implement the ERC-3643
+standard for compliant token transfers. Automated tests verify:
+
+- Transfers fail when sender or receiver lacks required identity verification
+- Transfers fail when they violate country-based restrictions
+- Transfers fail when they exceed investor count limits
+- Transfers fail when tokens are subject to lock-up periods
+- Transfers fail when addresses are frozen by compliance officers
+
+**Compliance module testing** - Each compliance module (identity verification,
+country restrictions, investor limits) tests in isolation and in combination.
+Tests verify correct composition when multiple restrictions apply
+simultaneously.
+
+**Negative testing** - Tests explicitly attempt to bypass restrictions:
+
+- Direct contract calls bypassing standard interfaces
+- Multicall batching to exploit atomic operations
+- Flash loans to temporarily appear compliant
+- Re-entrancy attacks to manipulate state
+
+All bypass attempts must fail with appropriate error messages. See
+[Security validation](/docs/architecture/quality/security-validation) for
+security testing details.
+
+### Identity and verification requirements
+
+Know-Your-Customer (KYC) and Anti-Money-Laundering (AML) regulations require
+identity verification for all token holders.
+
+**OnchainID integration** - ATK integrates OnchainID for blockchain-native
+identity management:
+
+- Each investor receives a unique identity contract
+- Compliance officers add verified claims (KYC, AML, accreditation status)
+- Trusted issuers sign claims with cryptographic signatures
+- Token contracts verify claims before allowing transfers
+
+**Claim lifecycle management** - Identity claims have defined lifecycles:
+
+- **Issuance** - Compliance officer adds claim to investor's identity
+- **Validation** - Token contract verifies claim signature and issuer trust
+- **Expiration** - Claims expire after defined periods (typically 12 months)
+- **Revocation** - Compliance officers can revoke claims immediately
+- **Re-verification** - Expired or revoked claims require investor
+  re-verification
+
+**Testing verification flows** - Automated tests validate the complete
+verification lifecycle:
+
+1. New investor creates identity contract
+2. Investor submits KYC documentation
+3. Compliance officer verifies documentation and adds claim
+4. Token transfer succeeds with valid claim
+5. Token transfer fails with expired claim
+6. Token transfer fails with revoked claim
+
+### Audit trail requirements
+
+Regulators require complete, immutable audit trails of all token operations.
+
+**Comprehensive event emissions** - Every state-changing operation emits events:
+
+- Token minting: `Transfer(address(0), recipient, amount)` with metadata
+- Token burning: `Transfer(account, address(0), amount)` with reason
+- Compliance updates: `ComplianceModuleUpdated(module, action, params)`
+- Identity updates: `IdentityRegistryUpdated(address, identity, action)`
+- Freeze operations: `AddressFrozen(address, reason)` and
+  `AddressUnfrozen(address)`
+
+**Event parameter completeness** - Events include all data required for audit
+reconstruction:
+
+- Token identifiers and amounts
+- Sender and recipient addresses
+- Transaction timestamps (block.timestamp)
+- Transaction hashes (available from transaction receipt)
+- Operation-specific metadata (freeze reason, compliance module parameters)
+
+**Subgraph indexing** - TheGraph subgraph indexes all events into a queryable
+database:
+
+- Auditors query transaction history without raw blockchain access
+- Complex queries aggregate data across multiple transactions
+- Historical snapshots reconstruct state at specific points in time
+- GraphQL API provides structured access to audit data
+
+## Compliance certification readiness
+
+ATK architecture aligns with common compliance certification frameworks.
+
+### SOC 2 Type II readiness
+
+Service Organization Control (SOC) 2 Type II certification validates that
+controls operate effectively over time.
+
+**Access controls** - Role-based access control (RBAC) enforces the principle of
+least privilege:
+
+- Investors can transfer tokens but cannot mint, burn, or freeze accounts
+- Compliance officers can freeze accounts and verify identities but cannot mint
+  tokens
+- Issuers can mint and burn tokens but cannot modify compliance rules
+- Administrators can modify compliance rules but must follow governance
+  processes
+
+**Access control logging** - All privileged operations log to immutable audit
+trails:
+
+- Who performed the operation (Ethereum address and associated identity)
+- What operation was performed (function called, parameters provided)
+- When the operation occurred (block timestamp and transaction hash)
+- Why the operation was performed (metadata and supporting documentation)
+
+**Log retention** - Audit logs are retained for 7 years in immutable storage:
+
+- Blockchain events are permanently recorded and cannot be modified
+- Subgraph data is backed up to immutable storage (IPFS, Arweave)
+- Database audit tables use append-only patterns preventing deletions
+
+**Change management** - All code changes follow documented procedures:
+
+- Pull requests require peer review and approval
+- Automated testing validates functionality and security
+- Deployment requires multi-signature approval
+- Rollback procedures are documented and tested
+
+**Change audit trail** - The complete change history is preserved:
+
+- Git commit history tracks all code changes
+- Pull request discussions document decision rationale
+- CI/CD pipeline logs validate quality gates passed
+- Deployment transaction hashes prove on-chain updates
+
+**Monitoring and alerting** - Comprehensive monitoring demonstrates operational
+effectiveness:
+
+- Real-time alerts detect security and availability incidents
+- Metrics track system health and performance
+- Incident response procedures minimize impact
+- Postmortems document improvements
+
+### ISO 27001 alignment
+
+ISO 27001 defines requirements for information security management systems.
+
+**Risk assessment** - Threat modeling identifies security risks:
+
+- Smart contract vulnerabilities (re-entrancy, access control, economic
+  exploits)
+- Infrastructure vulnerabilities (network attacks, denial of service)
+- Operational vulnerabilities (key management, insider threats)
+- Third-party vulnerabilities (dependencies, service providers)
+
+**Risk mitigation** - Identified risks have documented mitigations:
+
+- Smart contract audits and formal verification
+- Automated security scanning and vulnerability management
+- Key management using hardware security modules (HSMs)
+- Vendor security assessments and contract terms
+
+**Residual risk acceptance** - Risks that cannot be eliminated are explicitly
+accepted:
+
+- Senior management reviews residual risks
+- Risk acceptance is documented and time-limited
+- Residual risks are monitored and re-assessed periodically
+
+**Incident management** - The incident response process aligns with ISO 27001:
+
+- **Detection** - Automated monitoring and user reports identify incidents
+- **Classification** - Incidents are triaged by severity and impact
+- **Response** - Documented runbooks guide incident response
+- **Resolution** - Incidents are resolved and validated
+- **Postmortem** - Blameless postmortems identify preventive measures
+- **Prevention** - Action items prevent recurrence
+
+**Continuous improvement** - Security posture improves over time:
+
+- Quality metrics track improvement trends
+- Security scanning identifies new vulnerabilities
+- Periodic audits validate control effectiveness
+- Lessons learned from incidents improve processes
+
+### MiCA compliance (Markets in Crypto-Assets Regulation)
+
+The European Union's MiCA regulation imposes requirements on crypto-asset
+service providers.
+
+**Transparency requirements** - MiCA requires disclosure of asset details:
+
+- Token metadata includes issuer information, asset description, risk factors
+- Smart contracts are verified and published to block explorers
+- Compliance modules and their parameters are publicly auditable
+- Regular reports disclose token supply, holder counts, and trading volumes
+
+**Operational resilience** - MiCA requires business continuity planning:
+
+- High availability architecture with no single points of failure
+- Disaster recovery procedures with defined RPO/RTO targets
+- Regular disaster recovery testing validates recovery procedures
+- Incident response procedures minimize operational impact
+
+**Consumer protection** - MiCA requires safeguards for token holders:
+
+- Clear disclosure of risks in token documentation
+- Redemption mechanisms for applicable asset types
+- Dispute resolution procedures for operational issues
+- Segregated storage of customer assets
+
+## Audit preparation
+
+Preparing for regulatory audits requires organized documentation and responsive
+data access.
+
+### Documentation organization
+
+**Technical documentation** - Comprehensive technical documentation is
+maintained:
+
+- Smart contract architecture and design decisions
+- Security controls and threat mitigation
+- Compliance mechanisms and regulatory mapping
+- Operational procedures and runbooks
+
+**Policy documentation** - Formal policies govern operations:
+
+- Access control policies define role assignments
+- Change management policies define approval requirements
+- Incident response policies define escalation procedures
+- Data retention policies define storage and deletion
+
+**Audit artifacts** - Pre-organized artifacts accelerate audits:
+
+- Security audit reports from external firms
+- Penetration testing results and remediation tracking
+- Code review approvals and discussion summaries
+- Deployment records with timestamps and approvers
+
+### Data access for auditors
+
+**Read-only access** - Auditors receive read-only access to systems:
+
+- Blockchain explorer access for on-chain data
+- Subgraph GraphQL endpoint for indexed data
+- Monitoring dashboards for operational metrics
+- Log aggregation for historical event data
+
+**Data export capabilities** - Auditors can export data for offline analysis:
+
+- Transaction histories in CSV/JSON formats
+- Event logs with complete parameters
+- Access control logs showing privileged operations
+- Deployment histories with change descriptions
+
+**Audit trail completeness validation** - Automated tools validate audit
+completeness:
+
+- Event emission coverage tests ensure all operations emit events
+- Subgraph indexing tests validate complete event indexing
+- Log retention tests validate 7-year retention compliance
+- Data integrity tests validate immutability of audit data
+
+## Regulatory reporting
+
+Ongoing regulatory compliance requires periodic reporting to authorities.
+
+### Automated report generation
+
+**Token holder reports** - Automated reports provide investor information:
+
+- Total holder count and geographic distribution
+- Accredited vs. non-accredited investor breakdown
+- Concentration risk (percentage held by top holders)
+- Transfer restrictions summary
+
+**Transaction reports** - Automated reports summarize token activity:
+
+- Total transaction count and volume by time period
+- Mint and burn operations with supporting documentation
+- Failed transfers by rejection reason
+- Compliance officer actions (freezes, unfreezes)
+
+**Compliance violation reports** - Automated reports flag potential issues:
+
+- Attempted transfers that failed compliance checks
+- Expired identity claims requiring re-verification
+- Addresses approaching investor count limits
+- Unusual transaction patterns requiring investigation
+
+### Regulatory data requests
+
+**Responsive data access** - Regulators may request specific data:
+
+- Transaction history for specific addresses
+- Complete audit trail for specific tokens
+- Compliance officer action history
+- System access logs for specific time periods
+
+**Data format flexibility** - Data exports support multiple formats:
+
+- CSV for spreadsheet analysis
+- JSON for programmatic processing
+- PDF for formatted reports
+- GraphQL for custom queries
+
+**Timeliness commitments** - Data requests are fulfilled within defined
+timeframes:
+
+- Routine requests: 5 business days
+- Urgent requests: 24 hours
+- Emergency requests: 4 hours
+
+## Conclusion
+
+Compliance certification is not an afterthought—it is embedded into ATK's
+architecture from the beginning. Comprehensive audit trails, documented
+controls, and alignment with industry standards enable institutional adoption in
+regulated markets.
+
+This approach enables compliance teams to trust that regulatory requirements are
+met. Auditors can efficiently validate control effectiveness. Regulators receive
+timely, accurate data when requested.
+
+For testing practices that validate compliance, see
+[Testing and quality gates](/docs/architecture/quality/testing-quality). For
+security validation processes, see
+[Security validation](/docs/architecture/quality/security-validation).

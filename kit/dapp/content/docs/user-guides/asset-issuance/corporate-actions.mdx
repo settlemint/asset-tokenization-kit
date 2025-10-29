@@ -1,0 +1,610 @@
+---
+title: Corporate actions
+description:
+  Execute corporate actions on your tokenized assets, including dividend
+  distributions, coupon payments, token splits, and governance votes. Manage the
+  complete lifecycle from planning through settlement and holder notification.
+pageTitle: How to perform corporate actions
+tags: [how-to, corporate-actions, dividends, coupons, token-split]
+---
+
+**Primary audience:** Corporate treasurers, CFOs  
+**Secondary audience:** Investor relations teams, asset managers
+
+<Mermaid
+  chart={
+    "graph TB\n    A(Plan Corporate<br/>Action) --> B(Set Key Dates<br/>Ex-div/Record/Payment)\n    B --> C{Action Type?}\n    C -->|Dividend| D(Fund Distribution<br/>Wallet)\n    C -->|Coupon| E(Fund Yield<br/>Wallet)\n    C -->|Split| F(Calculate Split<br/>Ratio)\n    C -->|Vote| G(Create Governance<br/>Proposal)\n    D --> H(Snapshot Holders<br/>at Record Date)\n    E --> H\n    F --> H\n    G --> I(Shareholders<br/>Vote)\n    H --> J(Execute Distribution<br/>on Payment Date)\n    I --> K(Tally Votes)\n    J --> L(Notify Holders)\n    K --> M(Execute Approved<br/>Proposal)\n    L --> N(Record Action)\n    M --> N\n    style A fill:#0EA5E9\n    style D fill:#10B981\n    style E fill:#10B981\n    style H fill:#10B981\n    style J fill:#6366F1\n    style K fill:#6366F1"
+  }
+/>
+
+## Before you start
+
+**Prerequisites:**
+
+- Issued tokens per asset-specific guides
+- Understanding of corporate action type and shareholder impact
+- Required reserves or distribution assets funded
+- Shareholder communication plan
+
+**Time estimate:** Varies by action type; 30-60 minutes for dividend
+distribution, 15-30 minutes for governance proposals
+
+**Required knowledge:**
+
+- Corporate finance and shareholder rights
+- Token holder communication procedures
+- Regulatory requirements for corporate actions
+
+## Common corporate actions
+
+The platform supports these corporate actions:
+
+**Equity actions:**
+
+- Dividend distributions (cash or stock)
+- Stock splits and reverse splits
+- Rights offerings
+- Voting and governance proposals
+- Share buybacks
+
+**Bond actions:**
+
+- Coupon payments
+- Principal repayment at maturity
+- Optional redemptions (calls)
+- Interest rate adjustments
+- Bond conversions
+
+**Fund actions:**
+
+- Income distributions
+- Capital gains distributions
+- NAV updates
+- Management fee collection
+- Share class conversions
+
+## Steps
+
+### Dividend distributions
+
+Pay cash or stock dividends to your equity holders.
+
+#### Plan dividend distribution
+
+Determine your dividend parameters:
+
+1. Navigate to token details: **Asset Management** &gt; **Equity** &gt; [Token
+   Name]
+2. Click **Actions** &gt; **Distributions** &gt; **New Distribution**
+3. Configure dividend:
+   - **Distribution type** - Cash (token payment) or stock (additional shares)
+   - **Amount per share** - Dividend amount per token held
+   - **Payment token** - USDC, USDT, or other ERC20 (for cash dividends)
+   - **Ex-dividend date** - Last day to hold shares to receive dividend
+   - **Record date** - Snapshot date for eligible shareholders
+   - **Payment date** - When distribution executes
+
+![Dividend configuration](/images/screenshots/placeholder.svg) _Screenshot:
+Dividend distribution configuration showing distribution type, amount per share,
+dates, and payment token selection_
+
+**Date definitions:**
+
+- **Ex-dividend date:** Shares purchased after this date don't receive dividend
+- **Record date:** Shareholders on this date are eligible
+- **Payment date:** When dividend is actually distributed
+
+**Example:**
+
+- Ex-dividend: April 1
+- Record date: April 3
+- Payment date: April 15
+- Shareholders owning stock April 3 receive dividend April 15
+
+#### Fund dividend wallet
+
+Prepare your distribution tokens:
+
+For cash dividends:
+
+1. Calculate total distribution amount:
+   - Total shares outstanding × dividend per share = total distribution
+2. Navigate to **Distributions** &gt; [Distribution Name] &gt; **Funding**
+3. Note dividend wallet address
+4. Transfer total distribution amount of payment token to dividend wallet
+5. Verify balance sufficient:
+   - Platform shows required vs. actual balance
+   - Green indicator when fully funded
+
+![Dividend funding](/images/screenshots/placeholder.svg) _Screenshot: Dividend
+funding showing required amount, dividend wallet address, current balance, and
+funding status indicator_
+
+**Timing:** Fund dividend wallet at least 48 hours before payment date.
+
+### Execute dividend distribution
+
+Process dividend payment:
+
+On payment date:
+
+1. Navigate to **Distributions** &gt; [Distribution Name]
+2. Review distribution summary:
+   - Eligible shareholders count
+   - Total distribution amount
+   - Per-share distribution
+   - Funding status
+3. Click **Execute Distribution**
+4. Platform:
+   - Takes snapshot of shareholders as of record date
+   - Calculates pro-rata distribution for each holder
+   - Transfers payment token from dividend wallet to each holder
+   - Records distribution transactions
+   - Updates distribution status to "Complete"
+5. Review distribution results:
+   - Successful payments count
+   - Failed payments (if any)
+   - Total amount distributed
+
+![Distribution execution](/images/screenshots/placeholder.svg) _Screenshot:
+Distribution execution showing eligible shareholders list with calculated
+amounts and execution progress_
+
+**Scheduled execution:** Configure automatic entitlement calculation on payment
+date to eliminate manual spreadsheet work.
+
+<Callout type="info" title="Business context">
+  Traditional distribution execution requires the corporate secretary to
+  manually calculate each shareholder's entitlement, prepare payment
+  instructions for dozens or hundreds of transfers, coordinate with the transfer
+  agent, and reconcile which payments completed. This manual process typically
+  requires 3-5 business days and introduces calculation errors in 15-20% of
+  cases. ATK automates the entire flow with sub-second execution and zero
+  calculation errors.
+</Callout>
+
+### Stock dividends
+
+Issue additional shares as dividend:
+
+For stock dividends (e.g., 10% stock dividend):
+
+1. Configure distribution with type "Stock"
+2. Enter shares per share ratio (e.g., 0.10 for 10% stock dividend)
+3. Set ex-dividend and record dates
+4. On payment date, click **Execute Distribution**
+5. Platform:
+   - Snapshots shareholders
+   - Calculates additional shares: holdings × ratio
+   - Mints new shares to each holder
+   - Updates total supply
+   - Records distribution
+
+**Dilution:** Stock dividends increase total shares; per-share value adjusts
+proportionally.
+
+### Coupon payments
+
+Pay interest on bond tokens:
+
+### Configure yield schedule
+
+Set up scheduled bond interest calculations:
+
+For bonds with yield module:
+
+1. Navigate to bond token: **Asset Management** &gt; **Bonds** &gt; [Bond Name]
+2. Navigate to **Yield** tab
+3. Click **Configure Schedule**
+4. Set payment parameters:
+   - **Payment frequency** - Quarterly, semi-annual, annual
+   - **Annual yield rate** - Coupon rate (basis points)
+   - **Yield token** - Denomination asset (USDC, USDT)
+   - **First payment date** - Initial coupon date
+   - **Yield basis** - Face value or current principal
+5. Click **Save Schedule**
+
+![Yield schedule](/images/screenshots/placeholder.svg) _Screenshot: Yield
+schedule configuration showing payment frequency, rate, token, and calculated
+payment dates_
+
+**Accrual calculation:** The system calculates daily accrual and makes
+entitlements claimable on payment dates, eliminating manual interest
+calculations.
+
+<Callout type="info" title="Business context">
+  Traditional bond servicing requires the paying agent to manually calculate
+  each bondholder's coupon payment based on their holdings, prepare wire
+  transfer instructions, send payments through the banking system, and reconcile
+  which payments cleared. This process typically takes 5-10 business days per
+  payment date and costs $50-150 per bondholder in servicing fees. ATK enables
+  instant claim-based distribution where bondholders pull their payments
+  on-demand, reducing operational costs by 85-95%.
+</Callout>
+
+### Fund yield wallet
+
+Ensure sufficient reserves for coupon payments:
+
+1. Navigate to **Yield** tab
+2. Review upcoming payments:
+   - Next payment date
+   - Required payment amount
+   - Current yield wallet balance
+3. Calculate shortfall if any
+4. Transfer yield tokens to yield wallet address
+5. Verify funding adequate
+
+**Calculation example:**
+
+- Total bonds outstanding: 1,000,000
+- Face value per bond: $1,000
+- Annual coupon: 5%
+- Quarterly payment: (1,000,000 × $1,000 × 5%) / 4 = $12,500,000
+
+### Execute coupon payment
+
+Process scheduled interest payment:
+
+**Automated processing:**
+
+If automatic execution enabled:
+
+1. On payment date, platform automatically:
+   - Snapshots bond holders
+   - Calculates pro-rata interest for each holder
+   - Transfers yield tokens from yield wallet
+   - Records payment transactions
+2. Review payment results on **Yield** &gt; **Payment History**
+
+**Manual processing:**
+
+If manual execution required:
+
+1. Navigate to **Yield** &gt; **Scheduled Payments**
+2. Select payment due
+3. Click **Execute Payment**
+4. Confirm execution
+5. Platform processes payment per automated flow above
+
+![Coupon payment history](/images/screenshots/placeholder.svg) _Screenshot:
+Coupon payment history showing past payments with dates, amounts, recipients,
+and transaction hashes_
+
+### Token splits and consolidations
+
+Adjust token denomination:
+
+### Execute token split
+
+Increase share count, decrease per-share value:
+
+For stock splits (e.g., 2-for-1 split):
+
+1. Navigate to equity token details
+2. Click **Actions** &gt; **Token Split**
+3. Enter split ratio:
+   - **Numerator** - New shares per old share (2 for 2-for-1 split)
+   - **Denominator** - Old shares (1 for 2-for-1 split)
+4. Set effective date
+5. Review impact:
+   - New total supply = current supply × (numerator / denominator)
+   - Holder balances multiply by (numerator / denominator)
+6. Click **Execute Split**
+7. Platform:
+   - Snapshots current holders and balances
+   - Mints additional tokens to each holder
+   - Updates total supply
+   - Records split event
+
+**Post-split:**
+
+- Shareholders have more tokens
+- Token price adjusts proportionally
+- Ownership percentages unchanged
+
+<Callout type="default" title="For developers">
+  See [Contract
+  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
+  technical details on how the token split mechanism adjusts balances while
+  maintaining proportional ownership.
+</Callout>
+
+### Reverse split
+
+Decrease share count, increase per-share value:
+
+For reverse splits (e.g., 1-for-10 reverse split):
+
+1. Navigate to equity token details
+2. Click **Actions** &gt; **Token Split**
+3. Enter split ratio:
+   - **Numerator** - New shares (1 for 1-for-10)
+   - **Denominator** - Old shares required (10 for 1-for-10)
+4. Set effective date
+5. Click **Execute Split**
+6. Platform:
+   - Snapshots holders
+   - Burns tokens proportionally
+   - Issues fewer tokens back
+   - Updates supply
+
+**Fractional shares:** The system handles fractional shares automatically;
+consider rounding rules for small holders to avoid dust amounts.
+
+### Governance proposals and voting
+
+Execute shareholder voting:
+
+### Create governance proposal
+
+Initiate shareholder vote:
+
+For equity with voting enabled:
+
+1. Navigate to equity token: **Asset Management** &gt; **Equity** &gt; [Token
+   Name]
+2. Navigate to **Governance** tab
+3. Click **New Proposal**
+4. Configure proposal:
+   - **Title** - Clear proposal name
+   - **Description** - Detailed proposal text
+   - **Voting options** - For, Against, Abstain (or custom options)
+   - **Voting period** - Duration proposal open (e.g., 7 days)
+   - **Quorum** - Minimum participation required (percentage of supply)
+   - **Approval threshold** - Percentage needed to pass (e.g., 50%, 66%, 75%)
+   - **Executable action** - On-chain action if proposal passes (optional)
+5. Review proposal details
+6. Click **Submit Proposal**
+
+![Proposal creation](/images/screenshots/placeholder.svg) _Screenshot:
+Governance proposal creation showing title, description, voting options, period,
+quorum, and threshold inputs_
+
+**Proposal threshold:** Your address must hold minimum proposal creation
+threshold to submit.
+
+### Voting period
+
+Shareholders vote on proposal:
+
+**Shareholder voting:**
+
+1. Shareholders navigate to **Governance** in dApp
+2. View active proposals
+3. Review proposal details and voting options
+4. Click **Vote**
+5. Select voting option (For / Against / Abstain)
+6. Optionally delegate votes to another address
+7. Confirm vote transaction
+8. Voting power determined by shares held at proposal creation block
+
+**Vote delegation:**
+
+Shareholders can delegate voting power:
+
+1. Navigate to **Governance** &gt; **Delegate**
+2. Enter delegate address
+3. Confirm delegation
+4. Delegate can vote with delegated power on all proposals
+
+### Tally votes and execute
+
+Process vote results:
+
+After voting period ends:
+
+1. Navigate to **Governance** &gt; [Proposal Name]
+2. Review voting results:
+   - Total votes cast
+   - For / Against / Abstain breakdown
+   - Quorum achieved (yes/no)
+   - Approval threshold met (yes/no)
+   - Proposal status: Passed / Failed
+3. If proposal passed:
+   - Click **Execute Proposal**
+   - If executable action configured, platform executes on-chain
+   - If informational proposal, record decision off-chain
+4. Communicate results to shareholders
+
+![Vote results](/images/screenshots/placeholder.svg) _Screenshot: Governance
+proposal results showing vote tallies, quorum indicator, threshold indicator,
+and execute button_
+
+**Timelock:** Some governance configurations include execution delay (timelock)
+after vote passes.
+
+### Bond redemptions and calls
+
+Handle bond maturity and early redemption:
+
+### Process bond maturity
+
+Redeem bonds at maturity:
+
+1. Navigate to bond token approaching maturity
+2. Navigate to **Actions** tab
+3. Review maturity details:
+   - Maturity date
+   - Outstanding bonds
+   - Redemption amount: bonds × face value
+   - Required denomination asset reserve
+4. Ensure redemption wallet funded
+5. Click **Mature Bond** (available after maturity date)
+6. Platform:
+   - Marks bond as matured
+   - Enables redemption for all bondholders
+7. Bondholders redeem:
+   - Navigate to bond holdings in dApp
+   - Click **Redeem Bonds**
+   - Platform burns bonds, transfers denomination asset
+
+**Proactive redemption:** Alternatively, platform can automatically redeem all
+bonds on maturity.
+
+### Optional redemption (call)
+
+Early bond redemption before maturity:
+
+For callable bonds:
+
+1. Navigate to bond token details
+2. Click **Actions** &gt; **Call Bonds**
+3. Configure call:
+   - **Call date** - When redemption occurs
+   - **Call price** - Redemption price (may include call premium)
+   - **Partial call** - Optionally call only portion of bonds
+4. Set notice period for bondholders (e.g., 30 days)
+5. Click **Issue Call Notice**
+6. Platform:
+   - Notifies bondholders
+   - Sets redemption parameters
+7. On call date:
+   - Click **Execute Call**
+   - Platform redeems bonds per call terms
+
+### Fund distributions
+
+Distribute fund income to unit holders:
+
+### NAV-based distributions
+
+Distribute fund earnings:
+
+1. Navigate to fund token: **Asset Management** &gt; **Funds** &gt; [Fund Name]
+2. Navigate to **Distributions** tab
+3. Click **New Distribution**
+4. Configure:
+   - **Distribution type** - Income, capital gains, return of capital
+   - **Amount per unit** - Distribution per fund share
+   - **Distribution token** - USDC, USDT, etc.
+   - **Ex-date** - Last day to own fund for distribution
+   - **Record date** - Snapshot date
+   - **Payment date** - Distribution date
+5. Fund distribution wallet
+6. Execute distribution on payment date (same process as equity dividends)
+
+**NAV adjustment:** Fund NAV decreases by distribution amount per unit.
+
+### Reinvestment option
+
+Allow distribution reinvestment:
+
+1. Configure distribution with **Reinvestment Enabled**
+2. Unit holders opt-in to reinvestment via dApp
+3. On distribution date:
+   - Platform calculates distribution amount for each holder
+   - Opt-in holders: mint new units at current NAV instead of cash distribution
+   - Opt-out holders: receive cash distribution
+4. Total fund units increases for reinvestment participants
+
+## Best practices
+
+**Communication:**
+
+- Announce corporate actions 30+ days in advance when possible
+- Provide clear documentation explaining action and shareholder impact
+- Send reminders before ex-dividend dates and record dates
+- Communicate distribution results after execution
+
+**Funding:**
+
+- Fund distribution wallets 48-72 hours before payment dates
+- Maintain buffer (5-10%) for calculation rounding
+- Verify funding before execution
+- Monitor wallet balances continuously
+
+**Execution:**
+
+- Execute on scheduled dates consistently
+- Schedule recurring distribution calculations when possible
+- Verify distributions complete successfully
+- Investigate failed distributions immediately
+
+**Record keeping:**
+
+- Maintain audit trail of all corporate actions
+- Archive shareholder snapshots for each action
+- Document approvals and authorizations
+- Retain records per regulatory requirements (typically 7 years)
+
+**Compliance:**
+
+- Ensure corporate actions approved per governance requirements
+- File required regulatory disclosures (8-K, etc.)
+- Verify tax reporting for distributions
+- Coordinate with transfer agent and legal counsel
+
+## Results
+
+After executing corporate actions, you will have:
+
+- Distributed dividends or coupon payments to your token holders
+- Executed token splits or consolidations with updated balances
+- Conducted governance votes and implemented approved proposals
+- Processed bond redemptions or callable bond exercises
+- Distributed fund income or capital gains to investors
+
+Your corporate action is recorded in the system with complete holder snapshots
+and transaction history for audit and regulatory compliance.
+
+<Callout type="default" title="For developers">
+  See [Events and
+  Logs](/docs/developer-guides/smart-contracts/contract-reference) for technical
+  details on how corporate action events are recorded on-chain for immutable
+  audit trails.
+</Callout>
+
+## Troubleshooting
+
+**Distribution execution fails:**
+
+- Verify distribution wallet has sufficient balance
+- Check all holders have verified OnchainIDs
+- Ensure payment token is valid ERC20 contract
+- Confirm no compliance restrictions preventing transfers
+
+**Governance proposal creation reverts:**
+
+- Check your address holds the minimum proposal threshold
+- Verify voting is enabled on your equity token
+- Ensure quorum and threshold percentages are valid (0-100%)
+- Confirm the voting period is within the allowed range
+
+**Vote transaction fails:**
+
+- Verify you held shares at the proposal creation block
+- Check the proposal is still in the voting period
+- Ensure you haven't already voted on this proposal
+- Confirm your voting power > 0
+
+**Bond redemption not available:**
+
+- Verify the bond has reached maturity date
+- Check the bond matured status is set correctly
+- Ensure your redemption wallet is funded
+- Confirm you hold bond tokens
+
+**Yield payment failed:**
+
+- Check your yield wallet has sufficient yield tokens
+- Verify the yield schedule is configured correctly
+- Ensure bondholders have verified OnchainIDs
+- Review that the yield module is enabled on your bond
+
+For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+
+## Next steps
+
+- [Issue a bond](/docs/user-guides/asset-issuance/issue-bond) - Configure
+  bond-specific actions like coupon payments and redemptions
+- [Issue equity](/docs/user-guides/asset-issuance/issue-equity) - Set up equity
+  governance and shareholder voting
+- [Issue a fund](/docs/user-guides/asset-issuance/issue-fund) - Execute NAV
+  updates and fund income distributions
+- [Manage investors](/docs/user-guides/operations/manage-investors) -
+  Communicate with shareholders about corporate actions
+- [Compliance certification](/docs/architecture/quality/compliance-certification) -
+  Understand distribution compliance requirements
+- [Troubleshooting](/docs/user-guides/troubleshooting) - Resolve common
+  corporate action issues

@@ -704,7 +704,7 @@ function ThemeSettingsPage() {
       ) {
         if (workerRef.current === null) {
           const worker = new globalThis.Worker(
-            new URL(
+            /* @vite-ignore */ new URL(
               "@/components/theme/lib/theme-css.worker.ts",
               import.meta.url
             ),
