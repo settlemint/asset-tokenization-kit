@@ -4,10 +4,10 @@ import {
   TileFooter,
   TileFooterAction,
   TileHeader,
-  TileSubtitle,
   TileTitle,
 } from "@/components/tile/tile";
 import { formatDate } from "@/lib/utils/date";
+import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import type { UserReadOutput } from "@/orpc/routes/user/routes/user.read.schema";
 import { UserRound } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -16,15 +16,16 @@ import { EditBasicInfoSheet } from "../actions/edit-basic-info-sheet";
 
 export interface BasicInfoTileProps {
   user: UserReadOutput;
-  displayName: string | null;
 }
 
 /**
  * Overview tile summarizing core user details with inline edit entry point.
  */
-export function BasicInfoTile({ user, displayName }: BasicInfoTileProps) {
+export function BasicInfoTile({ user }: BasicInfoTileProps) {
   const { t, i18n } = useTranslation(["user", "common"]);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+
+  const displayName = useMemo(() => getUserDisplayName(user), [user]);
 
   const infoItems = useMemo(
     () => [
@@ -39,25 +40,13 @@ export function BasicInfoTile({ user, displayName }: BasicInfoTileProps) {
       {
         label: t("user:fields.accountCreated", { defaultValue: "Created" }),
         value: user.createdAt
-          ? formatDate(user.createdAt, "yyyy-MM-dd", i18n.language)
+          ? formatDate(user.createdAt, "MMM d, yyyy HH:mm", i18n.language)
           : "-",
       },
       {
         label: t("user:fields.lastLogin", { defaultValue: "Last Login" }),
         value: user.lastLoginAt
-          ? formatDate(
-              user.lastLoginAt,
-              {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-                timeZoneName: "short",
-              },
-              i18n.language
-            )
+          ? formatDate(user.lastLoginAt, "MMM d, yyyy HH:mm", i18n.language)
           : "-",
       },
     ],
@@ -74,7 +63,6 @@ export function BasicInfoTile({ user, displayName }: BasicInfoTileProps) {
   return (
     <>
       <Tile
-        className="mb-6"
         detailLabel={t("common:actions.edit", { defaultValue: "Edit" })}
         onOpenDetail={() => {
           setIsEditSheetOpen(true);
@@ -91,11 +79,6 @@ export function BasicInfoTile({ user, displayName }: BasicInfoTileProps) {
                   defaultValue: "Basic Info",
                 })}
               </TileTitle>
-              <TileSubtitle>
-                {t("user:details.basicInfo.subtitle", {
-                  defaultValue: "Snapshot of the user's profile details.",
-                })}
-              </TileSubtitle>
             </div>
           </div>
         </TileHeader>

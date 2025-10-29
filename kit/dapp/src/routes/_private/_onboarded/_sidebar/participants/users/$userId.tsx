@@ -1,14 +1,11 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
-import { getUserTabConfiguration } from "@/components/tab-navigation/user-tab-configuration";
+import { BasicInfoTile } from "@/components/participants/users/tiles/basic-info-tile";
 import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import * as z from "zod";
 
 const routeParamsSchema = z.object({
@@ -16,7 +13,7 @@ const routeParamsSchema = z.object({
 });
 
 /**
- * Route configuration for the user details page parent route
+ * Route configuration for the user details page
  *
  * This route handles the userId parameter and provides shared data loading
  * for all user detail sub-routes. The route is authenticated and requires
@@ -27,7 +24,7 @@ const routeParamsSchema = z.object({
  * @remarks
  * - The userId parameter must be a non-empty string
  * - User data is fetched using ORPC and cached with TanStack Query
- * - This is a parent route that provides shared layout and tab navigation
+ * - Provides shared layout for user details and nested sub-pages
  * - Requires appropriate permissions to view user data
  *
  * @example
@@ -90,8 +87,6 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { user: loaderUser } = Route.useLoaderData();
   const { userId } = Route.useParams();
-  const { t } = useTranslation(["user", "common"]);
-
   // Subscribe to live user data so UI reacts to updates
   const { data: queriedUser } = useQuery(
     Route.useRouteContext().orpc.user.read.queryOptions({
@@ -101,21 +96,6 @@ function RouteComponent() {
 
   const user = queriedUser ?? loaderUser;
   const displayName = getUserDisplayName(user);
-
-  // Generate tab configuration based on user data
-  // Only memoize based on properties that affect tab configuration
-  const tabConfigs = useMemo(
-    () => getUserTabConfiguration({ userId }),
-    [userId]
-  );
-
-  // Transform tab configurations to TabItemProps with translations
-  const tabs = useMemo(() => {
-    return tabConfigs.map((config) => ({
-      href: config.href,
-      name: t(`user:tabs.${config.tabKey}`),
-    }));
-  }, [tabConfigs, t]);
 
   return (
     <div className="space-y-6 p-6">
@@ -128,14 +108,13 @@ function RouteComponent() {
               {displayName || user.email}
             </h1>
           </div>
-          {/* Future: Add ManageUserDropdown here */}
         </div>
       </div>
+      <div className="grid auto-rows-fr items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <BasicInfoTile user={user} />
+      </div>
 
-      {/* Tab Navigation */}
-      <TabNavigation items={tabs} />
-
-      {/* Child Routes */}
+      {/* Nested Sub Routes */}
       <Outlet />
     </div>
   );

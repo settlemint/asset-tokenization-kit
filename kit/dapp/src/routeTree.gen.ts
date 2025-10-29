@@ -57,7 +57,6 @@ import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteImp
 import { Route as PrivateOnboardedSidebarParticipantsUsersUserIdRouteImport } from './routes/_private/_onboarded/_sidebar/participants/users/$userId'
 import { Route as PrivateOnboardedSidebarParticipantsEntitiesAddressRouteImport } from './routes/_private/_onboarded/_sidebar/participants/entities/$address'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/index'
-import { Route as PrivateOnboardedSidebarParticipantsUsersUserIdIndexRouteImport } from './routes/_private/_onboarded/_sidebar/participants/users/$userId/index'
 import { Route as PrivateOnboardedSidebarParticipantsEntitiesAddressIndexRouteImport } from './routes/_private/_onboarded/_sidebar/participants/entities/$address/index'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield'
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
@@ -341,12 +340,6 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute =
         PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute,
     } as any,
   )
-const PrivateOnboardedSidebarParticipantsUsersUserIdIndexRoute =
-  PrivateOnboardedSidebarParticipantsUsersUserIdIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => PrivateOnboardedSidebarParticipantsUsersUserIdRoute,
-  } as any)
 const PrivateOnboardedSidebarParticipantsEntitiesAddressIndexRoute =
   PrivateOnboardedSidebarParticipantsEntitiesAddressIndexRouteImport.update({
     id: '/',
@@ -473,7 +466,7 @@ export interface FileRoutesByFullPath {
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
   '/participants/entities/$address': typeof PrivateOnboardedSidebarParticipantsEntitiesAddressRouteWithChildren
-  '/participants/users/$userId': typeof PrivateOnboardedSidebarParticipantsUsersUserIdRouteWithChildren
+  '/participants/users/$userId': typeof PrivateOnboardedSidebarParticipantsUsersUserIdRoute
   '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/participants/entities': typeof PrivateOnboardedSidebarParticipantsEntitiesIndexRoute
   '/participants/users': typeof PrivateOnboardedSidebarParticipantsUsersIndexRoute
@@ -488,7 +481,6 @@ export interface FileRoutesByFullPath {
   '/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
   '/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
   '/participants/entities/$address/': typeof PrivateOnboardedSidebarParticipantsEntitiesAddressIndexRoute
-  '/participants/users/$userId/': typeof PrivateOnboardedSidebarParticipantsUsersUserIdIndexRoute
   '/token/$factoryAddress/$tokenAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRoutesByTo {
@@ -528,6 +520,7 @@ export interface FileRoutesByTo {
   '/platform-settings/theme': typeof PrivateOnboardedSidebarPlatformSettingsThemeRoute
   '/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/addon': typeof PrivateOnboardedSidebarAddonIndexRoute
+  '/participants/users/$userId': typeof PrivateOnboardedSidebarParticipantsUsersUserIdRoute
   '/participants/entities': typeof PrivateOnboardedSidebarParticipantsEntitiesIndexRoute
   '/participants/users': typeof PrivateOnboardedSidebarParticipantsUsersIndexRoute
   '/token/$factoryAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressIndexRoute
@@ -541,7 +534,6 @@ export interface FileRoutesByTo {
   '/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
   '/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
   '/participants/entities/$address': typeof PrivateOnboardedSidebarParticipantsEntitiesAddressIndexRoute
-  '/participants/users/$userId': typeof PrivateOnboardedSidebarParticipantsUsersUserIdIndexRoute
   '/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRoutesById {
@@ -588,7 +580,7 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/token/stats': typeof PrivateOnboardedSidebarTokenStatsRoute
   '/_private/_onboarded/_sidebar/addon/': typeof PrivateOnboardedSidebarAddonIndexRoute
   '/_private/_onboarded/_sidebar/participants/entities/$address': typeof PrivateOnboardedSidebarParticipantsEntitiesAddressRouteWithChildren
-  '/_private/_onboarded/_sidebar/participants/users/$userId': typeof PrivateOnboardedSidebarParticipantsUsersUserIdRouteWithChildren
+  '/_private/_onboarded/_sidebar/participants/users/$userId': typeof PrivateOnboardedSidebarParticipantsUsersUserIdRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   '/_private/_onboarded/_sidebar/participants/entities/': typeof PrivateOnboardedSidebarParticipantsEntitiesIndexRoute
   '/_private/_onboarded/_sidebar/participants/users/': typeof PrivateOnboardedSidebarParticipantsUsersIndexRoute
@@ -603,7 +595,6 @@ export interface FileRoutesById {
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressPermissionsRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressYieldRoute
   '/_private/_onboarded/_sidebar/participants/entities/$address/': typeof PrivateOnboardedSidebarParticipantsEntitiesAddressIndexRoute
-  '/_private/_onboarded/_sidebar/participants/users/$userId/': typeof PrivateOnboardedSidebarParticipantsUsersUserIdIndexRoute
   '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRouteTypes {
@@ -662,7 +653,6 @@ export interface FileRouteTypes {
     | '/token/$factoryAddress/$tokenAddress/permissions'
     | '/token/$factoryAddress/$tokenAddress/yield'
     | '/participants/entities/$address/'
-    | '/participants/users/$userId/'
     | '/token/$factoryAddress/$tokenAddress/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -702,6 +692,7 @@ export interface FileRouteTypes {
     | '/platform-settings/theme'
     | '/token/stats'
     | '/addon'
+    | '/participants/users/$userId'
     | '/participants/entities'
     | '/participants/users'
     | '/token/$factoryAddress'
@@ -715,7 +706,6 @@ export interface FileRouteTypes {
     | '/token/$factoryAddress/$tokenAddress/permissions'
     | '/token/$factoryAddress/$tokenAddress/yield'
     | '/participants/entities/$address'
-    | '/participants/users/$userId'
     | '/token/$factoryAddress/$tokenAddress'
   id:
     | '__root__'
@@ -776,7 +766,6 @@ export interface FileRouteTypes {
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield'
     | '/_private/_onboarded/_sidebar/participants/entities/$address/'
-    | '/_private/_onboarded/_sidebar/participants/users/$userId/'
     | '/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/'
   fileRoutesById: FileRoutesById
 }
@@ -1131,13 +1120,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRouteImport
       parentRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute
     }
-    '/_private/_onboarded/_sidebar/participants/users/$userId/': {
-      id: '/_private/_onboarded/_sidebar/participants/users/$userId/'
-      path: '/'
-      fullPath: '/participants/users/$userId/'
-      preLoaderRoute: typeof PrivateOnboardedSidebarParticipantsUsersUserIdIndexRouteImport
-      parentRoute: typeof PrivateOnboardedSidebarParticipantsUsersUserIdRoute
-    }
     '/_private/_onboarded/_sidebar/participants/entities/$address/': {
       id: '/_private/_onboarded/_sidebar/participants/entities/$address/'
       path: '/'
@@ -1229,21 +1211,6 @@ const PrivateOnboardedSidebarParticipantsEntitiesAddressRouteWithChildren =
     PrivateOnboardedSidebarParticipantsEntitiesAddressRouteChildren,
   )
 
-interface PrivateOnboardedSidebarParticipantsUsersUserIdRouteChildren {
-  PrivateOnboardedSidebarParticipantsUsersUserIdIndexRoute: typeof PrivateOnboardedSidebarParticipantsUsersUserIdIndexRoute
-}
-
-const PrivateOnboardedSidebarParticipantsUsersUserIdRouteChildren: PrivateOnboardedSidebarParticipantsUsersUserIdRouteChildren =
-  {
-    PrivateOnboardedSidebarParticipantsUsersUserIdIndexRoute:
-      PrivateOnboardedSidebarParticipantsUsersUserIdIndexRoute,
-  }
-
-const PrivateOnboardedSidebarParticipantsUsersUserIdRouteWithChildren =
-  PrivateOnboardedSidebarParticipantsUsersUserIdRoute._addFileChildren(
-    PrivateOnboardedSidebarParticipantsUsersUserIdRouteChildren,
-  )
-
 interface PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteChildren {
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklistRoute
@@ -1301,7 +1268,7 @@ interface PrivateOnboardedSidebarRouteChildren {
   PrivateOnboardedSidebarTokenStatsRoute: typeof PrivateOnboardedSidebarTokenStatsRoute
   PrivateOnboardedSidebarAddonIndexRoute: typeof PrivateOnboardedSidebarAddonIndexRoute
   PrivateOnboardedSidebarParticipantsEntitiesAddressRoute: typeof PrivateOnboardedSidebarParticipantsEntitiesAddressRouteWithChildren
-  PrivateOnboardedSidebarParticipantsUsersUserIdRoute: typeof PrivateOnboardedSidebarParticipantsUsersUserIdRouteWithChildren
+  PrivateOnboardedSidebarParticipantsUsersUserIdRoute: typeof PrivateOnboardedSidebarParticipantsUsersUserIdRoute
   PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute: typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren
   PrivateOnboardedSidebarParticipantsEntitiesIndexRoute: typeof PrivateOnboardedSidebarParticipantsEntitiesIndexRoute
   PrivateOnboardedSidebarParticipantsUsersIndexRoute: typeof PrivateOnboardedSidebarParticipantsUsersIndexRoute
@@ -1342,7 +1309,7 @@ const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren
     PrivateOnboardedSidebarParticipantsEntitiesAddressRoute:
       PrivateOnboardedSidebarParticipantsEntitiesAddressRouteWithChildren,
     PrivateOnboardedSidebarParticipantsUsersUserIdRoute:
-      PrivateOnboardedSidebarParticipantsUsersUserIdRouteWithChildren,
+      PrivateOnboardedSidebarParticipantsUsersUserIdRoute,
     PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRoute:
       PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren,
     PrivateOnboardedSidebarParticipantsEntitiesIndexRoute:
