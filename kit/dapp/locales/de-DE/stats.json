@@ -170,6 +170,9 @@
     }
   },
   "title": "Statistiken",
+  "fromLastWeek": "seit letzter Woche",
+  "fromLastMonth": "seit letztem Monat",
+  "fromLastYear": "seit letztem Jahr",
   "widgets": {
     "assets": {
       "empty": "Noch keine Vermögenswerte",

@@ -170,6 +170,9 @@
     }
   },
   "title": "Statistics",
+  "fromLastWeek": "from last week",
+  "fromLastMonth": "from last month",
+  "fromLastYear": "from last year",
   "widgets": {
     "assets": {
       "empty": "No assets yet",

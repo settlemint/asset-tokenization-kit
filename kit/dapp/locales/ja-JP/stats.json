@@ -170,6 +170,9 @@
     }
   },
   "title": "統計",
+  "fromLastWeek": "先週から",
+  "fromLastMonth": "先月から",
+  "fromLastYear": "昨年から",
   "widgets": {
     "assets": {
       "empty": "まだ資産はありません",

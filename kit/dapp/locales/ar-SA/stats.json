@@ -170,6 +170,9 @@
     }
   },
   "title": "الإحصائيات",
+  "fromLastWeek": "من الأسبوع الماضي",
+  "fromLastMonth": "من الشهر الماضي",
+  "fromLastYear": "من العام الماضي",
   "widgets": {
     "assets": {
       "empty": "لا توجد أصول بعد",

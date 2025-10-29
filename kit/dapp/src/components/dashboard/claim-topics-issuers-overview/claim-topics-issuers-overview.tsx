@@ -23,6 +23,24 @@ export function ClaimTopicsIssuersOverview() {
     orpc.system.stats.trustedIssuerStatsState.queryOptions()
   );
 
+  const last7DaysClaimsStats = useSuspenseQuery(
+    orpc.system.stats.claimsStats.queryOptions({
+      input: "trailing7Days" as const,
+    })
+  );
+
+  const last7DaysTopicSchemesStats = useSuspenseQuery(
+    orpc.system.stats.topicSchemesStats.queryOptions({
+      input: "trailing7Days" as const,
+    })
+  );
+
+  const last7DaysIssuersStats = useSuspenseQuery(
+    orpc.system.stats.trustedIssuerStats.queryOptions({
+      input: "trailing7Days" as const,
+    })
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
@@ -43,6 +61,13 @@ export function ClaimTopicsIssuersOverview() {
             { type: "number" },
             locale
           )}
+          previousValue={
+            last7DaysClaimsStats.data.data.at(0)?.totalActiveClaims
+          }
+          currentValue={
+            last7DaysClaimsStats.data.data.at(-1)?.totalActiveClaims
+          }
+          period="fromLastWeek"
           icon={ShieldCheck}
         />
 
@@ -56,6 +81,13 @@ export function ClaimTopicsIssuersOverview() {
             { type: "number" },
             locale
           )}
+          previousValue={
+            last7DaysTopicSchemesStats.data.data.at(0)?.totalActiveTopicSchemes
+          }
+          currentValue={
+            last7DaysTopicSchemesStats.data.data.at(-1)?.totalActiveTopicSchemes
+          }
+          period="fromLastWeek"
           icon={Tag}
         />
 
@@ -69,6 +101,13 @@ export function ClaimTopicsIssuersOverview() {
             { type: "number" },
             locale
           )}
+          previousValue={
+            last7DaysIssuersStats.data.data.at(0)?.totalActiveTrustedIssuers
+          }
+          currentValue={
+            last7DaysIssuersStats.data.data.at(-1)?.totalActiveTrustedIssuers
+          }
+          period="fromLastWeek"
           icon={CheckCircle2}
         />
       </div>
