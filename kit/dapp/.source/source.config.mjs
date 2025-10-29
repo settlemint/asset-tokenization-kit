@@ -19,7 +19,7 @@ var docs = defineDocs({
        * Meta description for SEO.
        * Used in search engine results and social media previews.
        */
-      description: z.string().optional(),
+      description: z.string(),
       /**
        * Additional keywords for SEO.
        */
