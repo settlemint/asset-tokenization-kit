@@ -21,12 +21,7 @@ import {
   signInWithUser,
 } from "@test/fixtures/user";
 import { from } from "dnum";
-import {
-  BONDS,
-  DEPOSITS,
-  STABLECOINS,
-  type DemoAsset,
-} from "./data/demo-assets";
+import { BONDS, STABLECOINS, type DemoAsset } from "./data/demo-assets";
 import { DE_COUNTRY_CODE } from "./data/demo-country-codes";
 import {
   ADMIN,
@@ -34,6 +29,7 @@ import {
   GERMAN_INVESTOR_2,
   ISSUER,
   JAPANESE_INVESTOR,
+  SINGAPORE_INVESTOR,
   US_INVESTOR,
 } from "./data/demo-users";
 
@@ -50,12 +46,12 @@ await setupUser(GERMAN_INVESTOR_2);
 await setupUser(ISSUER);
 await setupUser(JAPANESE_INVESTOR);
 await setupUser(US_INVESTOR);
+await setupUser(SINGAPORE_INVESTOR);
 
 const adminClient = getOrpcClient(await signInWithUser(ADMIN));
 const issuerClient = getOrpcClient(await signInWithUser(ISSUER));
 
-const germanInvestor1 = await getUserData(GERMAN_INVESTOR_1);
-const germanInvestor2 = await getUserData(GERMAN_INVESTOR_2);
+const singaporeInvestor = await getUserData(SINGAPORE_INVESTOR);
 const issuer = await getUserData(ISSUER);
 
 // Setup system
@@ -90,6 +86,11 @@ await Promise.all([
       [GERMAN_INVESTOR_1, GERMAN_INVESTOR_2],
       "DE"
     );
+    await createAndRegisterUserIdentities(
+      adminClient,
+      [SINGAPORE_INVESTOR],
+      "SG"
+    );
     await createAndRegisterUserIdentities(adminClient, [US_INVESTOR], "US");
     await issueDefaultKycClaims(adminClient, [
       ADMIN,
@@ -97,6 +98,7 @@ await Promise.all([
       GERMAN_INVESTOR_1,
       GERMAN_INVESTOR_2,
       US_INVESTOR,
+      SINGAPORE_INVESTOR,
     ]);
   })(),
   setupDefaultIssuerRoles(adminClient, ISSUER),
@@ -108,17 +110,17 @@ let denominationToken: Awaited<ReturnType<typeof createToken>> | undefined =
   undefined;
 
 // Create tokens with compliance enabled
-
-for (const depositToCreate of DEPOSITS) {
-  const { isDenominationToken, ...depositData } = depositToCreate;
-  logger.info(`Creating deposit: ${depositData.name}`);
+for (const stableCoinToCreate of STABLECOINS) {
+  const { collateral, isDenominationToken, ...stableCoinData } =
+    stableCoinToCreate;
+  logger.info(`Creating stablecoin: ${stableCoinToCreate.name}`);
   const token = await createToken(
     issuerClient,
     {
-      type: "deposit",
-      ...depositData,
+      type: "stablecoin",
+      ...stableCoinData,
       basePrice: from("1.00", 2),
-      initialModulePairs: getInitialModulePairs(depositData),
+      initialModulePairs: getInitialModulePairs(stableCoinData),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
         verificationType: "PINCODE",
@@ -130,9 +132,24 @@ for (const depositToCreate of DEPOSITS) {
       unpause: true,
     }
   );
+  if (!token.identity?.id) {
+    throw new Error("Token does not have an identity");
+  }
   if (isDenominationToken) {
     denominationToken = token;
   }
+  const oneHundredDaysFromNow = new Date(
+    Date.now() + 1000 * 60 * 60 * 24 * 100
+  );
+  await issuerClient.token.updateCollateral({
+    contract: token.id,
+    walletVerification: {
+      secretVerificationCode: DEFAULT_PINCODE,
+      verificationType: "PINCODE",
+    },
+    amount: collateral,
+    expiryTimestamp: oneHundredDaysFromNow,
+  });
 }
 
 for (const bondToCreate of BONDS) {
@@ -213,7 +230,7 @@ for (const bondToCreate of BONDS) {
     logger.info("Topping up yield schedule");
     await issuerClient.fixedYieldSchedule.topUp({
       contract: schedule.id,
-      tokenAddress: bond.id,
+      //tokenAddress: bond.id,
       amount: from(500, 18),
       walletVerification: {
         secretVerificationCode: DEFAULT_PINCODE,
@@ -223,53 +240,15 @@ for (const bondToCreate of BONDS) {
   }
 
   // Mint some tokens to the german investors
-  logger.info("Minting tokens to the german investors");
+  logger.info("Minting tokens to the singapore investors");
   await issuerClient.token.mint({
     contract: bond.id,
-    recipients: [germanInvestor1.wallet, germanInvestor2.wallet],
-    amounts: [from(10, 18), from(38, 18)],
+    recipients: [singaporeInvestor.wallet],
+    amounts: [from(50, 18)],
     walletVerification: {
       secretVerificationCode: DEFAULT_PINCODE,
       verificationType: "PINCODE",
     },
-  });
-}
-
-for (const stableCoinToCreate of STABLECOINS) {
-  const { collateral, ...stableCoinData } = stableCoinToCreate;
-  logger.info(`Creating stablecoin: ${stableCoinToCreate.name}`);
-  const token = await createToken(
-    issuerClient,
-    {
-      type: "stablecoin",
-      ...stableCoinData,
-      basePrice: from("1.00", 2),
-      initialModulePairs: getInitialModulePairs(stableCoinData),
-      walletVerification: {
-        secretVerificationCode: DEFAULT_PINCODE,
-        verificationType: "PINCODE",
-      },
-    },
-    {
-      useExactName: true,
-      grantRole: ["custodian", "emergency", "governance", "supplyManagement"],
-      unpause: true,
-    }
-  );
-  if (!token.identity?.id) {
-    throw new Error("Token does not have an identity");
-  }
-  const oneHundredDaysFromNow = new Date(
-    Date.now() + 1000 * 60 * 60 * 24 * 100
-  );
-  await issuerClient.token.updateCollateral({
-    contract: token.id,
-    walletVerification: {
-      secretVerificationCode: DEFAULT_PINCODE,
-      verificationType: "PINCODE",
-    },
-    amount: collateral,
-    expiryTimestamp: oneHundredDaysFromNow,
   });
 }
 
@@ -281,7 +260,7 @@ function getInitialModulePairs(assetToCreate: DemoAsset) {
   if (smartIdentityVerificationModule && amlTopic && kycTopic) {
     initialModulePairs.push({
       typeId: "SMARTIdentityVerificationComplianceModule",
-      module: smartIdentityVerificationModule.module,
+      module: smartIdentityVerificationModule.id,
       values: [
         {
           nodeType: 0,
@@ -309,7 +288,7 @@ function getInitialModulePairs(assetToCreate: DemoAsset) {
   ) {
     initialModulePairs.push({
       typeId: "CountryAllowListComplianceModule",
-      module: countryAllowListModule.module,
+      module: countryAllowListModule.id,
       values: compliance.allowedCountries,
     });
   }
@@ -317,7 +296,7 @@ function getInitialModulePairs(assetToCreate: DemoAsset) {
   if (tokenSupplyLimitModule && compliance.tokenSupplyLimit) {
     initialModulePairs.push({
       typeId: "TokenSupplyLimitComplianceModule",
-      module: tokenSupplyLimitModule.module,
+      module: tokenSupplyLimitModule.id,
       values: {
         maxSupply: compliance.tokenSupplyLimit,
         periodLength: 0,

@@ -1,10 +1,6 @@
 import { TimeIntervalEnum } from "@atk/zod/time-interval";
 import type { DemoAsset } from "@test/scripts/demo/data/demo-assets";
-import {
-  BE_COUNTRY_CODE,
-  DE_COUNTRY_CODE,
-  JP_COUNTRY_CODE,
-} from "@test/scripts/demo/data/demo-country-codes";
+import { SG_COUNTRY_CODE } from "@test/scripts/demo/data/demo-country-codes";
 import { from, type Dnum } from "dnum";
 
 type DemoBond = DemoAsset & {
@@ -26,6 +22,13 @@ thirtyMinutesFromNow.setMilliseconds(0);
 thirtyMinutesFromNow.setSeconds(0);
 thirtyMinutesFromNow.setMinutes(thirtyMinutesFromNow.getMinutes() + 30);
 
+const threeAndAHalfHoursFromNow = new Date();
+threeAndAHalfHoursFromNow.setMilliseconds(0);
+threeAndAHalfHoursFromNow.setSeconds(0);
+threeAndAHalfHoursFromNow.setMinutes(
+  threeAndAHalfHoursFromNow.getMinutes() + 210
+);
+
 const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -40,63 +43,16 @@ fiveYearsFromTomorrow.setFullYear(fiveYearsFromTomorrow.getFullYear() + 5);
 
 export const BONDS = [
   {
-    name: "Short-term bond",
-    symbol: "STB",
+    name: "A1SG Bond 2025",
+    symbol: "A1SG25",
     decimals: 18,
-    faceValue: from(25, 18),
+    faceValue: from(1000, 18),
     yieldRate: 110,
-    countryCode: BE_COUNTRY_CODE,
-    cap: from(1_000_000_000, 18),
+    isin: undefined,
+    countryCode: SG_COUNTRY_CODE,
+    cap: from(10_000, 18),
     issueDate: fiveMinutesFromNow,
-    maturityDate: thirtyMinutesFromNow,
-    paymentInterval: 5 * 60, // 5 minutes
-  },
-  {
-    name: "Bund7",
-    symbol: "BUND7",
-    decimals: 18,
-    faceValue: from(1, 18),
-    isin: "DE000BU27014",
-    yieldRate: 250,
-    countryCode: DE_COUNTRY_CODE,
-    cap: from(8_000_000_000, 18),
-    issueDate: new Date(
-      tomorrow.getFullYear(),
-      tomorrow.getMonth(),
-      tomorrow.getDate()
-    ),
-    maturityDate: new Date(
-      threeYearsFromTomorrow.getFullYear(),
-      threeYearsFromTomorrow.getMonth(),
-      threeYearsFromTomorrow.getDate()
-    ),
-    paymentInterval: TimeIntervalEnum.YEARLY,
-    compliance: {
-      allowedCountries: [DE_COUNTRY_CODE],
-    },
-  },
-  {
-    name: "Bund10",
-    symbol: "BUND10",
-    decimals: 18,
-    faceValue: from(1, 18),
-    isin: "DE000BU2Z056",
-    yieldRate: 260,
-    countryCode: DE_COUNTRY_CODE,
-    cap: from(26_000_000_000, 18),
-    issueDate: new Date(
-      tomorrow.getFullYear(),
-      tomorrow.getMonth(),
-      tomorrow.getDate()
-    ),
-    maturityDate: new Date(
-      fiveYearsFromTomorrow.getFullYear(),
-      fiveYearsFromTomorrow.getMonth(),
-      fiveYearsFromTomorrow.getDate()
-    ),
-    paymentInterval: TimeIntervalEnum.YEARLY,
-    compliance: {
-      allowedCountries: [DE_COUNTRY_CODE, JP_COUNTRY_CODE],
-    },
+    maturityDate: threeAndAHalfHoursFromNow,
+    paymentInterval: 3_600, // 1 hour
   },
 ] satisfies DemoBond[];

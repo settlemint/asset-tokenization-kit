@@ -7,7 +7,7 @@ import {
 
 export const ADMIN: User = {
   ...DEFAULT_ADMIN,
-  firstName: "System",
+  firstName: "Mizuho",
   lastName: "Admin",
 };
 
@@ -43,4 +43,11 @@ export const US_INVESTOR: User = {
   email: "us.investor@settlemint.com",
   firstName: "US",
   lastName: "Investor",
+};
+
+export const SINGAPORE_INVESTOR: User = {
+  ...DEFAULT_INVESTOR,
+  email: "investor.ken@investor.com",
+  firstName: "Investor",
+  lastName: "Ken",
 };

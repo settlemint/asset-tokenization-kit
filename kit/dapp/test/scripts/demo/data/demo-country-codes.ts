@@ -11,3 +11,4 @@ export const PT_COUNTRY_CODE = "620";
 export const SE_COUNTRY_CODE = "752";
 export const NO_COUNTRY_CODE = "578";
 export const DK_COUNTRY_CODE = "208";
+export const SG_COUNTRY_CODE = "702";
