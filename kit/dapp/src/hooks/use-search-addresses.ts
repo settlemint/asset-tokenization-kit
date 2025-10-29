@@ -1,7 +1,6 @@
 import { orpc } from "@/orpc/orpc-client";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 import { getAddress } from "viem";
 
 export type AddressSearchScope = "user" | "asset" | "all";
@@ -60,38 +59,34 @@ export function useSearchAddresses({
     searchTerm.length > 0 ? searchAssets : listAssetsResponse?.tokens || [];
   const isLoadingAssets = isLoadingSearch || isLoadingList;
 
-  const searchResults = useMemo(() => {
-    const addresses: EthereumAddress[] = [];
+  const searchResults: EthereumAddress[] = [];
 
-    // Process based on scope
-    if (scope === "user" || scope === "all") {
-      users.forEach((user) => {
-        if (!user.wallet) return;
+  // Process based on scope
+  if (scope === "user" || scope === "all") {
+    users.forEach((user) => {
+      if (!user.wallet) return;
 
-        try {
-          const validAddress = getAddress(user.wallet);
-          addresses.push(validAddress);
-        } catch {
-          // Invalid address format, skip
-        }
-      });
-    }
+      try {
+        const validAddress = getAddress(user.wallet);
+        searchResults.push(validAddress);
+      } catch {
+        // Invalid address format, skip
+      }
+    });
+  }
 
-    if (scope === "asset" || scope === "all") {
-      assets.forEach((asset: { id?: string }) => {
-        if (!asset.id) return;
+  if (scope === "asset" || scope === "all") {
+    assets.forEach((asset: { id?: string }) => {
+      if (!asset.id) return;
 
-        try {
-          const validAddress = getAddress(asset.id);
-          addresses.push(validAddress);
-        } catch {
-          // Invalid address format, skip
-        }
-      });
-    }
-
-    return addresses;
-  }, [users, assets, scope]);
+      try {
+        const validAddress = getAddress(asset.id);
+        searchResults.push(validAddress);
+      } catch {
+        // Invalid address format, skip
+      }
+    });
+  }
 
   return {
     searchResults,

@@ -56,7 +56,7 @@ export const BondFields = withForm({
           };
         }
       },
-      [type, t, form.setFieldValue]
+      [type, t, form]
     );
 
     // Initialize the denomination asset decimals when denomination asset is set

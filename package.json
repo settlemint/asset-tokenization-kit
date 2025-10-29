@@ -79,6 +79,8 @@
     "@types/lodash": "4.17.20",
     "@typescript/native-preview": "7.0.0-dev.20251027.1",
     "graphql": "16.11.0",
+    "oxlint": "1.24.0",
+    "oxlint-tsgolint": "0.3.0",
     "prettier": "3.6.2",
     "turbo": "2.5.8",
     "typescript": "5.9.3",

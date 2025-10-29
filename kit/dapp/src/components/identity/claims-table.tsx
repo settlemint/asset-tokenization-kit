@@ -212,7 +212,7 @@ export function ClaimsTable({
                   <span className="sr-only">Open menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[160px]">
+              <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuItem
                   onSelect={() => {
                     setSelectedClaim(claim);
@@ -231,7 +231,7 @@ export function ClaimsTable({
         },
       }),
     ] as ColumnDef<ClaimRow>[]);
-  }, [t, identityAddress, userIdentityAddressLower, tableIdentityAddressLower]);
+  }, [t, userIdentityAddressLower, tableIdentityAddressLower]);
 
   return (
     <>

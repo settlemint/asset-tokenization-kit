@@ -24,11 +24,9 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "biome.enabled": false,
-  "biome.requireConfiguration": true,
   "editor.codeActionsOnSave": {
     "source.fixAll": "explicit",
-    "source.organizeImports": "explicit",
-    "source.fixAll.biome": "explicit"
+    "source.organizeImports": "explicit"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.fontLigatures": true,
@@ -38,15 +36,7 @@
   "editor.tabSize": 2,
   "emmet.showExpandedAbbreviation": "never",
   "errorLens.fontStyleItalic": true,
-  "eslint.codeActionsOnSave.mode": "all",
-  "eslint.enable": true,
-  "eslint.lintTask.enable": true,
-  "eslint.run": "onType",
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ],
+  "eslint.enable": false,
   "explorer.confirmPasteNative": false,
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
@@ -150,5 +140,9 @@
   "workbench.fontAliasing": "auto",
   "workbench.tips.enabled": false,
   "workbench.tree.enableStickyScroll": true,
-  "typescript.experimental.useTsgo": false
+  "typescript.experimental.useTsgo": false,
+  "oxc.enable": true,
+  "oxc.typeAware": true,
+  "oxc.unusedDisableDirectives": "warn",
+  "oxc.requireConfig": true
 }

@@ -6,6 +6,7 @@
   "private": true,
   "sideEffects": false,
   "scripts": {
+    "lint:ox": "oxlint --type-aware --deny-warnings",
     "dev": "bun --bun vite dev",
     "typecheck": "tsgo --noEmit",
     "posttypecheck": "bunx gql.tada check",

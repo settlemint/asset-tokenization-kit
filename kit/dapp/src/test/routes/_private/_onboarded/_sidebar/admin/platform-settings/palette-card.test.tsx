@@ -1,10 +1,10 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { PaletteCard } from "@/components/theme/components/palette-card";
 import {
   DEFAULT_THEME,
   type ThemeConfig,
   type ThemeToken,
 } from "@/components/theme/lib/schema";
-import { PaletteCard } from "@/components/theme/components/palette-card";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { type ReactNode, useMemo, useState } from "react";
 import { describe, expect, it } from "vitest";
 
@@ -22,7 +22,7 @@ function createMockForm(baseTheme: ThemeConfig, errors: ErrorMap = {}) {
   function MockField({ name, children }: MockFieldProps) {
     const initial = useMemo(() => {
       return getValueByPath(baseTheme, name) ?? "";
-    }, [baseTheme, name]);
+    }, [name]);
     const [value, setValue] = useState<string>(
       typeof initial === "string" ? initial : ""
     );

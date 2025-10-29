@@ -1,0 +1,31 @@
+{
+  "plugins": [
+    "unicorn",
+    "typescript",
+    "oxc",
+    "react",
+    "react-perf",
+    "vitest",
+    "import"
+  ],
+  "categories": {},
+  "rules": {
+    "restrict-template-expressions": "off",
+    "unbound-method": "off",
+    "no-floating-promises": "off",
+    "require-array-sort-compare": "off",
+    "no-standalone-expect": "off",
+    "no-conditional-expect": "off",
+    "no-disabled-tests": "off",
+    "expect-expect": "off",
+    "require-to-throw-message": "off",
+    "valid-describe-callback": "off",
+    "no-children-prop": "off"
+  },
+  "settings": {},
+  "env": {
+    "builtin": true
+  },
+  "globals": {},
+  "ignorePatterns": []
+}

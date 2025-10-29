@@ -236,6 +236,7 @@ function ThemeSettingsPage() {
     if (storedDraft) {
       localStorageService.getLocalStorage()?.removeItem(storageKey);
     }
+    // oxlint-disable-next-line exhaustive-deps
   }, [baseTheme, form, storageKey]);
 
   const draft = useStore(
@@ -542,6 +543,7 @@ function ThemeSettingsPage() {
       const response = await fetch(result.uploadUrl, {
         method: result.method,
         headers,
+        // oxlint-disable-next-line no-invalid-fetch-options
         body: file,
       });
 
@@ -837,6 +839,7 @@ function ThemeSettingsPage() {
     }
 
     return tabs;
+    // oxlint-disable-next-line exhaustive-deps
   }, [t, lightTokens.length, darkTokens.length]);
 
   return (

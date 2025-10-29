@@ -77,16 +77,7 @@ export function useBondStatusData(
       status: progressData.status,
       isEmpty: false,
     };
-  }, [
-    token.bond,
-    token.capped?.cap,
-    token.totalSupply,
-    token.redeemable?.redeemedAmount,
-    bondStatus.coveredPercentage,
-    bondStatus.denominationAssetBalanceAvailable,
-    bondStatus.denominationAssetBalanceRequired,
-    t,
-  ]);
+  }, [token, bondStatus, t]);
 }
 
 /**

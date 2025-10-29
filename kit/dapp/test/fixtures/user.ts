@@ -118,9 +118,7 @@ export const setupUser = (user: User) =>
         // Check if user needs a wallet
         const sessionBeforeWallet = await authClient.getSession({
           fetchOptions: {
-            headers: {
-              ...Object.fromEntries(signInHeaders.entries()),
-            },
+            headers: Object.fromEntries(signInHeaders.entries()),
           },
         });
 
@@ -163,9 +161,7 @@ export const setupUser = (user: User) =>
               pincode: DEFAULT_PINCODE,
             },
             {
-              headers: {
-                ...Object.fromEntries(pincodeHeaders.entries()),
-              },
+              headers: Object.fromEntries(pincodeHeaders.entries()),
             }
           );
 
@@ -192,9 +188,7 @@ export const setupUser = (user: User) =>
                 password: user.password,
               },
               {
-                headers: {
-                  ...Object.fromEntries(secretCodeHeaders.entries()),
-                },
+                headers: Object.fromEntries(secretCodeHeaders.entries()),
               }
             );
 
@@ -222,9 +216,7 @@ export const setupUser = (user: User) =>
                 stored: true,
               },
               {
-                headers: {
-                  ...Object.fromEntries(confirmSecretCodeHeaders.entries()),
-                },
+                headers: Object.fromEntries(confirmSecretCodeHeaders.entries()),
               }
             );
           if (confirmSecretCodeError) {
@@ -246,9 +238,7 @@ export const setupUser = (user: User) =>
         const sessionHeaders = await signInWithUser(user, true);
         const session = await authClient.getSession({
           fetchOptions: {
-            headers: {
-              ...Object.fromEntries(sessionHeaders.entries()),
-            },
+            headers: Object.fromEntries(sessionHeaders.entries()),
           },
         });
 
@@ -284,9 +274,7 @@ export async function getUserData(user: User) {
   const session = await authClient.getSession(
     {},
     {
-      headers: {
-        ...Object.fromEntries(headers.entries()),
-      },
+      headers: Object.fromEntries(headers.entries()),
     }
   );
   const userInfo = session.data?.user;
