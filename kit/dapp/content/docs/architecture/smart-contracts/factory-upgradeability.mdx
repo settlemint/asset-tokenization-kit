@@ -1,14 +1,13 @@
 ---
-title: Factory and proxies
-description: Documentation for factory-upgradeability
+title: Factory patterns & upgradeability
+description:
+  The ATK Protocol uses factory patterns and upgradeable proxy architecture to
+  enable standardized deployment, consistent configuration, and safe upgrades of
+  tokenized assets. This infrastructure provides the foundation for scalable,
+  maintainable asset tokenization at enterprise scale.
 pageTitle: Factory pattern and upgradeable architecture
 tags: [architecture, factory, upgradeability, proxy, deployment]
 ---
-
-The ATK Protocol uses factory patterns and upgradeable proxy architecture to
-enable standardized deployment, consistent configuration, and safe upgrades of
-tokenized assets. This infrastructure provides the foundation for scalable,
-maintainable asset tokenization at enterprise scale.
 
 ## Factory pattern overview
 
@@ -36,19 +35,19 @@ previous one:
 
 <Mermaid chart={`
 graph TB
-    Addons[ADDONS<br/>Operational Tools]
-    Assets[ASSETS<br/>Financial Instruments]
-    System[SYSTEM<br/>Infrastructure]
-    Smart[SMART<br/>Protocol Foundation]
+    Addons(ADDONS<br/>Operational Tools)
+    Assets(ASSETS<br/>Financial Instruments)
+    System(SYSTEM<br/>Infrastructure)
+    Smart(SMART<br/>Protocol Foundation)
 
     Addons --> Assets
     Assets --> System
     System --> Smart
 
-    style Addons fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style Assets fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style System fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style Smart fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style Addons fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Assets fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style System fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Smart fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 
 `} />
 

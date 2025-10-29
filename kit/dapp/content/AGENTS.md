@@ -5,6 +5,41 @@ the following **style guidelines** for any AI agent or writer generating the
 content. The goal is to combine _engaging, human-like writing_ with technical
 accuracy and clarity, optimized for both human readers and AI search indexing.
 
+### Product Positioning & Key Differentiators
+
+- **CRITICAL: Highlight DALP Lifecycle Features as USP**: The lifecycle
+  management capabilities of DALP are a unique selling proposition for ATK.
+  Always emphasize and prominently feature:
+  - **DvP (Delivery vs Payment)**: Atomic settlement mechanisms
+  - **Vaults**: Secure asset custody and management
+  - **Yield Management**: Automated distribution of dividends, interest, and
+    returns
+  - These features differentiate ATK from competitors and should be highlighted
+    in executive overviews, architecture discussions, and use case examples
+  - When discussing asset types (bonds, deposits, funds), always connect to
+    lifecycle capabilities where relevant
+
+- **CRITICAL: Leverage Observability Stack as Competitive Advantage**: ATK
+  includes an extensive observability stack with comprehensive dashboards
+  deployed via Helm charts. This is a selling point and operational advantage
+  that should be referenced throughout documentation:
+  - **Troubleshooting guides**: Reference specific dashboards and metrics for
+    diagnosing issues
+  - **Verification procedures**: Show how to confirm correct operation using
+    observability tools
+  - **Performance monitoring**: Explain how metrics validate system health and
+    scalability
+  - **Operational guides**: Demonstrate how dashboards support day-to-day
+    operations
+  - **Architecture discussions**: Highlight observability as
+    production-readiness differentiator
+  - **Developer workflows**: Show how metrics accelerate development and testing
+  - Whenever discussing deployment, operations, monitoring, debugging, or
+    production readiness, connect to the observability capabilities
+  - Use concrete examples: "Check the transaction latency dashboard to verify
+    settlement times" or "The compliance metrics panel shows real-time rule
+    evaluation statistics"
+
 ### Writing Tone and Voice
 
 - **Audience-Appropriate Tone:** Adjust tone based on the persona and section:
@@ -77,6 +112,22 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
 
 ### Structure and Formatting
 
+- **Special Documentation Components:** Use these components to enhance reader
+  experience when relevant, but prioritize readability over visual flair:
+  - **TabsComponents** — For content variants (e.g., different code samples per
+    framework, configuration for different environments)
+  - **AccordionComponents** — For collapsible sections with optional content
+    (FAQs, troubleshooting steps)
+  - **BannerComponents** — For important notices, warnings, or tips
+  - **CodeBlockComponents** — For enhanced code blocks with syntax highlighting
+    and features
+  - **FilesComponents** — For showing file structures and directory trees
+  - **StepsComponents** — For sequential tutorial or setup steps
+  - **Cards** — For feature overviews, option comparisons, or navigation grids
+  - _Guidelines:_ Only use these components where they genuinely improve
+    comprehension or navigation. Don't overuse—default markdown formatting is
+    preferred for most content. Use components when the structure naturally fits
+    (e.g., steps for tutorials, tabs for platform-specific instructions).
 - **Headings:** Use a clear heading hierarchy to make content
   skimmable[\[139\]](https://cookbook.openai.com/articles/what_makes_documentation_good#:~:text=Make%20docs%20easy%20to%20skim).
   Each page should start with its H1 title (from the metadata). Inside pages,
@@ -142,17 +193,28 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
     - Use single quotes for the prop if diagram contains backticks:
       `<Mermaid chart={'flowchart TB\n  A --> B'} />`
     - Always use self-closing tag `/>` at the end
-  - **Mermaid Color Standards:** Use brand-aligned colors that work in both
-    light and dark themes:
-    - **Success/positive states**:
-      `fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff` (emerald green)
-    - **Error/warning/problematic states**:
-      `fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff` (amber/orange)
-    - **Neutral/informational elements**:
-      `fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff` (sky blue)
-    - **Secondary/supporting elements**:
-      `fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff` (violet)
+  - **Mermaid Node Shapes:** Always use rounded rectangles for nodes to match
+    shadcn design language:
+    - ✅ Correct: `NodeID(Node Label)` - rounded rectangle
+    - ❌ Incorrect: `NodeID[Node Label]` - square rectangle
+    - Exception: Subgraph labels must use square brackets:
+      `subgraph ID["Label"]`
+    - This creates a consistent, modern appearance aligned with shadcn UI
+  - **Mermaid Color Standards:** Use brand-aligned shadcn colors that work in
+    both light and dark themes:
+    - **Primary elements (teal/cyan - sm-graphics-primary)**:
+      `fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`
+    - **Secondary elements (blue - sm-graphics-secondary)**:
+      `fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff`
+    - **Tertiary elements (purple - sm-graphics-tertiary)**:
+      `fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff`
+    - **Quaternary elements (pink/magenta - sm-graphics-quaternary)**:
+      `fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff`
     - Always use white text (`color:#fff`) on colored backgrounds for contrast
+    - These colors map to the SettleMint brand palette defined in
+      `kit/dapp/src/styles/app.css`
+    - Use primary (teal) for main flows, secondary (blue) for data/info,
+      tertiary (purple) for processes, quaternary (pink) for special states
   - **Mermaid Layout:** Prefer vertical (`TB` or `TD`) layouts over horizontal
     (`LR`) for better readability in documentation. Use `flowchart TB` instead
     of `flowchart LR` to create taller, narrower diagrams that fit better in
@@ -210,19 +272,31 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
     bonds")
   - **pageTitle**: Full descriptive title for the page header and browser title
     (e.g., "Corporate bond issuance for capital markets")
-  - **description**: One-line description (<160 chars ideally) for SEO meta
-    description, containing keywords for search
+  - **description**: **MANDATORY** - A 2-3 sentence paragraph introducing the
+    page and topic (this is displayed separately in custom styling on the page
+    itself). This should be the introductory paragraph for the page. **DO NOT**
+    repeat this content as the first paragraph in the body - it will cause
+    duplicate content on the rendered page.
   - **tags**: 3-6 keywords, all lowercase, that broadly cover the page topics
     (to feed the site's search indexing and help AI find context)
   - Example:
+
     ```yaml
     ---
     title: Corporate bonds
     pageTitle: Corporate bond issuance for capital markets
-    description: Automated bond lifecycle from issuance to redemption
+    description:
+      Corporate bonds represent debt instruments issued by companies to raise
+      capital. The ATK platform automates the complete bond lifecycle from
+      issuance through coupon payments to redemption, ensuring regulatory
+      compliance at every step.
     tags: [use-case, bonds, debt, capital-markets, automation]
     ---
+    ## Bond structure
+
+    (Start body content directly with first heading - NO introductory paragraph)
     ```
+
 - **SEO and AI Optimization:**
 - Include relevant keywords naturally in the content and headings. For example,
   the page about compliance should mention "KYC/AML", "regulatory compliance"
@@ -257,6 +331,22 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
   which may not directly apply to prose, but our content should support
   accessibility by being well-structured and using semantic markup (headings,
   lists, etc. which we are doing).
+
+### Code References
+
+- **GitHub Links:** When referencing code (functions, classes, contracts,
+  components), always include direct links to the source on GitHub:
+  - Format:
+    `[function_name](https://github.com/settlemint/asset-tokenization-kit/blob/main/path/to/file.ext#L123)`
+    where `#L123` points to the specific line
+  - Example:
+    `[validateTransfer](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/TransferRestrictions.sol#L45)`
+    function in compliance contracts
+  - For line ranges, use `#L10-L25` format
+  - Always use permalinks (commit SHA) for stability when possible, or `main`
+    branch for current version
+  - This applies to all documentation: guides, architecture docs, API
+    references, tutorials
 
 ### Content Development Process (Plan to Complete)
 
@@ -366,8 +456,11 @@ we propose the following plan for the AI (or documentation team):
 - Add any missing diagrams or examples that could further enhance understanding.
   Don't shy away from including clarifying content even if not explicitly in
   source (like an illustrative example scenario).
-- Check that each page's content indeed matches its description and that there
-  is no duplication that bores the reader or contradiction that confuses them.
+- **CRITICAL**: Check that each page's description field does NOT duplicate the
+  first paragraph of body content. The description is rendered separately above
+  the body content, so any duplication creates a poor reading experience. The
+  description should serve as the introduction, and body content should start
+  directly with the first heading or substantive content.
 - Perhaps include an index or search page (though the site likely has search
   built-in).
 - Ensure navigation is logical: Part ordering, numbering of pages as given in

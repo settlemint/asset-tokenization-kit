@@ -1,0 +1,10 @@
+{
+  "title": "Quality",
+  "pages": [
+    "testing-quality",
+    "security-validation",
+    "compliance-certification",
+    "identity-compliance-control-plane",
+    "observability-disaster-recovery"
+  ]
+}

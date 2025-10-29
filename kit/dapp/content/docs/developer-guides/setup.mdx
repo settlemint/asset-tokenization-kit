@@ -1,0 +1,546 @@
+---
+title: Development environment
+description:
+  Complete guide to setting up your local development environment for the Asset
+  Tokenization Kit
+pageTitle: Setting up your development environment
+tags: [tutorial, setup, environment, docker, bun, turborepo]
+---
+
+This guide walks you through setting up a complete local development environment
+for the Asset Tokenization Kit. You'll get a fully functional blockchain
+network, database, indexing services, and the dApp running on your machine.
+
+## Prerequisites
+
+Before starting, ensure you have the following installed:
+
+**Required:**
+
+- **Bun** (version 1.2.19): JavaScript runtime and package manager
+  - Install: `curl -fsSL https://bun.sh/install | bash`
+  - Verify: `bun --version`
+- **Docker** (version 20.10+): Container runtime for local services
+  - Install: [Docker Desktop](https://www.docker.com/products/docker-desktop)
+  - Verify: `docker --version` and `docker compose version`
+- **Node.js** (version 22+): Required by some build tools
+  - Install via [nvm](https://github.com/nvm-sh/nvm): `nvm install 22`
+  - Verify: `node --version`
+
+**Optional but recommended:**
+
+- **Git** (version 2.30+): Version control
+- **VS Code**: Editor with recommended extensions (`.vscode/extensions.json` in
+  the repo)
+- **SettleMint CLI** (version 2.6.2): Blockchain deployment and management tools
+  - Already included as dev dependency in the project
+
+**System requirements:**
+
+- **Disk space**: Minimum 10 GB free (for Docker volumes and node modules)
+- **Memory**: At least 8 GB RAM (16 GB recommended for running all services)
+- **OS**: macOS, Linux, or WSL2 on Windows
+
+<Steps>
+
+<Step>
+
+### Clone the repository
+
+Start by cloning the Asset Tokenization Kit repository:
+
+```bash
+git clone https://github.com/settlemint/asset-tokenization-kit.git
+cd asset-tokenization-kit
+```
+
+The repository uses a Turborepo monorepo structure with the following packages:
+
+```
+kit/
+├── contracts/   # Solidity smart contracts
+├── dapp/       # TanStack Start web application
+├── subgraph/   # TheGraph indexing protocol
+├── charts/     # Helm deployment charts
+└── e2e/        # Playwright end-to-end tests
+```
+
+</Step>
+
+<Step>
+
+### Install dependencies
+
+Install all workspace dependencies using Bun:
+
+```bash
+bun install
+```
+
+This command:
+
+- Installs dependencies for all packages in the monorepo
+- Links workspace packages together
+- Runs post-install scripts to set up tooling
+
+The installation should complete in 1-2 minutes. If you encounter errors, check
+that your Bun version matches `package.json` (1.2.19).
+
+</Step>
+
+<Step>
+
+### Generate artifacts
+
+The Kit requires pre-generated artifacts before starting services. These
+artifacts include:
+
+- **Genesis file**: Pre-deployed smart contracts for the local blockchain
+  (`kit/contracts/.generated/genesis.json`)
+- **Contract ABIs**: For frontend and indexing integration
+  (`kit/contracts/.generated/portal/`)
+- **Subgraph hash**: Pre-deployed subgraph configuration
+- **Database schema**: Initial PostgreSQL table definitions
+
+Generate all artifacts:
+
+```bash
+bun run artifacts
+```
+
+This command runs:
+
+1. `turbo run compile` - Compiles Solidity contracts with Foundry and Hardhat
+2. `turbo run codegen` - Generates TypeScript types from contracts and GraphQL
+   schemas
+3. `turbo run artifacts` - Creates genesis file, ABIs, and deployment
+   configurations
+
+**Expected output:**
+
+```
+• Packages in scope: contracts, dapp, subgraph
+• Running compile in 3 packages
+• Running codegen in 3 packages
+• Running artifacts in 3 packages
+✓ Genesis file written to kit/contracts/.generated/genesis.json
+✓ Portal ABIs written to kit/contracts/.generated/portal/
+✓ Subgraph hash: QmXyz...
+```
+
+**Important:** Re-run `bun run artifacts` whenever you modify smart contracts in
+`kit/contracts/contracts/`, database schemas in `kit/dapp/src/lib/db/schemas/`,
+or subgraph mappings in `kit/subgraph/src/`.
+
+</Step>
+
+<Step>
+
+### Configure environment variables
+
+The local development stack uses Docker Compose with default values suitable for
+development. No `.env` file is required for basic setup.
+
+<Tabs items={["Default (No .env)", "Development (.env.local)", "Custom Ports"]}>
+<Tab value="Default (No .env)">
+
+No `.env` file required for basic setup. Docker Compose uses these defaults:
+
+- **Chain ID**: 1337
+- **PostgreSQL**: Port 5432, user `postgres`, password `postgres`
+- **Redis**: Port 6379, password `shared`
+- **Anvil RPC**: Port 8545
+- **Hasura**: Port 8080, admin secret `hasura`
+
+</Tab>
+<Tab value="Development (.env.local)">
+
+Create `.env.local` in the project root to override defaults:
+
+```bash
+# Blockchain
+CHAIN_ID=1337
+NETWORK_NAME=ATK
+
+# PostgreSQL
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=postgres
+
+# Redis
+REDIS_PASSWORD=shared
+
+# MinIO (S3-compatible storage)
+MINIO_ROOT_USER=minio
+MINIO_ROOT_PASSWORD=miniominio
+
+# Hasura GraphQL
+HASURA_ADMIN_SECRET=hasura
+```
+
+</Tab>
+<Tab value="Custom Ports">
+
+Override default ports if you have conflicts:
+
+```bash
+# Custom port mappings
+ANVIL_PORT=8546
+POSTGRES_PORT=5433
+HASURA_PORT=8081
+GRAPH_NODE_PORT=8001
+MINIO_CONSOLE_PORT=9002
+BLOCKSCOUT_FRONTEND_PORT=4002
+```
+
+Remember to update connection strings in your dApp configuration when changing
+ports.
+
+</Tab>
+</Tabs>
+
+<Banner type="info">
+  **Important:** Never commit `.env.local` to version control. It's already in
+  `.gitignore`.
+</Banner>
+
+</Step>
+
+<Step>
+
+### Start Docker services
+
+Launch the complete development stack:
+
+```bash
+bun run dev:up
+```
+
+This command:
+
+1. Starts Docker Compose services defined in `docker-compose.yml`
+2. Creates persistent volumes for data storage
+3. Runs health checks on all services
+4. Connects to the local blockchain using SettleMint CLI
+
+**Services started:**
+
+| Service                 | Port | Purpose                                   |
+| ----------------------- | ---- | ----------------------------------------- |
+| **anvil**               | 8545 | Local Ethereum node (Foundry Anvil)       |
+| **txsigner**            | 8547 | Transaction signing service               |
+| **postgres**            | 5432 | PostgreSQL database                       |
+| **redis**               | 6379 | Caching and session storage               |
+| **hasura**              | 8080 | GraphQL API (not used in current version) |
+| **graph-node**          | 8000 | TheGraph indexing node                    |
+| **minio**               | 9000 | S3-compatible object storage              |
+| **minio-console**       | 9001 | MinIO web console                         |
+| **portal**              | 7700 | SettleMint blockchain portal              |
+| **blockscout-backend**  | 4000 | Blockchain explorer API                   |
+| **blockscout-frontend** | 4001 | Blockchain explorer UI                    |
+
+**Wait for services to be healthy:**
+
+```bash
+docker compose ps
+```
+
+All services should show `healthy` status. This may take 30-60 seconds on first
+run.
+
+**Troubleshooting:** If services fail to start, check Docker has sufficient
+memory allocated (8+ GB in Docker Desktop settings), ensure ports are not
+already in use (`lsof -i :8545,5432,8080`), or view logs
+(`docker compose logs -f [service-name]`).
+
+### Run the dApp
+
+With services running, start the web application:
+
+```bash
+cd kit/dapp
+bun run dev
+```
+
+The dApp starts on **http://localhost:3000** with:
+
+- **Hot module replacement** for instant updates
+- **React Server Components** for optimized rendering
+- **TanStack Router** for type-safe routing
+- **TanStack Query** for server state management
+
+**Expected terminal output:**
+
+```
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: http://192.168.1.x:3000/
+
+  VITE version 7.1.12 ready in 1234 ms
+  ➜ TanStack Router version 1.133.32
+```
+
+**Open the application:**
+
+1. Navigate to http://localhost:3000 in your browser
+2. Click "Sign In" to create a test account
+3. Follow the onboarding wizard to set up your wallet and identity
+
+</Step>
+
+</Steps>
+
+## Verify the setup
+
+Check that all components are working:
+
+### 1. Blockchain connectivity
+
+Open the dApp and check the network indicator in the top-right corner. It should
+show:
+
+- **Network**: ATK (Chain ID: 1337)
+- **Block height**: Incrementing (Anvil auto-mines blocks)
+
+### 2. Database connection
+
+Run a database migration to verify PostgreSQL:
+
+```bash
+cd kit/dapp
+bun run db:generate
+bun run db:migrate
+```
+
+**Expected:** No errors, migrations apply successfully.
+
+### 3. Subgraph indexing
+
+Visit the Graph Node GraphQL playground:
+
+- **URL**: http://localhost:8000/subgraphs/name/atk/graphql
+
+Run a test query:
+
+```graphql
+{
+  tokens(first: 5) {
+    id
+    name
+    symbol
+  }
+}
+```
+
+**Expected:** Returns empty array `[]` initially (no tokens deployed yet).
+
+### 4. Block explorer
+
+Open Blockscout: http://localhost:4001
+
+You should see:
+
+- Genesis block (block #0)
+- Pre-deployed system contracts
+- Transaction history
+
+## Generate test data
+
+To populate the dApp with sample assets and users, run the integration test
+suite:
+
+```bash
+cd kit/dapp
+bun run test:integration
+```
+
+This creates:
+
+- System administrator account
+- Multiple investor identities with claims
+- Sample bonds, equity, and fund tokens
+- Transaction history
+
+**Note:** Integration tests reset the database, so run this only when you need
+fresh test data.
+
+## Development workflow
+
+With the environment set up, your typical development loop looks like:
+
+### Making contract changes
+
+1. Edit Solidity files in `kit/contracts/contracts/`
+2. Regenerate artifacts: `bun run artifacts` (from project root)
+3. Restart Docker services: `bun run dev:reset`
+4. Restart dApp: `cd kit/dapp && bun run dev`
+
+### Making dApp changes
+
+1. Edit TypeScript/React files in `kit/dapp/src/`
+2. Changes hot-reload automatically
+3. Database schema changes: `bun run db:generate && bun run db:migrate`
+
+### Making subgraph changes
+
+1. Edit mappings in `kit/subgraph/src/`
+2. Regenerate artifacts: `bun run artifacts` (from project root)
+3. Restart Docker services: `bun run dev:reset`
+
+## Clean restart
+
+If you need to completely reset the development environment:
+
+```bash
+# From project root
+bun run dev:reset
+```
+
+This command:
+
+1. Stops and removes all Docker containers
+2. Deletes Docker volumes (blockchain state, database, etc.)
+3. Regenerates artifacts
+4. Starts fresh services
+
+**Warning:** This destroys all local data. Use when troubleshooting or starting
+a new feature.
+
+## Expected results
+
+After completing this setup guide, you should have:
+
+**Running services:**
+
+- Local Ethereum node (Anvil) producing blocks every 12 seconds
+- PostgreSQL database with initialized schema
+- TheGraph node indexing blockchain events
+- TanStack Start dApp serving on http://localhost:3000
+- Blockscout explorer showing genesis contracts
+
+**Working development loop:**
+
+- Smart contract changes trigger automatic recompilation and artifact generation
+- Frontend code changes hot-reload instantly without manual refresh
+- Database migrations apply successfully via Drizzle ORM
+- GraphQL queries return indexed blockchain data from subgraph
+
+**Verification checklist:**
+
+- [ ] dApp loads at http://localhost:3000 without errors
+- [ ] Network indicator shows "ATK (Chain ID: 1337)" with incrementing block
+      height
+- [ ] Database migrations complete successfully
+- [ ] Graph Node GraphQL playground responds at http://localhost:8000
+- [ ] Blockscout explorer displays genesis block and system contracts
+- [ ] Browser console shows no critical errors (some dev warnings OK)
+
+If any verification step fails, refer to the troubleshooting section below.
+
+## Next steps
+
+Now that your environment is running:
+
+- **Deploy your first token**: Follow the
+  [Getting started](/docs/user-guides/getting-started) tutorial
+- **Explore the codebase**: See
+  [Code structure](/docs/developer-guides/architecture)
+- **Extend smart contracts**: Read
+  [Extending contracts](/docs/developer-guides/smart-contracts/extending-contracts)
+- **Build API integrations**: Learn the
+  [API reference](/docs/developer-guides/api-integration/api-reference)
+- **Run the test suite**: Execute `bun run test` to verify code quality
+- **Configure CI/CD**: Review
+  [Deployment guide](/docs/developer-guides/deployment-ops/installation-configuration)
+  for production setup
+
+## Common issues
+
+<Accordions type="multiple">
+
+<Accordion title="Port conflicts">
+
+**Symptom:** Docker services fail with "port already allocated"
+
+**Solutions:**
+
+1. **Kill the conflicting process:**
+
+```bash
+# Find process using port 8545
+lsof -i :8545
+# Kill the process
+kill -9 [PID]
+```
+
+2. **Change the port in `.env.local`:**
+
+```bash
+ANVIL_PORT=8546
+```
+
+</Accordion>
+
+<Accordion title="Out of memory">
+
+**Symptom:** Services crash or become unresponsive
+
+**Solutions:**
+
+- Increase Docker Desktop memory limit to 8+ GB
+- Close other memory-intensive applications
+- Disable unused services in `docker-compose.yml`
+
+</Accordion>
+
+<Accordion title="Slow artifact generation">
+
+**Symptom:** `bun run artifacts` takes &gt;5 minutes
+
+**Solutions:**
+
+- Enable Turborepo remote caching: `bun turbo link`
+- Upgrade to SSD storage if using HDD
+- Run artifact generation for specific packages:
+  `turbo run artifacts --filter=contracts`
+
+</Accordion>
+
+<Accordion title="Subgraph not indexing">
+
+**Symptom:** GraphQL queries return stale data
+
+**Solutions:**
+
+```bash
+# Check Graph Node logs
+docker compose logs -f graph-node
+
+# Restart Graph Node
+docker compose restart graph-node
+
+# Full reset
+bun run dev:reset
+```
+
+</Accordion>
+
+<Accordion title="TypeScript errors after pulling changes">
+
+**Symptom:** IDE shows type errors after `git pull`
+
+**Solutions:**
+
+```bash
+# Reinstall dependencies
+bun install
+
+# Regenerate types
+bun run artifacts
+
+# Restart TypeScript server in VS Code
+# Cmd+Shift+P → "TypeScript: Restart TS Server"
+```
+
+</Accordion>
+
+</Accordions>

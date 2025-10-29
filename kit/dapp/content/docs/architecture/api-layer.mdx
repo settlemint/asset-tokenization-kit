@@ -1,0 +1,484 @@
+---
+title: API layer
+description:
+  The API layer orchestrates business logic, enforces access controls, and
+  coordinates between frontend, database, and blockchain layers. Built on ORPC
+  for type-safe procedures and Better Auth for authentication, it provides the
+  middle tier that transforms user intentions into validated, auditable
+  operations.
+pageTitle: API layer - Business logic and orchestration
+tags: [architecture, api, orpc, backend, services]
+---
+
+## Problem
+
+Traditional REST or GraphQL APIs require maintaining separate type definitions
+on client and server, leading to runtime errors when schemas drift. Business
+logic scattered across controllers, services, and repositories creates
+maintenance overhead. Authentication and authorization middleware duplicates
+permission checks. External integrations with KYC providers, payment gateways,
+and custody systems require bespoke adapters with inconsistent error handling.
+
+### Solution
+
+ORPC procedures define API contracts once with Zod schemas, generating
+TypeScript types consumed by both client and server. Business services
+encapsulate domain logic behind clean interfaces. Better Auth provides unified
+authentication with RBAC permissions validated through middleware pipelines. The
+integration service abstracts external systems behind consistent adapters,
+centralizing retry logic, error handling, and rate limiting.
+
+## Type-safe API with ORPC
+
+[ORPC](https://orpc.unnoq.com/) eliminates the impedance mismatch between client
+and server by sharing procedure definitions. Unlike REST where you manually
+maintain OpenAPI specs or GraphQL where you write separate resolvers, ORPC
+procedures are TypeScript functions with Zod validation that compile into both
+client SDKs and server handlers.
+
+### Procedure anatomy
+
+Every ORPC procedure declares input validation, output validation, and
+implementation:
+
+```typescript
+export const createAsset = procedure
+  .input(
+    z.object({
+      name: z.string().min(1).max(100),
+      symbol: z
+        .string()
+        .min(1)
+        .max(10)
+        .regex(/^[A-Z]+$/),
+      totalSupply: z.number().positive().int(),
+      assetType: z.enum(["bond", "equity", "fund", "stablecoin", "deposit"]),
+      complianceRules: z.array(
+        z.object({
+          ruleType: z.string(),
+          parameters: z.record(z.any()),
+        })
+      ),
+    })
+  )
+  .output(
+    z.object({
+      assetId: z.string().uuid(),
+      deploymentAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+      transactionHash: z.string(),
+    })
+  )
+  .mutation(async ({ input, ctx }) => {
+    // Implementation
+  });
+```
+
+Frontend calls receive full type inference:
+
+```typescript
+const { assetId, deploymentAddress } = await orpcClient.createAsset({
+  name: "Corporate Bond",
+  symbol: "BOND",
+  totalSupply: 1000000,
+  assetType: "bond",
+  complianceRules: [],
+});
+```
+
+TypeScript autocompletes `assetType` values, validates `symbol` format, and
+ensures `totalSupply` is a positive integer—all at compile time. If backend
+changes `assetId` from string to number, frontend sees immediate type errors.
+
+### Core procedures
+
+The API exposes procedures covering the complete asset lifecycle:
+
+**Asset management procedures** create, configure, and control token contracts.
+`createAsset()` validates configuration and deploys contracts via factory.
+`updateAsset()` modifies mutable properties like metadata URIs. `pauseAsset()`
+and `unpauseAsset()` toggle emergency stops. `burnTokens()` permanently destroys
+supply.
+
+**Investor operations procedures** handle onboarding and identity.
+`onboardInvestor()` creates user accounts and initiates KYC. `approveKYC()`
+marks identity verification complete and triggers OnchainID creation.
+`whitelistAddress()` adds Ethereum addresses to transfer allow-lists.
+`revokeAccess()` removes addresses and suspends accounts.
+
+**Compliance action procedures** configure and audit regulations.
+`setComplianceRules()` attaches transfer restrictions to tokens.
+`auditTransfer()` evaluates whether a proposed transfer meets requirements.
+`generateReport()` exports compliance data for regulators. `updateClaims()`
+modifies investor identity claims.
+
+**Token distribution procedures** handle primary issuance and secondary events.
+`mintTokens()` issues new supply to investors. `distributeYield()` calculates
+and transfers interest or dividend payments. `processRedemption()` exchanges
+tokens for underlying assets at maturity. `batchTransfer()` sends tokens to
+multiple recipients atomically.
+
+### Middleware pipeline
+
+Every procedure passes through middleware layers before reaching business logic:
+
+**Authentication middleware** validates session tokens via Better Auth. Unsigned
+requests return 401. Expired sessions trigger reauthentication. Multi-factor
+authentication requirements check for TOTP verification.
+
+**Authorization middleware** enforces RBAC permissions. Each procedure declares
+required roles (`admin`, `issuer`, `investor`, `compliance`). Users lacking
+permissions receive 403 errors. Permission checks evaluate against user's role
+set stored in database.
+
+**Rate limiting middleware** prevents abuse. Per-user limits (100
+requests/minute) prevent accidental loops. Per-IP limits (1000 requests/minute)
+mitigate DDoS. Authenticated users receive higher limits than anonymous. Rate
+limit state lives in Redis with sliding windows.
+
+**Audit logging middleware** records every request. Logs capture user ID,
+procedure name, input parameters (with sensitive fields redacted), timestamp,
+and result status. Audit entries write to PostgreSQL asynchronously, avoiding
+latency overhead. Compliance reports query audit logs for regulatory evidence.
+
+**Error handling middleware** transforms exceptions into user-friendly errors.
+Database connection failures return 503 with retry guidance. Blockchain RPC
+errors include transaction hashes for debugging. Validation errors return 400
+with field-specific messages. Unexpected exceptions log stack traces and
+return 500.
+
+### Performance characteristics
+
+API design targets specific latency and throughput benchmarks:
+
+**Read operations** (query procedures) complete in under 200ms at P95. Redis
+caching serves frequently accessed data (asset lists, investor balances) from
+memory. Database queries use indexes on foreign keys and timestamps. GraphQL
+queries batch-fetch related entities to avoid N+1 problems.
+
+**Write operations** (mutation procedures) complete in under 500ms for
+database-only changes. Procedures that submit blockchain transactions return
+immediately after RPC submission, polling transaction status asynchronously.
+WebSocket connections notify clients when on-chain confirmations arrive.
+
+**Transactional operations** involving blockchain confirmation take 2-15 seconds
+depending on network block time. Optimistic updates modify local database state
+immediately while waiting for on-chain confirmation. If blockchain rejects
+transaction, rollback updates and notify user.
+
+**Throughput** supports 500 concurrent requests per API pod under typical load.
+Horizontal pod autoscaling adds instances when CPU exceeds 70%. Database
+connection pooling maintains 100 active connections per pod. Long-running
+operations (file uploads, batch distributions) queue to background workers.
+
+## Business services layer
+
+Behind the API gateway, business services encapsulate domain logic and
+coordinate cross-cutting concerns. Services provide reusable abstractions that
+procedures compose into workflows.
+
+### Asset service
+
+Manages complete token lifecycle from creation through redemption. Coordinates
+between smart contracts, database records, and external systems to maintain
+state consistency.
+
+**Creation workflow** validates configuration against business rules (minimum
+supply, required compliance modules). Generates deterministic contract addresses
+via CREATE2. Submits deployment transaction and monitors confirmation. Records
+contract address, deployment block, and initial configuration in database.
+Indexes contract events via subgraph registration.
+
+**Configuration management** updates mutable properties while preserving
+immutable guarantees. Metadata URIs, logo images, and legal documents modify
+without blockchain transactions. Compliance rule changes require on-chain
+proposals with governance approval. Emergency pause operations validate operator
+permissions before submitting.
+
+**Corporate actions** manage scheduled events. Yield schedules calculate
+entitlement amounts based on token balances at snapshot block for claim-based
+distribution. Dividend claims coordinate with payment gateway to release cash.
+Redemption processes burn tokens and trigger asset delivery workflows.
+
+**State synchronization** reconciles off-chain and on-chain state. Periodic jobs
+compare database balances against contract storage, flagging discrepancies.
+Event replay reconstructs state from genesis block to current head. Merkle
+proofs verify state integrity against on-chain roots.
+
+### Identity service
+
+Handles KYC verification and OnchainID management. Bridges traditional identity
+providers with blockchain-native credentials.
+
+**KYC integration** connects to third-party verification providers (Onfido,
+Jumio, Sumsub). Submits identity documents and biometric scans. Polls
+verification status asynchronously. Stores KYC results encrypted at rest in
+database. Generates OnchainID smart contracts for approved investors.
+
+**OnchainID lifecycle** deploys identity contracts via factory. Records identity
+claims (country, accreditation status, investor type) as signed attestations.
+Manages claim updates when KYC status changes. Revokes claims if compliance
+violations occur.
+
+**Address linking** associates Ethereum addresses with OnchainID contracts.
+Supports multiple addresses per investor (custody, trading, cold storage).
+Validates address ownership via signature challenges. Updates on-chain
+registries with address-identity mappings.
+
+**Claim verification** evaluates transfer eligibility by querying OnchainID
+claims. Checks sender and receiver identities against compliance rules. Returns
+approval or denial with specific violation reasons. Caches verification results
+in Redis to accelerate repeated checks.
+
+### Compliance service
+
+Evaluates transfer rules in real-time, enforcing regulatory requirements before
+token movements occur.
+
+**Rule engine** interprets configurable compliance modules. Country restrictions
+block transfers to sanctioned jurisdictions. Investor limits enforce maximum
+token concentration per holder. Lock-up periods prevent transfers before vesting
+dates. Trading hour restrictions pause transfers outside market hours.
+
+**Transfer simulation** performs dry-run validation before submitting
+transactions. Evaluates sender and receiver identities against all active rules.
+Calculates post-transfer holder count and concentration ratios. Returns
+pass/fail with violation details. Frontend displays blocking reasons to users
+before transaction submission.
+
+**Regulatory reporting** generates audit-ready compliance reports. Aggregates
+investor demographics by country, accreditation status, and investor type.
+Tracks transfer history with rejection reasons. Exports to CSV, PDF, or
+regulatory portal APIs. Schedules automated delivery to compliance officers.
+
+**Exemption management** handles special cases requiring manual approval.
+Compliance officers whitelist specific transfers bypassing automated rules.
+Exemptions include remediation transfers for frozen accounts, forced transfers
+during litigation, and emergency administrator actions. All exemptions log
+justifications for audit trail.
+
+### Notification service
+
+Distributes events via email, webhooks, and real-time connections. Ensures
+stakeholders receive timely updates about asset lifecycle events.
+
+**Event routing** subscribes to domain events from business services. Asset
+creation triggers notifications to issuers. KYC approval notifies investors.
+Token transfers alert both sender and receiver. Corporate action scheduling
+notifies all token holders.
+
+**Multi-channel delivery** formats messages per channel. Emails use HTML
+templates with branding. Webhooks POST JSON payloads to registered URLs.
+WebSocket connections push real-time updates to connected clients. Push
+notifications reach mobile devices via Firebase Cloud Messaging.
+
+**Delivery guarantees** ensure critical notifications reach recipients. Failed
+email deliveries retry with exponential backoff. Webhook failures queue for
+redelivery up to 24 hours. Undelivered notifications escalate to administrators.
+Dead letter queues capture permanently failed deliveries for manual review.
+
+**Preference management** respects user notification settings. Investors control
+which event types trigger notifications per channel. Frequency limits prevent
+notification spam during high-volume periods. Digest mode batches multiple
+events into periodic summaries.
+
+### Integration service
+
+Connects to external systems like banking APIs, custody providers, and KYC
+vendors. Abstracts vendor-specific APIs behind consistent interfaces.
+
+**Banking integration** coordinates fiat payments for token purchases and
+redemptions. Initiates wire transfers via bank APIs. Monitors payment status
+asynchronously. Reconciles payments against token issuance. Handles payment
+failures and refunds.
+
+**Custody integration** interfaces with institutional custody solutions
+(Fireblocks, Copper, Coinbase). Submits multi-signature transaction proposals.
+Collects custodian approvals asynchronously. Monitors vault balances and
+reconciles against expected holdings. Triggers alerts for unexpected
+withdrawals.
+
+**KYC vendor abstraction** provides unified interface across identity providers.
+Maps vendor-specific data models to standardized schemas. Handles API rate
+limits and retry logic. Caches verification results to minimize API costs.
+Supports fallback to alternative vendors during outages.
+
+**Webhook processing** receives inbound notifications from external systems.
+Validates webhook signatures to prevent spoofing. Parses vendor-specific
+payloads into domain events. Triggers corresponding business service actions.
+Responds with acknowledgment to confirm receipt.
+
+## Authentication & authorization
+
+Better Auth provides modern authentication with built-in security features. RBAC
+permissions control access to procedures and resources.
+
+### Better Auth integration
+
+[Better Auth](https://better-auth.com/) handles session management and user
+authentication. Supports email/password, OAuth providers (Google, Microsoft),
+and Web3 wallet authentication. Multi-factor authentication via TOTP adds
+security for sensitive operations.
+
+**Session lifecycle** begins with authentication issuing signed JWT tokens.
+Tokens include user ID, email, and role assignments. Token expiration defaults
+to 7 days with automatic refresh. Logout revokes tokens immediately via
+blacklist in Redis.
+
+**Password security** uses Argon2id hashing with per-user salts. Password
+policies enforce minimum length, complexity, and breach checking via Have I Been
+Pwned. Password reset requires email verification with time-limited tokens.
+
+**OAuth flow** redirects users to identity providers for authentication. After
+provider approval, callback endpoint exchanges authorization codes for tokens.
+Links OAuth profiles to existing accounts via email matching. Stores provider
+tokens for API access to connected services.
+
+**Web3 authentication** validates wallet ownership via signature challenges.
+Users sign message containing timestamp and nonce. Backend verifies signature
+against claimed address. Associates wallet addresses with user accounts for
+transaction signing.
+
+### Role-based access control
+
+RBAC model assigns roles to users and permissions to roles. Procedures declare
+required permissions, middleware validates user roles.
+
+**Role hierarchy** defines five primary roles:
+
+- **Admin** - Full system access, user management, configuration
+- **Issuer** - Create assets, configure compliance, manage corporate actions
+- **Compliance** - Review KYC, approve investors, audit transfers, generate
+  reports
+- **Investor** - View holdings, transfer tokens, submit KYC documents
+- **Viewer** - Read-only access for auditors and observers
+
+**Permission granularity** controls specific operations. `asset:create`,
+`asset:pause`, `asset:burn` separate issuer capabilities. `kyc:review`,
+`kyc:approve`, `kyc:revoke` distinguish compliance workflows. `token:transfer`,
+`token:receive` restrict investor actions.
+
+**Dynamic permissions** adapt to context. Investors can only transfer their own
+tokens. Issuers manage only assets they created. Compliance officers review KYC
+submissions assigned to them. Middleware evaluates ownership and assignment
+during authorization.
+
+**Audit trail** logs every permission check. Records user, procedure, required
+permission, and decision. Failed authorization attempts trigger security alerts.
+Pattern detection identifies privilege escalation attempts.
+
+## Error handling patterns
+
+Consistent error responses help frontend display actionable messages and
+developers debug issues efficiently.
+
+### Error types
+
+**Validation errors** (400) return field-specific messages. Zod validation
+captures schema violations with precise locations. Custom validators add
+business rule checks. Response includes field paths and human-readable
+descriptions.
+
+**Authentication errors** (401) indicate missing or invalid credentials. Expired
+tokens prompt reauthentication. Invalid signatures reject with specific reason.
+Suggestions guide users toward resolution.
+
+**Authorization errors** (403) explain insufficient permissions. Response
+specifies required role or permission. Avoids leaking information about
+resources user cannot access. Logs unauthorized access attempts for security
+monitoring.
+
+**Not found errors** (404) indicate missing resources. Asset IDs, investor IDs,
+and transaction hashes resolve to 404 when nonexistent. Prevents enumeration
+attacks by returning same response for nonexistent and unauthorized resources.
+
+**Rate limit errors** (429) include retry-after headers. Response indicates
+limit type (per-user, per-IP, per-API-key). Provides current usage and reset
+timestamp. Authenticated requests suggest higher-limit plans.
+
+**Server errors** (500) return sanitized messages to users while logging full
+details. Unique error IDs correlate frontend errors with backend logs. Stack
+traces remain server-side. Monitoring alerts on-call engineers for unexpected
+exceptions.
+
+### Retry logic
+
+Transient failures receive automatic retry with exponential backoff. Idempotency
+keys prevent duplicate operations during retries.
+
+**Idempotency keys** accompany write operations. Client generates UUID for each
+mutation. Server checks key against recent operations. Duplicate keys return
+original result without re-executing. Keys expire after 24 hours.
+
+**Exponential backoff** spaces retries after transient failures. Initial retry
+after 1 second, then 2s, 4s, 8s, up to 64s maximum. Random jitter prevents
+thundering herd. Gives up after 5 attempts, returning final error to user.
+
+**Circuit breakers** prevent cascading failures. After threshold of consecutive
+failures, breaker opens and fails fast. Half-open state allows test requests to
+check recovery. Closes when success rate improves.
+
+## Development & testing
+
+API procedures use Vitest for unit tests and Playwright for integration tests.
+Mock adapters simulate external dependencies during testing.
+
+### Unit testing procedures
+
+Procedure tests validate input/output schemas, business logic, and error
+handling without external dependencies.
+
+**Schema validation tests** confirm Zod catches invalid inputs. Submit
+procedures with missing fields, wrong types, out-of-range values. Assert
+rejection with specific error messages. Verify output schemas match returned
+data.
+
+**Business logic tests** mock services and validate procedure orchestration.
+Stub database queries to return test data. Spy on service calls to verify
+invocation with correct parameters. Assert expected state changes and return
+values.
+
+**Authorization tests** verify permission enforcement. Call procedures as users
+with different roles. Assert allowed roles succeed and forbidden roles
+receive 403. Test ownership checks for resource-specific permissions.
+
+### Integration testing workflows
+
+E2E tests execute complete workflows from API call through database and
+blockchain state changes.
+
+**Asset creation flow** authenticates as issuer, calls `createAsset()`, waits
+for blockchain confirmation, verifies database records and subgraph indexing.
+Asserts contract deployment at expected address with correct initial state.
+
+**Investor onboarding flow** submits KYC documents, mocks verification provider
+response, calls `approveKYC()`, verifies OnchainID deployment and address
+whitelisting. Tests rejection paths for failed verification.
+
+**Token transfer flow** authenticates as investor, simulates transfer, verifies
+compliance checks, submits blockchain transaction, waits for confirmation,
+asserts balances updated. Tests blocked transfers with specific rule violations.
+
+### Mocking external systems
+
+Test environments replace real integrations with controllable mocks.
+
+**Database mocking** uses in-memory PostgreSQL or SQLite for fast test
+execution. Migrations run before test suite. Test transactions roll back after
+each test. Fixtures seed consistent test data.
+
+**Blockchain mocking** uses Hardhat Network or Anvil for deterministic EVM
+simulation. Deploys contracts to local network before tests. Mines blocks on
+demand for instant confirmation. Resets state between test runs.
+
+**External API mocking** intercepts HTTP requests with MSW (Mock Service
+Worker). Returns fixture responses matching real vendor APIs. Simulates error
+conditions (timeouts, rate limits, malformed responses). Validates outbound
+request payloads.
+
+## See also
+
+- [Core components](./core-components) - Overview of all architectural layers
+- [Frontend layer](./frontend-layer) - TanStack Start architecture and React
+  components
+- [Blockchain layer](./blockchain-layer) - Smart contracts and TheGraph indexing
+- [Data layer](./data-layer) - PostgreSQL, Redis, and MinIO storage

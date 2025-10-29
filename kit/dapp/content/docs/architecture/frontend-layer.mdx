@@ -1,0 +1,439 @@
+---
+title: Frontend layer
+description:
+  The frontend layer provides user-facing interfaces for issuers, investors,
+  compliance officers, and administrators. Built on TanStack Start with React,
+  it delivers server-rendered HTML for fast initial loads while maintaining the
+  responsiveness of client-side applications through progressive hydration.
+pageTitle: Frontend layer - User-facing interfaces and client architecture
+tags: [architecture, frontend, tanstack, react, ui]
+---
+
+## Problem
+
+Traditional blockchain applications force users to choose between two suboptimal
+architectures: server-rendered applications with poor interactivity or
+client-rendered SPAs with slow initial loads and SEO challenges. Multi-step
+workflows like asset creation require robust state management, while real-time
+portfolio updates demand efficient server synchronization. Mobile users face
+additional constraints with limited bandwidth and offline scenarios.
+
+### Solution
+
+TanStack Start combines server-side rendering with client-side interactivity,
+delivering initial HTML quickly while hydrating JavaScript progressively. The
+TanStack ecosystem (Router, Query, Form) provides type-safe navigation,
+automatic caching, and declarative validation. Responsive design adapts to
+mobile, tablet, and desktop viewports without maintaining separate codebases.
+All components share type definitions with the backend, catching integration
+errors at compile time.
+
+## Web application architecture
+
+The web application uses [TanStack Start](https://tanstack.com/start), a modern
+full-stack React framework that synthesizes server and client rendering
+strategies. Unlike Next.js or Remix which require framework-specific patterns,
+TanStack Start integrates seamlessly with the existing TanStack ecosystem while
+offering full control over rendering strategies.
+
+### User interfaces
+
+**Asset Designer Wizard** guides issuers through multi-step token creation. Each
+step validates input before progression, preventing deployment errors. Form
+state persists across browser refreshes. The wizard generates preview contracts
+showing exactly what will deploy on-chain.
+
+**Portfolio Management Dashboard** displays real-time holdings, transaction
+history, and asset performance. Updates appear automatically via WebSocket
+connections. Interactive charts visualize allocation, yield trends, and
+compliance status. Drill-down views show transaction details with blockchain
+explorer links.
+
+**Compliance Administration** provides tools for reviewing KYC documents,
+managing investor whitelists, and configuring transfer rules. Document viewers
+handle PDFs, images, and identity scans. Batch approval workflows process
+multiple investors simultaneously. Audit logs track every compliance decision
+with timestamp and operator ID.
+
+**Admin Control Panel** centralizes system-wide settings, user management, and
+operational monitoring. Role assignment interface supports granular RBAC
+permissions. System health dashboard shows API latency, blockchain sync status,
+and database query performance. Configuration editor validates settings before
+applying changes.
+
+### TanStack ecosystem integration
+
+[**TanStack Router**](https://tanstack.com/router) validates routes at compile
+time using TypeScript's template literal types. Code splitting occurs
+automatically per route, loading only necessary JavaScript for each page.
+Type-safe navigation prevents routing errors—calling
+`navigate('/asset/$assetId', { params: { assetId: 123 } })` throws a compile
+error if the route doesn't exist or params don't match.
+
+Route definitions declare dependencies:
+
+```typescript
+const assetRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/asset/$assetId",
+  loader: async ({ params }) => {
+    const asset = await fetchAsset(params.assetId);
+    return { asset };
+  },
+});
+```
+
+Loaders run on the server during SSR and client-side during navigation,
+providing consistent data fetching patterns.
+
+[**TanStack Query**](https://tanstack.com/query) manages server state with
+automatic caching, background refetching, and update synchronization. When
+multiple components request the same data, Query deduplicates requests and
+shares responses. Optimistic updates modify local state immediately while
+queuing background mutations.
+
+Query configurations balance freshness and performance:
+
+```typescript
+const { data: assets } = useQuery({
+  queryKey: ["assets"],
+  queryFn: fetchAssets,
+  staleTime: 60_000, // Cache for 60 seconds
+  gcTime: 300_000, // Garbage collect after 5 minutes
+});
+```
+
+Background refetching keeps data current without blocking UI. Query invalidation
+after mutations ensures consistency—creating an asset invalidates the assets
+list, triggering automatic refresh.
+
+[**TanStack Form**](https://tanstack.com/form) handles form state and validation
+through declarative APIs. Validation rules integrate directly into field
+definitions, eliminating manual tracking of input values and error messages.
+Async validation supports server-side checks like address uniqueness.
+
+Form definitions specify structure and validation:
+
+```typescript
+const form = useForm({
+  defaultValues: {
+    name: "",
+    symbol: "",
+    totalSupply: 0,
+  },
+  onSubmit: async ({ value }) => {
+    await createAsset(value);
+  },
+});
+```
+
+Field-level and form-level validation runs on change, blur, or submit. Error
+messages appear next to inputs without manual state management.
+
+### Visual components and styling
+
+[Radix UI](https://radix-ui.com) provides unstyled, accessible component
+primitives handling complex accessibility concerns. Keyboard navigation, screen
+readers, and ARIA attributes work correctly without manual implementation.
+Components like Dialog, Dropdown Menu, and Tooltip offer rich interactions while
+maintaining full styling control.
+
+Radix primitives compose into domain components:
+
+```typescript
+<Dialog.Root>
+  <Dialog.Trigger>Create Asset</Dialog.Trigger>
+  <Dialog.Portal>
+    <Dialog.Overlay />
+    <Dialog.Content>
+      <AssetCreationForm />
+    </Dialog.Content>
+  </Dialog.Portal>
+</Dialog.Root>
+```
+
+[Tailwind CSS](https://tailwindcss.com) provides utility-first styling enabling
+rapid UI development with visual consistency. Design tokens define colors,
+spacing, and typography. Responsive modifiers adapt layouts across breakpoints.
+Custom plugins extend Tailwind with ATK-specific utilities.
+
+Component libraries combine Radix and Tailwind into reusable patterns. The
+`Button` component encapsulates variants (primary, secondary, danger), sizes
+(sm, md, lg), and states (loading, disabled) with consistent styling and
+accessibility.
+
+### Performance characteristics
+
+The architecture targets specific performance metrics validated through
+Lighthouse audits and real-user monitoring:
+
+**Initial page load** completes in under 3 seconds on 3G connections.
+Server-side rendering delivers fully-formed HTML to browsers quickly. Critical
+CSS inlines in the document head. JavaScript bundles under 200KB (gzipped) per
+route load asynchronously.
+
+**Route transitions** complete in under 500ms for subsequent navigation.
+Client-side routing prefetches linked pages on hover. Data fetching parallelizes
+with route rendering. Shared layouts persist between routes, avoiding full-page
+reloads.
+
+**Code splitting** ensures users download only necessary JavaScript. Route-based
+splitting loads page-specific code on demand. Component-level splitting defers
+heavy imports (charts, editors) until needed. Vendor dependencies bundle
+separately with long cache headers.
+
+**Progressive hydration** prioritizes interactive elements. Above-the-fold
+content hydrates first, allowing immediate interaction. Below-the-fold sections
+hydrate during idle time. Non-interactive content remains static HTML.
+
+**Image optimization** uses next-gen formats (WebP, AVIF) with fallbacks.
+Responsive images serve appropriate resolutions per viewport. Lazy loading
+defers offscreen images. CDN delivers assets from edge locations.
+
+### State management patterns
+
+**Server state** lives in TanStack Query with automatic caching and background
+synchronization. Query keys define cache boundaries—`['assets']` caches all
+assets, `['asset', assetId]` caches individual assets. Mutations invalidate
+related queries, triggering automatic refetch.
+
+**Form state** lives in TanStack Form with validation and submission handling.
+Forms maintain local state until submission, avoiding premature server updates.
+Optimistic UI patterns show expected results immediately while queuing
+background mutations.
+
+**UI state** (modals, dropdowns, selections) uses React's useState and
+useReducer. Transient UI state doesn't persist across reloads. Context providers
+share UI state between related components without prop drilling.
+
+**URL state** (filters, pagination, tabs) persists in query parameters via
+TanStack Router. Search params provide shareable, bookmarkable links. Router's
+type-safe search params validate and parse URL values automatically.
+
+## Mobile interface
+
+Responsive design adapts to mobile devices, tablets, and desktop viewports
+without separate codebases. A single application handles all form factors
+through CSS media queries and adaptive JavaScript.
+
+### Mobile-specific optimizations
+
+**Touch-optimized controls** increase tap targets to at least 44x44 pixels
+meeting WCAG guidelines. Buttons space adequately to prevent mis-taps. Swipe
+gestures navigate between views on mobile while preserving mouse interactions on
+desktop.
+
+**Simplified navigation** collapses complex menus into hamburger drawers on
+small screens. Bottom navigation bars keep primary actions accessible with
+thumbs. Back buttons follow platform conventions—hardware back on Android,
+header back on iOS.
+
+**Wallet integration** supports mobile-native crypto wallets via WalletConnect.
+QR code scanning initiates connections. Deep linking redirects to wallet apps
+for transaction signing. Wallet connection state persists across sessions.
+
+**Offline-first caching** stores critical data in IndexedDB via TanStack Query
+persistence. Service workers cache static assets and API responses. Background
+sync queues mutations when offline, submitting automatically when connectivity
+returns.
+
+**Reduced bandwidth** serves smaller images and defers non-critical resources.
+Critical path resources inline or preload. Lazy loading defers offscreen
+content. Video placeholders load full video only when played.
+
+### Responsive design rationale
+
+Single responsive codebase consolidates authentication, state management, and
+API integration across devices. Changes propagate to all form factors without
+maintaining separate web and native applications. Testing covers fewer code
+paths. Security updates deploy simultaneously to all platforms.
+
+Progressive Web App (PWA) capabilities enable installation on mobile home
+screens without app stores. Installed PWAs run fullscreen, hiding browser
+chrome. Push notifications re-engage users when corporate actions occur or
+compliance requires attention.
+
+### Performance targets mobile vs desktop
+
+| Metric              | Mobile (3G) | Desktop (Broadband) |
+| ------------------- | ----------- | ------------------- |
+| Initial load        | &lt;5s      | &lt;3s              |
+| Time to interactive | &lt;6s      | &lt;3.5s            |
+| Route transition    | &lt;800ms   | &lt;500ms           |
+| API response (P95)  | &lt;1s      | &lt;500ms           |
+
+Mobile targets account for higher latency and lower bandwidth. Desktop targets
+prioritize perceived performance and interactivity.
+
+## Type-safe backend integration
+
+Shared TypeScript types flow from backend to frontend, catching integration
+errors at compile time. ORPC procedure definitions declare parameter and return
+types consumed by both client and server.
+
+### End-to-end type safety
+
+Backend procedure definition:
+
+```typescript
+export const createAsset = procedure
+  .input(
+    z.object({
+      name: z.string().min(1).max(100),
+      symbol: z.string().min(1).max(10),
+      totalSupply: z.number().positive(),
+      assetType: z.enum(["bond", "equity", "fund"]),
+    })
+  )
+  .output(
+    z.object({
+      assetId: z.string(),
+      deploymentAddress: z.string(),
+    })
+  )
+  .mutation(async ({ input }) => {
+    // Implementation
+  });
+```
+
+Frontend usage:
+
+```typescript
+const mutation = useMutation({
+  mutationFn: (input) => orpcClient.createAsset(input),
+});
+
+// TypeScript knows input shape and validates:
+mutation.mutate({
+  name: "Corporate Bond",
+  symbol: "BOND",
+  totalSupply: 1000000,
+  assetType: "bond", // Enum autocompletes; invalid values cause compile error
+});
+```
+
+If backend changes parameter types or adds required fields, frontend sees
+compile errors immediately. Runtime "undefined is not an object" errors from API
+changes become impossible.
+
+### Contract ABI integration
+
+Smart contract ABIs generate TypeScript types via Viem's `abitype` package.
+Contract interactions validate function names, parameters, and return types at
+compile time.
+
+Generated types ensure correct contract calls:
+
+```typescript
+import { bondAbi } from "@/abis/bond";
+
+const { writeContract } = useWriteContract();
+
+writeContract({
+  address: bondAddress,
+  abi: bondAbi,
+  functionName: "mint", // Autocompletes from ABI
+  args: [recipientAddress, amount], // Types validated
+});
+```
+
+Calling non-existent functions or passing wrong argument types produces compile
+errors. ABI changes propagate automatically through type regeneration.
+
+## React Compiler integration
+
+The React Compiler (formerly React Forget) automatically optimizes component
+re-renders by memoizing expensive computations and skipping unnecessary updates.
+This eliminates manual `useMemo`, `useCallback`, and `React.memo` in most cases.
+
+### Automatic memoization
+
+Without compiler, developers manually memoize:
+
+```typescript
+const expensiveValue = useMemo(
+  () => computeExpensive(props.data),
+  [props.data]
+);
+
+const handleClick = useCallback(() => {
+  doSomething(expensiveValue);
+}, [expensiveValue]);
+```
+
+With compiler, write straightforward code:
+
+```typescript
+const expensiveValue = computeExpensive(props.data);
+
+const handleClick = () => {
+  doSomething(expensiveValue);
+};
+```
+
+Compiler analyzes data dependencies and inserts memoization automatically.
+Components re-render only when relevant props or state change.
+
+### Performance impact
+
+React Compiler reduces unnecessary re-renders by 30-50% in typical applications.
+Complex dashboard components with many nested children benefit most. Form
+components with expensive validation show measurable latency improvements.
+
+Compiler operates at build time, generating optimized JavaScript. No runtime
+overhead occurs. Bundle sizes remain unchanged since compiler output is standard
+React code.
+
+## Accessibility (a11y) considerations
+
+All user interfaces meet WCAG 2.1 Level AA standards, ensuring usability for
+assistive technologies and keyboard-only users.
+
+**Semantic HTML** uses appropriate elements (`<button>`, `<nav>`, `<main>`,
+`<article>`) rather than generic `<div>` with ARIA roles. Native semantics
+provide better browser and screen reader support.
+
+**Keyboard navigation** allows accessing all functionality without a mouse. Tab
+order follows visual flow. Focus indicators clearly highlight active elements.
+Escape closes modals and dropdowns.
+
+**Screen reader support** provides descriptive labels for form inputs, buttons,
+and interactive elements. ARIA live regions announce dynamic content changes.
+Complex widgets like date pickers and dropdowns follow ARIA authoring practices.
+
+**Color contrast** meets WCAG AA standards with minimum 4.5 to 1 ratio for
+normal text and 3 to 1 for large text. Interactive elements distinguish through
+more than color alone.
+
+**Responsive text** scales with user preferences for font size. Layouts remain
+functional at 200% zoom. Text reflows without horizontal scrolling.
+
+## Development workflow
+
+**Local development** runs `bun run dev` starting TanStack Start's development
+server with hot module replacement. Changes reload instantly without losing
+application state. Error overlays show compilation errors and runtime
+exceptions.
+
+**Type checking** runs continuously via TypeScript's watch mode. IDE integration
+(VS Code, WebStorm) provides inline type errors and autocomplete. Pre-commit
+hooks block commits with type errors.
+
+**Linting** enforces code style via ESLint with React, TypeScript, and
+accessibility plugins. Rules catch common bugs (missing dependencies, unused
+variables) and enforce best practices.
+
+**Testing** uses Vitest for unit tests and Playwright for E2E tests. Component
+tests validate rendering, interactions, and state management. Integration tests
+exercise complete user workflows from login through transaction confirmation.
+
+**Storybook** documents and tests components in isolation. Stories demonstrate
+component variants, states, and edge cases. Visual regression testing catches
+unintended styling changes.
+
+## See also
+
+- [Core components](./core-components) - Overview of all architectural layers
+- [API layer](./api-layer) - ORPC procedures and business services
+- [Data layer](./data-layer) - PostgreSQL, Redis, and MinIO storage
+- [Deployment layer](./deployment-layer) - Kubernetes and E2E testing

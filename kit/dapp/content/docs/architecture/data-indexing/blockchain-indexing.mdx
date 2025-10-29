@@ -1,13 +1,813 @@
 ---
 title: Blockchain indexing
-description: Documentation for blockchain-indexing
-pageTitle: Blockchain indexing
-tags: [architecture, blockchain-indexing]
+description:
+  TheGraph provides high-performance blockchain indexing that transforms raw
+  contract events into a queryable GraphQL API. The Asset Tokenization Kit's
+  subgraph indexes all smart contract state—tokens, balances, compliance rules,
+  identities—enabling fast, complex queries that would be prohibitively
+  expensive to execute directly against contracts.
+pageTitle: Blockchain indexing - TheGraph subgraph design and query patterns
+tags: [architecture, blockchain, indexing, subgraph, thegraph, graphql]
 ---
 
-<Callout type="info" title="Template guide">
-  This page follows The Good Docs Project
-  **[Concept](https://www.thegooddocsproject.dev/template/concept)** template.
-</Callout>
+## Data pipeline architecture
 
-_Content to be added_
+The complete data flow from blockchain events to frontend display follows a
+multi-stage pipeline:
+
+<Mermaid
+  chart={`flowchart LR
+    Contracts(Smart Contracts<br/>Emit events<br/>Store state)
+    Subgraph(TheGraph Subgraph<br/>Index events<br/>Build entities)
+    Database(PostgreSQL<br/>Application data<br/>User preferences)
+    ORPC(ORPC API<br/>Merge sources<br/>Enforce auth)
+    Frontend(React Frontend<br/>TanStack Query<br/>Display data)
+    
+    Contracts -->|Events: Transfer, Mint, Burn| Subgraph
+    Subgraph -->|GraphQL queries| ORPC
+    Database -->|SQL queries| ORPC
+    ORPC -->|Type-safe procedures| Frontend
+    
+    style Contracts fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Subgraph fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Database fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ORPC fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Frontend fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+`}
+/>
+
+**The data pipeline enforces separation of concerns**: Smart contracts emit
+events whenever state changes (transfers, mints, compliance updates). TheGraph
+subgraph listens for these events, processes them through handler logic, and
+stores structured entities in a queryable GraphQL database. The ORPC API layer
+acts as the single data gateway—it queries TheGraph for blockchain state,
+PostgreSQL for application data (user preferences, off-chain metadata), merges
+both sources, and applies authentication. The frontend never touches TheGraph or
+PostgreSQL directly; it only calls typed ORPC procedures through TanStack Query.
+This architecture enables fast queries (subgraph pre-indexes everything),
+security (ORPC enforces auth), and flexibility (easy to add data sources without
+changing frontend code).
+
+## Architecture: Frontend → ORPC → TheGraph
+
+**CRITICAL**: The frontend never queries TheGraph directly. All blockchain data
+flows through the ORPC API layer, which provides authentication, validation, and
+data enrichment before querying TheGraph:
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Frontend Layer"
+        UI(React Components<br/>TanStack Query)
+    end
+    
+    subgraph "API Layer - ORPC"
+        Procedures(ORPC Procedures<br/>/api/rpc)
+        Middleware(Middleware<br/>Auth, validation)
+        TheGraphClient(TheGraph Client<br/>in procedure handlers)
+    end
+    
+    subgraph "Data Layer"
+        Subgraph(TheGraph Subgraph<br/>GraphQL API)
+        DB(PostgreSQL<br/>Application Data)
+    end
+    
+    subgraph "Blockchain"
+        Contracts(Smart Contracts<br/>State &amp; Events)
+    end
+    
+    UI -->|orpc.token.list.query()| Procedures
+    Procedures --> Middleware
+    Middleware --> TheGraphClient
+    Middleware --> DB
+    TheGraphClient -->|GraphQL query| Subgraph
+    
+    Contracts -->|Events emitted| Subgraph
+    Subgraph -->|Indexed data| TheGraphClient
+    
+    style UI fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Procedures fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style TheGraphClient fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Subgraph fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+`}
+/>
+
+### Why ORPC sits between frontend and TheGraph
+
+| Without ORPC (Direct GraphQL)      | With ORPC Layer                    | Benefit                           |
+| ---------------------------------- | ---------------------------------- | --------------------------------- |
+| Frontend exposes GraphQL queries   | Queries hidden in backend handlers | Security: Can't inspect API calls |
+| No authentication on queries       | Middleware enforces auth           | Access control per user           |
+| Can't combine blockchain + DB data | Single procedure merges sources    | Simpler frontend code             |
+| Each component builds queries      | Reusable typed procedures          | DRY principle                     |
+| GraphQL types manually synced      | End-to-end TypeScript inference    | Type safety                       |
+| Client-side data transformation    | Server-side aggregation            | Better performance                |
+
+Example ORPC procedure querying TheGraph:
+
+```typescript
+// Backend: kit/dapp/src/orpc/routes/token/routes/token.list.ts
+export const list = authRouter.token.list
+  .use(theGraphMiddleware) // Inject TheGraph client
+  .handler(async ({ input, context }) => {
+    // Query TheGraph through ORPC
+    const result = await context.theGraphClient.query({
+      query: LIST_TOKENS_QUERY,
+      variables: {
+        first: input.pageSize,
+        skip: (input.page - 1) * input.pageSize,
+        where: { isLaunched: true },
+      },
+    });
+
+    // Enrich with database data if needed
+    const enriched = await enrichWithUserPreferences(
+      result.data.tokens,
+      context.auth.user.id
+    );
+
+    return enriched;
+  });
+
+// Frontend: components/token-list.tsx
+function TokenList() {
+  // Never calls TheGraph directly - goes through ORPC
+  const { data } = orpc.token.list.useQuery({
+    page: 1,
+    pageSize: 20,
+  });
+
+  return <div>{/* render tokens */}</div>;
+}
+```
+
+### Why TheGraph over direct contract calls
+
+Even with ORPC, we need efficient blockchain indexing:
+
+| Approach                         | Backend Query Time         | Frontend UX      | Historical Queries   |
+| -------------------------------- | -------------------------- | ---------------- | -------------------- |
+| **Direct RPC** (ORPC → Contract) | 1-5s per contract call     | Slow page loads  | Must scan all blocks |
+| **TheGraph** (ORPC → Subgraph)   | 50-200ms for complex query | Fast, responsive | Pre-indexed history  |
+
+The subgraph provides ORPC procedures with:
+
+- **Fast aggregations**: Pre-computed statistics available in milliseconds
+- **Historical queries**: Full audit trail without blockchain scanning
+- **Complex joins**: Link tokens, balances, identities in single query
+- **Real-time updates**: 5-10 second lag behind chain head
+
+## Subgraph architecture
+
+### Schema definition
+
+The subgraph schema (`kit/subgraph/schema.graphql`) defines entities that mirror
+smart contract state:
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Core Entities"
+        System("System<br/>ATK deployment")
+        Token("Token<br/>Asset contracts")
+        Account("Account<br/>Addresses")
+    end
+    
+    subgraph "Balances & Transfers"
+        TokenBalance("TokenBalance<br/>Holdings")
+        Event("Event<br/>Transfer history")
+    end
+    
+    subgraph "Identity & Compliance"
+        Identity("Identity<br/>OnchainID")
+        RegisteredIdentity("RegisteredIdentity<br/>KYC mapping")
+        IdentityClaim("IdentityClaim<br/>Verification")
+        Compliance("Compliance<br/>Module config")
+    end
+    
+    subgraph "Statistics"
+        TokenStats("TokenStatsState<br/>Supply, holders")
+        SystemStats("SystemStatsState<br/>Platform metrics")
+        DistributionStats("DistributionStatsState<br/>Top holders")
+    end
+    
+    System --> Token
+    Token --> TokenBalance
+    Token --> TokenStats
+    Token --> Compliance
+    
+    Account --> TokenBalance
+    Account --> Identity
+    
+    Identity --> RegisteredIdentity
+    Identity --> IdentityClaim
+    
+    Token --> Event
+    Event --> Account
+    
+    System --> SystemStats
+    Token --> DistributionStats
+    
+    style System fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Token fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style TokenStats fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+`}
+/>
+
+Key design decisions:
+
+- **Immutable entities**: Events use `@entity(immutable: true)` for append-only
+  logs
+- **Mutable state**: Tokens, balances use `@entity(immutable: false)` for
+  updates
+- **Timeseries data**: Stats use `@entity(timeseries: true)` for hourly/daily
+  aggregates
+- **Derived fields**: Use `@derivedFrom` to avoid redundant storage
+
+### Event handlers
+
+Event handlers in `kit/subgraph/src/` process contract events and update
+entities:
+
+```typescript
+// Example: Token transfer handler
+export function handleTransferCompleted(event: TransferCompletedEvent): void {
+  // 1. Load or create entities
+  const token = Token.load(event.address);
+  const fromBalance = loadOrCreateBalance(token, event.params.from);
+  const toBalance = loadOrCreateBalance(token, event.params.to);
+
+  // 2. Update balances
+  fromBalance.valueExact = fromBalance.valueExact.minus(event.params.value);
+  fromBalance.value = fromBalance.valueExact.toBigDecimal().div(decimals);
+  fromBalance.lastUpdatedAt = event.block.timestamp;
+
+  toBalance.valueExact = toBalance.valueExact.plus(event.params.value);
+  toBalance.value = toBalance.valueExact.toBigDecimal().div(decimals);
+  toBalance.lastUpdatedAt = event.block.timestamp;
+
+  // 3. Update statistics
+  updateTokenStats(token, event.block.timestamp);
+
+  // 4. Create event record
+  const eventEntity = new Event(
+    event.transaction.hash.concat(event.logIndex.toString())
+  );
+  eventEntity.eventName = "TransferCompleted";
+  eventEntity.emitter = token.account;
+  eventEntity.blockNumber = event.block.number;
+  eventEntity.blockTimestamp = event.block.timestamp;
+
+  // 5. Save all changes
+  fromBalance.save();
+  toBalance.save();
+  token.save();
+  eventEntity.save();
+}
+```
+
+Handler patterns:
+
+- **Idempotent logic**: Re-processing same event produces same state
+- **Atomic updates**: All related entities updated together
+- **Efficient queries**: Use `.load()` before creating new entities
+- **Aggregate updates**: Stats computed incrementally, not recalculated
+
+### Manifest configuration
+
+`kit/subgraph/subgraph.yaml` defines which contracts to index:
+
+```yaml
+dataSources:
+  - kind: ethereum
+    name: SystemFactory
+    network: settlemint
+    source:
+      address: "0x5e771e1417100000000000000000000000020088"
+      abi: SystemFactory
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - System
+        - Event
+      eventHandlers:
+        - event:
+            ATKSystemCreated(indexed address,indexed address,indexed address)
+          handler: handleATKSystemCreated
+      file: ./src/system-factory/system-factory.ts
+
+templates:
+  - kind: ethereum
+    name: Token
+    network: settlemint
+    source:
+      abi: Token
+    mapping:
+      eventHandlers:
+        - event:
+            TransferCompleted(indexed address,indexed address,indexed
+            address,uint256)
+          handler: handleTransferCompleted
+        - event: MintCompleted(indexed address,indexed address,indexed uint256)
+          handler: handleMintCompleted
+      file: ./src/token/token.ts
+```
+
+Key features:
+
+- **Static data sources**: System factory tracked from deployment
+- **Dynamic templates**: Token contracts added when created
+- **Event signatures**: Automatically match Solidity events
+- **Multiple ABIs**: Handlers can call multiple contract types
+
+## Query patterns
+
+### Basic entity queries
+
+Fetch specific entities by ID:
+
+```graphql
+query GetToken($tokenId: ID!) {
+  token(id: $tokenId) {
+    id
+    name
+    symbol
+    decimals
+    totalSupply
+    totalSupplyExact
+    type
+    createdAt
+    implementsERC3643
+    implementsSMART
+  }
+}
+```
+
+### Relationship traversal
+
+Navigate entity relationships:
+
+```graphql
+query GetTokenWithHolders($tokenId: ID!, $minBalance: BigInt!) {
+  token(id: $tokenId) {
+    name
+    symbol
+    balances(
+      where: { valueExact_gt: $minBalance }
+      orderBy: valueExact
+      orderDirection: desc
+      first: 100
+    ) {
+      account {
+        id
+        identities {
+          id
+          claims {
+            name
+            issuer {
+              id
+            }
+            revoked
+          }
+        }
+      }
+      value
+      valueExact
+      isFrozen
+      lastUpdatedAt
+    }
+  }
+}
+```
+
+### Filtering and pagination
+
+Complex filtering with pagination:
+
+```graphql
+query SearchTokens(
+  $skip: Int!
+  $first: Int!
+  $minSupply: BigInt!
+  $types: [String!]
+) {
+  tokens(
+    skip: $skip
+    first: $first
+    orderBy: createdAt
+    orderDirection: desc
+    where: {
+      totalSupplyExact_gt: $minSupply
+      type_in: $types
+      isLaunched: true
+    }
+  ) {
+    id
+    name
+    symbol
+    type
+    totalSupply
+    createdAt
+    stats {
+      balancesCount
+      totalValueInBaseCurrency
+    }
+  }
+}
+```
+
+### Time-series statistics
+
+Query aggregated metrics:
+
+```graphql
+query GetTokenStats($tokenId: ID!, $since: Timestamp!) {
+  tokenStats(
+    where: { token: $tokenId, timestamp_gt: $since }
+    orderBy: timestamp
+    orderDirection: asc
+  ) {
+    timestamp
+    totalSupply
+    balancesCount
+    totalMinted
+    totalBurned
+    totalTransferred
+  }
+}
+```
+
+## Performance optimization
+
+### Indexed fields
+
+Schema uses indexes for common queries:
+
+```graphql
+type Token @entity(immutable: false) {
+  id: Bytes!
+  name: String! # Indexed by default
+  symbol: String! # Indexed by default
+  type: String! # Indexed for filtering
+  createdAt: BigInt! # Indexed for sorting
+  isLaunched: Boolean! # Indexed for filtering
+  # Derived fields don't require indexing
+  balances: [TokenBalance!]! @derivedFrom(field: "token")
+  stats: TokenStatsState @derivedFrom(field: "token")
+}
+```
+
+### Query cost limits
+
+TheGraph enforces query complexity limits:
+
+- **Depth limit**: Maximum 7 levels of nesting
+- **Field limit**: Maximum 100 fields per query
+- **List limit**: Maximum 1000 items per list field
+
+Optimization strategies:
+
+```graphql
+# ❌ Bad: Nested lists exceed limits
+query TooExpensive {
+  tokens(first: 1000) {
+    balances(first: 1000) {
+      account {
+        balances(first: 1000) {
+          # Too deep, too many items
+          token {
+            name
+          }
+        }
+      }
+    }
+  }
+}
+
+# ✅ Good: Paginate and limit depth
+query Optimized($skip: Int!, $first: Int!) {
+  tokens(skip: $skip, first: $first) {
+    id
+    name
+    stats {
+      balancesCount # Use aggregate instead of listing all
+    }
+  }
+}
+```
+
+### Denormalized statistics
+
+Pre-compute expensive aggregates:
+
+```typescript
+// Instead of counting balances on every query
+type Token {
+  balances: [TokenBalance!]!  # Don't query this for counts
+}
+
+// Store computed counts
+type TokenStatsState {
+  token: Token!
+  balancesCount: Int!  # Pre-computed
+  totalValueInBaseCurrency: BigDecimal!  # Pre-computed
+}
+
+// Update incrementally in handlers
+function updateTokenStats(token: Token): void {
+  const stats = token.stats
+  stats.balancesCount = countNonZeroBalances(token)
+  stats.totalValueInBaseCurrency = calculateTotalValue(token)
+  stats.save()
+}
+```
+
+## Deployment and monitoring
+
+### Local development
+
+Run subgraph locally for testing:
+
+```bash
+# Start local Graph Node
+cd kit/subgraph
+docker-compose up -d
+
+# Deploy subgraph
+bun run graph:create-local
+bun run graph:deploy-local
+```
+
+### Production deployment
+
+Deploy to hosted service:
+
+```bash
+# Authenticate
+graph auth --product hosted-service <ACCESS_TOKEN>
+
+# Deploy to production
+bun run graph:deploy
+```
+
+### Monitoring metrics
+
+Track subgraph health:
+
+| Metric                | Target         | Alert Threshold           |
+| --------------------- | -------------- | ------------------------- |
+| **Indexing lag**      | &lt;10 seconds | &gt;60 seconds            |
+| **Failed handlers**   | 0              | &gt;10/hour               |
+| **Query latency P95** | &lt;200ms      | &gt;1s                    |
+| **Sync status**       | Synced         | Not syncing for &gt;5 min |
+
+Query indexing status:
+
+```graphql
+query SubgraphStatus {
+  _meta {
+    block {
+      number
+      hash
+      timestamp
+    }
+    deployment
+    hasIndexingErrors
+  }
+}
+```
+
+## Error handling and recovery
+
+### Handler errors
+
+Handlers must handle edge cases gracefully:
+
+```typescript
+export function handleTransferCompleted(event: TransferCompletedEvent): void {
+  const token = Token.load(event.address);
+
+  // Guard against missing token (shouldn't happen, but be defensive)
+  if (!token) {
+    log.error("Token not found for address {}", [event.address.toHexString()]);
+    return; // Skip event, don't crash indexer
+  }
+
+  // Guard against overflow in statistics
+  const newBalance = fromBalance.valueExact.minus(event.params.value);
+  if (newBalance.lt(BigInt.zero())) {
+    log.warning("Negative balance detected for {} in token {}", [
+      event.params.from.toHexString(),
+      token.id.toHexString(),
+    ]);
+    // Set to zero instead of crashing
+    fromBalance.valueExact = BigInt.zero();
+  }
+
+  fromBalance.save();
+}
+```
+
+### Reorg handling
+
+TheGraph automatically handles chain reorganizations:
+
+1. Detects reorg by monitoring block hash changes
+2. Reverts entities to pre-reorg state
+3. Replays events from new canonical chain
+4. Deterministic handlers ensure consistent result
+
+No manual intervention required for reorgs up to 1000 blocks deep.
+
+### Full resync
+
+Rebuild index from genesis when needed:
+
+```bash
+# Delete existing deployment
+graph remove <SUBGRAPH_NAME>
+
+# Redeploy (triggers full resync)
+bun run graph:deploy
+
+# Monitor progress
+graph logs <SUBGRAPH_NAME>
+```
+
+Resync timeline:
+
+- **Testnet**: ~30 minutes for 500K blocks
+- **Mainnet**: ~4 hours for 5M blocks
+
+## Integration with frontend (via ORPC)
+
+**CRITICAL**: Frontend components never import TheGraph client or query GraphQL
+directly. All blockchain data access goes through ORPC procedures.
+
+### Backend: ORPC procedure using TheGraph
+
+ORPC handlers use TheGraph client injected by middleware:
+
+```typescript
+// kit/dapp/src/orpc/routes/token/routes/token.read.ts
+import { authRouter } from "@/orpc/procedures/auth.router";
+import { TokenReadSchema } from "./token.read.schema";
+
+export const read = authRouter.token.read
+  .use(theGraphMiddleware) // Injects context.theGraphClient
+  .handler(async ({ input, context }) => {
+    // Backend queries TheGraph
+    const result = await context.theGraphClient.query({
+      query: GET_TOKEN_QUERY,
+      variables: { id: input.address },
+    });
+
+    if (!result.data.token) {
+      throw errors.NOT_FOUND("Token not found");
+    }
+
+    // Optionally enrich with database data
+    const userPreference = await context.db
+      .select()
+      .from(tokenPreferences)
+      .where(eq(tokenPreferences.tokenAddress, input.address))
+      .where(eq(tokenPreferences.userId, context.auth.user.id))
+      .get();
+
+    return {
+      ...result.data.token,
+      isWatchedByUser: userPreference?.isWatching ?? false,
+    };
+  });
+```
+
+### Frontend: Query ORPC, not TheGraph
+
+Components use generated ORPC client:
+
+```typescript
+// ❌ WRONG: Frontend querying TheGraph directly
+import { subgraphClient } from "@/lib/subgraph/client";
+
+function TokenDetail({ address }: Props) {
+  const { data } = useQuery({
+    queryFn: () => subgraphClient.query(GET_TOKEN_QUERY, { id: address }),
+  });
+  // This bypasses authentication and can't combine data sources
+}
+
+// ✅ CORRECT: Frontend querying ORPC
+import { orpc } from "@/lib/orpc/client";
+
+function TokenDetail({ address }: Props) {
+  const { data } = orpc.token.read.useQuery({ address });
+  // ORPC handles auth, queries TheGraph, enriches data
+}
+```
+
+### Type safety flow
+
+Types flow from backend to frontend automatically:
+
+```typescript
+// 1. Backend handler defines return type
+export const read = authRouter.token.read.handler(async ({ input }) => {
+  return {
+    id: "0x...",
+    name: "Token Name",
+    symbol: "TKN",
+    totalSupply: "1000000",
+    isWatchedByUser: true, // Enriched from DB
+  };
+});
+
+// 2. Frontend infers exact return type
+function TokenDetail({ address }: Props) {
+  const { data } = orpc.token.read.useQuery({ address });
+
+  // TypeScript knows data has: id, name, symbol, totalSupply, isWatchedByUser
+  // No manual type definitions needed
+  return <div>{data?.name}</div>;
+}
+```
+
+### TheGraph client configuration
+
+TheGraph client is configured at the ORPC middleware level, not exposed to
+frontend:
+
+```typescript
+// kit/dapp/src/orpc/middlewares/thegraph.middleware.ts
+import { createClient } from "@urql/core";
+
+const theGraphClient = createClient({
+  url: process.env.SUBGRAPH_URL,
+  requestPolicy: "cache-first",
+});
+
+export const theGraphMiddleware = baseRouter.middleware(
+  async ({ context, next }) => {
+    return next({
+      context: {
+        ...context,
+        theGraphClient,
+      },
+    });
+  }
+);
+```
+
+Frontend never sees or configures TheGraph - it's an internal backend data
+source.
+
+### Frontend integration (via ORPC)
+
+Frontend components query blockchain data through ORPC procedures, not directly:
+
+```typescript
+import { orpc } from "@/lib/orpc/client";
+
+export function useToken(tokenId: string) {
+  // ORPC procedure internally queries TheGraph
+  return orpc.token.read.useQuery({
+    address: tokenId,
+  });
+  // Response includes both blockchain data (from TheGraph)
+  // and application data (from database)
+}
+```
+
+## Best practices
+
+### Schema design
+
+- **Use bytes32 for IDs**: Ethereum addresses and hashes as `Bytes!`
+- **Store exact and human-readable**: `valueExact: BigInt!` and
+  `value: BigDecimal!`
+- **Timestamp everything**: Add `createdAt`, `lastUpdatedAt` to mutable entities
+- **Denormalize stats**: Pre-compute aggregates, don't rely on runtime counts
+
+### Handler performance
+
+- **Batch entity loads**: Use `Token.load()` once, not in loops
+- **Avoid redundant saves**: Only call `.save()` if entity changed
+- **Use efficient data structures**: Arrays for small lists, derived fields for
+  large
+- **Log sparingly**: Excessive logging slows indexing
+
+### Query optimization
+
+- **Paginate everything**: Never query unbounded lists
+- **Filter server-side**: Use `where` clauses, not client-side filtering
+- **Request only needed fields**: Don't fetch entire entities if you need 2
+  fields
+- **Use aliases for batch queries**: Fetch multiple entities in one request
+
+## Related documentation
+
+- [Database model](./database-model) - PostgreSQL schemas for application data
+- [Backend API](../application/backend-api) - ORPC procedures consuming subgraph
+  data
+- [Scalability patterns](../performance/scalability-architecture) - Query
+  optimization techniques

@@ -17,6 +17,7 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+
   build: {
     target: "es2023",
     sourcemap: true,
@@ -34,8 +35,75 @@ export default defineConfig({
           }
 
           // Documentation libraries - only loaded in /docs routes
-          if (id.includes("mermaid") || id.includes("katex")) {
-            return "vendor-docs";
+          // Split by library for better caching and lazy loading
+          if (
+            id.includes("mermaid") ||
+            id.includes("cytoscape") ||
+            id.includes("chevrotain") ||
+            id.includes("langium") ||
+            id.includes("layout-base") ||
+            id.includes("cose-base") ||
+            id.includes("roughjs")
+          ) {
+            return "vendor-mermaid";
+          }
+          if (id.includes("katex")) {
+            return "vendor-katex";
+          }
+          if (
+            id.includes("fumadocs-core") ||
+            id.includes("fumadocs-ui") ||
+            id.includes("fumadocs-mdx") ||
+            id.includes("orama")
+          ) {
+            return "vendor-fumadocs";
+          }
+          if (id.includes("shiki") || id.includes("shikiji")) {
+            return "vendor-shiki";
+          }
+
+          // Icon library - used throughout app but can be split
+          if (id.includes("lucide-react")) {
+            return "vendor-icons";
+          }
+
+          // Animation library - used in various components
+          if (id.includes("motion") || id.includes("framer-motion")) {
+            return "vendor-motion";
+          }
+
+          // Internationalization - used throughout app
+          if (id.includes("i18next") || id.includes("react-i18next")) {
+            return "vendor-i18n";
+          }
+
+          // Date utilities - used in various components
+          if (id.includes("date-fns")) {
+            return "vendor-dates";
+          }
+
+          // Authentication - better-auth and related
+          if (
+            id.includes("better-auth") ||
+            id.includes("@daveyplate/better-auth") ||
+            id.includes("marked")
+          ) {
+            return "vendor-auth";
+          }
+
+          // Database ORM - drizzle
+          if (id.includes("drizzle-orm")) {
+            return "vendor-db";
+          }
+
+          // RPC framework - orpc
+          if (id.includes("@orpc/")) {
+            return "vendor-orpc";
+          }
+
+          // Validation library - zod (large with many schemas)
+          if (id.includes("zod") && !id.includes("@atk/zod")) {
+            return "vendor-validation";
           }
 
           // Table utilities - code-split for table-heavy routes
@@ -156,7 +224,8 @@ export default defineConfig({
     tailwindcss(),
     tanstackStart({
       prerender: {
-        enabled: false,
+        enabled: true,
+        filter: ({ path }) => path.startsWith("/docs"),
       },
     }),
     viteReact({

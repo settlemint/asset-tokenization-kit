@@ -1,16 +1,13 @@
 ---
 title: Identity & compliance
 description:
-  Explains how the platform handles identity management and compliance checking
-  for regulated assets
+  The identity and compliance system provides the foundation for
+  regulatory-compliant tokenization. Built on OnchainID standards (ERC-734/735)
+  and modular compliance rules, it enables sophisticated identity management and
+  flexible compliance enforcement for regulated assets.
 pageTitle: Identity and compliance system - OnchainID and KYC/AML workflow
 tags: [compliance, identity, KYC, AML, onchainID, concept]
 ---
-
-The identity and compliance system provides the foundation for
-regulatory-compliant tokenization. Built on OnchainID standards (ERC-734/735)
-and modular compliance rules, it enables sophisticated identity management and
-flexible compliance enforcement for regulated assets.
 
 ## OnchainID extensions
 
@@ -142,18 +139,18 @@ Identity implementations use these extensions as building blocks:
 <Mermaid chart={`
 graph TB
     subgraph "Root Level"
-        Constants[ERC734KeyPurposes<br/>ERC734KeyTypes<br/>ERC735ClaimSchemes]
-        IContract[IContractIdentity.sol]
+        Constants(ERC734KeyPurposes<br/>ERC734KeyTypes<br/>ERC735ClaimSchemes)
+        IContract(IContractIdentity.sol)
     end
 
     subgraph "extensions/ Directory"
-        OnchainID[OnChainIdentity.sol]
-        ContractID[OnChainContractIdentity.sol]
-        RevocationID[OnChainIdentityWithRevocation.sol]
-        ERC734[ERC734.sol]
-        ERC735[ERC735.sol]
-        ClaimAuth[ClaimAuthorizationExtension.sol]
-        IClaimAuth[IClaimAuthorizer.sol]
+        OnchainID(OnChainIdentity.sol)
+        ContractID(OnChainContractIdentity.sol)
+        RevocationID(OnChainIdentityWithRevocation.sol)
+        ERC734(ERC734.sol)
+        ERC735(ERC735.sol)
+        ClaimAuth(ClaimAuthorizationExtension.sol)
+        IClaimAuth(IClaimAuthorizer.sol)
     end
 
     OnchainID --> Constants
@@ -165,9 +162,9 @@ graph TB
     ContractID --> IContract
     ClaimAuth --> IClaimAuth
 
-    style OnchainID fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style ContractID fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style RevocationID fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style OnchainID fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ContractID fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style RevocationID fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
 
 `} />
 
@@ -204,22 +201,69 @@ regulatory compliance across different jurisdictions and use cases. Each module
 implements specific compliance rules that can be configured per-token while
 sharing global infrastructure.
 
+### Compliance check sequence
+
+Before diving into module architecture, understand how compliance checks execute
+during a transfer:
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant User
+    participant Token as Token Contract
+    participant Compliance as Compliance Engine
+    participant IR as Identity Registry
+    participant Module as Compliance Modules
+    
+    User->>Token: transfer(to, amount)
+    Token->>Compliance: canTransfer(from, to, amount)?
+    
+    Compliance->>IR: getIdentity(from)
+    IR-->>Compliance: fromIdentity
+    
+    Compliance->>IR: getIdentity(to)
+    IR-->>Compliance: toIdentity
+    
+    loop Each Configured Module
+        Compliance->>Module: canTransfer(token, from, to, amount)
+        alt Module Allows
+            Module-->>Compliance: true
+        else Module Blocks
+            Module-->>Compliance: false (reason)
+            Compliance-->>Token: ❌ Revert with reason
+            Token-->>User: ❌ Transfer blocked
+        end
+    end
+    
+    Compliance-->>Token: ✅ All checks passed
+    Token->>Token: executeTransfer()
+    Token-->>User: ✅ Transfer complete
+`}
+/>
+
+**Compliance enforcement is pre-transfer validation**: Every transfer request
+passes through the compliance engine before execution. The engine loads both
+sender and recipient identities from the registry, then evaluates each
+configured module sequentially. If any module returns false, the entire transfer
+reverts with a specific reason code. Only when all modules pass does the token
+contract execute the state change. This architecture ensures non-compliant
+transfers never execute, not even temporarily.
+
 ### Architecture overview
 
 <Mermaid chart={`
 graph TB
     %% Top Row - Multiple Tokens
-    TokenA[Token A]
-    TokenB[Token B]
-    TokenC[Token C]
+    TokenA(Token A)
+    TokenB(Token B)
+    TokenC(Token C)
 
     %% Middle Row - Compliance Contract
-    CC[Compliance Contract<br/>Orchestration Engine]
+    CC(Compliance Contract<br/>Orchestration Engine)
 
     %% Right Side - Compliance Modules
-    ModuleA[Module A<br/>Global Config]
-    ModuleB[Module B<br/>Global Config]
-    ModuleC[Module C<br/>Global Config]
+    ModuleA(Module A<br/>Global Config)
+    ModuleB(Module B<br/>Global Config)
+    ModuleC(Module C<br/>Global Config)
 
     %% Token to Compliance Contract
     TokenA -->|uses| CC
@@ -241,10 +285,10 @@ graph TB
     TokenC -.->|"config: maxHolders=50"| ModuleB
     TokenC -.->|"config: lockPeriod=30days"| ModuleC
 
-    style CC fill:#0ea5e9,stroke:#0369a1,stroke-width:2px,color:#fff
-    style ModuleA fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style ModuleB fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style ModuleC fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
+    style CC fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style ModuleA fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ModuleB fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ModuleC fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
 
 `} />
 
@@ -262,26 +306,26 @@ graph TB
 
 <Mermaid chart={`
 graph LR
-    Base[ISMARTComplianceModule] --> Country[Country Modules]
-    Base --> Identity[Identity Modules]
-    Base --> Transfer[Transfer & Supply Modules]
-    Base --> Time[Time-Based Modules]
+    Base(ISMARTComplianceModule) --> Country(Country Modules)
+    Base --> Identity(Identity Modules)
+    Base --> Transfer(Transfer & Supply Modules)
+    Base --> Time(Time-Based Modules)
 
-    Country --> CA[Country Allow List]
-    Country --> CB[Country Block List]
+    Country --> CA(Country Allow List)
+    Country --> CB(Country Block List)
 
-    Identity --> IA[Identity Allow List]
-    Identity --> IB[Identity Block List]
-    Identity --> IV[Identity Verification]
-    Identity --> AB[Address Block List]
+    Identity --> IA(Identity Allow List)
+    Identity --> IB(Identity Block List)
+    Identity --> IV(Identity Verification)
+    Identity --> AB(Address Block List)
 
-    Transfer --> TL[Token Supply Limit]
-    Transfer --> IC[Investor Count]
-    Transfer --> TA[Transfer Approval]
+    Transfer --> TL(Token Supply Limit)
+    Transfer --> IC(Investor Count)
+    Transfer --> TA(Transfer Approval)
 
-    Time --> TLock[Time Lock]
+    Time --> TLock(Time Lock)
 
-    style Base fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style Base fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
 
 `} />
 

@@ -1,4 +1,4 @@
 {
   "title": "Data & indexing",
-  "pages": ["database-model", "blockchain-indexing"]
+  "pages": ["blockchain-indexing", "database-model"]
 }

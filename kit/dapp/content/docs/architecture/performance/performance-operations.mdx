@@ -1,0 +1,143 @@
+---
+title: Testing & monitoring
+description:
+  Production performance requires continuous measurement, testing, and
+  optimization. This page documents the operational practices that keep ATK fast
+  and reliable under real-world load.
+pageTitle: Performance testing and monitoring
+tags: [architecture, performance, testing, monitoring, optimization]
+---
+
+## Performance testing and monitoring
+
+Automated performance testing runs in CI to catch regressions before deployment.
+
+### Load testing
+
+**K6 scenarios** - Load tests simulate realistic user patterns: browsing assets,
+minting tokens, executing transfers. Tests ramp from 10 concurrent users to
+1,000 users over 10 minutes. Response times must stay below P95 targets
+throughout the ramp.
+
+**Spike testing** - Spike tests validate behavior under sudden load increases
+(e.g., 10,000 users appear instantly). The system should degrade gracefully
+(slower responses) rather than failing catastrophically (timeouts, errors).
+
+**Soak testing** - Soak tests run at moderate load (500 concurrent users) for 24
+hours. This detects memory leaks, connection pool exhaustion, and other issues
+that manifest only under sustained load.
+
+### Contract gas benchmarking
+
+**Foundry gas reports** - Every contract test measures gas consumption. CI
+compares gas reports against the previous commit. Increases greater than 5%
+block merging and require developer justification.
+
+**Regression tracking** - A dashboard tracks gas costs over time. Unexpected
+increases trigger investigations. Optimizations that reduce costs by more than
+10% are celebrated and documented.
+
+### Production monitoring
+
+**Metrics collection** - OpenTelemetry instruments the API, collecting request
+latency, error rates, and throughput. Metrics export to Prometheus for
+aggregation and alerting.
+
+**Distributed tracing** - Complex operations (minting tokens with compliance
+checks) emit distributed traces. Traces reveal where latency accumulates: slow
+database queries, network round-trips, or blockchain confirmations.
+
+**Real User Monitoring (RUM)** - The frontend reports Core Web Vitals from real
+user sessions. This reveals performance issues specific to certain browsers,
+devices, or network conditions that synthetic tests miss.
+
+**Performance monitoring for frontend** - The frontend measures Largest
+Contentful Paint (LCP), First Input Delay (FID), and Cumulative Layout Shift
+(CLS). These metrics feed into production monitoring dashboards and trigger
+alerts when thresholds degrade.
+
+**Bundle size budgets** - CI enforces bundle size limits per chunk. The main
+bundle stays under 200KB gzipped. Vendor chunks target 150KB each. Oversized
+bundles block deployment until developers analyze and reduce them.
+
+**Lighthouse CI integration** - Automated Lighthouse audits run on every pull
+request. Regressions in performance, accessibility, or best practices scores
+block merging until resolved.
+
+## Optimization workflow
+
+Performance optimization follows a disciplined process to ensure changes improve
+metrics without introducing regressions.
+
+### Measure first
+
+**Establish baseline** - Before optimizing, measure current performance under
+realistic load. Example: "Token holder list query takes 800ms at P95 with 10,000
+holders."
+
+**Identify bottlenecks** - Use profiling tools to find where time is spent.
+Database queries? Network latency? Rendering? Focus optimization efforts on the
+biggest contributor.
+
+### Optimize targeted
+
+**Implement change** - Apply one optimization at a time. Example: "Add composite
+index on `(token_id, created_at)`."
+
+**Measure impact** - Re-run performance tests. Document the improvement: "Token
+holder list query now takes 120ms at P95, an 85% reduction."
+
+**Compare cost vs benefit** - If the optimization added complexity (e.g.,
+maintaining a denormalized table), ensure the performance gain justifies the
+maintenance burden.
+
+### Validate in production
+
+**Canary deployments** - Deploy optimizations to 10% of production traffic
+first. Monitor metrics for regressions (increased error rates, degraded
+latency). If metrics improve, roll out to 100%.
+
+**Rollback readiness** - Keep the previous version deployable. If an
+optimization degrades performance unexpectedly, roll back within minutes rather
+than scrambling to fix forward.
+
+## Common performance anti-patterns
+
+Avoid these mistakes that plague tokenization platforms:
+
+- **Polling instead of push** - Don't poll the blockchain for events; use
+  websockets or subgraph subscriptions for real-time updates
+- **N+1 queries** - Load related data in batch queries, not one query per item
+  in a loop
+- **Unbounded pagination** - Always paginate large result sets; never return
+  100,000 token holders in one response
+- **Missing indexes** - Every foreign key and frequently filtered column should
+  have an index
+- **Synchronous external calls** - Don't block API responses waiting for
+  third-party services; use background jobs with webhooks
+- **Over-fetching GraphQL** - Request only the fields you need, not entire
+  entity graphs
+- **Premature optimization** - Measure before optimizing; don't guess where the
+  bottleneck is
+- **Ignoring cache invalidation** - Stale data erodes user trust; ensure caches
+  invalidate promptly when state changes
+
+## Conclusion
+
+Performance is not a feature you add at the end; it's an architectural property
+you design in from the beginning. ATK's performance targets are not
+aspirational—they are enforced through automated testing and production
+monitoring. When response times drift outside acceptable bounds, alerts fire and
+teams respond.
+
+This discipline ensures that ATK remains fast and scalable as adoption grows.
+There are no hidden bottlenecks waiting to surface when you onboard your
+10,000th investor or issue your 100th token. The architecture scales
+horizontally, the database queries are optimized, and the smart contracts are
+gas-efficient. Performance is predictable, measurable, and reliable.
+
+## See also
+
+- [Frontend and API optimization](/docs/architecture/performance/frontend-api-optimization)
+- [Infrastructure performance](/docs/architecture/performance/infrastructure-performance)
+- [Scalability architecture](/docs/architecture/performance/scalability-architecture)

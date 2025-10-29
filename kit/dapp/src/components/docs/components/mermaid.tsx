@@ -1,6 +1,5 @@
 "use client";
 
-import DOMPurify from "isomorphic-dompurify";
 import { useTheme } from "next-themes";
 import { useEffect, useId, useRef, useState } from "react";
 
@@ -99,7 +98,7 @@ function MermaidContent({ chart }: { chart: string }) {
         if (lastInitializedTheme !== theme) {
           lib.initialize({
             startOnLoad: false,
-            securityLevel: "antiscript",
+            securityLevel: "loose",
             fontFamily: "inherit",
             themeCSS: "margin: 1.5rem auto 0;",
             theme,
@@ -161,8 +160,8 @@ function MermaidContent({ chart }: { chart: string }) {
 
   if (!svg) {
     return (
-      <div className="h-32 bg-gray-50 border border-gray-200 rounded p-4 text-center text-gray-400">
-        Rendering chart...
+      <div className="min-h-8 opacity-0">
+        <span className="sr-only">Rendering chart...</span>
       </div>
     );
   }
@@ -171,23 +170,7 @@ function MermaidContent({ chart }: { chart: string }) {
     <div
       ref={containerRef}
       dangerouslySetInnerHTML={{
-        __html: DOMPurify.sanitize(svg, {
-          ADD_TAGS: ["svg", "path", "g", "text", "rect", "circle", "line"],
-          ADD_ATTR: [
-            "viewBox",
-            "width",
-            "height",
-            "fill",
-            "stroke",
-            "d",
-            "x",
-            "y",
-            "cx",
-            "cy",
-            "r",
-            "transform",
-          ],
-        }),
+        __html: svg,
       }}
     />
   );
