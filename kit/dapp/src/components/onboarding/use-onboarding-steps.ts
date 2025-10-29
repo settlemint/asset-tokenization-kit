@@ -81,9 +81,9 @@ export function useOnboardingSteps(): UseOnboardingStepsReturn {
           step: 8,
         },
         {
-          id: OnboardingStep.identity,
-          label: t("steps.identity.title"),
-          description: t("steps.identity.description"),
+          id: OnboardingStep.personal,
+          label: t("steps.personal.title"),
+          description: t("steps.personal.description"),
           step: 9,
         },
       ],

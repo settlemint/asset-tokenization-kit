@@ -32,7 +32,7 @@ function IdentityProgressContent({ user }: IdentityProgressContentProps) {
   );
 
   const identityRegistered = !!systemDetails?.userIdentity?.registered;
-  const personalInfoCompleted = user.onboardingState.identity;
+  const personalInfoCompleted = user.onboardingState.personal;
 
   if (identityRegistered) {
     return null;

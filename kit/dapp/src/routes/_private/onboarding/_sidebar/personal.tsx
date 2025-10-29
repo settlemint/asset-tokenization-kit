@@ -9,9 +9,9 @@ import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
-export const Route = createFileRoute("/_private/onboarding/_sidebar/identity")({
+export const Route = createFileRoute("/_private/onboarding/_sidebar/personal")({
   validateSearch: createOnboardingSearchSchema(),
-  beforeLoad: createOnboardingBeforeLoad(OnboardingStep.identity),
+  beforeLoad: createOnboardingBeforeLoad(OnboardingStep.personal),
   component: RouteComponent,
 });
 
@@ -21,18 +21,21 @@ function RouteComponent() {
 
   return (
     <FormStepLayout
-      title={t("identity.title")}
+      title={t("personal.title")}
       fullWidth={true}
-      description={t("identity.description")}
+      description={t("personal.description")}
     >
       <div className="text-sm text-muted-foreground space-y-4 mb-6">
-        <p>{t("onboarding:identity.intro-paragraph-1")}</p>
-        <p>{t("onboarding:identity.intro-paragraph-2")}</p>
-        <p>{t("onboarding:identity.intro-paragraph-3")}</p>
+        <p>{t("onboarding:personal.intro-paragraph-1")}</p>
+        <p>{t("onboarding:personal.intro-paragraph-2")}</p>
+        <p>{t("onboarding:personal.intro-paragraph-3")}</p>
       </div>
       <KycForm
         onComplete={async () => {
-          await completeStepAndNavigate(OnboardingStep.identity);
+          await completeStepAndNavigate(OnboardingStep.personal);
+        }}
+        onSkip={async () => {
+          await completeStepAndNavigate(OnboardingStep.personal);
         }}
       />
     </FormStepLayout>

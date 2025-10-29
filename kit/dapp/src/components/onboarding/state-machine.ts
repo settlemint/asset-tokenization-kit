@@ -17,7 +17,7 @@ export enum OnboardingStep {
   systemAssets = "system-assets",
   systemAddons = "system-addons",
   identitySetup = "identity-setup",
-  identity = "identity",
+  personal = "personal",
 }
 
 export const enum OnboardingStepGroup {
@@ -36,7 +36,7 @@ export const onboardingStateMachine = new Store<OnboardingStateMachine>({
   systemAssets: false,
   systemAddons: false,
   identitySetup: false,
-  identity: false,
+  personal: false,
 });
 
 export const onboardingSteps = new Derived({
@@ -100,10 +100,10 @@ export const onboardingSteps = new Derived({
         completed: onboardingStateMachine.state.identitySetup,
       },
       {
-        step: OnboardingStep.identity,
+        step: OnboardingStep.personal,
         groupId: OnboardingStepGroup.identity,
         current: false,
-        completed: onboardingStateMachine.state.identity,
+        completed: onboardingStateMachine.state.personal,
       },
     ];
 

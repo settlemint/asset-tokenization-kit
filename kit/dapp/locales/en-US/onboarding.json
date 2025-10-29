@@ -53,12 +53,12 @@
       "title": "Wallet"
     }
   },
-  "identity": {
-    "description": "Required for identity registration and KYC verification",
-    "intro": "Complete your identity verification to unlock full platform access. This ensures compliance with financial regulations (KYC/AML).\n\nYou can skip this for now, but you'll need to provide at least your country of residence to register your identity.\n\nYour data is encrypted and used only for regulatory compliance.",
-    "intro-paragraph-1": "To complete your identity and use the platform, we need some basic information. This helps us meet regulatory requirements (KYC/AML) and allows your identity to be registered on the blockchain.",
-    "intro-paragraph-2": "We use this information to verify your identity and meet compliance requirements. You’ll be able to update or complete this later from your dashboard. Fields marked with * are required. Country is required for identity registration.",
-    "intro-paragraph-3": "Your data is securely stored and used only for compliance purposes. You'll be able to update or complete it later from the dashboard.",
+  "personal": {
+    "description": "Optional personal information for compliance",
+    "intro": "Complete your personal information to unlock full platform access. This ensures compliance with financial regulations (KYC/AML).\n\nYou can skip this for now and complete it later from your dashboard.\n\nYour data is encrypted and used only for regulatory compliance.",
+    "intro-paragraph-1": "To unlock full platform features, we may need some personal information. This helps us meet regulatory requirements (KYC/AML).",
+    "intro-paragraph-2": "All fields are optional and can be completed later from your dashboard. Providing this information now will give you immediate access to all platform features.",
+    "intro-paragraph-3": "Your data is securely stored and used only for compliance purposes. You can update or complete it at any time.",
     "title": "Complete Your Personal Information"
   },
   "identity-setup": {
@@ -90,9 +90,9 @@
     "title": "Your setup progress"
   },
   "steps": {
-    "identity": {
+    "personal": {
       "description": "Add personal info for compliance",
-      "title": "Verify identity"
+      "title": "Personal information"
     },
     "identity-setup": {
       "description": "Deploy your unique identity contract",

@@ -134,7 +134,7 @@ export const me = authRouter.user.me
         ...systemOnboardingState,
         systemSettings: !!baseCurrency,
         identitySetup: systemOnboardingState.identitySetup,
-        identity: !!userQueryResult?.kyc,
+        personal: !!userQueryResult?.kyc,
       },
     };
   });

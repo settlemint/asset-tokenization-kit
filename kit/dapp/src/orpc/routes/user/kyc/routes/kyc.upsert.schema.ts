@@ -12,6 +12,14 @@ const strictDob = z.date().refine((date) => {
 }, "Must be at least 18 years old");
 const strictNationalId = z.string().min(1).max(50).trim();
 
+// Optional field definitions for when fields are not required
+const optionalFirstName = strictFirstName.optional();
+const optionalLastName = strictLastName.optional();
+const optionalDob = strictDob.optional();
+const optionalCountry = isoCountryCode.optional();
+const optionalResidencyStatus = residencyStatus().optional();
+const optionalNationalId = strictNationalId.optional();
+
 // Base schema with all strict validations
 const KycBaseSchema = {
   userId: z.string().min(1),
@@ -23,15 +31,25 @@ const KycBaseSchema = {
 };
 
 export const KycUpsertInputSchema = z.object({
-  ...KycBaseSchema,
+  userId: z.string().min(1),
   id: z.string().min(1).optional(),
-  nationalId: strictNationalId,
+  firstName: optionalFirstName,
+  lastName: optionalLastName,
+  dob: optionalDob,
+  country: optionalCountry,
+  residencyStatus: optionalResidencyStatus,
+  nationalId: optionalNationalId,
 });
 
 export const KycUpsertOutputSchema = z.object({
-  ...KycBaseSchema,
+  userId: z.string().min(1),
   id: z.string().min(1),
-  nationalId: strictNationalId,
+  firstName: optionalFirstName,
+  lastName: optionalLastName,
+  dob: optionalDob,
+  country: optionalCountry,
+  residencyStatus: optionalResidencyStatus,
+  nationalId: optionalNationalId,
   createdAt: z.date(),
   updatedAt: z.date(),
 });

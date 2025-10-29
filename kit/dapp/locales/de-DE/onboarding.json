@@ -53,12 +53,12 @@
       "title": "Wallet-Sicherheit"
     }
   },
-  "identity": {
-    "description": "Erforderlich für Identitätsregistrierung und KYC-Verifizierung",
-    "intro": "Schließen Sie Ihre Identitätsverifizierung ab, um vollen Plattformzugriff freizuschalten. Dies stellt die Einhaltung von Finanzvorschriften (KYC/AML) sicher.\n\nSie können dies vorerst überspringen, aber Sie benötigen mindestens Ihr Wohnsitzland, um Ihre Identität zu registrieren.\n\nIhre Daten werden verschlüsselt und nur für regulatorische Compliance verwendet.",
-    "intro-paragraph-1": "Um Ihre Identität abzuschließen und die Plattform zu verwenden, benötigen wir einige grundlegende Informationen. Dies hilft uns, regulatorische Anforderungen (KYC/AML) zu erfüllen und ermöglicht es Ihrer Identität, auf der Blockchain registriert zu werden.",
-    "intro-paragraph-2": "Wir verwenden diese Informationen, um Ihre Identität zu verifizieren und Compliance-Anforderungen zu erfüllen. Sie können dies später von Ihrem Dashboard aus aktualisieren oder vervollständigen. Felder mit * sind erforderlich. Land ist für die Identitätsregistrierung erforderlich.",
-    "intro-paragraph-3": "Ihre Daten werden sicher gespeichert und nur für Compliance-Zwecke verwendet. Sie können dies später von Ihrem Dashboard aus aktualisieren oder vervollständigen.",
+  "personal": {
+    "description": "Optionale persönliche Informationen für Compliance",
+    "intro": "Vervollständigen Sie Ihre persönlichen Informationen, um vollen Plattformzugriff freizuschalten. Dies stellt die Einhaltung von Finanzvorschriften (KYC/AML) sicher.\n\nSie können dies vorerst überspringen und später von Ihrem Dashboard aus vervollständigen.\n\nIhre Daten werden verschlüsselt und nur für regulatorische Compliance verwendet.",
+    "intro-paragraph-1": "Um alle Plattformfunktionen freizuschalten, benötigen wir möglicherweise einige persönliche Informationen. Dies hilft uns, regulatorische Anforderungen (KYC/AML) zu erfüllen.",
+    "intro-paragraph-2": "Alle Felder sind optional und können später von Ihrem Dashboard aus ausgefüllt werden. Wenn Sie diese Informationen jetzt angeben, erhalten Sie sofortigen Zugriff auf alle Plattformfunktionen.",
+    "intro-paragraph-3": "Ihre Daten werden sicher gespeichert und nur für Compliance-Zwecke verwendet. Sie können sie jederzeit aktualisieren oder vervollständigen.",
     "title": "Schließen Sie Ihre persönlichen Informationen ab"
   },
   "identity-setup": {
@@ -90,9 +90,9 @@
     "title": "Ihr Setup-Fortschritt"
   },
   "steps": {
-    "identity": {
+    "personal": {
       "description": "Persönliche Infos für Compliance hinzufügen",
-      "title": "Identität verifizieren"
+      "title": "Persönliche Informationen"
     },
     "identity-setup": {
       "description": "Stellen Sie Ihren einzigartigen Identitätsvertrag bereit",

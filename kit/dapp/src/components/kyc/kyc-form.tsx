@@ -27,6 +27,8 @@ export type KycFormValues = KycUpsertInput & {
 interface KycFormProps {
   /** Callback executed after successful KYC completion and any necessary identity registration */
   onComplete: () => void | Promise<void>;
+  /** Optional callback executed when user skips the KYC form */
+  onSkip?: () => void | Promise<void>;
 }
 
 /**
@@ -48,8 +50,8 @@ interface KycFormProps {
  *
  * @param onComplete - Callback executed after successful KYC submission and identity registration
  */
-export function KycForm({ onComplete }: KycFormProps) {
-  const { t } = useTranslation(["components"]);
+export function KycForm({ onComplete, onSkip }: KycFormProps) {
+  const { t } = useTranslation(["components", "common"]);
   const { data: session } = useSession();
   const queryClient = useQueryClient();
 
@@ -183,13 +185,13 @@ export function KycForm({ onComplete }: KycFormProps) {
           <form.AppField
             name="firstName"
             children={(field) => (
-              <field.TextField label={t("kycForm.firstName")} required={true} />
+              <field.TextField label={t("kycForm.firstName")} required={false} />
             )}
           />
           <form.AppField
             name="lastName"
             children={(field) => (
-              <field.TextField label={t("kycForm.lastName")} required={true} />
+              <field.TextField label={t("kycForm.lastName")} required={false} />
             )}
           />
           <form.AppField
@@ -197,7 +199,7 @@ export function KycForm({ onComplete }: KycFormProps) {
             children={(field) => (
               <field.DateTimeField
                 label={t("kycForm.dob")}
-                required={true}
+                required={false}
                 hideTime={true}
               />
             )}
@@ -207,7 +209,7 @@ export function KycForm({ onComplete }: KycFormProps) {
             children={(field) => (
               <field.CountrySelectField
                 label={t("kycForm.country")}
-                required={true}
+                required={false}
               />
             )}
           />
@@ -216,7 +218,7 @@ export function KycForm({ onComplete }: KycFormProps) {
             children={(field) => (
               <field.SelectField
                 label={t("kycForm.residencyStatus")}
-                required={true}
+                required={false}
                 options={residencyStatusOptions}
               />
             )}
@@ -226,36 +228,55 @@ export function KycForm({ onComplete }: KycFormProps) {
             children={(field) => (
               <field.TextField
                 label={t("kycForm.nationalId")}
-                required={true}
+                required={false}
               />
             )}
           />
         </FormStepContent>
-        <form.VerificationButton
-          walletVerification={{
-            title: t("kycForm.identity.confirm-title"),
-            description: t("kycForm.identity.confirm-description"),
-            setField: (verification) => {
-              form.setFieldValue("walletVerification", verification);
-            },
-          }}
-          disabled={({ isDirty, errors }) => {
-            return (
-              // LOADING: Prevent double-submission during async operations
-              isRegisteringIdentity ||
-              isUpdatingKyc ||
-              // UX: Only enable when user has made changes to the form
-              !isDirty ||
-              // VALIDATION: Block submission if any validation errors exist
-              Object.keys(errors).length > 0
-            );
-          }}
-          onSubmit={() => {
-            void form.handleSubmit();
-          }}
-        >
-          {t("kycForm.submit")}
-        </form.VerificationButton>
+        <div className="flex flex-col gap-4">
+          <form.VerificationButton
+            walletVerification={{
+              title: t("kycForm.identity.confirm-title"),
+              description: t("kycForm.identity.confirm-description"),
+              setField: (verification) => {
+                form.setFieldValue("walletVerification", verification);
+              },
+            }}
+            disabled={({ isDirty, errors }) => {
+              return (
+                // LOADING: Prevent double-submission during async operations
+                isRegisteringIdentity ||
+                isUpdatingKyc ||
+                // UX: Only enable when user has made changes to the form
+                !isDirty ||
+                // VALIDATION: Block submission if any validation errors exist
+                Object.keys(errors).length > 0
+              );
+            }}
+            onSubmit={() => {
+              void form.handleSubmit();
+            }}
+          >
+            {t("kycForm.submit")}
+          </form.VerificationButton>
+          {onSkip && (
+            <form.subscribe
+              selector={(state) => [state.isSubmitting]}
+              children={([isSubmitting]) => (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void onSkip();
+                  }}
+                  disabled={isSubmitting || isRegisteringIdentity || isUpdatingKyc}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {t("common:actions.skip")}
+                </button>
+              )}
+            />
+          )}
+        </div>
       </form.AppForm>
     </div>
   );

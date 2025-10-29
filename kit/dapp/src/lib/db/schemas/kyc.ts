@@ -24,16 +24,16 @@ export const kycProfiles = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
 
-    firstName: text("first_name").notNull(),
-    lastName: text("last_name").notNull(),
+    firstName: text("first_name"),
+    lastName: text("last_name"),
 
-    dob: date("dob", { mode: "date" }).notNull(),
+    dob: date("dob", { mode: "date" }),
 
-    country: text("country").notNull(),
+    country: text("country"),
 
-    residencyStatus: residencyStatusEnum("residency_status").notNull(),
+    residencyStatus: residencyStatusEnum("residency_status"),
 
-    nationalId: text("national_id").notNull(),
+    nationalId: text("national_id"),
 
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()

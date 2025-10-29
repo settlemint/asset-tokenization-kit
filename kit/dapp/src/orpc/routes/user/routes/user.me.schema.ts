@@ -36,7 +36,7 @@ const onboardingStateSchema = z.object({
   identitySetup: z
     .boolean()
     .describe("Whether the user has set up their ONCHAINID"),
-  identity: z.boolean().describe("Whether the user has an identity"),
+  personal: z.boolean().describe("Whether the user has completed personal information"),
 });
 
 export type OnboardingState = z.infer<typeof onboardingStateSchema>;
