@@ -1,20 +1,16 @@
 ---
 title: API layer
 description:
-  Type-safe ORPC procedures and business services orchestrating asset
-  management, compliance, and integrations
+  The API layer orchestrates business logic, enforces access controls, and
+  coordinates between frontend, database, and blockchain layers. Built on ORPC
+  for type-safe procedures and Better Auth for authentication, it provides the
+  middle tier that transforms user intentions into validated, auditable
+  operations.
 pageTitle: API layer - Business logic and orchestration
 tags: [architecture, api, orpc, backend, services]
 ---
 
-## Overview
-
-The API layer orchestrates business logic, enforces access controls, and
-coordinates between frontend, database, and blockchain layers. Built on ORPC for
-type-safe procedures and Better Auth for authentication, it provides the middle
-tier that transforms user intentions into validated, auditable operations.
-
-### Problem
+## Problem
 
 Traditional REST or GraphQL APIs require maintaining separate type definitions
 on client and server, leading to runtime errors when schemas drift. Business

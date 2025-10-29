@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivateRouteImport } from './routes/_private'
@@ -69,6 +71,16 @@ import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressBlocklis
 import { Route as PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRouteImport } from './routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/actions'
 import { Route as PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRouteImport } from './routes/_private/_onboarded/_sidebar/participants/entities/$address/claims'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LlmsFullDottxtRoute = LlmsFullDottxtRouteImport.update({
   id: '/llms-full.txt',
   path: '/llms-full.txt',
@@ -437,6 +449,8 @@ const PrivateOnboardedSidebarParticipantsEntitiesAddressClaimsRoute =
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/onboarding': typeof PrivateOnboardingSidebarRouteWithChildren
   '/api/$': typeof ApiSplatRoute
   '/api/search': typeof ApiSearchRoute
@@ -494,6 +508,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/$': typeof ApiSplatRoute
   '/api/search': typeof ApiSearchRoute
   '/api/theme.css': typeof ApiThemeDotcssRoute
@@ -549,6 +565,8 @@ export interface FileRoutesById {
   '/_private': typeof PrivateRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/llms-full.txt': typeof LlmsFullDottxtRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_private/_onboarded': typeof PrivateOnboardedRouteWithChildren
   '/_private/onboarding': typeof PrivateOnboardingRouteWithChildren
   '/api/$': typeof ApiSplatRoute
@@ -611,6 +629,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/auth'
     | '/llms-full.txt'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/onboarding'
     | '/api/$'
     | '/api/search'
@@ -668,6 +688,8 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/llms-full.txt'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/api/$'
     | '/api/search'
     | '/api/theme.css'
@@ -722,6 +744,8 @@ export interface FileRouteTypes {
     | '/_private'
     | '/auth'
     | '/llms-full.txt'
+    | '/robots.txt'
+    | '/sitemap.xml'
     | '/_private/_onboarded'
     | '/_private/onboarding'
     | '/api/$'
@@ -784,6 +808,8 @@ export interface RootRouteChildren {
   PrivateRoute: typeof PrivateRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiSplatRoute: typeof ApiSplatRoute
   ApiSearchRoute: typeof ApiSearchRoute
   ApiThemeDotcssRoute: typeof ApiThemeDotcssRoute
@@ -795,6 +821,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/llms-full.txt': {
       id: '/llms-full.txt'
       path: '/llms-full.txt'
@@ -1447,6 +1487,8 @@ const rootRouteChildren: RootRouteChildren = {
   PrivateRoute: PrivateRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   LlmsFullDottxtRoute: LlmsFullDottxtRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiSplatRoute: ApiSplatRoute,
   ApiSearchRoute: ApiSearchRoute,
   ApiThemeDotcssRoute: ApiThemeDotcssRoute,

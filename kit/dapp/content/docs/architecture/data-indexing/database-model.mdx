@@ -1,14 +1,13 @@
 ---
 title: Database model
-description: PostgreSQL schema reference with Drizzle ORM for application state
+description:
+  The Asset Tokenization Kit uses PostgreSQL with Drizzle ORM to store
+  application-specific data that doesn't belong on-chain. This database layer
+  handles user preferences, KYC workflows, session management, cached exchange
+  rates, and other mutable state that requires fast updates and complex queries.
 pageTitle: Database model - Application database schema and relationships
 tags: [architecture, database, postgresql, drizzle, schema, reference]
 ---
-
-The Asset Tokenization Kit uses PostgreSQL with Drizzle ORM to store
-application-specific data that doesn't belong on-chain. This database layer
-handles user preferences, KYC workflows, session management, cached exchange
-rates, and other mutable state that requires fast updates and complex queries.
 
 ## Schema organization
 

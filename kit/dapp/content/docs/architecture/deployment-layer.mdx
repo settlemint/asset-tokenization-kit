@@ -1,23 +1,18 @@
 ---
 title: Deployment layer
 description:
-  End-to-end testing with Playwright, Kubernetes orchestration, Helm charts, and
-  production operations for the Asset Tokenization Kit
+  The deployment layer encompasses end-to-end testing, containerization,
+  orchestration, and production operations. Playwright validates complete user
+  workflows, Docker containers package application components, Kubernetes
+  orchestrates distributed services, and Helm charts provide declarative
+  configuration management. This layer transforms development artifacts into
+  production-ready systems with built-in observability, scalability, and
+  resilience.
 pageTitle: Deployment layer - Testing, orchestration, and operations
 tags: [architecture, deployment, kubernetes, helm, playwright, testing]
 ---
 
-## Overview
-
-The deployment layer encompasses end-to-end testing, containerization,
-orchestration, and production operations. Playwright validates complete user
-workflows, Docker containers package application components, Kubernetes
-orchestrates distributed services, and Helm charts provide declarative
-configuration management. This layer transforms development artifacts into
-production-ready systems with built-in observability, scalability, and
-resilience.
-
-### Problem
+## Problem
 
 Manual testing fails to catch integration bugs between frontend, API, and
 blockchain layers. Inconsistent deployment across environments introduces

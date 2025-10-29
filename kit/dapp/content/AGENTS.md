@@ -272,19 +272,31 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
     bonds")
   - **pageTitle**: Full descriptive title for the page header and browser title
     (e.g., "Corporate bond issuance for capital markets")
-  - **description**: One-line description (<160 chars ideally) for SEO meta
-    description, containing keywords for search
+  - **description**: **MANDATORY** - A 2-3 sentence paragraph introducing the
+    page and topic (this is displayed separately in custom styling on the page
+    itself). This should be the introductory paragraph for the page. **DO NOT**
+    repeat this content as the first paragraph in the body - it will cause
+    duplicate content on the rendered page.
   - **tags**: 3-6 keywords, all lowercase, that broadly cover the page topics
     (to feed the site's search indexing and help AI find context)
   - Example:
+
     ```yaml
     ---
     title: Corporate bonds
     pageTitle: Corporate bond issuance for capital markets
-    description: Automated bond lifecycle from issuance to redemption
+    description:
+      Corporate bonds represent debt instruments issued by companies to raise
+      capital. The ATK platform automates the complete bond lifecycle from
+      issuance through coupon payments to redemption, ensuring regulatory
+      compliance at every step.
     tags: [use-case, bonds, debt, capital-markets, automation]
     ---
+    ## Bond structure
+
+    (Start body content directly with first heading - NO introductory paragraph)
     ```
+
 - **SEO and AI Optimization:**
 - Include relevant keywords naturally in the content and headings. For example,
   the page about compliance should mention "KYC/AML", "regulatory compliance"
@@ -444,8 +456,11 @@ we propose the following plan for the AI (or documentation team):
 - Add any missing diagrams or examples that could further enhance understanding.
   Don't shy away from including clarifying content even if not explicitly in
   source (like an illustrative example scenario).
-- Check that each page's content indeed matches its description and that there
-  is no duplication that bores the reader or contradiction that confuses them.
+- **CRITICAL**: Check that each page's description field does NOT duplicate the
+  first paragraph of body content. The description is rendered separately above
+  the body content, so any duplication creates a poor reading experience. The
+  description should serve as the introduction, and body content should start
+  directly with the first heading or substantive content.
 - Perhaps include an index or search page (though the site likely has search
   built-in).
 - Ensure navigation is logical: Part ordering, numbering of pages as given in

@@ -1,21 +1,16 @@
 ---
 title: Data layer
 description:
-  PostgreSQL database, Drizzle ORM, Redis caching, and MinIO object storage for
-  application state and off-chain data
+  The data layer manages application state, user data, and file storage that
+  exists outside the blockchain. PostgreSQL stores structured data with ACID
+  guarantees, Redis provides high-speed caching and session management, and
+  MinIO handles binary assets like KYC documents and token metadata. Drizzle ORM
+  provides type-safe database access with automatic TypeScript inference.
 pageTitle: Data layer - Persistent storage and caching architecture
 tags: [architecture, database, postgresql, redis, minio, drizzle]
 ---
 
-## Overview
-
-The data layer manages application state, user data, and file storage that
-exists outside the blockchain. PostgreSQL stores structured data with ACID
-guarantees, Redis provides high-speed caching and session management, and MinIO
-handles binary assets like KYC documents and token metadata. Drizzle ORM
-provides type-safe database access with automatic TypeScript inference.
-
-### Problem
+## Problem
 
 Storing all data on-chain incurs prohibitive transaction costs and exposes
 sensitive information publicly. User preferences, KYC documents, cached exchange

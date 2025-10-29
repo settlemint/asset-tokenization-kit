@@ -1,15 +1,12 @@
 ---
 title: Code structure
 description:
-  Complete reference for navigating the Asset Tokenization Kit monorepo
-  architecture and code organization
+  The Asset Tokenization Kit uses a Turborepo monorepo to manage multiple
+  interconnected packages. This reference explains the directory structure, key
+  modules, file conventions, and how packages depend on each other.
 pageTitle: Understanding the codebase structure
 tags: [reference, monorepo, architecture, turborepo, organization]
 ---
-
-The Asset Tokenization Kit uses a Turborepo monorepo to manage multiple
-interconnected packages. This reference explains the directory structure, key
-modules, file conventions, and how packages depend on each other.
 
 ## Monorepo overview
 
@@ -578,3 +575,6 @@ across environments.
 - **Deploy to production**:
   [Deployment guide](/docs/developer-guides/deployment-ops/installation-configuration)
 - **Run tests**: [Testing and QA](/docs/developer-guides/quality-assurance)
+- **Surface docs for crawlers**: [robots.txt](/robots.txt) and
+  [sitemap.xml](/sitemap.xml) are generated automatically from the docs source
+  so search engines index published guides.
