@@ -1,17 +1,19 @@
 ---
 title: Platform settings
 description:
-  Guide for platform administrators to configure global settings, roles, and
-  optional modules
+  Configure asset types, role segregation, addon modules, and monitoring for
+  production platform operation
 pageTitle: Admin guide - Configuring platform settings and modules
 tags: [how-to, admin, settings, configuration, roles]
 ---
 
 ## Overview
 
-Platform administration involves configuring system-wide settings, managing
-roles and permissions, deploying addon modules, and maintaining system health.
-This guide walks you through platform configuration and operational maintenance.
+You've deployed the platform and completed onboarding. Now you're responsible
+for enabling asset types, assigning operational roles, deploying yield
+automation, and maintaining system health. This guide walks through Day 1
+configuration and ongoing administrative tasks that keep your tokenization
+platform running.
 
 **Primary role:** Platform administrators, DevOps engineers
 
@@ -22,301 +24,386 @@ configuration and maintenance
 
 Make sure you have:
 
-- Platform admin role with required permissions
+- Platform admin role with multisig wallet access
 - Completed system deployment during onboarding
-- Understanding of organizational structure and role assignments
-- Familiarity with blockchain networks and gas management
+- Organizational role matrix documenting segregation of duties
+- Gas budget allocated for factory deployments
 
-**Time required:** 30-60 minutes for initial configuration; ongoing maintenance
-is periodic
+**Time required:** Initial configuration 45-90 minutes; ongoing monitoring is
+continuous with weekly reviews
 
 <Mermaid
   chart={`flowchart TB
-  Access(Access Admin Settings) --> Roles(Configure Roles)
-  Roles --> Assets(Manage Asset Types)
-  Assets --> Addons(Deploy Addon Modules)
-  Addons --> Claims(Configure Claim Topics)
-  Claims --> Monitor(Monitor System Health)
-  Monitor --> Maintain(Ongoing Maintenance)
+  Start(Day 1 login) --> Roles(Assign operational roles)
+  Roles --> Assets(Enable asset type factories)
+  Assets --> Decision{Need bonds or<br/>fixed income?}
+  Decision -->|Yes| Yield(Deploy Yield addon)
+  Decision -->|No| Claims(Configure claim framework)
+  Yield --> Claims
+  Claims --> Monitor(Set up monitoring dashboards)
+  Monitor --> Ongoing(Weekly health checks)
 
-style Access fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff style Roles
+style Start fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff style Roles
 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff style Assets
-fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff style Addons
+fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff style Yield
 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff style Monitor
+fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff style Ongoing
 fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`} />
 
-## Step 1: Access admin settings
+## Day 1 scenario: Setting up production access
 
-Navigate to administrative controls:
+Your platform is deployed to mainnet. The deployment wallet holds platform admin
+rights, but you need to establish operational role segregation before your
+treasury team can issue bonds and your compliance team can manage investor
+identities.
 
-1. Log in to platform with administrator account
-2. Click **Platform Settings** in the left sidebar
-3. Administrative dashboard appears with configuration sections:
-   - Access control
-   - Asset types and factories
-   - Addon modules
-   - Claim topics and issuers
-   - Theme customization
+First priority: distribute platform-level permissions to operational wallets
+using multisig governance. This prevents single points of failure and
+establishes audit trails. You'll assign three platform roles—Platform Admin,
+Identity Manager, and Claim Issuer—then enable the Bond asset type factory.
+Because bonds require automated coupon payments, you'll deploy the Yield addon
+factory. Finally, you'll configure observability dashboards to track factory
+usage and role activity.
 
-**Permission check:** Admin settings are only visible to users with platform
-administrator roles.
+## Access admin settings
 
-## Step 2: Manage access control
+Navigate to administrative controls by logging in with your platform
+administrator account. Click **Platform Settings** in the left sidebar. The
+administrative dashboard appears with five configuration sections: access
+control for role assignments, asset types showing enabled factories, addon
+modules for yield automation, claim topics defining identity requirements, and
+theme customization for branding.
 
-Configure roles and permissions.
+Only wallets holding platform administrator roles can see these settings. If the
+settings page doesn't appear, verify your wallet address against the initial
+deployment configuration.
 
-### System roles overview
+## Establish role segregation
 
-Platform uses role-based access control (RBAC) with predefined roles:
+Role-based access control (RBAC) separates operational responsibilities across
+teams. Platform-level roles govern system-wide permissions, while token-level
+roles apply to individual assets after deployment.
 
-**Platform-level roles:**
+### Platform-level roles
 
-Navigate to **Platform Settings** &gt; **Permissions**:
+Three roles control platform operations. **Platform Admin** holds full system
+administrator privileges including factory deployment and role assignment.
+**Identity Manager** controls the identity registry, managing investor
+onboarding and KYC claim verification. **Claim Issuer** signs identity claims
+that authorize investors for specific asset types or jurisdictions.
 
-- **Platform Admin** - Full system administrator
-- **Identity Manager** - Manage identity registry
-- **Claim Issuer** - Issue identity claims
+Navigate to **Platform Settings** &gt; **Permissions** to view current role
+assignments. The users table shows wallet addresses, assigned roles, and
+assignment timestamps. Role changes emit on-chain events visible in the **Access
+Control** dashboard.
 
-**Token-level roles:**
+### Token-level roles
 
-Assigned per individual token:
+After deploying an asset (bond, equity, fund), you assign four operational roles
+per token. **GOVERNANCE_ROLE** configures compliance rules and transfer
+restrictions. **SUPPLY_MANAGEMENT_ROLE** mints new tokens during subscriptions
+and burns during redemptions. **CUSTODIAN_ROLE** freezes investor accounts
+during legal holds and recovers tokens when required. **EMERGENCY_ROLE** pauses
+all transfers during security incidents.
 
-- **GOVERNANCE_ROLE** - Token compliance and parameters
-- **SUPPLY_MANAGEMENT_ROLE** - Mint and burn tokens
-- **CUSTODIAN_ROLE** - Freeze and recover tokens
-- **EMERGENCY_ROLE** - Pause token transfers
+These roles appear during token deployment. You'll assign them in the asset
+creation workflow documented in asset-specific issuance guides.
 
-### Assign platform roles
+### Assigning platform roles with multisig governance
 
-Grant platform-level permissions:
+Distribute platform roles to operational teams while maintaining security
+controls. Platform Admin should go to 2-3 senior administrators using a 2-of-3
+multisig wallet (never a single-signature wallet). Identity Manager goes to your
+compliance team, typically 1-2 members who handle investor onboarding. Claim
+Issuer goes to your KYC provider integration or internal compliance system.
 
-1. Navigate to **Platform Settings** &gt; **Permissions**
-2. Review current role assignments in the users table
-3. Use your organization's access management system to grant roles
+Use your organization's access management system (Safe, Defender, or custom
+governance contract) to grant these roles. Each role assignment creates an
+on-chain event that feeds the observability stack. Check the **Role
+Assignments** panel in the admin dashboard after granting permissions to verify
+events appear within 30 seconds.
 
-**Role assignment:**
+**Why multisig matters:** Single-signature admin wallets create catastrophic
+failure points. If the private key is compromised or lost, you lose platform
+control. A 2-of-3 multisig requires two approvals for factory deployments or
+emergency actions, creating accountability and preventing unilateral mistakes.
 
-- Platform Admin: Assign to 2-3 trusted administrators using multisig wallets
-- Identity Manager: Assign to compliance team members
-- Claim Issuer: Assign to KYC provider or compliance system
+Review role assignments quarterly. Revoke access when team members change
+positions or leave the organization. Maintain a role assignment matrix
+documenting who holds which permissions and why.
 
-**Best practice:** Use multisig wallets for critical roles to prevent
-single-point-of-failure.
+## Enable asset type factories
 
-## Step 3: Manage asset types
+Asset type factories deploy new tokens on demand. During onboarding, you
+selected which asset types to enable (bonds, equities, funds, stablecoins,
+deposits). If you need to enable additional asset types post-deployment, use the
+factory enablement workflow.
 
-Configure which asset types are available.
+Navigate to **Platform Settings** &gt; **Asset Types**. The registry shows five
+asset types with their factory contract addresses, deployment counts, and
+status. Enabled factories show the proxy address and current token count.
+Disabled types show an **Enable Asset Type** button.
 
-### Asset type registry
+### Enabling a new asset type
 
-View enabled asset types:
+Suppose your platform initially launched with equity and fund support, but
+treasury operations now require bond issuance. You need to deploy the Bond
+factory.
 
-Navigate to **Platform Settings** &gt; **Asset Types**:
+Click **Enable Asset Type** next to Bonds. The deployment modal shows factory
+parameters: implementation contract address (pre-deployed during platform
+setup), proxy configuration, and gas cost estimate. During low network
+congestion (weekends or late UTC evenings), gas costs drop 40-60% compared to
+peak hours.
 
-Platform shows enabled asset types:
+Enter your PIN or OTP when prompted. Click **Deploy Factory**. The platform
+executes three transactions: deploying the factory implementation contract,
+deploying the factory proxy, and registering the factory in the factory
+registry. The entire sequence takes 60-90 seconds on typical EVM networks.
 
-- **Bonds** - Debt instruments
-- **Equity** - Company shares
-- **Funds** - Investment fund units
-- **Stablecoins** - Fiat-pegged tokens
-- **Deposits** - Certificate of deposit tokens
+After deployment completes, the Bond asset type appears as enabled with a token
+count of zero. Navigate to **Asset Issuance** in the main menu; Bonds now
+appears as a creation option. Check the **Factory Deployments** dashboard panel
+to verify the deployment event appears with transaction hashes and gas
+consumption metrics.
 
-Each asset type shows:
+**Gas planning:** Factory deployment consumes 2-4 million gas depending on asset
+type complexity. Bonds and funds (with yield calculations) use more gas than
+stablecoins or deposits. Budget $50-200 per factory at typical gas prices, but
+always check current network conditions before deploying.
 
-- Factory contract address
-- Number of deployed tokens
-- Status (enabled/disabled)
+## Deploy addon modules
 
-### Enable new asset type
+Addons extend platform capabilities with optional features. Currently, one addon
+type is available: Yield, which automates scheduled interest and dividend
+calculations for bonds and funds.
 
-Add asset type to platform:
+Navigate to **Platform Settings** &gt; **Addons**. The registry shows available
+addons, their deployment status, and usage statistics. The Yield addon displays
+how many tokens currently use yield automation and total distributions
+processed.
 
-If asset type was not deployed during onboarding:
+### Understanding when Yield is required
 
-1. Navigate to **Platform Settings** &gt; **Asset Types**
-2. Click **Enable Asset Type** for the desired type
-3. Review deployment parameters
-4. Enter your PIN or OTP when prompted
-5. Click **Deploy Factory**
-6. Platform:
-   - Deploys factory implementation contract
-   - Deploys factory proxy
-   - Registers factory in factory registry
-   - Enables asset type in platform UI
-7. Asset type now available for token creation
+If you enabled Bond tokens during onboarding, the platform automatically
+deployed the Yield addon factory. Bonds require scheduled coupon payments;
+without the Yield addon, you cannot configure payment schedules during bond
+creation.
 
-**Cost:** Factory deployment consumes gas. Plan deployment during low-congestion
-periods.
+Equity and fund tokens can optionally use Yield for dividend automation.
+Stablecoins and deposits don't require yield functionality (deposits use fixed
+maturity redemptions, stablecoins maintain 1:1 peg without yield).
 
-## Step 4: Manage addon modules
+### Deploying the Yield addon factory
 
-Configure optional platform addons.
+Suppose you initially deployed only stablecoins, but now need to issue bonds.
+Navigate to **Platform Settings** &gt; **Addons**, find the Yield addon, and
+click **Deploy Factory**. Review addon parameters showing the yield calculation
+contract, registry integration, and required permissions.
 
-### Addon registry
+Click **Confirm Deployment** and enter your PIN or OTP. The platform deploys the
+addon factory contract and registers it in the addon registry, taking
+approximately 45 seconds. The Yield addon now appears during bond and fund
+creation, enabling you to configure payment schedules and automated
+distributions.
 
-View available addons:
+Check the **Addon Deployments** panel in the observability dashboard. The
+deployment event should appear with the factory address and initialization
+parameters. Later, when you create bonds with yield schedules, usage metrics
+will populate showing active yield configurations and upcoming payment dates.
 
-Navigate to **Platform Settings** &gt; **Addons**:
+**Selective deployment saves gas:** Deploy only the addons your asset types
+require. If you're running a stablecoin-only platform, skip Yield deployment
+entirely. You can always enable it later when business needs change.
 
-Platform shows addon categories:
+## Configure identity claim framework
 
-**Yield distribution:**
+The compliance layer uses on-chain identity claims to enforce transfer
+restrictions. Claims are cryptographic attestations (KYC verified, accredited
+investor, jurisdiction approval) signed by trusted issuers and bound to investor
+wallets via the OnchainID registry.
 
-- Yield - Scheduled interest/dividend calculations (required for bonds)
+Navigate to **Platform Settings** &gt; **Claim Topics &amp; Issuers** to view
+the claim framework configuration. Four default claim topics are registered:
 
-**Note:** Additional addon types will be available in future releases.
+| Claim Topic                     | Topic ID | Purpose                                |
+| ------------------------------- | -------- | -------------------------------------- |
+| CLAIM_TOPIC_KYC                 | 1        | Identity verification completed        |
+| CLAIM_TOPIC_ACCREDITED_INVESTOR | 2        | Qualified investor status              |
+| CLAIM_TOPIC_JURISDICTION        | 3        | Approved geographic region             |
+| CLAIM_TOPIC_INVESTOR_TYPE       | 4        | Institutional vs retail classification |
 
-Each addon shows deployment status and usage statistics.
-
-### Deploy addon factory
-
-Enable addon for platform use:
-
-1. Navigate to **Platform Settings** &gt; **Addons**
-2. Find addon to deploy (for example, "Yield")
-3. Click **Deploy Factory**
-4. Review addon parameters and permissions
-5. Click **Confirm Deployment**
-6. Enter your PIN or OTP when prompted
-7. Platform:
-   - Deploys addon factory contract
-   - Registers in addon registry
-   - Makes available in token creation and management UI
-8. Addon now available for use with compatible tokens
-
-**Selective deployment:** The Yield addon is automatically selected during
-onboarding if you enable Bond tokens, as bonds require yield functionality.
-
-## Step 5: Configure claim topics and issuers
-
-Manage identity claim framework.
-
-### Claim topics
-
-Navigate to **Platform Settings** &gt; **Claim Topics & Issuers**:
-
-View registered claim topics:
-
-- CLAIM_TOPIC_KYC (Topic 1)
-- CLAIM_TOPIC_ACCREDITED_INVESTOR (Topic 2)
-- CLAIM_TOPIC_JURISDICTION (Topic 3)
-- CLAIM_TOPIC_INVESTOR_TYPE (Topic 4)
-
-**Add custom claim topic:**
-
-Custom claim topic creation requires smart contract development and deployment.
-Contact your technical team for assistance.
+When you configure compliance rules during asset deployment, you'll require
+specific claim topics. For example, a Reg D equity offering might require claims
+1, 2, and 3 (KYC + accredited + US jurisdiction). The identity registry checks
+these claims before allowing transfers.
 
 ### Trusted claim issuers
 
-View registered claim issuers:
+The platform pre-registers one claim issuer: your internal platform claim issuer
+wallet. This issuer can sign all four claim topics during investor onboarding.
+External KYC provider integrations register additional issuers when you
+configure third-party identity verification.
 
-- Platform claim issuer (default)
-- External KYC provider integrations
+Adding custom claim topics or additional trusted issuers requires smart contract
+development. Work with your technical team to deploy claim issuer contracts and
+register them via the identity registry governance functions. Changes to the
+claim framework emit events tracked in the **Compliance Activity** dashboard.
 
-**Add trusted issuer:**
+Check the **Identity Registry** panel to monitor claim issuance rates and
+revocations. High revocation rates indicate compliance issues requiring
+investigation.
 
-Adding trusted issuers requires smart contract configuration. Work with your
-technical team to register additional claim issuers.
+## Set up observability monitoring
 
-## Step 6: Customize theme
+After configuring roles, factories, and addons, establish continuous monitoring
+to track system health and operational metrics. The platform integrates with the
+observability stack (Hasura GraphQL queries, subgraph indexing, and database
+analytics) to surface key performance indicators.
 
-Configure platform appearance:
+### Dashboard tour
 
-Navigate to **Platform Settings** &gt; **Theme**:
+Navigate to the main dashboard after logging in as platform administrator. The
+admin view shows five panels:
 
-You can customize:
+**Factory Activity** tracks token deployments per asset type, showing daily
+creation rates and total active tokens. Sudden spikes indicate batch issuance
+campaigns or automated processes. Drops to zero suggest operational issues
+blocking deployments.
 
-- Primary brand color
-- Logo upload
-- Favicon
+**Role Assignments** displays recent permission changes with timestamps and
+acting administrators. Monitor this panel for unauthorized role grants or
+unexpected revocations. All changes should correspond to documented team
+updates.
 
-Changes apply immediately across the platform.
+**Addon Usage** shows Yield automation metrics: active schedules, upcoming
+payment dates, and total distributions processed. Before bond coupon dates,
+verify the upcoming payments list includes expected issuances. Missing entries
+indicate configuration errors requiring immediate correction.
 
-## Common workflows
+**Compliance Metrics** aggregates identity claim statistics: total investors
+onboarded, pending KYC verifications, and claim revocations. Compare claim
+issuance rates against subscription volumes to detect bottlenecks in investor
+onboarding.
 
-### Monitor system health
+**Transaction Volume** tracks platform-wide transfer activity, showing daily
+transaction counts per asset type. Correlate volume spikes with known corporate
+actions (dividend distributions, redemptions) to validate expected behavior.
 
-Track platform metrics:
+### Configuring alerts
 
-1. Navigate to dashboard
-2. Review key metrics:
-   - Total tokens deployed
-   - Active users
-   - Recent transactions
+Set up threshold alerts for critical metrics. Configure notifications when
+factory deployments fail (indicates gas issues or contract bugs), when role
+assignment events occur outside maintenance windows (potential security
+incidents), or when transaction volumes drop to zero for more than 6 hours
+(operational outage).
 
-### Review audit logs
+Alerts integrate with your organization's incident management system (PagerDuty,
+Slack, email). Configure alert routing during business hours to on-call
+operations teams, and escalate to senior administrators for after-hours critical
+events.
 
-Track system events:
+Check the **System Health** page weekly to review 7-day trends. Compare current
+metrics against historical baselines to detect gradual degradation before it
+impacts operations.
 
-1. Use blockchain explorer to review on-chain events
-2. Monitor key contract interactions
-3. Track token deployments and transfers
+## Customize platform appearance
 
-**Event types:**
+Configure platform branding to match your organization's visual identity.
+Navigate to **Platform Settings** &gt; **Theme** to customize the primary brand
+color (used for buttons, links, and navigation), upload your company logo
+(displayed in the header and login screen), and set a custom favicon.
 
-- User access events
-- Role assignment changes
-- Token deployments
-- Claim issuance/revocation
+Changes apply immediately across the platform for all users. Color values must
+be valid hex codes (#RRGGBB format). Logo files should be PNG or SVG format with
+transparent backgrounds for best results. Maximum file size is 2 MB.
 
-### Handle system maintenance
+After customization, test the appearance across devices (desktop, tablet,
+mobile) to verify logo scaling and color contrast meet accessibility standards.
 
-Coordinate with your technical team for:
+## Ongoing operational workflows
 
-- Contract upgrades
-- Network migrations
-- Emergency pauses
+### Weekly health checks
 
-## Best practices
+Schedule recurring administrative reviews every Monday morning. Review the
+**Factory Activity** panel for unexpected deployment patterns. Check the **Role
+Assignments** panel against your documented role matrix to catch drift. Verify
+the **Addon Usage** panel shows expected upcoming yield payments matching your
+asset calendar. Review the **Compliance Metrics** panel for anomalous claim
+revocation rates or KYC processing delays.
 
-**Access control:**
+Document findings in your operational runbook. Escalate anomalies to technical
+teams for investigation.
 
-- Use multisig wallets for all platform admin roles
-- Review role assignments quarterly
-- Revoke unnecessary permissions (least privilege)
-- Maintain role assignment documentation
+### Quarterly role audits
 
-**System monitoring:**
+Every quarter, export the current role assignment list from the **Permissions**
+page. Compare against your organization's access control matrix. Revoke access
+for departed team members, update multisig signers when governance membership
+changes, and document justification for all platform admin assignments.
 
-- Review platform activity regularly
-- Monitor token deployment trends for capacity planning
-- Track blockchain node health continuously
+Maintain an audit trail linking role grants to HR records or security clearance
+documentation. Regulators reviewing your compliance program will request
+evidence of least-privilege access control.
 
-**Maintenance:**
+### Factory upgrade coordination
 
-- Coordinate platform upgrades with technical team during low-traffic periods
-- Test all upgrades in staging environment first
-- Document all configuration changes
-- Perform quarterly disaster recovery drills
+When new platform versions deploy upgraded factory implementations, coordinate
+with your technical team to execute proxy upgrades during maintenance windows.
+Test upgrades in staging environments first, verifying that existing tokens
+remain functional and new deployments use updated contract logic.
+
+Schedule upgrades during low-traffic periods (weekends or regional holidays).
+Notify asset issuers 48 hours in advance via platform announcements and email.
+After upgrades complete, verify the **Factory Activity** dashboard shows
+successful post-upgrade deployments before declaring the maintenance window
+closed.
 
 ## Troubleshooting
 
-**Cannot access admin settings**
+**Admin settings page not visible**
 
-- Verify your address has platform administrator role
-- Check wallet connection and network
-- Clear browser cache and reload
-- Ensure using admin account
+Your wallet address lacks the platform administrator role. Verify your wallet
+connection shows the correct address (check the wallet icon in the header). If
+you're certain the address is correct, contact the deployment team to confirm
+role assignment. Check the on-chain role registry via block explorer: search for
+the PlatformRoles contract and query the admin role member list.
 
-**Asset type deployment fails**
+**Factory deployment fails with "insufficient funds"**
 
-- Check sufficient platform balance for factory deployment
-- Verify network connectivity
-- Review deployment transaction on block explorer
-- Retry after network congestion clears
+The platform wallet lacks native token balance to pay gas fees. Check the
+platform wallet address (visible in **Platform Settings** &gt; **Overview**) on
+a block explorer. Transfer sufficient balance to cover deployment costs plus 20%
+buffer. Retry factory deployment after confirming balance increase.
 
-**Addon factory deployment reverts**
+**Addon factory deployment reverts with "already deployed"**
 
-- Verify sufficient gas for deployment
-- Check network status
-- Ensure addon compatible with system version
-- Review transaction revert reason on block explorer
+The addon factory was deployed during initial onboarding but appears disabled in
+the UI. This indicates a UI state synchronization issue. Refresh the browser
+page and check the **Addons** panel again. If the addon still shows undeployed,
+check the addon registry contract directly via block explorer to confirm
+on-chain state. Contact technical support if on-chain state contradicts UI
+display.
+
+**Observability dashboards show stale data**
+
+The subgraph indexing layer is behind chain head or experiencing sync issues.
+Navigate to **Platform Settings** &gt; **System Status** to check indexer
+health. If the indexer shows block lag exceeding 100 blocks, restart the indexer
+service. For managed deployments, contact infrastructure support. Check Hasura
+console logs for GraphQL query errors indicating database connection issues.
 
 For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+contact platform support with transaction hashes and wallet addresses for
+investigation.
 
 ## Next steps
 
-- **Asset deployment** - Review asset-specific deployment guides
-- **Compliance configuration** - Configure
-  [Manage investors](/docs/user-guides/operations/manage-investors) workflows
+After completing platform configuration, move to asset-specific workflows:
+
+- **Bond issuance** - Configure yield schedules and coupon automation in
+  [Issue bonds](/docs/user-guides/asset-issuance/issue-bond)
+- **Investor onboarding** - Set up identity verification and claim issuance in
+  [Manage investors](/docs/user-guides/operations/manage-investors)
+- **Corporate actions** - Learn dividend distribution and redemption workflows
+  in [Corporate actions](/docs/user-guides/asset-issuance/corporate-actions)

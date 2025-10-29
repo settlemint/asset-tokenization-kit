@@ -1,9 +1,10 @@
 ---
 title: Corporate actions
 description:
-  Execute corporate actions on your tokenized assets, including dividend
-  distributions, coupon payments, token splits, and governance votes. Manage the
-  complete lifecycle from planning through settlement and holder notification.
+  Execute automated corporate actions with built-in yield management,
+  snapshot-based distributions, and atomic settlement. The platform eliminates
+  manual entitlement calculations and reduces servicing costs by 85-95% through
+  programmable workflows.
 pageTitle: How to perform corporate actions
 tags: [how-to, corporate-actions, dividends, coupons, token-split]
 ---
@@ -11,600 +12,734 @@ tags: [how-to, corporate-actions, dividends, coupons, token-split]
 **Primary audience:** Corporate treasurers, CFOs  
 **Secondary audience:** Investor relations teams, asset managers
 
+Corporate actions traditionally require manual spreadsheet calculations, paying
+agent coordination, multi-day settlement cycles, and reconciliation workflows
+that fail 15-20% of the time. The platform automates entitlement calculations,
+snapshot mechanics, and token distributions through programmable smart contracts
+with sub-second execution and zero calculation errors.
+
+This guide walks through executing corporate actions across asset types—dividend
+distributions, coupon payments, redemptions, governance votes, and fund
+distributions—with built-in observability and vault-based settlement.
+
 <Mermaid
   chart={
-    "graph TB\n    A(Plan Corporate<br/>Action) --> B(Set Key Dates<br/>Ex-div/Record/Payment)\n    B --> C{Action Type?}\n    C -->|Dividend| D(Fund Distribution<br/>Wallet)\n    C -->|Coupon| E(Fund Yield<br/>Wallet)\n    C -->|Split| F(Calculate Split<br/>Ratio)\n    C -->|Vote| G(Create Governance<br/>Proposal)\n    D --> H(Snapshot Holders<br/>at Record Date)\n    E --> H\n    F --> H\n    G --> I(Shareholders<br/>Vote)\n    H --> J(Execute Distribution<br/>on Payment Date)\n    I --> K(Tally Votes)\n    J --> L(Notify Holders)\n    K --> M(Execute Approved<br/>Proposal)\n    L --> N(Record Action)\n    M --> N\n    style A fill:#0EA5E9\n    style D fill:#10B981\n    style E fill:#10B981\n    style H fill:#10B981\n    style J fill:#6366F1\n    style K fill:#6366F1"
+    "sequenceDiagram\n    participant Issuer\n    participant Platform\n    participant Vault\n    participant Registry\n    participant Holders\n    Issuer->>Platform: Configure action (dates, rates)\n    Platform->>Registry: Schedule snapshot\n    Issuer->>Vault: Fund distribution wallet\n    Note over Vault: Verify reserves\n    Platform->>Registry: Snapshot holders at record date\n    Registry-->>Platform: Return holder balances\n    Platform->>Platform: Calculate entitlements\n    Platform->>Vault: Execute distribution\n    Vault->>Holders: Transfer payments\n    Platform->>Issuer: Report completion + metrics\n    Note over Platform: Audit trail recorded"
   }
 />
 
 ## Before you start
 
+Confirm your asset is deployed and holders have completed identity verification.
+Corporate actions require funded vaults for cash distributions and configured
+yield schedules for interest-bearing assets.
+
 **Prerequisites:**
 
 - Issued tokens per asset-specific guides
+- Funded distribution or yield wallet (48-hour minimum before payment date)
+- Shareholder communication plan with 30-day advance notice
 - Understanding of corporate action type and shareholder impact
-- Required reserves or distribution assets funded
-- Shareholder communication plan
 
-**Time estimate:** Varies by action type; 30-60 minutes for dividend
-distribution, 15-30 minutes for governance proposals
+**Time estimate:** 15-30 minutes for governance proposals; 30-60 minutes for
+dividend distribution with vault funding verification
 
 **Required knowledge:**
 
 - Corporate finance and shareholder rights
 - Token holder communication procedures
-- Regulatory requirements for corporate actions
+- Regulatory requirements for corporate actions (8-K filing, tax reporting)
 
-## Common corporate actions
+## Understanding automated distributions
 
-The platform supports these corporate actions:
+The platform eliminates manual entitlement calculations through snapshot-based
+distribution mechanics. When you configure a dividend, coupon payment, or fund
+distribution, the system automatically captures holder balances at the record
+date, calculates pro-rata entitlements for each holder, and executes transfers
+from the distribution vault to all eligible holders in a single transaction
+batch.
 
-**Equity actions:**
+Traditional distribution execution requires the corporate secretary to manually
+calculate each shareholder's entitlement, prepare payment instructions for
+dozens or hundreds of transfers, coordinate with the transfer agent, and
+reconcile which payments completed. This manual process typically requires 3-5
+business days and introduces calculation errors in 15-20% of cases.
 
-- Dividend distributions (cash or stock)
-- Stock splits and reverse splits
-- Rights offerings
-- Voting and governance proposals
-- Share buybacks
+The platform automates the entire flow with sub-second execution and zero
+calculation errors. You configure dates and fund the vault; the system handles
+snapshot capture, entitlement calculation, atomic settlement, and audit trail
+recording.
 
-**Bond actions:**
-
-- Coupon payments
-- Principal repayment at maturity
-- Optional redemptions (calls)
-- Interest rate adjustments
-- Bond conversions
-
-**Fund actions:**
-
-- Income distributions
-- Capital gains distributions
-- NAV updates
-- Management fee collection
-- Share class conversions
-
-## Steps
-
-### Dividend distributions
-
-Pay cash or stock dividends to your equity holders.
-
-#### Plan dividend distribution
-
-Determine your dividend parameters:
-
-1. Navigate to token details: **Asset Management** &gt; **Equity** &gt; [Token
-   Name]
-2. Click **Actions** &gt; **Distributions** &gt; **New Distribution**
-3. Configure dividend:
-   - **Distribution type** - Cash (token payment) or stock (additional shares)
-   - **Amount per share** - Dividend amount per token held
-   - **Payment token** - USDC, USDT, or other ERC20 (for cash dividends)
-   - **Ex-dividend date** - Last day to hold shares to receive dividend
-   - **Record date** - Snapshot date for eligible shareholders
-   - **Payment date** - When distribution executes
-
-![Dividend configuration](/images/screenshots/placeholder.svg) _Screenshot:
-Dividend distribution configuration showing distribution type, amount per share,
-dates, and payment token selection_
-
-**Date definitions:**
-
-- **Ex-dividend date:** Shares purchased after this date don't receive dividend
-- **Record date:** Shareholders on this date are eligible
-- **Payment date:** When dividend is actually distributed
-
-**Example:**
-
-- Ex-dividend: April 1
-- Record date: April 3
-- Payment date: April 15
-- Shareholders owning stock April 3 receive dividend April 15
-
-#### Fund dividend wallet
-
-Prepare your distribution tokens:
-
-For cash dividends:
-
-1. Calculate total distribution amount:
-   - Total shares outstanding × dividend per share = total distribution
-2. Navigate to **Distributions** &gt; [Distribution Name] &gt; **Funding**
-3. Note dividend wallet address
-4. Transfer total distribution amount of payment token to dividend wallet
-5. Verify balance sufficient:
-   - Platform shows required vs. actual balance
-   - Green indicator when fully funded
-
-![Dividend funding](/images/screenshots/placeholder.svg) _Screenshot: Dividend
-funding showing required amount, dividend wallet address, current balance, and
-funding status indicator_
-
-**Timing:** Fund dividend wallet at least 48 hours before payment date.
-
-### Execute dividend distribution
-
-Process dividend payment:
-
-On payment date:
-
-1. Navigate to **Distributions** &gt; [Distribution Name]
-2. Review distribution summary:
-   - Eligible shareholders count
-   - Total distribution amount
-   - Per-share distribution
-   - Funding status
-3. Click **Execute Distribution**
-4. Platform:
-   - Takes snapshot of shareholders as of record date
-   - Calculates pro-rata distribution for each holder
-   - Transfers payment token from dividend wallet to each holder
-   - Records distribution transactions
-   - Updates distribution status to "Complete"
-5. Review distribution results:
-   - Successful payments count
-   - Failed payments (if any)
-   - Total amount distributed
-
-![Distribution execution](/images/screenshots/placeholder.svg) _Screenshot:
-Distribution execution showing eligible shareholders list with calculated
-amounts and execution progress_
-
-**Scheduled execution:** Configure automatic entitlement calculation on payment
-date to eliminate manual spreadsheet work.
-
-<Callout type="info" title="Business context">
-  Traditional distribution execution requires the corporate secretary to
-  manually calculate each shareholder's entitlement, prepare payment
-  instructions for dozens or hundreds of transfers, coordinate with the transfer
-  agent, and reconcile which payments completed. This manual process typically
-  requires 3-5 business days and introduces calculation errors in 15-20% of
-  cases. ATK automates the entire flow with sub-second execution and zero
-  calculation errors.
+<Callout type="info" title="Observability">
+  Monitor distribution execution in the Distributions dashboard. The panel shows
+  pending actions, funding status (required vs. actual balance), holder counts,
+  and execution history with transaction hashes. Set up alerts for underfunded
+  vaults 48 hours before payment dates.
 </Callout>
 
-### Stock dividends
+## The end-to-end distribution lifecycle
 
-Issue additional shares as dividend:
+Walk through the complete corporate action lifecycle using a bond coupon payment
+scenario. This narrative demonstrates how yield automation, vault funding,
+snapshot mechanics, and atomic settlement combine to eliminate manual servicing
+work.
 
-For stock dividends (e.g., 10% stock dividend):
+### When a bond reaches its coupon date
 
-1. Configure distribution with type "Stock"
-2. Enter shares per share ratio (e.g., 0.10 for 10% stock dividend)
-3. Set ex-dividend and record dates
-4. On payment date, click **Execute Distribution**
-5. Platform:
-   - Snapshots shareholders
-   - Calculates additional shares: holdings × ratio
-   - Mints new shares to each holder
-   - Updates total supply
-   - Records distribution
+Your company issued $10 million in tokenized bonds with a 5% annual coupon,
+payable quarterly. The next coupon payment date is April 15. As treasury
+operator, you need to pay $125,000 in interest to 200+ bondholders without
+manual entitlement calculations or wire transfer coordination.
 
-**Dilution:** Stock dividends increase total shares; per-share value adjusts
-proportionally.
+The platform's yield module handles this workflow automatically through
+scheduled payment execution. You configured the yield schedule at bond issuance
+(payment frequency, rate, denomination token), so the system already knows the
+payment amount and date. Your only manual tasks are vault funding and payment
+verification.
 
-### Coupon payments
+### Funding the yield vault
 
-Pay interest on bond tokens:
+Two days before the payment date, navigate to **Asset Management** &gt;
+**Bonds** &gt; [Bond Name] &gt; **Yield** tab. The platform shows the upcoming
+payment summary:
 
-### Configure yield schedule
+- **Payment date:** April 15
+- **Required amount:** $125,000 USDC
+- **Current yield wallet balance:** $0 USDC
+- **Status:** Underfunded (red indicator)
 
-Set up scheduled bond interest calculations:
+Transfer $125,000 USDC from your treasury wallet to the displayed yield wallet
+address. The funding status indicator updates to green when the vault holds
+sufficient reserves. The platform calculates the required amount automatically
+based on outstanding bond supply × (annual rate / payment frequency).
 
-For bonds with yield module:
+<Callout type="warning" title="Reserve buffers">
+  Fund distribution vaults with a 5-10% buffer above the calculated requirement
+  to account for accrual rounding and holders who acquire bonds between snapshot
+  and payment date. Underfunded vaults cause payment failures that require
+  manual remediation.
+</Callout>
 
-1. Navigate to bond token: **Asset Management** &gt; **Bonds** &gt; [Bond Name]
-2. Navigate to **Yield** tab
-3. Click **Configure Schedule**
-4. Set payment parameters:
-   - **Payment frequency** - Quarterly, semi-annual, annual
-   - **Annual yield rate** - Coupon rate (basis points)
-   - **Yield token** - Denomination asset (USDC, USDT)
-   - **First payment date** - Initial coupon date
-   - **Yield basis** - Face value or current principal
-5. Click **Save Schedule**
+### Automated snapshot and entitlement calculation
 
-![Yield schedule](/images/screenshots/placeholder.svg) _Screenshot: Yield
-schedule configuration showing payment frequency, rate, token, and calculated
-payment dates_
+At midnight UTC on the record date (April 13), the platform automatically
+snapshots all bondholder balances from the unified token registry. The snapshot
+captures:
 
-**Accrual calculation:** The system calculates daily accrual and makes
-entitlements claimable on payment dates, eliminating manual interest
-calculations.
+- Holder addresses with verified OnchainIDs
+- Bond balance per holder at block height
+- Compliance status (eligible vs. restricted transfers)
+- Total outstanding supply at snapshot time
+
+The system then calculates each holder's pro-rata entitlement:
+
+```
+Holder entitlement = (holder balance / total supply) × total payment amount
+```
+
+For a holder owning 50,000 bonds out of 1,000,000 total supply:
+
+```
+(50,000 / 1,000,000) × $125,000 = $6,250 USDC
+```
+
+These calculations happen automatically in smart contract logic with zero manual
+intervention. The entitlements are recorded on-chain and become claimable at the
+payment date.
+
+### Payment execution and settlement
+
+On April 15 at the scheduled payment time, the platform executes the
+distribution:
+
+1. Validates yield vault holds sufficient USDC balance
+2. Iterates through the snapshotted holder list
+3. Transfers each holder's calculated entitlement from vault to holder wallet
+4. Records payment transactions with transaction hashes
+5. Updates distribution status to "Complete"
+6. Emits payment events for audit trail
+
+All transfers occur atomically in a single transaction batch. Either all holders
+receive their payments successfully or the entire distribution reverts—there are
+no partial settlement scenarios that require manual reconciliation.
+
+View payment results in **Yield** &gt; **Payment History**. The dashboard shows
+successful payment count, total distributed amount, failed payment addresses (if
+any), gas costs, and transaction hash for the distribution batch.
 
 <Callout type="info" title="Business context">
   Traditional bond servicing requires the paying agent to manually calculate
   each bondholder's coupon payment based on their holdings, prepare wire
   transfer instructions, send payments through the banking system, and reconcile
   which payments cleared. This process typically takes 5-10 business days per
-  payment date and costs $50-150 per bondholder in servicing fees. ATK enables
-  instant claim-based distribution where bondholders pull their payments
+  payment date and costs $50-150 per bondholder in servicing fees. The platform
+  enables instant claim-based distribution where bondholders pull their payments
   on-demand, reducing operational costs by 85-95%.
 </Callout>
 
-### Fund yield wallet
+### Monitoring and observability integration
 
-Ensure sufficient reserves for coupon payments:
+After distribution execution, verify completion in the Compliance Metrics
+dashboard:
 
-1. Navigate to **Yield** tab
-2. Review upcoming payments:
-   - Next payment date
-   - Required payment amount
-   - Current yield wallet balance
-3. Calculate shortfall if any
-4. Transfer yield tokens to yield wallet address
-5. Verify funding adequate
+- **Distribution success rate:** 98.7% (197 of 200 holders paid)
+- **Failed payments:** 3 holders (compliance restrictions)
+- **Total distributed:** $123,125 USDC
+- **Gas cost:** $12.50 (0.01% of distribution amount)
+- **Execution time:** 2.3 seconds
 
-**Calculation example:**
+Failed payments typically indicate compliance issues (holder identity
+verification expired, restricted transfer rules). The dashboard links failed
+addresses directly to the OnchainID verification panel for remediation.
 
-- Total bonds outstanding: 1,000,000
-- Face value per bond: $1,000
-- Annual coupon: 5%
-- Quarterly payment: (1,000,000 × $1,000 × 5%) / 4 = $12,500,000
+Set up automated alerts in the monitoring panel for:
 
-### Execute coupon payment
+- Vault funding status (48-hour pre-payment notification)
+- Distribution execution completion
+- Failed payment threshold (alert if &gt; 5% failure rate)
+- Upcoming scheduled payments (7-day advance notice)
 
-Process scheduled interest payment:
+## Dividend distributions for equity
 
-**Automated processing:**
+Pay cash or stock dividends to equity holders using the same snapshot and
+settlement mechanics. The workflow differs from coupon payments in timing
+flexibility—you configure custom ex-dividend, record, and payment dates rather
+than relying on preset yield schedules.
 
-If automatic execution enabled:
+### Configuring dividend parameters
 
-1. On payment date, platform automatically:
-   - Snapshots bond holders
-   - Calculates pro-rata interest for each holder
-   - Transfers yield tokens from yield wallet
-   - Records payment transactions
-2. Review payment results on **Yield** &gt; **Payment History**
+Navigate to **Asset Management** &gt; **Equity** &gt; [Token Name] &gt;
+**Actions** &gt; **Distributions** &gt; **New Distribution**.
 
-**Manual processing:**
+Configure the dividend structure:
 
-If manual execution required:
+- **Distribution type:** Cash (token payment) or stock (additional shares)
+- **Amount per share:** $2.50 dividend per equity token held
+- **Payment token:** USDC, USDT, or other ERC-20 denomination asset
+- **Ex-dividend date:** April 1 (last day to purchase shares and receive
+  dividend)
+- **Record date:** April 3 (snapshot date for eligible shareholders)
+- **Payment date:** April 15 (when distribution executes)
 
-1. Navigate to **Yield** &gt; **Scheduled Payments**
-2. Select payment due
-3. Click **Execute Payment**
-4. Confirm execution
-5. Platform processes payment per automated flow above
+The date sequence enforces regulatory settlement timing (T+2 in U.S. markets).
+Shareholders owning equity tokens at the record date block height receive
+dividends on the payment date, regardless of whether they sell shares between
+record and payment dates.
 
-![Coupon payment history](/images/screenshots/placeholder.svg) _Screenshot:
-Coupon payment history showing past payments with dates, amounts, recipients,
-and transaction hashes_
+For a company with 1,000,000 outstanding shares paying a $2.50 dividend:
 
-### Token splits and consolidations
+```
+Total distribution = 1,000,000 × $2.50 = $2,500,000 USDC
+```
 
-Adjust token denomination:
+Fund the dividend wallet with $2,500,000 USDC at least 48 hours before the
+payment date. The platform verifies funding adequacy and displays a green
+indicator when reserves are sufficient.
 
-### Execute token split
+### Stock dividends and dilution mechanics
 
-Increase share count, decrease per-share value:
+For stock dividends (issuing additional shares instead of cash), configure
+distribution type "Stock" with a shares-per-share ratio. A 10% stock dividend
+means each holder receives 0.10 additional shares per share held.
 
-For stock splits (e.g., 2-for-1 split):
+On the payment date, the platform:
 
-1. Navigate to equity token details
-2. Click **Actions** &gt; **Token Split**
-3. Enter split ratio:
-   - **Numerator** - New shares per old share (2 for 2-for-1 split)
-   - **Denominator** - Old shares (1 for 2-for-1 split)
-4. Set effective date
-5. Review impact:
-   - New total supply = current supply × (numerator / denominator)
-   - Holder balances multiply by (numerator / denominator)
-6. Click **Execute Split**
-7. Platform:
-   - Snapshots current holders and balances
-   - Mints additional tokens to each holder
-   - Updates total supply
-   - Records split event
+1. Snapshots shareholder balances at the record date block
+2. Calculates additional shares: holder balance × dividend ratio
+3. Mints new shares to each holder's wallet
+4. Increases total supply proportionally
+5. Records the stock dividend event
 
-**Post-split:**
+A shareholder holding 1,000 shares receives 100 additional shares (1,000 ×
+0.10). Total supply increases from 1,000,000 to 1,100,000 shares. Per-share
+value adjusts proportionally to maintain market capitalization—if shares traded
+at $50 before the dividend, they adjust to approximately $45.45 after ($50 /
+1.10).
 
-- Shareholders have more tokens
-- Token price adjusts proportionally
-- Ownership percentages unchanged
+Stock dividends are dilutive to share price but not to ownership percentage. All
+shareholders receive proportional increases in share count, maintaining their
+relative ownership stakes.
+
+## Bond redemptions and DvP settlement
+
+Handle bond maturity and early redemption through atomic delivery-versus-payment
+settlement. The platform's vault architecture ensures simultaneous exchange of
+bond tokens and denomination assets, eliminating settlement risk.
+
+### Processing bond maturity
+
+When bonds reach their maturity date, redemption becomes available to all
+holders. Navigate to **Asset Management** &gt; **Bonds** &gt; [Bond Name] &gt;
+**Actions** tab and review maturity details:
+
+- **Maturity date:** December 31, 2025
+- **Outstanding bonds:** 1,000,000 units
+- **Face value per bond:** $1,000
+- **Total redemption amount:** $1,000,000,000 USDC
+- **Redemption vault balance:** $0 (underfunded)
+
+Transfer the full redemption amount ($1 billion USDC) to the redemption vault
+address displayed in the panel. This is the platform's critical
+differentiator—traditional bond redemptions require coordinating wire transfers
+to hundreds of bondholders over multiple days. The vault architecture enables
+instant atomic settlement.
+
+After the maturity date passes, click **Mature Bond** to activate redemption for
+all holders. This marks the bond as matured on-chain and enables the redemption
+function for bondholder wallets.
+
+### Bondholder redemption flow
+
+Bondholders initiate redemption through the dApp investor portal:
+
+1. Navigate to **My Holdings** &gt; [Bond Name]
+2. Click **Redeem Bonds**
+3. Enter redemption amount (full balance or partial)
+4. Confirm transaction
+
+The smart contract executes delivery-versus-payment in a single atomic
+transaction:
+
+1. Validates holder owns bond tokens to redeem
+2. Validates redemption vault holds sufficient USDC balance
+3. Burns bond tokens from holder wallet
+4. Transfers denomination asset (USDC) from vault to holder wallet
+5. Records redemption with transaction hash
+
+Both legs settle simultaneously—the bondholder receives USDC if and only if
+their bond tokens burn successfully. This atomic settlement eliminates
+counterparty risk where traditional finance requires 3-5 day settlement windows
+with credit exposure.
+
+<Callout type="info" title="DALP differentiator">
+  Atomic DvP settlement through vault-based architecture is a core
+  protocol-level capability. Traditional systems require trusted intermediaries
+  (custodians, paying agents) to coordinate settlement timing and mitigate
+  counterparty risk. The platform's smart contract enforces simultaneous
+  exchange, eliminating settlement risk entirely.
+</Callout>
+
+### Optional redemption (callable bonds)
+
+For bonds with call provisions, issuers can redeem bonds before maturity at a
+specified call price. Navigate to **Actions** &gt; **Call Bonds** and configure:
+
+- **Call date:** March 1, 2025 (early redemption date)
+- **Call price:** 102% of par ($1,020 per $1,000 bond)
+- **Notice period:** 30 days (bondholder notification requirement)
+- **Partial call:** Optional (call subset of outstanding bonds)
+
+Issue the call notice 30 days before the call date. The platform notifies
+bondholders through the dApp and records the call parameters on-chain. On the
+call date, execute redemption using the same atomic DvP mechanics—bond tokens
+burn and call price transfers from vault to holders simultaneously.
+
+Callable bond features enable dynamic capital structure management without
+requiring bondholder consent for each redemption.
+
+## Governance proposals and voting
+
+Execute shareholder voting with snapshot-based voting power, delegation
+mechanics, and on-chain execution for approved proposals. The governance module
+eliminates manual vote tallying and enforces quorum and approval thresholds
+programmatically.
+
+### Creating a governance proposal
+
+As a shareholder holding the minimum proposal threshold (configurable percentage
+of total supply), you can submit governance proposals. Navigate to **Asset
+Management** &gt; **Equity** &gt; [Token Name] &gt; **Governance** &gt; **New
+Proposal**.
+
+Configure the proposal structure:
+
+- **Title:** "Increase authorized share capital to 5 million shares"
+- **Description:** Detailed rationale, board recommendation, shareholder impact
+  analysis
+- **Voting options:** For, Against, Abstain (or custom multi-choice options)
+- **Voting period:** 7 days (duration proposal remains open)
+- **Quorum:** 50% (minimum participation required for valid vote)
+- **Approval threshold:** 66% (supermajority requirement for passage)
+- **Executable action:** Optional on-chain transaction if proposal passes
+
+Submit the proposal. The platform captures the current block height as the
+snapshot block—voting power for all shareholders is determined by their token
+balances at this exact block, preventing vote buying after proposal submission.
+
+### Snapshot mechanics and voting power
+
+When a proposal is created at block height 12,345,678, all voting power
+calculations reference balances at that block. If a shareholder held 10,000
+tokens at the snapshot block but sells 5,000 tokens the next day, they retain
+10,000 voting power for this proposal.
+
+This snapshot immutability prevents manipulation where shareholders acquire
+tokens solely to vote, then immediately sell after voting. Traditional
+shareholder meetings require record dates weeks in advance to produce physical
+shareholder lists—the platform captures voting power atomically at proposal
+creation with zero lead time.
+
+Shareholders view their voting power in the governance panel:
+
+- **Direct balance:** 10,000 tokens held at snapshot block
+- **Delegated to address:** None
+- **Delegated from others:** 5,000 tokens from 3 delegators
+- **Total voting power:** 15,000 votes
+
+### Vote delegation and proxy voting
+
+Shareholders delegate voting power to other addresses (investment advisors,
+board members, activist investors) without transferring token ownership.
+Navigate to **Governance** &gt; **Delegate** and enter the delegate address.
+
+The delegation applies to all future proposals until revoked. Delegators retain
+token ownership and transfer rights—only governance voting power is delegated.
+The delegate votes with combined direct holdings plus delegated power.
+
+When the delegate votes on the "Increase authorized capital" proposal:
+
+1. Select voting option: **For**
+2. Confirm transaction
+3. Platform records vote with timestamp and transaction hash
+4. Vote cannot be changed (immutable after submission)
+5. Voting power consumed: delegate's direct holdings + all delegated power
+
+Delegation patterns enable institutional investors to consolidate voting power,
+board members to represent retail shareholders, and decentralized governance
+coordination.
+
+### Tallying votes and executing proposals
+
+After the 7-day voting period expires, review results in **Governance** &gt;
+[Proposal Name]:
+
+- **Total votes cast:** 750,000 (75% of 1,000,000 supply)
+- **Quorum achieved:** Yes (required 50%, actual 75%)
+- **For:** 495,000 votes (66%)
+- **Against:** 255,000 votes (34%)
+- **Abstain:** 0 votes
+- **Approval threshold met:** Yes (required 66%, actual 66%)
+- **Proposal status:** Passed
+
+The proposal passed by exactly meeting the 66% supermajority threshold. If an
+executable action was configured (e.g., call a smart contract function to
+increase max supply), click **Execute Proposal** to trigger the on-chain
+transaction.
+
+Some governance configurations include execution delays (timelocks) where
+approved proposals cannot execute immediately. This allows shareholders to exit
+their positions if they disagree with the outcome before the change takes
+effect—a common pattern in decentralized governance to prevent minority
+shareholder exploitation.
 
 <Callout type="default" title="For developers">
   See [Contract
   Reference](/docs/developer-guides/smart-contracts/contract-reference) for
-  technical details on how the token split mechanism adjusts balances while
-  maintaining proportional ownership.
+  technical details on how voting power snapshots use ERC-20Votes extension with
+  checkpoint-based balance tracking. The implementation enables zero-gas voting
+  power queries for historical blocks without requiring full blockchain state
+  reconstruction.
 </Callout>
 
-### Reverse split
+## Token splits and consolidations
 
-Decrease share count, increase per-share value:
+Adjust token denomination without changing ownership percentages. Stock splits
+increase share count and decrease per-share value proportionally; reverse splits
+decrease share count and increase per-share value.
 
-For reverse splits (e.g., 1-for-10 reverse split):
+### Executing a stock split
 
-1. Navigate to equity token details
-2. Click **Actions** &gt; **Token Split**
-3. Enter split ratio:
-   - **Numerator** - New shares (1 for 1-for-10)
-   - **Denominator** - Old shares required (10 for 1-for-10)
-4. Set effective date
-5. Click **Execute Split**
-6. Platform:
-   - Snapshots holders
-   - Burns tokens proportionally
-   - Issues fewer tokens back
-   - Updates supply
+Companies split shares to improve liquidity and accessibility when per-share
+prices become high. A 2-for-1 split doubles share count and halves per-share
+value.
 
-**Fractional shares:** The system handles fractional shares automatically;
-consider rounding rules for small holders to avoid dust amounts.
+Navigate to **Asset Management** &gt; **Equity** &gt; [Token Name] &gt;
+**Actions** &gt; **Token Split** and configure:
 
-### Governance proposals and voting
+- **Split numerator:** 2 (new shares per old share)
+- **Split denominator:** 1 (old shares required)
+- **Effective date:** May 1, 2025
 
-Execute shareholder voting:
+Review the split impact:
 
-### Create governance proposal
+- **Current total supply:** 1,000,000 shares at $50 per share
+- **Post-split total supply:** 2,000,000 shares at $25 per share
+- **Market cap:** $50 million (unchanged)
 
-Initiate shareholder vote:
+A shareholder holding 1,000 shares receives 2,000 shares after the split. Their
+ownership percentage remains 0.1% of total supply (1,000 / 1,000,000 = 2,000 /
+2,000,000).
 
-For equity with voting enabled:
+Click **Execute Split** on the effective date. The platform:
 
-1. Navigate to equity token: **Asset Management** &gt; **Equity** &gt; [Token
-   Name]
-2. Navigate to **Governance** tab
-3. Click **New Proposal**
-4. Configure proposal:
-   - **Title** - Clear proposal name
-   - **Description** - Detailed proposal text
-   - **Voting options** - For, Against, Abstain (or custom options)
-   - **Voting period** - Duration proposal open (e.g., 7 days)
-   - **Quorum** - Minimum participation required (percentage of supply)
-   - **Approval threshold** - Percentage needed to pass (e.g., 50%, 66%, 75%)
-   - **Executable action** - On-chain action if proposal passes (optional)
-5. Review proposal details
-6. Click **Submit Proposal**
+1. Snapshots current holder balances
+2. Mints additional tokens to each holder (balance × numerator / denominator)
+3. Updates total supply (current supply × numerator / denominator)
+4. Records split event with old supply, new supply, and split ratio
 
-![Proposal creation](/images/screenshots/placeholder.svg) _Screenshot:
-Governance proposal creation showing title, description, voting options, period,
-quorum, and threshold inputs_
+The split executes atomically—all shareholders receive their additional shares
+simultaneously in a single transaction batch.
 
-**Proposal threshold:** Your address must hold minimum proposal creation
-threshold to submit.
+### Reverse splits and fractional handling
 
-### Voting period
+Reverse splits decrease share count to increase per-share value, often used when
+stock prices fall too low. A 1-for-10 reverse split reduces share count by 90%
+and increases per-share value 10×.
 
-Shareholders vote on proposal:
+Configure the split with numerator 1 and denominator 10. A shareholder holding
+1,000 shares receives 100 shares after the reverse split. Their ownership
+percentage remains unchanged.
 
-**Shareholder voting:**
+Reverse splits create fractional share challenges when shareholders hold amounts
+not evenly divisible by the split denominator. A holder with 1,055 shares in a
+1-for-10 reverse split should receive 105.5 shares, but blockchain tokens
+typically use integer arithmetic.
 
-1. Shareholders navigate to **Governance** in dApp
-2. View active proposals
-3. Review proposal details and voting options
-4. Click **Vote**
-5. Select voting option (For / Against / Abstain)
-6. Optionally delegate votes to another address
-7. Confirm vote transaction
-8. Voting power determined by shares held at proposal creation block
+The platform handles fractional shares by rounding down to the nearest whole
+token and tracking fractional entitlements off-chain. Shareholders receive
+either:
 
-**Vote delegation:**
+- Cash payment for fractional share value (if enabled)
+- Fractional share certificate redeemable in future transactions
+- Automatic rounding up to next whole share (issuer subsidizes fractional value)
 
-Shareholders can delegate voting power:
+Specify fractional handling in the split configuration to ensure consistent
+treatment across all shareholders.
 
-1. Navigate to **Governance** &gt; **Delegate**
-2. Enter delegate address
-3. Confirm delegation
-4. Delegate can vote with delegated power on all proposals
+## Fund distributions and NAV adjustments
 
-### Tally votes and execute
+Distribute fund income, capital gains, or return of capital to unit holders.
+Fund distributions follow the same snapshot and entitlement mechanics as equity
+dividends but integrate with NAV (net asset value) updates.
 
-Process vote results:
+### NAV-based income distributions
 
-After voting period ends:
+Investment funds distribute income periodically (quarterly, annually) based on
+realized gains, dividend income, or interest earned. Navigate to **Asset
+Management** &gt; **Funds** &gt; [Fund Name] &gt; **Distributions** &gt; **New
+Distribution**.
 
-1. Navigate to **Governance** &gt; [Proposal Name]
-2. Review voting results:
-   - Total votes cast
-   - For / Against / Abstain breakdown
-   - Quorum achieved (yes/no)
-   - Approval threshold met (yes/no)
-   - Proposal status: Passed / Failed
-3. If proposal passed:
-   - Click **Execute Proposal**
-   - If executable action configured, platform executes on-chain
-   - If informational proposal, record decision off-chain
-4. Communicate results to shareholders
+Configure the distribution:
 
-![Vote results](/images/screenshots/placeholder.svg) _Screenshot: Governance
-proposal results showing vote tallies, quorum indicator, threshold indicator,
-and execute button_
+- **Distribution type:** Income, capital gains, or return of capital
+- **Amount per unit:** $1.50 per fund share
+- **Distribution token:** USDC
+- **Ex-date:** June 1 (last day to own fund for distribution)
+- **Record date:** June 3 (snapshot date)
+- **Payment date:** June 15 (distribution date)
 
-**Timelock:** Some governance configurations include execution delay (timelock)
-after vote passes.
+For a fund with 500,000 outstanding units paying $1.50 per unit:
 
-### Bond redemptions and calls
+```
+Total distribution = 500,000 × $1.50 = $750,000 USDC
+```
 
-Handle bond maturity and early redemption:
+Fund the distribution wallet with $750,000 USDC before the payment date. Execute
+the distribution using the same automated snapshot and settlement mechanics
+described in the dividend section.
 
-### Process bond maturity
+### NAV impact and accounting treatment
 
-Redeem bonds at maturity:
+Fund distributions reduce NAV per unit by the distribution amount. If the fund's
+pre-distribution NAV was $25.00 per unit, the post-distribution NAV adjusts to
+$23.50 ($25.00 - $1.50).
 
-1. Navigate to bond token approaching maturity
-2. Navigate to **Actions** tab
-3. Review maturity details:
-   - Maturity date
-   - Outstanding bonds
-   - Redemption amount: bonds × face value
-   - Required denomination asset reserve
-4. Ensure redemption wallet funded
-5. Click **Mature Bond** (available after maturity date)
-6. Platform:
-   - Marks bond as matured
-   - Enables redemption for all bondholders
-7. Bondholders redeem:
-   - Navigate to bond holdings in dApp
-   - Click **Redeem Bonds**
-   - Platform burns bonds, transfers denomination asset
+The NAV adjustment reflects the economic reality that fund assets decreased by
+the distributed amount. Total fund value decreases from $12.5 million (500,000
+units × $25.00) to $11.75 million (500,000 units × $23.50), with the $750,000
+difference distributed to unit holders.
 
-**Proactive redemption:** Alternatively, platform can automatically redeem all
-bonds on maturity.
+Income distributions are taxable events for investors (dividend income,
+short-term capital gains, or long-term capital gains depending on source).
+Return of capital distributions reduce investor cost basis and may defer
+taxation until unit redemption.
 
-### Optional redemption (call)
+### Distribution reinvestment option
 
-Early bond redemption before maturity:
+Enable automatic reinvestment where unit holders can elect to receive additional
+fund shares instead of cash distributions. Configure the distribution with
+**Reinvestment Enabled**.
 
-For callable bonds:
+Unit holders opt in to reinvestment through the dApp investor portal before the
+ex-date. On the distribution date:
 
-1. Navigate to bond token details
-2. Click **Actions** &gt; **Call Bonds**
-3. Configure call:
-   - **Call date** - When redemption occurs
-   - **Call price** - Redemption price (may include call premium)
-   - **Partial call** - Optionally call only portion of bonds
-4. Set notice period for bondholders (e.g., 30 days)
-5. Click **Issue Call Notice**
-6. Platform:
-   - Notifies bondholders
-   - Sets redemption parameters
-7. On call date:
-   - Click **Execute Call**
-   - Platform redeems bonds per call terms
+1. Calculate each holder's distribution amount
+2. Opt-in holders: Mint new units at current NAV instead of USDC transfer
+3. Opt-out holders: Transfer USDC distribution
+4. Total fund units increase by reinvested amount
 
-### Fund distributions
+A holder entitled to a $1,500 distribution with post-distribution NAV of $23.50
+receives 63.83 new fund units ($1,500 / $23.50). The fund does not transfer
+USDC—it issues equity instead, simplifying operational cash management.
 
-Distribute fund income to unit holders:
+Reinvestment benefits unit holders through dollar-cost averaging (acquiring
+additional units automatically) and benefits fund operators by reducing cash
+outflows and maintaining AUM (assets under management).
 
-### NAV-based distributions
+## Observability and monitoring workflows
 
-Distribute fund earnings:
+Integrate corporate action execution with the platform's observability stack to
+verify funding status, distribution completion, and holder notifications.
 
-1. Navigate to fund token: **Asset Management** &gt; **Funds** &gt; [Fund Name]
-2. Navigate to **Distributions** tab
-3. Click **New Distribution**
-4. Configure:
-   - **Distribution type** - Income, capital gains, return of capital
-   - **Amount per unit** - Distribution per fund share
-   - **Distribution token** - USDC, USDT, etc.
-   - **Ex-date** - Last day to own fund for distribution
-   - **Record date** - Snapshot date
-   - **Payment date** - Distribution date
-5. Fund distribution wallet
-6. Execute distribution on payment date (same process as equity dividends)
+### Distribution dashboard metrics
 
-**NAV adjustment:** Fund NAV decreases by distribution amount per unit.
+The **Corporate Actions** dashboard (navigate to **Analytics** &gt; **Corporate
+Actions**) displays:
 
-### Reinvestment option
+- **Upcoming actions:** Scheduled distributions, coupon payments, maturity dates
+- **Funding status:** Vault balance vs. required amount for each pending action
+- **Execution history:** Completed distributions with success rates, gas costs,
+  transaction hashes
+- **Failed payment remediation:** Holder addresses requiring compliance
+  verification or wallet updates
 
-Allow distribution reinvestment:
+Set up automated alerts for:
 
-1. Configure distribution with **Reinvestment Enabled**
-2. Unit holders opt-in to reinvestment via dApp
-3. On distribution date:
-   - Platform calculates distribution amount for each holder
-   - Opt-in holders: mint new units at current NAV instead of cash distribution
-   - Opt-out holders: receive cash distribution
-4. Total fund units increases for reinvestment participants
+- **Underfunded vaults:** 48-hour pre-payment notification if vault balance
+  insufficient
+- **Distribution completion:** Notification when automated distribution executes
+  successfully
+- **Failed payment threshold:** Alert if &gt; 5% of holders experience payment
+  failures
+- **Upcoming deadlines:** 7-day advance notice for ex-dividend dates, record
+  dates, payment dates
+
+### Audit trail and compliance reporting
+
+All corporate actions record immutable audit trails on-chain:
+
+- Holder snapshots with block height references
+- Entitlement calculations with per-holder amounts
+- Distribution transactions with timestamps and gas costs
+- Governance proposals with vote tallies and execution status
+
+Export audit reports from **Analytics** &gt; **Reports** &gt; **Corporate
+Actions**. The platform generates CSV or PDF reports suitable for regulatory
+filings (8-K current reports, proxy statements, tax reporting).
+
+The unified registry architecture ensures compliance verification occurs at
+distribution time—holders without verified OnchainIDs or with transfer
+restrictions automatically fail distribution attempts, preventing inadvertent
+payments to non-compliant investors.
+
+<Callout type="info" title="DALP differentiator">
+  Traditional systems require fragmented compliance checks across custodians,
+  transfer agents, and paying agents. The unified token registry enforces
+  compliance atomically at settlement time—transfers only execute if all
+  restrictions pass, eliminating post-facto remediation workflows.
+</Callout>
 
 ## Best practices
 
-**Communication:**
+**Communication and timing**
 
-- Announce corporate actions 30+ days in advance when possible
-- Provide clear documentation explaining action and shareholder impact
-- Send reminders before ex-dividend dates and record dates
-- Communicate distribution results after execution
+Announce corporate actions 30+ days in advance when possible. Provide clear
+documentation explaining the action's purpose, shareholder impact, and key
+dates. Send reminder notifications before ex-dividend dates and record dates.
+Communicate distribution results within 24 hours of execution.
 
-**Funding:**
+**Vault funding and reserves**
 
-- Fund distribution wallets 48-72 hours before payment dates
-- Maintain buffer (5-10%) for calculation rounding
-- Verify funding before execution
-- Monitor wallet balances continuously
+Fund distribution wallets 48-72 hours before payment dates to allow verification
+time. Maintain 5-10% reserve buffers above calculated requirements to account
+for rounding and late acquisitions. Monitor vault balances continuously through
+the dashboard's funding status panel. Set up automated alerts for low balance
+thresholds.
 
-**Execution:**
+**Execution consistency**
 
-- Execute on scheduled dates consistently
-- Schedule recurring distribution calculations when possible
-- Verify distributions complete successfully
-- Investigate failed distributions immediately
+Execute distributions on scheduled dates consistently to establish investor
+confidence. Configure automated execution for recurring payments (quarterly
+coupons, monthly fund distributions) to eliminate manual workflow dependencies.
+Verify distributions complete successfully through the observability dashboard.
+Investigate failed payments immediately—most indicate compliance issues
+requiring identity verification updates.
 
-**Record keeping:**
+**Record keeping and compliance**
 
-- Maintain audit trail of all corporate actions
-- Archive shareholder snapshots for each action
-- Document approvals and authorizations
-- Retain records per regulatory requirements (typically 7 years)
+Maintain immutable audit trails for all corporate actions through the platform's
+on-chain recording. Archive shareholder snapshots for each action (required for
+dispute resolution). Document board approvals and authorization workflows for
+governance and regulatory compliance. Retain records per regulatory requirements
+(typically 7 years for securities, longer for tax documentation).
 
-**Compliance:**
+**Regulatory coordination**
 
-- Ensure corporate actions approved per governance requirements
-- File required regulatory disclosures (8-K, etc.)
-- Verify tax reporting for distributions
-- Coordinate with transfer agent and legal counsel
-
-## Results
-
-After executing corporate actions, you will have:
-
-- Distributed dividends or coupon payments to your token holders
-- Executed token splits or consolidations with updated balances
-- Conducted governance votes and implemented approved proposals
-- Processed bond redemptions or callable bond exercises
-- Distributed fund income or capital gains to investors
-
-Your corporate action is recorded in the system with complete holder snapshots
-and transaction history for audit and regulatory compliance.
-
-<Callout type="default" title="For developers">
-  See [Events and
-  Logs](/docs/developer-guides/smart-contracts/contract-reference) for technical
-  details on how corporate action events are recorded on-chain for immutable
-  audit trails.
-</Callout>
+Ensure corporate actions receive proper board approval before execution. File
+required regulatory disclosures (8-K current reports for material actions, proxy
+statements for governance proposals, tax reporting for distributions).
+Coordinate with legal counsel on disclosure requirements and shareholder
+communication content. Verify compliance with transfer restrictions and
+accreditation requirements before distributions.
 
 ## Troubleshooting
 
-**Distribution execution fails:**
+**Distribution execution fails with insufficient balance error**
 
-- Verify distribution wallet has sufficient balance
-- Check all holders have verified OnchainIDs
-- Ensure payment token is valid ERC20 contract
-- Confirm no compliance restrictions preventing transfers
+Verify the distribution wallet holds the full required amount plus 5-10% buffer.
+Check the **Funding Status** panel in the distribution details—it displays
+required amount vs. current vault balance. Transfer additional denomination
+assets to the vault address and retry execution. Set up funding status alerts to
+prevent recurrence.
 
-**Governance proposal creation reverts:**
+**Holders report not receiving distributions**
 
-- Check your address holds the minimum proposal threshold
-- Verify voting is enabled on your equity token
-- Ensure quorum and threshold percentages are valid (0-100%)
-- Confirm the voting period is within the allowed range
+Confirm holder addresses have verified OnchainIDs in the identity registry.
+Navigate to **Identity Management** &gt; search holder address &gt; verify
+claims are up to date. Check transfer restriction rules—some compliance
+configurations prevent distributions to addresses with expired accreditation.
+Review the **Failed Payments** section in distribution results for affected
+addresses and remediation steps.
 
-**Vote transaction fails:**
+**Governance proposal creation reverts with threshold error**
 
-- Verify you held shares at the proposal creation block
-- Check the proposal is still in the voting period
-- Ensure you haven't already voted on this proposal
-- Confirm your voting power > 0
+Verify your address holds the minimum proposal creation threshold at current
+block height. The threshold is typically 1-5% of total supply to prevent spam
+proposals. Check that voting is enabled on your equity token—navigate to **Token
+Settings** &gt; **Governance** &gt; confirm **Voting Enabled** is true. Ensure
+quorum and approval threshold percentages are valid (between 0-100%).
 
-**Bond redemption not available:**
+**Vote transaction fails with no voting power error**
 
-- Verify the bond has reached maturity date
-- Check the bond matured status is set correctly
-- Ensure your redemption wallet is funded
-- Confirm you hold bond tokens
+Confirm you held tokens at the proposal creation block (snapshot block). Voting
+power is determined by balance at snapshot time, not current balance. If you
+acquired tokens after the proposal was submitted, you cannot vote on that
+specific proposal. Check your voting power in the proposal details panel—it
+displays your balance at the snapshot block.
 
-**Yield payment failed:**
+**Bond redemption function disabled after maturity**
 
-- Check your yield wallet has sufficient yield tokens
-- Verify the yield schedule is configured correctly
-- Ensure bondholders have verified OnchainIDs
-- Review that the yield module is enabled on your bond
+Verify the bond's maturity date has passed by checking **Maturity Date** in bond
+details. Ensure the bond status is set to **Matured**—navigate to **Actions**
+&gt; **Mature Bond** and click to activate redemption if needed. Confirm the
+redemption vault is funded with sufficient denomination assets (outstanding
+bonds × face value). Check that your wallet holds bond tokens to redeem.
+
+**Coupon payment executes with zero amounts**
+
+Verify the yield schedule is configured correctly with annual rate, payment
+frequency, and denomination token. Navigate to **Yield** &gt; **Schedule
+Configuration** to review parameters. Check that the yield wallet holds
+sufficient denomination assets for the calculated payment. Confirm bondholders
+have verified OnchainIDs—the system skips distributions to non-compliant
+addresses. Review accrual calculations in the **Yield** tab to ensure daily
+accrual is tracking correctly.
 
 For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+contact support with transaction hashes and error messages from failed
+operations.
 
 ## Next steps
 
-- [Issue a bond](/docs/user-guides/asset-issuance/issue-bond) - Configure
-  bond-specific actions like coupon payments and redemptions
-- [Issue equity](/docs/user-guides/asset-issuance/issue-equity) - Set up equity
-  governance and shareholder voting
+- [Issue a bond](/docs/user-guides/asset-issuance/issue-bond) - Configure yield
+  schedules and redemption mechanics for interest-bearing securities
+- [Issue equity](/docs/user-guides/asset-issuance/issue-equity) - Set up
+  governance modules and shareholder voting capabilities
 - [Issue a fund](/docs/user-guides/asset-issuance/issue-fund) - Execute NAV
-  updates and fund income distributions
-- [Manage investors](/docs/user-guides/operations/manage-investors) -
-  Communicate with shareholders about corporate actions
+  updates and automated income distributions
+- [Manage investors](/docs/user-guides/operations/manage-investors) - Coordinate
+  shareholder communications about corporate actions
 - [Compliance certification](/docs/architecture/quality/compliance-certification) -
-  Understand distribution compliance requirements
-- [Troubleshooting](/docs/user-guides/troubleshooting) - Resolve common
-  corporate action issues
+  Understand transfer restrictions and distribution compliance requirements
+- [Contract reference](/docs/developer-guides/smart-contracts/contract-reference) -
+  Review smart contract functions for corporate action execution

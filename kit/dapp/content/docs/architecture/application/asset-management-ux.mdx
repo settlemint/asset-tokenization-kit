@@ -1,759 +1,1857 @@
 ---
-title: Token management UX
+title: Asset management user experience
 description:
-  The asset management interface provides intuitive workflows for issuing,
-  operating, and monitoring tokenized financial instruments. Designed for both
-  financial professionals and compliance officers, the interface abstracts
-  blockchain complexity while maintaining full control and transparency.
-pageTitle: Asset management interface - User workflows and screens
-tags: [architecture, ux, workflows, asset-management, interface]
+  Four personas interact with the platform daily—investors seeking transparent
+  holdings, issuers managing lifecycle events, compliance officers enforcing
+  rules, and administrators configuring infrastructure. Each journey reveals how
+  atomic DvP settlement, unified identity, and real-time observability eliminate
+  fragmentation that plagues traditional financial platforms.
+pageTitle: Asset management UX - Persona-driven design for DALP workflows
+tags: [architecture, ux, personas, accessibility, observability]
 ---
 
-## Core user workflows
+## Design philosophy
 
-### Token creation journey
+The asset management interface serves four distinct user groups with competing
+needs. Retail investors demand mobile-first simplicity for checking balances and
+claiming yields. Institutional treasury teams require precision controls for
+issuing multi-million dollar bond tranches. Compliance officers need rapid
+identity verification workflows that never compromise on regulatory rigor.
+Platform administrators balance all three while keeping infrastructure costs
+predictable.
 
-The asset designer wizard guides users through token deployment in structured
-steps:
+Traditional financial platforms fracture these experiences across disparate
+systems—KYC portals, custody platforms, compliance dashboards, and investor
+portals rarely share data models or authentication. The Asset Tokenization Kit
+eliminates this fragmentation by anchoring all personas to the same unified
+identity registry and on-chain asset state. When an investor completes KYC,
+compliance officers see the signed claim immediately. When issuers schedule a
+coupon payment, the observability dashboard updates in real-time. This
+architecture reduces cognitive load for all personas because the source of truth
+is singular and transparent.
 
-<Mermaid
-  chart={`
-flowchart TB
-    subgraph "Step 1: Asset Type Selection"
-        TypeSelect("Choose Asset Class
-        • Bond (debt instrument)
-        • Equity (company shares)
-        • Fund (investment units)
-        • StableCoin (fiat-backed)")
-    end
+Mobile-first design matters because institutional investors increasingly expect
+consumer-grade experiences. A CFO reviewing bond holdings on a phone during a
+board meeting should see the same transaction history as their assistant viewing
+the desktop dashboard. Responsive layouts ensure this continuity without
+duplicating codebases or maintaining separate mobile apps that drift out of
+sync.
 
-    subgraph "Step 2: Basic Configuration"
-        BasicInfo("Enter Token Details
-        • Name & symbol
-        • Total supply
-        • Decimals
-        • Optional: ISIN/ticker")
-    end
+Accessibility is not altruism—it is risk management. Screen reader compatibility
+means compliance officers can audit transactions while visually impaired.
+Keyboard navigation enables treasury operators to batch-process distributions
+without mouse fatigue during month-end close. High-contrast modes and focus
+indicators prevent costly misclicks when approving six-figure transfers. These
+features compound when users work under time pressure or regulatory deadlines.
 
-    subgraph "Step 3: Compliance Rules"
-        Compliance("Configure Transfer Rules
-        • Identity requirements
-        • Country restrictions
-        • Investor caps
-        • Time locks")
-    end
+Observability surfaces operational reality. Dashboards display pending
+transaction counts, compliance rejection rates, gas cost trends, and identity
+claim expiration alerts. Each persona sees filtered metrics relevant to their
+role. Investors see their individual transaction history. Compliance officers
+see aggregate identity verification throughput. Administrators see
+infrastructure health metrics. This selective disclosure prevents information
+overload while maintaining transparency for audit trails.
 
-    subgraph "Step 4: Asset-Specific Features"
-        Features("Enable Extensions
-        Bond: maturity, yield schedule
-        Equity: voting, dividends
-        Fund: NAV, management fees
-        StableCoin: reserve backing")
-    end
+## Personas and their journeys
 
-    subgraph "Step 5: Review & Deploy"
-        Review("Review Configuration
-        • Gas estimation
-        • Contract preview
-        • Compliance summary")
-        Deploy("Submit Transaction
-        • Wallet confirmation
-        • Progress monitoring")
-    end
+### Retail investor: subscription to redemption
 
-    subgraph "Step 6: Post-Deployment"
-        Success("Asset Live
-        • Token address
-        • View dashboard
-        • Distribute to holders")
-    end
+Maria is a software engineer in Portugal who qualified as an accredited investor
+through annual income thresholds. She discovers a tokenized corporate bond
+offering 6% yield and wants to subscribe with €10,000. Her journey illustrates
+how the platform balances accessibility with compliance rigor.
 
-    TypeSelect --> BasicInfo
-    BasicInfo --> Compliance
-    Compliance --> Features
-    Features --> Review
-    Review --> Deploy
-    Deploy --> Success
+#### Onboarding and identity verification
 
-    style TypeSelect fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    style BasicInfo fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    style Compliance fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
-    style Features fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style Review fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style Deploy fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
-    style Success fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+Maria registers using her Google account via Better Auth integration. The system
+prompts her to connect an Ethereum wallet—she chooses MetaMask. At this stage,
+she has authenticated user credentials but no on-chain identity. The dashboard
+shows a banner: "Complete KYC to access investment opportunities."
 
-`} />
+She clicks through to the identity verification flow
+(`src/routes/_private/_onboarded/_sidebar/participants/users/`). The interface
+requests:
 
-#### Step 1: Asset type selection
+- Full legal name and date of birth
+- Residential address with proof (utility bill upload)
+- Tax identification number (NIF for Portugal)
+- Government-issued passport photo
+- Accredited investor certification (tax return showing income &gt;€60k)
 
-Interface: `src/routes/_private/_onboarded/_sidebar/addon-designer.tsx`
+The file upload component uses drag-and-drop with mobile camera integration.
+Maria photographs her passport on her phone—the image is uploaded directly to
+encrypted storage with client-side compression to minimize mobile data usage.
 
-Users select from five asset classes with contextual descriptions:
+Behind the scenes, the system performs automated checks:
 
-- **Bond** - Fixed-income securities with maturity dates and yield distributions
-- **Equity** - Company shares with voting rights and dividend capabilities
-- **Fund** - Investment fund units with NAV tracking and management fees
-- **StableCoin** - Fiat-pegged tokens with reserve management
-- **Deposit** - Collateralized deposit certificates with time locks
+- Passport expiry date validation via OCR
+- Name matching across documents (passport vs utility bill)
+- Address format verification for Portuguese postal codes
+- OFAC sanctions screening against her name and address
 
-Each option displays key features, typical use cases, and compliance
-requirements.
+These checks complete in under 10 seconds. The application moves to "Pending
+Review" status visible in Maria's dashboard. She receives an email: "Your
+identity verification is under review. Typical processing time: 24 hours."
 
-#### Step 2: Basic token configuration
+#### Compliance officer approval
 
-Form validation ensures:
+Carlos is the compliance officer for the bond issuer. He logs in the next
+morning and sees five pending identity reviews in his queue
+(`src/routes/_private/_onboarded/_sidebar/participants/users/`). Maria's
+application appears with a risk score: "Low Risk – Automated checks passed."
 
-- **Name** - 3-100 characters, human-readable
-- **Symbol** - 1-10 uppercase characters, unique within system
-- **Supply** - Positive integer, supports decimals (default 18)
-- **Optional identifiers** - ISIN (International Securities Identification
-  Number), LEI (Legal Entity Identifier)
+Carlos clicks into her profile. The interface displays:
 
-Real-time validation prevents common mistakes (duplicate symbols, invalid ISIN
-format).
+- Document thumbnails with zoom controls
+- Automated check results (green checkmarks for passed checks)
+- Sanctions screening report (no matches)
+- PEP (Politically Exposed Person) screening (negative)
 
-#### Step 3: Compliance rule builder
+Carlos reviews the passport photo—expiration date is clear, photo matches
+utility bill name. He verifies the accreditation proof—tax return shows
+qualifying income. The interface prompts: "Issue claims to this identity?"
 
-Visual interface for assembling compliance logic:
+He selects claim topics to issue:
 
-**Identity requirements:**
+- Country: Portugal (ISO 3166-1 alpha-2 code PT)
+- KYC Level: 2 (document verification completed)
+- Investor Classification: Accredited
+- Age Verification: Over 18
 
-- Minimum KYC level (Level 1: basic info, Level 2: document verification, Level
-  3: enhanced due diligence)
-- Required claim topics (accredited investor, institutional investor)
-- Trusted claim issuers (authorized KYC providers)
+Carlos clicks "Approve and Issue Claims." The system executes three
+transactions:
 
-**Geographic restrictions:**
+1. Deploys an OnchainID smart contract for Maria (deterministic address derived
+   from her wallet)
+2. Links the OnchainID to Maria's connected wallet address
+3. Issues cryptographically signed claims from the trusted issuer registry
 
-- Country allow list (investors from these countries only)
-- Country block list (explicitly blocked jurisdictions)
-- OFAC sanctions screening integration
+Maria receives an email notification: "Identity verified. You can now invest in
+compliant assets." When she logs back in, the KYC banner is replaced with a
+portfolio view showing available investment opportunities.
 
-**Investor caps:**
+#### Discovering and subscribing to assets
 
-- Maximum holder count (e.g., 99 investors for Reg D compliance)
-- Maximum individual allocation (ownership concentration limits)
-- Minimum holding period (time locks for vesting)
+Maria navigates to the marketplace
+(`src/routes/_private/_onboarded/_sidebar/assets/`). She sees a list of
+available tokenized securities, filtered to show only assets her identity
+qualifies for—bonds with Portugal in the allow-list and requiring Accredited
+investor status.
 
-Each rule displays regulatory context (e.g., "Required for SEC Regulation D
-offerings") and validation warnings.
+She selects a 12-month corporate bond:
 
-#### Step 4: Asset-specific extensions
+- Issuer: TechCorp SGPS
+- Face value: €1,000 per token
+- Coupon: 6% annual, paid quarterly
+- Maturity: October 2026
+- Minimum investment: €5,000 (5 tokens)
 
-Configuration adapts to selected asset type:
+The asset detail page shows real-time data:
 
-**Bond features:**
+- Total issuance: €5,000,000 (5,000 tokens)
+- Current investors: 47
+- Remaining allocation: €1,200,000
+- Compliance requirements: Accredited investors from EU member states
 
-- Maturity date and redemption terms
-- Yield schedule (fixed coupon, variable rate, zero-coupon)
-- Early redemption options (callable, puttable)
+Maria clicks "Subscribe." The interface shows a subscription form:
+
+- Investment amount: €10,000 (10 tokens)
+- Payment method: Bank transfer to IBAN or USDC stablecoin
+- Settlement: Delivery vs Payment (DvP) – tokens delivered upon payment
+  confirmation
+
+She selects stablecoin payment. The system calculates the USDC equivalent:
+10,526 USDC (assuming €0.95 per USDC exchange rate at time of subscription). A
+countdown timer appears: "Exchange rate locked for 15 minutes."
+
+Maria confirms the transaction. The interface prompts her MetaMask wallet to
+approve two operations:
+
+1. Approve spending 10,526 USDC to the subscription contract
+2. Execute subscription transaction (deposits USDC, triggers atomic DvP
+   settlement)
+
+Both transactions confirm within 30 seconds. The dashboard updates:
+
+- Portfolio balance: 10 TechCorp Bond tokens
+- Yield schedule: Next coupon payment on January 1, 2026 (€150 pro-rata)
+- Redemption date: October 29, 2026
+
+This atomic settlement is a DALP differentiator. Traditional platforms require
+multi-day settlement windows with escrow intermediaries. Here, compliance
+checks, payment, and token delivery happen in a single block—Maria owns the
+tokens immediately, no custody lag.
+
+#### Monitoring holdings and claiming yield
+
+Maria bookmarks the bond token dashboard
+(`src/routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/`).
+The mobile-optimized view shows:
+
+- Current balance: 10 tokens (€10,000 face value)
+- Accrued interest: €45.21 (updated daily)
+- Next payment date: January 1, 2026
+- Total yield earned: €150 (from previous quarter)
+
+On January 1st, she receives a push notification: "Coupon payment available –
+€150 USDC claimable." She opens the app on her phone and navigates to the yield
+tab. The interface shows:
+
+- Distribution ID: Q4-2025-COUPON
+- Your allocation: €150 (10 tokens ÷ 5,000 total supply × €75,000 total
+  distribution)
+- Payment token: USDC
+- Status: Claimable
+
+She taps "Claim Payment." MetaMask prompts for gas approval (€0.50 equivalent).
+The transaction confirms—her USDC balance increases by €150. The yield history
+updates with a green checkmark: "Claimed on January 1, 2026."
+
+This claim-based distribution model reduces issuer costs. Instead of executing
+47 individual transfer transactions (expensive gas fees), the issuer funds a
+single distribution contract. Each investor claims their portion on-demand,
+paying their own gas. For Maria, the €0.50 gas cost is negligible compared to
+€150 payout. For the issuer, this scales to thousands of investors without
+linear cost increases.
+
+#### Redemption at maturity
+
+On October 29, 2026, the bond matures. Maria logs in and sees a banner: "Bond
+matured – redeem your principal." The redemption interface shows:
+
+- Maturity value: €10,000 (10 tokens × €1,000 face value)
+- Redemption currency: USDC
+- Exchange rate: 1.05 USDC per EUR (current market rate)
+- You will receive: 10,500 USDC
+
+She clicks "Redeem All Holdings." The system executes a single transaction:
+
+1. Burns Maria's 10 bond tokens
+2. Transfers 10,500 USDC from the issuer's redemption vault to Maria's wallet
+
+Within 15 seconds, her wallet balance updates. The bond tokens are gone,
+replaced with fungible stablecoin. The transaction history shows the redemption
+event with a PDF export button—Maria downloads a tax receipt showing the
+original €10,000 investment, €600 total yield earned (4 quarters × €150), and
+€10,000 principal returned.
+
+### Institutional investor: treasury operations
+
+David manages treasury operations for a €50M venture capital fund. His firm
+invests in tokenized money market funds to earn yield on idle capital while
+maintaining liquidity. His workflow emphasizes precision controls, batch
+operations, and multi-signature security.
+
+#### Fund setup and custody architecture
+
+David's firm uses a Gnosis Safe multisig wallet requiring 3-of-5 approvals for
+transactions above €100,000. He navigates to the wallet integration settings and
+connects the Safe contract address. The interface detects the multisig
+configuration and displays:
+
+- Threshold: 3-of-5 signatures required
+- Signers: 5 wallet addresses (with role labels: CFO, Controller, Treasury
+  Manager, Investment Committee Chair, External Auditor)
+- Policy: Transactions below €100k require 1 signature; above require 3
+
+This custody model is integrated into all subscription and redemption workflows.
+When David subscribes to a money market fund with €500,000, the interface
+generates a Safe transaction proposal rather than executing immediately. The
+other signers receive email notifications with a link to the Gnosis Safe web
+interface. Once 3 approvers sign, the transaction executes automatically.
+
+#### Batch subscription workflow
+
+David wants to diversify across three money market funds with a total €1.5M
+allocation. Instead of executing three separate multisig workflows, he uses the
+batch subscription interface:
+
+- Fund A: €600,000 (600 tokens)
+- Fund B: €500,000 (500 tokens)
+- Fund C: €400,000 (400 tokens)
+
+The system generates a single Gnosis Safe transaction with three encoded calls.
+This reduces gas costs (one transaction fee instead of three) and signature
+overhead (3 approvals instead of 9). The interface shows estimated gas: €45
+total vs €135 for individual transactions.
+
+#### Daily NAV monitoring and rebalancing
+
+David's dashboard displays a portfolio view aggregating holdings across all
+three funds:
+
+- Total AUM: €1,500,000
+- Weighted average yield: 4.2% annual
+- NAV updates: Daily at 4:00 PM UTC
+- Unrealized gain: €5,200 (since subscription 45 days ago)
+
+Each fund publishes NAV updates on-chain daily. The observability dashboard
+shows NAV history charts for each holding. David notices Fund B's NAV declined
+0.3% over the past week—he drills into the fund details and sees the issuer
+published a disclosure: "Increased allocation to longer-duration commercial
+paper."
+
+This transparency enables proactive rebalancing. David decides to shift €200,000
+from Fund B to Fund A (which maintains shorter duration). He initiates a batch
+operation:
+
+1. Redeem €200,000 from Fund B (receive USDC)
+2. Subscribe €200,000 to Fund A (spend USDC)
+
+Both operations settle atomically in a single multisig transaction. No manual
+wire transfers or multi-day settlement—the vault custody model ensures instant
+liquidity.
+
+#### Monthly reconciliation and reporting
+
+At month-end, David exports transaction history for all holdings
+(`src/routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/events.tsx`).
+The interface provides export formats:
+
+- CSV: For spreadsheet import (columns: Date, Type, Amount, Token Address,
+  Transaction Hash, Gas Fee)
+- PDF: Audit-ready report with narrative descriptions ("Subscribed 600 tokens to
+  Fund A on Oct 1, 2026")
+- JSON: Machine-readable for accounting system integration
+
+David downloads the CSV and imports it into the firm's portfolio management
+system. Each transaction includes gas fees paid (important for cost accounting)
+and transaction hashes (for audit trail verification). The cryptographic
+immutability means external auditors can independently verify every transaction
+by querying the blockchain directly—no trust required in David's exported files.
+
+### Issuer: treasury team managing a bond program
+
+Sophia leads treasury operations for TechCorp, the company issuing the €5M bond
+that Maria invested in. Her responsibilities include deploying the bond token,
+managing investor onboarding, scheduling coupon payments, and handling
+redemption at maturity.
+
+#### Designing and deploying the bond token
+
+Sophia uses the asset designer wizard
+(`src/routes/_private/_onboarded/_sidebar/addon-designer.tsx`). The workflow
+guides her through five configuration phases.
+
+**Phase 1: Asset type selection**
+
+She selects "Bond" from the asset class menu. The interface shows key features:
+
+- Maturity date configuration
+- Yield distribution scheduling (fixed coupon, variable rate, zero-coupon)
+- Redemption mechanics (callable, puttable, or fixed maturity)
 - Collateral tracking (secured vs unsecured)
 
-**Equity features:**
+Sophia's bond is a straightforward fixed-coupon unsecured note. She proceeds to
+basic configuration.
 
-- Voting mechanism (on-chain governance integration)
-- Dividend policy (scheduled calculation, claimable)
-- Share class (common, preferred, non-voting)
-- Anti-dilution protection
+**Phase 2: Token parameters**
 
-**Fund features:**
+She enters:
 
-- NAV calculation frequency (daily, weekly, monthly)
-- Management fee structure (flat rate, performance-based)
-- Subscription/redemption terms (open-ended, closed-end)
-- High-water mark tracking
+- Name: "TechCorp 6% 2026 Bond"
+- Symbol: "TECH26"
+- Initial supply: 5,000 tokens (representing €5M face value, €1,000 per token)
+- Decimals: 0 (bonds are indivisible—can't own 0.5 tokens)
+- ISIN: PTXXXX123456 (registered with CMVM, Portuguese securities regulator)
 
-**StableCoin features:**
+The system validates the ISIN format (2-letter country code + 10 alphanumeric)
+and checks uniqueness—no other asset in the registry uses this ISIN. Green
+checkmarks confirm valid inputs.
 
-- Peg currency (USD, EUR, GBP)
-- Reserve account integration (bank API connection)
-- Mint/burn controls (role-based permissions)
-- Attestation frequency (reserve proof publication)
+**Phase 3: Compliance rules**
 
-#### Step 5: Review and deployment
+Sophia configures investor eligibility:
 
-Pre-deployment checklist:
+- Geographic restrictions: EU member states only (27-country allow-list)
+- Investor classification: Accredited investors only (requires signed claim)
+- Maximum investors: 99 (complies with Portuguese private placement rules)
+- Minimum holding period: None (freely transferable after purchase)
 
-- **Configuration summary** - All parameters in human-readable format
-- **Gas estimation** - Transaction cost prediction (current network conditions)
-- **Compliance audit** - Automated checks for common misconfigurations
-- **Contract preview** - Show which factory and extensions will be deployed
+The interface displays regulatory context: "99-investor limit allows exemption
+from prospectus requirements under EU Prospectus Regulation Article 1(4)(a)."
 
-Wallet confirmation modal displays:
+**Phase 4: Bond-specific features**
 
-- Estimated gas fee
-- Factory contract address
-- Expected token address (deterministic deployment)
-- Transaction risks and irreversibility warning
+She enables the Yield addon and configures:
 
-#### Step 6: Transaction monitoring
+- Maturity date: October 29, 2026 (12 months from issuance)
+- Coupon rate: 6% annual (1.5% quarterly)
+- Payment frequency: Quarterly (January, April, July, October)
+- Payment currency: USDC
+- Redemption value: €1,000 per token (100% principal return)
 
-Post-submission interface shows:
+The system calculates total yield obligation: €300,000 over 12 months (€5M face
+value × 6%). Sophia connects a yield wallet address—this vault contract will
+hold USDC reserves for scheduled payments. The interface prompts: "Fund yield
+wallet with €300,000 USDC before first coupon date."
 
-- **Transaction hash** - Link to block explorer
-- **Confirmation status** - Block depth (0/12 confirmations)
-- **Estimated time** - Based on current network speed
-- **Error handling** - If transaction fails, explain why and offer retry
+**Phase 5: Review and deployment**
 
-Once confirmed, redirect to token dashboard with congratulations message and
-next steps (invite investors, configure cap table).
+The pre-deployment summary shows:
 
-### Token dashboard
+- Estimated gas cost: €35 (based on current mainnet conditions)
+- Contracts to deploy: ERC-3643 token + Yield addon + Compliance modules
+  (country restriction, investor cap)
+- Post-deployment actions required: Fund yield wallet, invite investors, assign
+  compliance officer role
 
-Interface:
-`src/routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/`
+Sophia clicks "Deploy Bond Token." MetaMask prompts for confirmation. She
+approves the transaction. A progress indicator shows deployment stages:
 
-After deployment, each token has a dedicated management dashboard.
+1. Deploy token implementation (contract created, 1/3 confirmations)
+2. Initialize compliance modules (2/3 confirmations)
+3. Configure yield schedule (3/3 confirmations)
 
-#### Overview tab (index.tsx)
+After 45 seconds, the success screen displays:
 
-At-a-glance metrics:
+- Token address: 0xABC123... (link to block explorer)
+- Dashboard URL: Navigate to token management interface
+- Next steps: Assign compliance officer role to Carlos, fund yield wallet
 
-<Mermaid
-  chart={`
-flowchart LR
-    subgraph "Key Metrics"
-        Supply("Total Supply: 1M tokens")
-        Holders("Holder Count: 47 investors")
-        Value("Market Cap: $5.2M")
-        Compliance("Compliance Status: ✓ All transfers allowed")
-    end
+This deployment workflow eliminates the need for external developers. Sophia, a
+finance professional with no coding experience, deployed a compliant bond token
+in under 10 minutes. The wizard abstracted Solidity contract interactions into
+intuitive form fields.
 
-    subgraph "Quick Actions"
-        Mint("Mint Tokens")
-        Transfer("Distribute")
-        Pause("Emergency Pause")
-        Settings("Configure")
-    end
+#### Managing investor onboarding pipeline
 
-    Supply --> Mint
-    Holders --> Transfer
-    Value --> Settings
-    Compliance --> Pause
+Sophia assigns the Compliance Officer role to Carlos
+(`src/routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/permissions.tsx`).
+Carlos now has permissions to approve investor identities and add addresses to
+the bond's whitelist.
 
-    style Supply fill:#6ba4d4,stroke:#4a7ba8,color:#fff
-    style Holders fill:#6ba4d4,stroke:#4a7ba8,color:#fff
-    style Value fill:#5fc9bf,stroke:#3a9d96,color:#fff
-    style Compliance fill:#5fc9bf,stroke:#3a9d96,color:#fff
+As investors like Maria complete KYC, Carlos reviews applications. Sophia
+monitors the pipeline via the compliance dashboard:
 
-`} />
+- Pending applications: 23
+- Approved investors: 47
+- Rejected applications: 3 (reason: non-EU residents attempted to register)
+- Average approval time: 18 hours
 
-**Recent activity feed:**
+The observability dashboard shows a conversion funnel:
 
-- Last 10 transactions (mints, transfers, burns)
-- Compliance events (identity approvals, transfer rejections)
-- Administrative actions (permission changes, rule updates)
+1. Started KYC: 73 users
+2. Submitted documents: 61 users (83% completion rate)
+3. Passed automated checks: 58 users (95% pass rate)
+4. Approved by compliance officer: 47 users (81% approval rate)
 
-**Performance charts** (for yield-bearing assets):
+Sophia notices the 18-hour approval time creates friction—some investors
+complete KYC but lose interest before approval. She discusses with Carlos, who
+commits to same-day reviews for applications received before noon. This
+operational insight came from observability metrics, not anecdotal complaints.
 
-- Yield distribution history
-- NAV evolution (funds)
-- Trading volume (if secondary market exists)
+#### Scheduling and executing coupon payments
 
-#### Holders tab (holders.tsx)
+On December 28th, Sophia prepares the January 1st coupon payment. She navigates
+to the yield distribution interface
+(`src/routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/yield.tsx`).
 
-Cap table management:
+The system displays scheduled payments:
 
-| Address  | Balance | % Ownership | Country | KYC Status | Claims        |
-| -------- | ------- | ----------- | ------- | ---------- | ------------- |
-| 0x123... | 50,000  | 5.0%        | US      | ✓ Verified | Accredited    |
-| 0x456... | 25,000  | 2.5%        | UK      | ✓ Verified | Institutional |
-| 0x789... | 10,000  | 1.0%        | SG      | ✓ Verified | Retail        |
+- Q4 2025 Coupon: January 1, 2026 – €75,000 (€5M × 1.5% quarterly)
+- Record date: December 31, 2025, 23:59 UTC (snapshot block for holder
+  eligibility)
+- Payment status: Ready to fund
 
-**Holder actions:**
+Sophia transfers €75,000 USDC from TechCorp's treasury wallet to the yield
+distribution contract. The transaction confirms, and the interface updates:
+"Distribution funded – investors can claim starting January 1st."
 
-- Export cap table (CSV, Excel)
-- View holder transaction history
-- Filter by ownership threshold or country
-- Send bulk communications (via off-chain email system)
+On January 1st at midnight UTC, the distribution activates. The system takes a
+snapshot of all bond token holders at block height 12,345,678. Maria owns 10
+tokens out of 5,000 supply—her allocation is €150 (10 ÷ 5,000 × €75,000).
 
-**Concentration chart:** Pie chart showing ownership distribution by bracket:
+Sophia monitors the claim rate:
 
-- Top 10 holders
-- 11-50 holders
-- Small holders (&lt;0.1%)
+- Day 1: 23 investors claimed (48% of holders, 62% of total yield)
+- Day 7: 41 investors claimed (87% of holders, 93% of total yield)
+- Day 30: 45 investors claimed (96% of holders, 98% of total yield)
 
-#### Events tab (events.tsx)
+Two investors haven't claimed after 30 days. Sophia sends reminder emails via
+the communication tool. This claim-based model means TechCorp doesn't overpay
+gas executing transfers to inactive addresses—unclaimed funds remain in the
+distribution contract until withdrawn.
 
-Comprehensive transaction log:
+#### Handling mid-lifecycle changes
 
-**Filter options:**
+Six months into the bond's lifecycle, TechCorp raises additional capital and
+wants to increase the maximum investor count from 99 to 149 (still below the 150
+threshold requiring a prospectus in Portugal). Sophia navigates to compliance
+settings and modifies the investor cap module.
 
-- Event type (Transfer, Mint, Burn, Pause, ComplianceUpdate)
-- Date range
-- Involved addresses (from, to)
-- Transaction status (pending, confirmed, failed)
+The interface warns: "Increasing investor limits may trigger regulatory
+obligations. Confirm compliance with legal counsel before proceeding." Sophia
+has already obtained legal approval. She updates the cap to 149 and submits the
+transaction. The change is logged in the event history with a timestamp and
+Sophia's wallet address—creating an immutable audit trail.
 
-**Event details:** Each row expands to show:
+The observability dashboard now shows "Current investors: 47 / 149 maximum"
+instead of the previous 99 cap. New investors can subscribe without hitting
+artificial limits.
 
-- Full transaction parameters
-- Gas used and fee paid
-- Block number and timestamp
-- Compliance checks performed
-- Role-based actor identification
+#### Redemption at maturity
 
-**Export options:**
+On October 29, 2026, the bond reaches maturity. Sophia prepares the redemption
+process:
 
-- Audit report (PDF with regulatory commentary)
-- CSV export (all fields)
-- JSON export (machine-readable)
+1. Transfer €5M USDC to the redemption vault contract
+2. Activate redemption functionality (allows token holders to burn tokens and
+   claim principal)
+3. Notify all holders via email: "Your bond has matured – redeem via dashboard"
 
-#### Compliance tab (compliance.tsx)
+The redemption interface shows real-time status:
 
-Identity and rule management:
+- Total tokens outstanding: 5,000
+- Tokens redeemed: 0 (0%)
+- Redemption vault balance: €5M USDC
 
-**Identity registry:**
+Over the following week, investors redeem their holdings. The dashboard updates:
 
-- List of approved investors (linked OnchainIDs)
-- Pending approval queue (awaiting compliance officer review)
-- Rejected identities (with rejection reason)
+- Day 1: 2,800 tokens redeemed (56%)
+- Day 7: 4,700 tokens redeemed (94%)
+- Day 30: 4,950 tokens redeemed (99%)
 
-**Compliance modules:** Active rules with configuration:
+Fifty tokens remain unredeemed after 30 days (representing €50,000). Sophia
+reaches out to the holder—the investor is a family office that forgot to redeem.
+They complete redemption after the reminder.
 
-- Country restrictions (current allow/block lists)
-- Investor cap status (current: 47/99 investors)
-- Transfer restrictions (time locks, approval requirements)
+The final transaction burns the last 50 tokens and empties the redemption vault.
+Sophia exports the complete lifecycle report:
 
-**Modify rules:**
+- Total face value issued: €5M
+- Total yield distributed: €300,000 (6% over 12 months)
+- Average coupon claim time: 8.2 days
+- Redemption completion: 30 days
+- Gas fees paid by issuer: €420 (deployment + yield funding + redemption
+  activation)
 
-- Add/remove countries from lists
-- Adjust investor caps
-- Enable/disable specific modules
-- Test compliance scenarios (simulate transfers to check if allowed)
+For comparison, a traditional bond program with 47 investors would incur:
 
-#### Yield/Distributions tab (yield.tsx)
+- Custodian fees: €15,000 (0.3% annual on €5M)
+- Transfer agent fees: €8,000 (setup + quarterly distribution processing)
+- Audit trail management: €5,000 (compliance documentation)
+- **Total:** €28,000 saved by using tokenized infrastructure
 
-For assets with payment features:
+### Compliance officer: identity and rule enforcement
 
-**Distribution history:**
+Carlos is the compliance officer responsible for investor vetting and ongoing
+monitoring. His daily workflow involves reviewing KYC applications,
+investigating suspicious activity, and responding to regulatory inquiries.
 
-| Date       | Type     | Amount  | Recipients | Status     |
-| ---------- | -------- | ------- | ---------- | ---------- |
-| 2024-03-01 | Coupon   | $50,000 | 47 holders | ✓ Complete |
-| 2024-02-01 | Coupon   | $50,000 | 45 holders | ✓ Complete |
-| 2024-01-01 | Dividend | $25,000 | 43 holders | ✓ Complete |
+#### Daily application review workflow
 
-**Schedule distribution:**
+Carlos logs in each morning and sees the KYC queue
+(`src/routes/_private/_onboarded/_sidebar/participants/users/`). The interface
+prioritizes applications by risk score:
 
-- Select distribution type (coupon, dividend, redemption)
-- Enter total amount (in stablecoin or native token)
-- Choose record date (snapshot date for eligibility)
-- Set payment date
-- Preview per-holder allocation (pro-rata calculation)
+- Green (low risk): Automated checks passed, straightforward review
+- Yellow (medium risk): Missing documents or minor discrepancies
+- Red (high risk): Sanctions screening match or inconsistent information
 
-**Scheduled distributions:**
+He starts with yellow-risk applications. One applicant's passport photo is
+blurry—Carlos uses the "Request Additional Documentation" button to send an
+automated email: "Please re-upload a clear passport photo." The application
+remains in pending status.
 
-- Configure recurring schedules (quarterly coupons)
-- Link yield wallet for claim-based funding
-- Set up notifications (email holders before payment date)
+For green-risk applications, Carlos performs rapid reviews:
 
-#### Permissions tab (permissions.tsx)
+1. Verify passport expiry date is &gt;6 months in the future
+2. Confirm address on utility bill matches residential address in form
+3. Check accreditation proof meets regulatory standards (income or net worth
+   thresholds)
+4. Review sanctions screening report (confirm zero matches)
 
-Role-based access control:
+Each review takes 2-3 minutes. Carlos approves 12 applications in 30 minutes.
+For each approval, the system:
 
-**System roles:**
+- Deploys an OnchainID contract (gas paid by platform, not investor)
+- Issues signed claims (country, KYC level, investor classification)
+- Sends approval email to investor
+- Logs the approval decision with Carlos's wallet address and timestamp
 
-- **Admin** - Full control (mint, burn, compliance, permissions)
-- **Compliance Officer** - Identity approval, rule configuration
-- **Agent** - Distribution management, holder communication
-- **Auditor** - Read-only access to all data
+#### Investigating transfer rejections
 
-**Current assignments:** List of addresses with assigned roles and grant date.
+The observability dashboard shows an alert: "3 transfer attempts rejected in
+past 24 hours due to compliance failures." Carlos drills into the compliance
+events log:
 
-**Add role:**
+- Event 1: Transfer from 0x123... to 0x456... rejected – recipient lacks
+  required KYC level
+- Event 2: Transfer from 0x789... to 0xABC... rejected – recipient country not
+  in allow-list
+- Event 3: Transfer from 0xDEF... to 0x123... rejected – investor cap reached
+  (99/99 investors)
 
-1. Enter Ethereum address or select existing user
-2. Choose role(s) to grant
-3. Set optional expiration date
-4. Require multi-signature approval (if enabled)
+Event 1 requires action. Recipient 0x456... has a verified identity but only KYC
+Level 1 (basic info). The bond token requires Level 2 (document verification).
+Carlos reaches out to the recipient: "Complete document verification to receive
+this transfer."
 
-**Revoke role:** Immediately removes permissions. Warns if revoking own admin
-role.
+Event 2 is expected—a US investor tried to acquire tokens despite the EU-only
+restriction. No action needed; the transfer correctly rejected.
 
-### Investor onboarding workflow
+Event 3 indicates TechCorp is at maximum investor capacity. Carlos notifies
+Sophia, who increases the cap to 149 (as described earlier). The pending
+transfer can now proceed once the sender retries.
 
-Interface: `src/routes/_private/_onboarded/_sidebar/participants/users/`
+This proactive monitoring prevents compliance violations. In traditional
+systems, transfers might settle and then require manual reversal—creating
+operational headaches and potential regulatory exposure. Here, compliance is
+enforced atomically at the protocol layer.
 
-Compliance officers manage investor onboarding:
+#### Responding to regulatory inquiries
 
-<Mermaid
-  chart={`
-flowchart TB
-    Application("Investor Applies
-    • Submits personal info
-    • Uploads KYC documents
-    • Connects wallet")
+Portugal's CMVM (securities regulator) sends an inquiry: "Provide investor list
+and transaction history for TechCorp 6% 2026 Bond." Carlos navigates to the
+audit report generator.
 
-    Queue("Review Queue
-    • Compliance officer notified
-    • Document verification
-    • Background checks")
+He selects:
 
-    Decision{"Approve or Reject?"}
+- Asset: TechCorp 6% 2026 Bond (TECH26)
+- Report type: Regulatory disclosure
+- Date range: All time (issuance to present)
+- Include: Investor identities, transaction history, compliance events, yield
+  distributions
 
-    Approve("Approve Identity
-    • Create OnchainID
-    • Issue claim topics
-    • Add to token whitelist")
+The system generates a PDF report containing:
 
-    Reject("Reject Application
-    • Provide rejection reason
-    • Notify investor
-    • Log compliance decision")
+- Cap table: 47 investors with wallet addresses, OnchainID addresses, and claim
+  details (anonymized personal data per GDPR, showing only compliance-relevant
+  attributes)
+- Transaction log: All transfers, mints, burns with timestamps and block numbers
+- Compliance events: Identity approvals, transfer rejections, rule modifications
+- Yield distributions: Coupon payment dates and per-investor allocations
 
-    Identity("OnchainID Created
-    • Blockchain identity registered
-    • Claims cryptographically signed
-    • Linked to wallet")
+Carlos reviews the report for sensitive information—confirms no passport numbers
+or tax IDs are included (only compliance claims). He exports the PDF and submits
+to CMVM via their secure portal. The entire process takes 15 minutes, compared
+to weeks of data gathering in traditional custody systems.
 
-    Eligible("Eligible for Trading
-    • Can receive tokens
-    • Compliance checks pass
-    • Participate in distributions")
+The report includes a verification appendix: "All transactions verifiable
+on-chain at addresses 0x... Compliance claims cryptographically signed by
+trusted issuer 0x..." Regulators can independently verify the report's accuracy
+by querying the blockchain—no trust required in Carlos's export.
 
-    Application --> Queue
-    Queue --> Decision
-    Decision -->|Yes| Approve
-    Decision -->|No| Reject
-    Approve --> Identity
-    Identity --> Eligible
+### Platform administrator: infrastructure and observability
 
-    style Application fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    style Queue fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style Decision fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style Approve fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
-    style Reject fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
-    style Identity fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
-    style Eligible fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+Amit administers the tokenization platform infrastructure. His responsibilities
+include enabling asset types, assigning system roles, deploying addons, and
+monitoring operational health.
 
-`} />
+#### Enabling asset types for new jurisdictions
 
-#### Investor profile view
+TechCorp operated in Portugal initially but now expands to Spain. Amit enables
+Spanish compliance modules:
 
-For each applicant:
+1. Navigate to admin settings (`src/routes/_private/_onboarded/_sidebar/admin/`)
+2. Select "Asset Types" configuration
+3. Enable "Bond" asset type for Spanish jurisdiction
+4. Configure required compliance modules: Spanish KYC standards, CNMV reporting
+   integration
+5. Set gas parameters: Estimated deployment cost €40 per bond token
 
-**Personal information:**
+The interface displays supported jurisdictions:
 
-- Full name, date of birth
-- Residential address, nationality
-- Tax identification number
-- Contact information (email, phone)
+- Portugal: Bonds, Equity, Funds (CMVM compliance)
+- Spain: Bonds, Equity (CNMV compliance)
+- France: Bonds, Funds (AMF compliance)
 
-**KYC documents:**
+Each jurisdiction has tailored compliance rulesets. Spanish bonds require
+different claim topics than Portuguese bonds (e.g., "Spanish Accredited
+Investor" claim vs "Portuguese Qualified Investor" claim). Amit configures these
+mappings in the admin panel—issuers like Sophia don't need to understand the
+regulatory nuances, they simply select "Spain" during bond deployment and the
+correct rules apply automatically.
 
-- Government-issued ID (passport, driver's license)
-- Proof of address (utility bill, bank statement)
-- Accreditation proof (for qualified investors)
+#### Role assignment and segregation of duties
 
-**Document verification tools:**
+Amit enforces role-based access control to prevent privilege escalation. He
+assigns roles across TechCorp's team:
 
-- Zoom/pan/rotate uploaded images
-- Mark specific fields (verify expiration date)
-- Request additional documentation
-- External verification service integration (Onfido, Jumio)
+- Sophia: SUPPLY_MANAGEMENT role (can mint/burn tokens, schedule distributions)
+- Carlos: COMPLIANCE_OFFICER role (can approve identities, modify compliance
+  rules)
+- External auditor: AUDITOR role (read-only access to all transaction data)
 
-**Compliance checks:**
+No single person has all permissions. Sophia can't approve investor
+identities—that's Carlos's domain. Carlos can't mint new tokens—that requires
+Sophia's treasury role. This segregation mirrors traditional financial controls
+but is enforced cryptographically via smart contract role checks.
 
-- Sanctions screening (OFAC, EU sanctions lists)
-- PEP (Politically Exposed Person) screening
-- Adverse media search
-- Duplicate account detection
+Amit monitors role assignments via the observability dashboard:
 
-#### Approval process
+- Total system roles: 47 active role grants across 8 asset tokens
+- Recent role changes: 3 in past week (2 grants, 1 revocation)
+- Stale roles: 2 roles unused for &gt;90 days (flagged for review)
 
-**Issue claim topics:**
+He investigates the stale roles—one is an ex-employee who left TechCorp 6 months
+ago. Amit revokes the COMPLIANCE_OFFICER role immediately. The transaction
+executes, and the ex-employee's wallet can no longer approve identities. This
+audit trail is immutable—Amit's revocation is logged with his wallet address and
+timestamp.
 
-- Country of residence
-- KYC level achieved
-- Investor classification (retail, accredited, institutional)
-- Custom claim topics (project-specific requirements)
+#### Deploying and monitoring addons
 
-**Create OnchainID:** System automatically:
+TechCorp wants to offer a token sale for a new equity token. Amit deploys the
+Token Sale addon
+(`src/routes/_private/_onboarded/_sidebar/addon/$addonAddress.tsx`):
 
-1. Deploys OnchainID contract for investor
-2. Links to investor's wallet address
-3. Issues signed claims from trusted issuer registry
-4. Records identity on-chain (gas paid by platform)
+1. Select addon type: Token Sale (fixed-price offering)
+2. Configure parameters:
+   - Sale price: €10 per equity token
+   - Hard cap: €2M (200,000 tokens maximum)
+   - Whitelist: Only approved investors (linked to OnchainID registry)
+   - Start date: November 1, 2026
+   - End date: November 30, 2026 (or until hard cap reached)
+3. Estimate gas: €25 deployment + €0.10 per subscription transaction
+4. Deploy addon contract
 
-**Add to token whitelists:** Optionally add approved investor to specific token
-eligibility lists immediately.
+The addon goes live on November 1st. Amit monitors the sale via observability
+dashboard:
 
-#### Rejection handling
+- Total raised: €420,000 (21% of hard cap)
+- Unique contributors: 18 investors
+- Average subscription: €23,333
+- Pending subscriptions: 2 (awaiting payment confirmation)
+- Failed subscriptions: 1 (investor's payment transaction reverted—insufficient
+  USDC)
 
-**Rejection reasons:**
+The failed subscription triggers an alert. Amit investigates—the investor
+attempted to pay with USDC but their wallet only held USDT. Amit contacts the
+investor: "Token sale accepts USDC only. Please swap USDT for USDC and retry
+subscription."
 
-- Incomplete documentation
-- Failed sanctions screening
-- Jurisdiction restrictions
-- Risk assessment failure
+This real-time monitoring prevents revenue leakage. In traditional equity
+offerings, failed payment attempts might go unnoticed for days until manual
+reconciliation.
 
-**Investor notification:** Automated email with rejection reason and remediation
-steps (if applicable).
+#### Infrastructure cost optimization
 
-**Audit trail:** All decisions logged with:
+Amit tracks gas costs across all platform operations. The observability
+dashboard shows:
 
-- Reviewing officer
-- Decision timestamp
-- Supporting documentation
-- Compliance notes
+- Total gas spent (all users): €4,200 in October 2026
+- Breakdown by operation type:
+  - Token deployments: €420 (12 new tokens deployed)
+  - Identity deployments: €1,680 (140 new OnchainIDs created)
+  - Compliance checks: €0 (read-only operations, no gas)
+  - Yield distributions: €840 (12 distribution schedules funded)
+  - Redemptions: €210 (3 bonds matured, redemption activated)
+  - General transfers: €1,050 (investor-paid gas for secondary transfers)
 
-### Corporate actions workflow
+Amit notices identity deployments consume 40% of platform gas budget. He
+investigates optimization strategies:
 
-Interface: Token dashboard → Actions tab
+- Batch identity deployment: Deploy 10 OnchainIDs in a single transaction
+  (reduces per-identity cost from €12 to €6)
+- Lazy deployment: Create OnchainID only when investor makes first purchase
+  (defers cost to point of value)
 
-#### Executing a coupon payment
+He implements lazy deployment. The observability dashboard shows impact over the
+next month:
 
-**Scenario:** Quarterly interest payment on bond token.
+- Identity deployments: €840 (70 OnchainIDs created, 50% reduction vs prior
+  month)
+- Reason: 50% of KYC-approved investors never made a purchase—their identities
+  were never deployed
 
-**Workflow:**
+This data-driven optimization saves €840/month (€10,080 annual) without
+degrading user experience. Investors who purchase assets still get OnchainIDs
+instantly—they just aren't created prematurely for window-shoppers.
 
-1. Navigate to token yield tab
-2. Click "Schedule Distribution"
-3. Select distribution type: "Coupon Payment"
-4. Enter details:
-   - Coupon rate: 5% annual (1.25% quarterly)
-   - Principal: $1,000,000 total issuance
-   - Payment amount: $12,500
-   - Record date: End of quarter
-   - Payment date: 5 business days after record date
-5. Preview allocation:
-   - System calculates pro-rata distribution to each holder
-   - Shows per-holder amounts
-   - Flags any holders with compliance issues
-6. Fund payment:
-   - Transfer stablecoin to distribution contract
-   - Or authorize payment from linked bank account
-7. Submit transaction:
-   - Execute distribution schedule on-chain
-   - System calculates entitlements for each holder
-   - Holders claim their portion on-demand
-8. Confirm completion:
-   - View distribution receipt
-   - Export payment proof for accounting
-   - Update holder communications
+## Component architecture and state management
 
-#### Initiating shareholder vote
+The dApp uses TanStack Start (React-based meta-framework) with a unidirectional
+data flow: user actions → ORPC procedures → blockchain/database → TanStack Query
+cache → React components → DOM updates.
 
-**Scenario:** Equity token holders vote on board election.
+### State management philosophy
 
-**Workflow:**
+Traditional financial platforms struggle with state synchronization. An
+investor's balance might show different values across the mobile app, web
+portal, and API due to caching inconsistencies or database replication lag. The
+Kit eliminates this fragmentation by treating the blockchain as the source of
+truth for asset state and the PostgreSQL database as a query-optimized cache.
 
-1. Navigate to token governance section (if voting module enabled)
-2. Create proposal:
-   - Proposal title: "Board Election Q4 2025"
-   - Description: Detailed information, candidate bios
-   - Voting options: Candidate A, Candidate B, Abstain
-   - Voting period: 7 days
-   - Quorum requirement: 50% of outstanding shares
-3. Submit proposal on-chain:
-   - Proposal stored in governance contract
-   - Snapshot of current holdings taken (vote weight = token balance at
-     snapshot)
-4. Notify holders:
-   - Automated email/notification to all holders
-   - Link to voting interface
-5. Monitor vote:
-   - Real-time vote count dashboard
-   - Participation rate tracking
-   - Quorum countdown
-6. Close vote:
-   - Automatically closes after voting period
-   - Tally results on-chain
-   - Execute outcome (if binding vote)
-7. Announce results:
-   - Publish results to all holders
-   - Update governance records
-
-### Addon management
-
-Interface: `src/routes/_private/_onboarded/_sidebar/addon/$addonAddress.tsx`
-
-Users deploy optional addon modules (vault, token sale, XvP settlement) after
-initial token deployment.
-
-#### Deploying a token sale
-
-**Use case:** Primary issuance via smart contract sale.
-
-**Configuration:**
-
-- Sale price (in stablecoin or native currency)
-- Hard cap (maximum raise amount)
-- Soft cap (minimum viable raise)
-- Start and end dates
-- Whitelist (eligible purchasers)
-- Vesting schedule (optional token lock-up)
-
-**Sale management:**
-
-- Dashboard shows:
-  - Total raised
-  - Tokens sold
-  - Unique contributors
-  - Time remaining
-- Manual close (if target reached early)
-- Refund mechanism (if soft cap not met)
-
-#### Configuring vault
-
-**Use case:** Custodial holding for institutional clients.
-
-**Setup:**
-
-- Create vault contract
-- Set withdrawal permissions (multi-signature)
-- Define authorized operators
-- Enable withdrawal limits and time delays
-
-**Operations:**
-
-- Deposit tokens to vault (from issuer or investors)
-- Request withdrawal (initiates approval flow)
-- View vault holdings and history
-- Export custody reports
-
-## Design principles
-
-### Progressive disclosure
-
-Interfaces reveal complexity gradually:
-
-**Default view:**
-
-- Essential information only (token name, balance, compliance status)
-- Common actions prominently displayed (transfer, mint)
-
-**Advanced controls:**
-
-- Hidden behind "Advanced" accordion or separate tabs
-- Raw contract data, detailed events, low-level configuration
-
-**Expert mode:**
-
-- Developer tools (contract ABI, ethers.js snippets)
-- Direct contract interaction (for power users)
-
-### Contextual help
-
-Every form and action includes:
-
-**Inline tooltips:** Hover over field labels for explanations (e.g., "ISIN:
-12-character alphanumeric code identifying securities")
-
-**Documentation links:** "Learn more about compliance modules" → opens relevant
-docs section
-
-**Example values:** Placeholder text shows valid format (e.g., "ACME Corp" for
-token name)
-
-**Validation feedback:** Real-time error messages with specific guidance
-("Symbol must be 2-10 uppercase letters without spaces")
-
-### Error prevention
-
-System prevents common mistakes:
-
-**Confirmation dialogs:** High-risk actions (pause token, revoke admin role)
-require explicit confirmation with typed phrase (e.g., type "PAUSE" to confirm).
-
-**Irreversibility warnings:** Clearly state actions that cannot be undone ("Once
-deployed, token supply cannot be changed").
-
-**Dry-run mode:** Test compliance scenarios without executing transactions
-("Will transfer be allowed?" → Yes/No with reason).
-
-**Undo capabilities:** Where possible, provide undo (e.g., revoke recently
-granted permissions within 5 minutes).
-
-### Responsive feedback
-
-Every user action provides immediate feedback:
-
-**Optimistic updates:** UI updates immediately (e.g., balance changes before
-blockchain confirmation).
-
-**Progress indicators:**
-
-- Spinner for quick actions (&lt;3s expected)
-- Progress bar for multi-step workflows
-- Block confirmation counter (1/12 confirmations)
-
-**Success confirmation:**
-
-- Toast notification with success icon
-- Confetti animation for major milestones (token deployed)
-- Redirect to next logical screen
-
-**Error handling:**
-
-- Clear error messages (avoid technical jargon)
-- Actionable suggestions ("Transaction failed: Insufficient funds. Please top up
-  your wallet.")
-- Retry button (for transient failures)
-
-### Accessibility compliance
-
-All interfaces meet WCAG 2.1 AA standards:
-
-**Keyboard navigation:**
-
-- Tab order follows logical flow
-- Escape key closes modals
-- Arrow keys navigate lists and tables
-- Enter/Space activates buttons
-
-**Screen reader support:**
-
-- Semantic HTML (nav, main, article)
-- ARIA labels on icons and controls
-- Descriptive link text (no "click here")
-- Form field labels properly associated
-
-**Visual accessibility:**
-
-- 4.5:1 contrast ratio for text
-- Focus indicators visible on all interactive elements
-- No color-only information encoding
-- Font size adjustable without breaking layout
-
-## Integration with backend
-
-Asset management UI calls backend via ORPC:
-
-**Token creation:**
+TanStack Query manages this dual-state architecture. When Maria views her bond
+balance, the component calls:
 
 ```typescript
-const createToken = orpc.token.create.useMutation();
-await createToken.mutateAsync({
-  type: "equity",
-  name: formData.name,
-  symbol: formData.symbol,
-  initialSupply: BigInt(formData.supply),
+const { data: balance } = orpc.token.balance.useQuery({
+  tokenAddress: "0xABC123...",
+  holderAddress: "0x123...",
 });
 ```
 
-**Fetching token data:**
+The ORPC procedure first checks the database cache (responds in &lt;10ms). If
+the cache is fresh (&lt;30 seconds old), the query returns immediately. If
+stale, the procedure queries the blockchain RPC endpoint, updates the database
+cache, and returns the authoritative balance. This two-tier architecture
+balances speed (for 99% of queries) with accuracy (for 1% requiring real-time
+data).
+
+The 30-second staleness threshold is tunable per query type. Asset balances
+tolerate 30-second lag—investors checking holdings don't need sub-second
+accuracy. Compliance checks require real-time data—the system queries the
+blockchain directly, bypassing cache, to ensure a transfer is allowed before
+executing. This selective freshness prevents both slow user experiences (from
+over-fetching blockchain) and compliance failures (from stale cache).
+
+### Real-time updates via subgraph subscriptions
+
+The observability dashboard displays live transaction counts: "47 transfers in
+past 24 hours." This metric updates in real-time as new transfers confirm. The
+component uses a GraphQL subscription:
 
 ```typescript
-const { data: token } = orpc.token.read.useQuery({
+const { data: events } = useSubscription({
+  query: gql`
+    subscription RecentTransfers($tokenAddress: String!) {
+      transfers(
+        where: { token: $tokenAddress }
+        orderBy: timestamp
+        orderDirection: desc
+        first: 50
+      ) {
+        id
+        from
+        to
+        value
+        timestamp
+      }
+    }
+  `,
+  variables: { tokenAddress: "0xABC123..." },
+});
+```
+
+The Graph indexer listens to blockchain events (Transfer, Mint, Burn) and pushes
+updates to subscribed clients via WebSocket. When a transfer confirms, all
+connected dashboards update within 2-3 seconds—no manual refresh required. This
+real-time visibility is critical for treasury operators like David who need to
+confirm large transactions settled correctly.
+
+The subscription model also reduces server load. Instead of polling every 5
+seconds (creating 720 requests/hour per client), clients maintain a single
+persistent WebSocket connection. The server pushes updates only when state
+changes. For a quiet token with 10 transactions per day, this reduces query load
+by 99.9% (10 pushes vs 7,200 polls).
+
+### Form state and optimistic updates
+
+When Sophia schedules a coupon payment, the form uses TanStack Form for
+validation:
+
+```typescript
+const form = useForm({
+  defaultValues: {
+    distributionType: "coupon",
+    amount: "",
+    recordDate: new Date(),
+  },
+  onSubmit: async (values) => {
+    await orpc.token.yield.schedule.mutate(values);
+  },
+});
+```
+
+The form validates input constraints:
+
+- Amount must be positive and ≤ yield wallet balance
+- Record date must be in the future
+- Payment date must be ≥ record date
+
+These checks run on every keystroke, providing instant feedback. If Sophia
+enters "€100,000" but the yield wallet only holds €75,000 USDC, the form
+displays: "Insufficient funds—yield wallet balance: €75,000." This prevents
+transaction failures from inadequate funding.
+
+When Sophia submits the form, the mutation executes optimistically:
+
+1. UI immediately adds the scheduled distribution to the list (with "Pending"
+   badge)
+2. ORPC procedure submits blockchain transaction
+3. Transaction confirms after 30 seconds
+4. TanStack Query invalidates the yield schedule cache
+5. Component refetches data—"Pending" badge changes to "Scheduled"
+
+If the transaction fails (e.g., gas estimation error), the optimistic update
+rolls back and displays an error toast. This pattern makes the UI feel instant
+while maintaining consistency with blockchain state.
+
+### Component hierarchy and data fetching
+
+The token dashboard
+(`src/routes/_private/_onboarded/_sidebar/token/$factoryAddress/$tokenAddress/`)
+is split into tabs: Overview, Holders, Events, Compliance, Yield, Permissions.
+Each tab is a separate route with independent data requirements.
+
+The root layout component fetches shared data:
+
+```typescript
+const { data: token } = orpc.token.metadata.useQuery({
   address: tokenAddress,
 });
 ```
 
-**Distribution execution:**
+This query runs once when navigating to the dashboard. Child routes access the
+cached token metadata without refetching:
 
 ```typescript
-const distribute = orpc.token.yield.distribute.useMutation();
-await distribute.mutateAsync({
-  tokenAddress,
-  amount: distributionAmount,
-  recordDate: new Date(),
+// In the Holders tab component
+const queryClient = useQueryClient();
+const token = queryClient.getQueryData([
+  "token.metadata",
+  { address: tokenAddress },
+]);
+```
+
+This query deduplication reduces backend load. Without shared cache, navigating
+between tabs would trigger 6 redundant metadata fetches. With cache, the
+metadata fetches once, and tabs read from cache instantly.
+
+Child routes fetch tab-specific data:
+
+- Overview tab: Recent events, yield history, compliance status
+- Holders tab: Cap table (all balances), ownership distribution chart
+- Events tab: Paginated transaction log with filters
+- Compliance tab: Identity registry, active compliance modules
+- Yield tab: Distribution schedule, claim history
+- Permissions tab: Role assignments
+
+Each tab's queries are independent. Navigating from Overview to Holders triggers
+the cap table query but doesn't refetch events. This selective loading keeps
+initial page load fast (&lt;1 second for Overview) while deferring heavy queries
+(cap table with 1,000 investors) until needed.
+
+## Responsive design and mobile-first approach
+
+Investors like Maria access the platform primarily on mobile—checking balances
+during commutes, claiming yield while traveling. The UI must work flawlessly on
+375px-wide iPhone screens and 1920px-wide desktop monitors.
+
+### Why mobile-first matters for tokenized assets
+
+Traditional financial platforms treat mobile as an afterthought—desktop web
+interfaces crudely resized with hamburger menus and tiny text. This fails for
+tokenized assets where investors expect real-time transparency. A bond investor
+receiving a maturity notification at 9 PM shouldn't wait until tomorrow morning
+to redeem on their desktop—they tap the notification, authenticate with Face ID,
+and redeem in 30 seconds from their couch.
+
+Mobile-first design also improves desktop experiences. Constraints of small
+screens force ruthless prioritization—only essential information fits above the
+fold. This discipline carries over to desktop layouts, eliminating clutter.
+Desktop users get the same focused experience with bonus screen real estate for
+contextual help and advanced controls.
+
+### Breakpoint strategy
+
+The Kit uses four breakpoints:
+
+- Mobile: &lt;640px (single-column layout, collapsible sections)
+- Tablet: 640px-1024px (two-column layout for dashboards, full-width forms)
+- Desktop: 1024px-1440px (three-column dashboards, sidebar navigation)
+- Wide: &gt;1440px (same as desktop, but charts expand to fill space)
+
+Components use Tailwind's responsive utilities:
+
+```tsx
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  {/* Mobile: stacked cards, Desktop: 3-column grid */}
+</div>
+```
+
+The portfolio overview shows different layouts:
+
+**Mobile (375px):**
+
+- Asset list: Vertical cards, one per row
+- Balances: Large text (24px), prominent
+- Actions: Full-width buttons ("Claim Yield", "Redeem")
+- Charts hidden by default (expandable accordion)
+
+**Desktop (1440px):**
+
+- Asset list: Table with 6 columns (Symbol, Balance, Value, Yield, Status,
+  Actions)
+- Balances: Standard text (16px), space for more metrics
+- Actions: Inline icon buttons (hoverable tooltips)
+- Charts visible in sidebar (live NAV updates, yield history)
+
+This isn't just resizing—it's information hierarchy optimization per screen
+size.
+
+### Touch-friendly controls
+
+Mobile components use 44px minimum tap targets (Apple Human Interface
+Guidelines). Buttons smaller than 44px create frustration—users misclick,
+fat-finger adjacent buttons. The Kit enforces this in the Radix UI component
+library:
+
+```tsx
+<Button className="min-h-[44px] min-w-[44px] touch-manipulation">
+  Claim €150
+</Button>
+```
+
+The `touch-manipulation` CSS property disables double-tap zoom on
+buttons—preventing accidental zooms when users quickly tap "Claim" twice
+(thinking the first tap didn't register).
+
+Form inputs use large fonts (16px minimum) to prevent iOS auto-zoom. When an
+input uses &lt;16px font, iOS zooms the page to make text readable—disorienting
+users. The Kit sets:
+
+```css
+input {
+  font-size: 16px;
+}
+```
+
+This small detail dramatically improves mobile UX—users stay focused on form
+completion rather than fighting zoom behavior.
+
+### Progressive disclosure on small screens
+
+The token dashboard has 6 tabs on desktop. On mobile, 6 tabs don't fit
+horizontally—text truncates, users can't distinguish between tabs. The mobile
+layout uses a dropdown selector:
+
+**Mobile:**
+
+```
+[Dashboard Menu ▼]
+```
+
+Tapping opens a full-screen menu:
+
+- Overview
+- Holders
+- Events
+- Compliance
+- Yield
+- Permissions
+
+**Desktop:**
+
+```
+[Overview] [Holders] [Events] [Compliance] [Yield] [Permissions]
+```
+
+All tabs visible, horizontal navigation.
+
+This pattern extends to complex forms. The bond deployment wizard shows one form
+section at a time on mobile (swipe left/right to navigate). Desktop shows all
+sections simultaneously with a progress sidebar. Same data, optimized navigation
+per screen size.
+
+### Performance budget for mobile networks
+
+Mobile users often access the platform on cellular networks (4G, occasionally 3G
+in rural areas). The Kit enforces a performance budget:
+
+- Initial page load: &lt;50 KB JavaScript (gzipped)
+- First Contentful Paint: &lt;1.5 seconds on 4G
+- Time to Interactive: &lt;3 seconds on 4G
+
+Achieving this requires aggressive code splitting. The dashboard route bundle is
+separate from the asset designer bundle. Investors like Maria who only view
+portfolios never download the 200 KB designer component code. Issuers like
+Sophia who deploy tokens pay the cost of loading designer code—but only on the
+designer route.
+
+Image optimization is critical. The marketplace displays token logos—these are
+lazy-loaded as users scroll and served as WebP (30% smaller than PNG). The Kit
+uses the `loading="lazy"` attribute:
+
+```tsx
+<img
+  src="/tokens/tech26.webp"
+  alt="TechCorp Bond Logo"
+  loading="lazy"
+  width={64}
+  height={64}
+/>
+```
+
+This defers loading images below the fold until users scroll—reducing initial
+page weight from 500 KB to 80 KB.
+
+## Accessibility: inclusive design for operational resilience
+
+Accessibility features serve two audiences: users with disabilities (screen
+readers, keyboard-only, visual impairments) and all users under stress (time
+pressure, poor lighting, multitasking). The Kit meets WCAG 2.1 AA standards not
+as compliance theater but as operational resilience.
+
+### Why accessibility matters for financial platforms
+
+Financial interfaces are high-stakes—misclicks transfer thousands of dollars,
+missed deadlines incur penalties. Accessibility features reduce error rates for
+everyone:
+
+- **Keyboard navigation** helps treasury operators batch-process transactions
+  without mouse fatigue during month-end close (50+ distributions in one
+  session).
+- **High-contrast modes** prevent costly misclicks when reviewing transactions
+  in bright sunlight (mobile outdoor use) or dim late-night office lighting.
+- **Screen reader compatibility** enables compliance officers to audit
+  transaction logs while visually impaired or while reviewing printed documents
+  (eyes on paper, ears on screen reader).
+
+These features also future-proof the platform. As treasury operators age,
+presbyopia (farsightedness) and reduced color perception become common.
+High-contrast text and scalable fonts delay the need for assistive
+technology—operators remain productive longer.
+
+### Keyboard navigation architecture
+
+Every interactive element is keyboard-accessible. The tab order follows logical
+reading order (top to bottom, left to right). Pressing Tab moves forward through
+controls, Shift+Tab moves backward.
+
+Focus indicators use a 3px solid border with high contrast:
+
+```css
+:focus-visible {
+  outline: 3px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+```
+
+The `:focus-visible` pseudo-class shows outlines only for keyboard focus—not
+mouse clicks. This prevents ugly outlines when clicking buttons while preserving
+visibility for keyboard users.
+
+Custom components implement ARIA keyboard patterns. The token dashboard tabs use
+arrow key navigation:
+
+- Tab key enters the tab list
+- Right arrow moves to next tab
+- Left arrow moves to previous tab
+- Home jumps to first tab
+- End jumps to last tab
+
+This matches native browser tab behavior—users who rely on keyboard navigation
+encounter familiar patterns.
+
+Modal dialogs trap focus—pressing Tab cycles through controls inside the modal,
+never escaping to background content. Pressing Escape closes the modal. This
+prevents confusion when users have 10 tabs open and accidentally Tab into
+background page controls.
+
+### Screen reader optimization
+
+The Kit uses semantic HTML to convey document structure:
+
+```tsx
+<nav aria-label="Main navigation">
+  <ul>
+    <li><a href="/dashboard">Dashboard</a></li>
+    <li><a href="/assets">Assets</a></li>
+  </ul>
+</nav>
+
+<main>
+  <h1>Token Dashboard</h1>
+  <section aria-labelledby="overview-heading">
+    <h2 id="overview-heading">Overview</h2>
+    {/* ... */}
+  </section>
+</main>
+```
+
+Screen readers announce: "Navigation region, Main navigation. List with 2
+items." Users can skip navigation with a single keystroke (landmarks
+navigation).
+
+Icons always have text alternatives:
+
+```tsx
+<button aria-label="Claim €150 yield payment">
+  <CoinsIcon aria-hidden="true" />
+  <span className="sr-only">Claim €150 yield payment</span>
+</button>
+```
+
+The icon is hidden from screen readers (`aria-hidden="true"`) to prevent
+redundant announcements ("Claim euro 150 yield payment button, image"). The
+`sr-only` class visually hides text while exposing it to assistive tech.
+
+Form validation errors are announced immediately:
+
+```tsx
+<input
+  type="text"
+  aria-label="Token symbol"
+  aria-invalid={errors.symbol ? "true" : "false"}
+  aria-describedby="symbol-error"
+/>;
+{
+  errors.symbol && (
+    <span id="symbol-error" role="alert">
+      {errors.symbol}
+    </span>
+  );
+}
+```
+
+The `role="alert"` triggers screen reader announcement: "Symbol must be 2-10
+uppercase letters." Users don't have to navigate to the error message—it reads
+aloud immediately.
+
+### Visual accessibility and color contrast
+
+Text meets WCAG AA contrast ratios:
+
+- Normal text (16px): 4.5:1 contrast minimum
+- Large text (24px): 3:1 contrast minimum
+- UI controls (buttons, inputs): 3:1 contrast minimum
+
+The design system enforces this via CSS variables:
+
+```css
+:root {
+  --foreground: 222 47% 11%; /* Near-black text */
+  --background: 0 0% 100%; /* White background */
+  /* Contrast ratio: 15.8:1 (exceeds WCAG AAA) */
+}
+```
+
+Color is never the sole indicator of information. Status badges use both color
+and text:
+
+```tsx
+<Badge variant="success">
+  <CheckIcon aria-hidden="true" />
+  Approved
+</Badge>
+
+<Badge variant="error">
+  <XIcon aria-hidden="true" />
+  Rejected
+</Badge>
+```
+
+A colorblind user sees "Approved" vs "Rejected" text, not just green vs red. The
+icons provide additional redundancy.
+
+The dashboard charts use patterns in addition to color:
+
+- Line charts: Solid, dashed, and dotted lines (not just different colors)
+- Bar charts: Hatching patterns (diagonal lines, dots, solid fills)
+
+This ensures portfolio performance charts remain readable for users with
+deuteranopia (red-green colorblindness, affecting 8% of men).
+
+### Cognitive load reduction
+
+Financial platforms overwhelm users with jargon, acronyms, and nested
+navigation. The Kit reduces cognitive load through progressive disclosure and
+plain language.
+
+Technical terms include inline definitions:
+
+```tsx
+<Tooltip>
+  <TooltipTrigger>ISIN</TooltipTrigger>
+  <TooltipContent>
+    International Securities Identification Number – a 12-character code
+    uniquely identifying this security.
+  </TooltipContent>
+</Tooltip>
+```
+
+Users don't need to Google "ISIN"—the definition is one hover away.
+
+Forms break complex workflows into discrete steps. The bond deployment wizard
+has 5 steps, each fitting on one screen. Progress indicators show "Step 3 of
+5"—users always know how much work remains.
+
+Error messages avoid blame language:
+
+- ❌ "Invalid symbol format"
+- ✅ "Symbol must be 2-10 uppercase letters (e.g., BOND, TECH26)"
+
+The second message explains the rule and provides examples—users fix errors
+without guessing.
+
+## Observability integration: operational transparency per persona
+
+The platform's observability stack (metrics, logs, traces) surfaces in
+user-facing dashboards. Each persona sees filtered data relevant to their role.
+
+### Investor observability: transaction transparency
+
+Maria's portfolio dashboard shows:
+
+- **Transaction history**: Last 50 transactions (transfers, yield claims,
+  redemptions) with timestamps, amounts, gas fees, and block explorer links
+- **Yield accrual chart**: Daily accrued interest visualization (€1.64 per day
+  for €10,000 face value at 6% annual)
+- **Compliance status**: "Your identity: Verified – Eligible for 8 asset
+  classes"
+
+Each transaction row expands to show:
+
+- Transaction hash (link to Etherscan/block explorer)
+- Gas fee paid (in ETH and USD equivalent)
+- Block number and confirmation timestamp
+- Contract interaction details (function called, parameters)
+
+This transparency builds trust. Maria sees exactly when transactions settle and
+can independently verify on the blockchain—no trust required in the platform's
+displayed data.
+
+### Issuer observability: operational metrics
+
+Sophia's bond dashboard shows:
+
+- **Holder metrics**: Current investor count (47/149 max), geographic
+  distribution (pie chart: Portugal 60%, Spain 25%, France 15%), average holding
+  size (€106,383)
+- **Yield distribution metrics**: Average claim time (8.2 days), claim rate (96%
+  after 30 days), unclaimed amounts (€3,000 across 2 investors)
+- **Gas cost tracking**: Total gas spent on bond operations (€420 lifetime),
+  breakdown by operation (deployment, yield funding, redemptions)
+- **Compliance events**: Transfer rejection rate (0.8%), rejection reasons (3
+  attempts blocked: 2 for country restrictions, 1 for investor cap)
+
+These metrics inform operational decisions. The 8.2-day average claim time
+suggests investors are engaged—if it drifted to 30+ days, Sophia would
+investigate communication gaps or UX friction.
+
+The compliance rejection rate of 0.8% is healthy—low enough to show rules are
+working without blocking legitimate activity. If it spiked to 10%, Sophia would
+review rule configurations for errors.
+
+### Compliance officer observability: risk monitoring
+
+Carlos's compliance dashboard shows:
+
+- **KYC pipeline metrics**: Application volume (23 pending, 47 approved, 3
+  rejected), average review time (18 hours), approval rate (81%)
+- **Identity claim health**: Expiring claims (12 investors with KYC documents
+  expiring in &lt;30 days), revoked claims (0), claim issuer trust status (all
+  trusted issuers active)
+- **Sanctions screening alerts**: Real-time OFAC/EU sanctions list updates (last
+  updated: 2 hours ago), zero matches in current investor base
+- **Transfer monitoring**: Real-time feed of transfer attempts (successful and
+  rejected), filtering by rejection reason
+
+The expiring claims metric is proactive—Carlos reaches out to affected investors
+before their documents expire: "Your passport expires in 20 days. Please
+re-verify identity to maintain eligibility."
+
+The real-time transfer feed shows:
+
+- 10:32 AM: Transfer 0x123... → 0x456... (50 tokens, €50,000) – ✓ Approved
+- 10:35 AM: Transfer 0x789... → 0xABC... (20 tokens, €20,000) – ❌ Rejected
+  (recipient country not allowed)
+- 10:41 AM: Transfer 0xDEF... → 0x123... (15 tokens, €15,000) – ✓ Approved
+
+Carlos can immediately investigate rejections—the system flags the specific
+compliance rule that blocked the transfer. This rapid feedback loop prevents
+compliance failures from snowballing.
+
+### Administrator observability: infrastructure health
+
+Amit's admin dashboard shows:
+
+- **System health**: RPC endpoint latency (avg 120ms), database query
+  performance (p95: 45ms), subgraph indexing lag (2 blocks behind chain tip)
+- **Gas cost trends**: 7-day moving average (€180/day), cost per operation type,
+  anomaly detection (alerts if daily cost exceeds €300)
+- **User activity**: Daily active users (127), new registrations (8), KYC
+  approval rate (82%), asset deployment rate (1.2 new tokens per week)
+- **Asset health**: Total assets deployed (47), total investors (1,247), total
+  value locked (€18.2M), assets with &lt;10 investors (flagged for marketing
+  review)
+
+The RPC latency metric alerts Amit to infrastructure issues. If latency spikes
+to 500ms, users experience slow dashboard loading—Amit investigates RPC provider
+issues or switches to a backup endpoint.
+
+Gas cost anomaly detection prevents runaway spending. If a bug causes accidental
+mass OnchainID deployments (creating identities for bots instead of humans), the
+daily cost spikes from €180 to €1,500. Amit receives an alert, investigates the
+code bug, and deploys a fix before burning through the monthly budget.
+
+The "assets with &lt;10 investors" metric identifies struggling issuances. If a
+bond deploys but attracts only 3 investors after 30 days, Amit discusses with
+the issuer—is pricing wrong? Is marketing inadequate? This proactive outreach
+improves platform success rates.
+
+## User flow diagrams
+
+### Investor subscription journey
+
+This diagram maps Maria's path from discovery to token ownership:
+
+<Mermaid
+  chart={`
+flowchart TB
+    Start([Investor discovers bond offering])
+    
+    CheckAuth{Has platform account?}
+    Register[Create account with Google/email]
+    Login[Log in to existing account]
+    
+    CheckKYC{Has verified identity?}
+    StartKYC[Begin KYC application]
+    UploadDocs[Upload passport & proof of address]
+    WaitApproval[Wait for compliance review]
+    
+    ViewBond[View bond details page]
+    CheckEligibility{Meets compliance requirements?}
+    ShowError[Display ineligibility reason]
+    
+    Subscribe[Enter subscription amount]
+    SelectPayment[Choose payment method: bank or USDC]
+    
+    FundCheck{Sufficient funds?}
+    RequestFunds[Prompt to fund wallet]
+    
+    ExecuteDvP[Execute atomic DvP settlement]
+    ConfirmTx[Wait for blockchain confirmation]
+    
+    Success([Tokens in wallet - subscription complete])
+    
+    Start --> CheckAuth
+    CheckAuth -->|No| Register
+    CheckAuth -->|Yes| Login
+    Register --> CheckKYC
+    Login --> CheckKYC
+    
+    CheckKYC -->|No| StartKYC
+    CheckKYC -->|Yes| ViewBond
+    StartKYC --> UploadDocs
+    UploadDocs --> WaitApproval
+    WaitApproval --> ViewBond
+    
+    ViewBond --> CheckEligibility
+    CheckEligibility -->|No| ShowError
+    CheckEligibility -->|Yes| Subscribe
+    ShowError --> Start
+    
+    Subscribe --> SelectPayment
+    SelectPayment --> FundCheck
+    FundCheck -->|No| RequestFunds
+    FundCheck -->|Yes| ExecuteDvP
+    RequestFunds --> FundCheck
+    
+    ExecuteDvP --> ConfirmTx
+    ConfirmTx --> Success
+    
+    style Start fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Register fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Login fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style StartKYC fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style UploadDocs fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style WaitApproval fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style ViewBond fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Subscribe fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style ExecuteDvP fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Success fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style ShowError fill:#d97662,stroke:#b84a38,stroke-width:2px,color:#fff
+
+`} />
+
+**Critical moments in this journey:**
+
+1. **Identity verification gate**: Maria cannot view investment opportunities
+   without completing KYC. This enforces DALP law #2 (compliance by design)—the
+   UI prevents non-compliant actions rather than rejecting them post-attempt.
+
+2. **Eligibility check**: The system validates Maria's OnchainID claims against
+   bond requirements (Portugal in allow-list, Accredited investor claim) before
+   showing the subscribe button. Ineligible investors see a clear message: "This
+   asset requires Accredited Investor status. Complete accreditation
+   verification to invest."
+
+3. **Atomic DvP settlement**: Maria's USDC payment and token delivery happen in
+   a single transaction—no escrow period, no settlement risk. Traditional
+   platforms take 1-3 days to settle securities purchases. Here, settlement is
+   instant and atomic.
+
+### Issuer asset creation flow
+
+This diagram maps Sophia's bond deployment process:
+
+<Mermaid
+  chart={`
+flowchart TB
+    Start([Treasury team decides to issue bond])
+    
+    OpenDesigner[Open asset designer wizard]
+    
+    SelectType[Select asset type: Bond]
+    ConfigBasic[Enter name, symbol, supply, ISIN]
+    
+    ConfigCompliance[Configure compliance rules]
+    SetCountries[Set geographic restrictions]
+    SetInvestorCap[Set maximum investor count]
+    SetKYCLevel[Set required KYC level]
+    
+    ConfigYield[Configure yield parameters]
+    SetMaturity[Set maturity date]
+    SetCoupon[Set coupon rate & frequency]
+    LinkYieldWallet[Connect yield funding wallet]
+    
+    ReviewConfig[Review full configuration]
+    EstimateGas[View gas cost estimate]
+    
+    CheckReady{Treasury approval obtained?}
+    GetApproval[Obtain internal approvals]
+    
+    DeployTx[Submit deployment transaction]
+    WaitConfirm[Wait for blockchain confirmation]
+    
+    AssignRoles[Assign compliance officer role]
+    FundYield[Transfer USDC to yield wallet]
+    
+    InviteInvestors[Begin investor onboarding]
+    
+    Success([Bond live - ready for subscriptions])
+    
+    Start --> OpenDesigner
+    OpenDesigner --> SelectType
+    SelectType --> ConfigBasic
+    ConfigBasic --> ConfigCompliance
+    
+    ConfigCompliance --> SetCountries
+    SetCountries --> SetInvestorCap
+    SetInvestorCap --> SetKYCLevel
+    
+    SetKYCLevel --> ConfigYield
+    ConfigYield --> SetMaturity
+    SetMaturity --> SetCoupon
+    SetCoupon --> LinkYieldWallet
+    
+    LinkYieldWallet --> ReviewConfig
+    ReviewConfig --> EstimateGas
+    EstimateGas --> CheckReady
+    
+    CheckReady -->|No| GetApproval
+    CheckReady -->|Yes| DeployTx
+    GetApproval --> CheckReady
+    
+    DeployTx --> WaitConfirm
+    WaitConfirm --> AssignRoles
+    AssignRoles --> FundYield
+    FundYield --> InviteInvestors
+    InviteInvestors --> Success
+    
+    style Start fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style SelectType fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ConfigBasic fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ConfigCompliance fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style SetCountries fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style SetInvestorCap fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style SetKYCLevel fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style ConfigYield fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style SetMaturity fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style SetCoupon fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style DeployTx fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Success fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+
+`} />
+
+**Key design decisions in this flow:**
+
+1. **Wizard structure prevents misconfiguration**: Each step validates inputs
+   before allowing progression. Sophia cannot deploy a bond with an invalid ISIN
+   format or negative coupon rate—the UI blocks these errors at data entry time,
+   not transaction submission time.
+
+2. **Gas estimation provides cost transparency**: Before deploying, Sophia sees
+   "Estimated cost: €35" based on current network conditions. If gas spikes to
+   €200 during network congestion, she can delay deployment until costs
+   normalize.
+
+3. **Post-deployment checklist reduces operational gaps**: The success screen
+   shows required next steps (assign roles, fund yield wallet) rather than
+   leaving Sophia to discover these requirements through trial and error. This
+   reduces support tickets and prevents bonds launching without necessary
+   infrastructure.
+
+### Compliance officer identity approval workflow
+
+This diagram maps Carlos's daily KYC review process:
+
+<Mermaid
+  chart={`
+flowchart TB
+    Start([New KYC application submitted])
+    
+    QueueNotif[Application appears in review queue]
+    
+    AutoChecks[Automated checks execute]
+    SanctionsScreen[OFAC/EU sanctions screening]
+    PEPCheck[PEP screening]
+    DocOCR[Document OCR & validation]
+    
+    RiskScore{Risk score calculation}
+    
+    LowRisk[Green: Low risk - fast track]
+    MediumRisk[Yellow: Medium risk - manual review]
+    HighRisk[Red: High risk - enhanced due diligence]
+    
+    ReviewDocs[Compliance officer reviews documents]
+    CheckPassport[Verify passport photo & expiry]
+    CheckAddress[Verify proof of address]
+    CheckAccred[Verify accreditation proof]
+    
+    Decision{Approve or reject?}
+    
+    Approve[Issue OnchainID claims]
+    DeployID[Deploy OnchainID contract]
+    SignClaims[Sign claims: country, KYC level, investor class]
+    LinkWallet[Link OnchainID to wallet address]
+    
+    Reject[Reject application]
+    LogReason[Record rejection reason]
+    NotifyInvestor[Send rejection email with reason]
+    
+    Success([Identity verified - investor eligible])
+    
+    Start --> QueueNotif
+    QueueNotif --> AutoChecks
+    
+    AutoChecks --> SanctionsScreen
+    SanctionsScreen --> PEPCheck
+    PEPCheck --> DocOCR
+    DocOCR --> RiskScore
+    
+    RiskScore -->|Low| LowRisk
+    RiskScore -->|Medium| MediumRisk
+    RiskScore -->|High| HighRisk
+    
+    LowRisk --> ReviewDocs
+    MediumRisk --> ReviewDocs
+    HighRisk --> ReviewDocs
+    
+    ReviewDocs --> CheckPassport
+    CheckPassport --> CheckAddress
+    CheckAddress --> CheckAccred
+    CheckAccred --> Decision
+    
+    Decision -->|Approve| Approve
+    Decision -->|Reject| Reject
+    
+    Approve --> DeployID
+    DeployID --> SignClaims
+    SignClaims --> LinkWallet
+    LinkWallet --> Success
+    
+    Reject --> LogReason
+    LogReason --> NotifyInvestor
+    
+    style Start fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style AutoChecks fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style SanctionsScreen fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style PEPCheck fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style LowRisk fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style MediumRisk fill:#f4a261,stroke:#e76f51,stroke-width:2px,color:#fff
+    style HighRisk fill:#d97662,stroke:#b84a38,stroke-width:2px,color:#fff
+    style ReviewDocs fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Approve fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Success fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Reject fill:#d97662,stroke:#b84a38,stroke-width:2px,color:#fff
+
+`} />
+
+**Operational efficiency highlights:**
+
+1. **Automated checks reduce manual workload**: Sanctions screening and document
+   OCR run instantly when applications submit. Carlos only reviews cases flagged
+   by automated checks—he doesn't manually search OFAC lists or squint at
+   passport photos to read expiry dates.
+
+2. **Risk-based prioritization**: High-risk applications (sanctions matches,
+   suspicious activity patterns) bubble to the top of Carlos's queue. He reviews
+   critical cases first, ensuring dangerous actors are blocked before they
+   invest.
+
+3. **Audit trail enforcement**: Every approval and rejection logs Carlos's
+   wallet address and timestamp. If regulators question why an investor was
+   approved, the system shows exactly who approved them, when, and what
+   documents were reviewed. This accountability protects both Carlos and the
+   platform.
+
+## Technical implementation notes
+
+### Component library: Radix UI primitives
+
+The Kit uses Radix UI for accessible components. Radix provides unstyled
+primitives (dialogs, dropdowns, tooltips) with ARIA attributes and keyboard
+interactions built-in. This eliminates the need to manually implement `role`,
+`aria-labelledby`, `aria-expanded`, and keyboard event handlers—Radix handles
+these details.
+
+Example: The compliance rule builder uses a Radix Accordion for collapsible rule
+sections:
+
+```tsx
+<Accordion type="multiple">
+  <AccordionItem value="country-restrictions">
+    <AccordionTrigger>Geographic restrictions</AccordionTrigger>
+    <AccordionContent>
+      {/* Country allow-list/block-list form fields */}
+    </AccordionContent>
+  </AccordionItem>
+
+  <AccordionItem value="investor-caps">
+    <AccordionTrigger>Investor caps</AccordionTrigger>
+    <AccordionContent>
+      {/* Max holder count, max allocation form fields */}
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+```
+
+Radix automatically adds:
+
+- `role="region"` on expandable sections
+- `aria-expanded="true"` when section is open
+- Keyboard controls: Enter/Space to toggle, Tab to move between sections
+- Focus management: When opening a section, focus moves to first interactive
+  element inside
+
+This accessibility-by-default approach ensures screen reader users can navigate
+complex forms without custom ARIA debugging.
+
+### State synchronization: optimistic updates with rollback
+
+TanStack Query's optimistic updates make the UI feel instant. When Sophia
+schedules a coupon payment, the UI updates immediately:
+
+```typescript
+const scheduleMutation = orpc.token.yield.schedule.useMutation({
+  onMutate: async (newDistribution) => {
+    // Cancel outgoing refetches (prevent overwriting optimistic update)
+    await queryClient.cancelQueries({ queryKey: ["token.yield.schedule"] });
+
+    // Snapshot current state
+    const previousSchedule = queryClient.getQueryData(["token.yield.schedule"]);
+
+    // Optimistically update cache
+    queryClient.setQueryData(["token.yield.schedule"], (old) => {
+      return [...old, { ...newDistribution, status: "pending" }];
+    });
+
+    // Return snapshot for rollback
+    return { previousSchedule };
+  },
+
+  onError: (err, newDistribution, context) => {
+    // Rollback on error
+    queryClient.setQueryData(
+      ["token.yield.schedule"],
+      context.previousSchedule
+    );
+  },
+
+  onSettled: () => {
+    // Refetch after mutation completes (success or error)
+    queryClient.invalidateQueries({ queryKey: ["token.yield.schedule"] });
+  },
 });
 ```
 
-All mutations trigger TanStack Query cache invalidation, automatically
-refreshing dependent UI components. Optimistic updates provide instant feedback
-before blockchain confirmation.
+This pattern provides:
 
-See [Backend API architecture](./backend-api) for complete procedure reference.
+1. **Instant feedback**: UI updates before blockchain confirmation
+2. **Error resilience**: If transaction fails, UI rolls back to previous state
+3. **Eventual consistency**: After transaction settles, cache refetches
+   authoritative data
+
+The user experience is snappy (no 30-second wait for confirmation) while
+maintaining consistency (UI always matches blockchain state after settlement).
+
+### Mobile wallet integration: WalletConnect and deep linking
+
+Investors using mobile wallets (MetaMask mobile, Rainbow, Trust Wallet) need
+seamless transaction signing. The Kit uses WalletConnect v2 for cross-app
+communication:
+
+1. User taps "Subscribe" on mobile browser
+2. Web app generates WalletConnect QR code
+3. Mobile wallet app scans QR (or deep link opens wallet directly)
+4. Wallet prompts for transaction approval
+5. User approves in wallet app
+6. Web app receives confirmation via WalletConnect bridge
+
+Deep linking improves this flow on mobile devices. Instead of QR scanning, the
+web app detects mobile browser and uses a custom URI scheme:
+
+```typescript
+if (isMobileDevice) {
+  window.location.href = `metamask://wc?uri=${encodeURIComponent(wcUri)}`;
+}
+```
+
+This opens MetaMask directly with the transaction pre-loaded. User approves,
+switches back to browser, subscription completes. Reduces friction from 5 steps
+(scan QR, open wallet, find pending transaction, approve, switch back) to 2
+steps (approve in wallet, switch back).
+
+### Real-time updates: GraphQL subscriptions over WebSocket
+
+The observability dashboard uses GraphQL subscriptions for live data. The Graph
+provides a WebSocket endpoint:
+
+```typescript
+const wsClient = createClient({
+  url: "wss://api.thegraph.com/subgraphs/name/asset-tokenization-kit",
+});
+
+const unsubscribe = wsClient.subscribe(
+  {
+    query: `
+      subscription OnTransfer($tokenAddress: String!) {
+        transfers(
+          where: { token: $tokenAddress }
+          orderBy: timestamp
+          orderDirection: desc
+        ) {
+          id from to value timestamp
+        }
+      }
+    `,
+    variables: { tokenAddress: "0xABC123..." },
+  },
+  {
+    next: (data) => {
+      // Update UI with new transfer event
+      queryClient.setQueryData(["token.transfers"], (old) => [data, ...old]);
+    },
+    error: (err) => console.error("Subscription error:", err),
+    complete: () => console.log("Subscription closed"),
+  }
+);
+```
+
+When a transfer event emits on-chain, The Graph indexer processes it and pushes
+to all subscribed clients within 2-3 seconds. The dashboard updates
+automatically—no refresh button, no polling loop.
+
+This architecture scales efficiently. With 1,000 connected users viewing
+dashboards, the server handles 1,000 persistent WebSocket connections but only
+sends updates when events occur. Compare to polling (1,000 users × 12
+requests/minute = 720,000 requests/hour even during idle periods).
+
+---
+
+This persona-driven architecture ensures each user group—investors, issuers,
+compliance officers, administrators—experiences interfaces optimized for their
+decision-making contexts. The unified state model, mobile-first responsive
+design, comprehensive accessibility features, and integrated observability
+create an operational environment where transparency, speed, and regulatory
+compliance reinforce rather than conflict with each other. The atomic settlement
+primitives, claim-based distributions, and cryptographic audit trails eliminate
+fragmentation that plague traditional financial platforms, while the TanStack
+ecosystem provides the React-based foundation for rapid feature development
+without sacrificing user experience quality.

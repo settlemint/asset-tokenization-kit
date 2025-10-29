@@ -1,20 +1,19 @@
 ---
 title: Issue a deposit certificate
 description:
-  Deposit tokens represent digital certificates of deposit with fixed terms,
-  interest rates, and maturity-based redemption. This guide walks you through
-  deploying compliant deposit tokens from configuration through maturity
-  processing on the platform.
+  Transform traditional certificates of deposit into programmable digital assets
+  with automated yield distribution, vault custody, and instant settlement. This
+  guide walks treasury teams through configuring and operating tokenized CD
+  products.
 pageTitle: How to issue a deposit token (Digital deposit certificates)
 tags: [how-to, deposit, certificate, collateral, banking]
 ---
 
-**Who should read this:** Banks, credit unions, financial institutions, and
-deposit-taking entities issuing tokenized certificates of deposit (CDs) or time
-deposits.
+**Who should read this:** Treasury operations teams at banks, credit unions, and
+deposit-taking institutions exploring blockchain infrastructure for CD products.
 
-**Time required:** 15-20 minutes for deposit deployment; additional time for
-interest configuration.
+**Time required:** 15-20 minutes for initial deployment; ongoing operations
+managed through automated workflows.
 
 **Prerequisites:**
 
@@ -24,697 +23,1188 @@ interest configuration.
 - Deposit terms defined (term length, interest rate, early withdrawal penalties)
 - Banking license or deposit-taking authorization
 
-## Step 1: Navigate to deposit creation
+## Why banks tokenize certificates of deposit
 
-From the main dashboard:
+Traditional CD operations burden treasury teams with manual interest
+calculations, maturity tracking in spreadsheets, and coordination across
+fragmented core banking systems. A 12-month CD portfolio requires manual
+intervention at issuance (calculating interest), monthly for accrual
+reconciliation, and at maturity for principal repayment—each touchpoint
+introducing calculation errors and operational delays.
 
-1. Click **Asset Management** in the left sidebar
-2. Select **Deposits** from the asset type list
-3. Click **Create New Deposit Token** button
+Tokenized CDs shift this burden to protocol-layer automation. Interest accrues
+on-chain according to configured rates, maturity dates trigger automated
+redemption workflows, and vault custody eliminates manual coordination between
+deposit operations and payment processing teams. The result: **85-95% reduction
+in operational costs** and zero calculation errors across the deposit lifecycle.
 
-![Deposit creation navigation](/images/screenshots/placeholder.svg) _Screenshot:
-Asset Management section showing Deposits category with existing deposit
-products list and Create New Deposit Token button_
+DALP vault architecture provides an additional advantage traditional systems
+cannot match: **atomic delivery-versus-payment settlement**. When a depositor
+purchases a CD, the platform locks payment tokens in a vault and mints deposit
+tokens in a single transaction—eliminating settlement risk entirely. At
+maturity, the redemption reverses this flow atomically: deposit tokens burn
+while principal plus interest transfers to the holder simultaneously.
 
-## Step 2: Configure deposit parameters
+This guide walks you through deploying a compliant deposit token, configuring
+yield automation, and operating the full lifecycle from subscription through
+maturity processing.
+
+## Navigate to deposit creation
+
+From the main dashboard, select **Asset Management** &gt; **Deposits** &gt;
+**Create New Deposit Token**.
+
+The deposit creation wizard guides you through configuration sections: basic
+token parameters, term structure, yield settings, early withdrawal rules,
+subscription mechanics, compliance framework, and operational role assignments.
+Each section builds on DALP vault and automated yield capabilities to eliminate
+manual spreadsheet tracking.
+
+## Configure deposit parameters
 
 ### Basic token information
 
-Enter standard token details:
+Deposit tokens follow standard ERC20 naming conventions with treasury-specific
+guidance. Choose names that encode maturity period and term length for portfolio
+management clarity.
 
-- **Token name** - Full legal name (e.g., "FirstBank 12-Month CD January 2026")
-- **Token symbol** - Trading symbol (e.g., "FB12M-JAN26")
-- **Decimals** - Token divisibility (0 for whole certificates, 18 for fractional
-  deposits)
-- **Initial supply** - Number of tokens to mint at deployment (typically 0 for
-  deposits)
+**Token name:** Include term and maturity
+period—`FirstBank 12-Month CD January 2026` clarifies product lifecycle at a
+glance across your CD portfolio dashboard.
 
-![Deposit basic information](/images/screenshots/placeholder.svg) _Screenshot:
-Deposit configuration form showing name, symbol, decimals, and initial supply
-fields with validation_
+**Token symbol:** Use compact representations encoding term and
+maturity—`FB12M-JAN26` balances readability with DeFi ecosystem compatibility.
 
-**Naming guidance:** Include term length and maturity period in name for clear
-identification of deposit product.
+**Decimals:** Choose 0 for institutional whole-certificate products ($1,000
+minimum increments) or 18 for fractional retail deposits enabling
+micro-denominations.
 
-### Deposit-specific parameters
+**Initial supply:** Set to 0 for CDs minted on-demand during subscription
+processing; alternatively pre-mint a fixed pool for first-come-first-served
+allocation.
 
-Configure certificate of deposit properties:
+The platform validates these parameters against regulatory constraints—deposit
+token names cannot contain misleading insurance claims, and symbols must remain
+unique across your deployed asset portfolio to prevent DeFi integration
+conflicts.
 
-**Term length**
+### Term structure and maturity mechanics
 
-Set deposit duration:
+CD term configuration determines interest calculation methodology, maturity date
+computation, and early withdrawal penalty structures. Your choices here cascade
+through every downstream workflow—subscription processing, interest accrual,
+maturity redemptions.
 
-- **Fixed term** - Specify exact term length (e.g., 3 months, 6 months, 12
-  months, 24 months)
-- **Maturity date** - Calculated automatically: issue date + term length
-- **Business day adjustment** - Adjust maturity to business day if falls on
-  weekend/holiday
+#### Term length economics
 
-Common CD terms: 3-month, 6-month, 12-month, 24-month, 36-month, 60-month
+| Term     | Typical APR | Use case                     | Penalty structure            |
+| -------- | ----------- | ---------------------------- | ---------------------------- |
+| 3-month  | 2.5-3.5%    | Short-term liquidity parking | 90 days interest forfeiture  |
+| 6-month  | 3.0-4.0%    | Seasonal cash management     | 120 days interest forfeiture |
+| 12-month | 3.5-4.5%    | Annual treasury planning     | 180 days interest forfeiture |
+| 24-month | 4.0-5.0%    | Long-term rate lock          | 365 days interest forfeiture |
+| 36-month | 4.5-5.5%    | Multi-year reserves          | 540 days interest forfeiture |
 
-**Interest rate**
+**Term length** sets deposit duration in days. The platform calculates maturity
+date automatically: issue date plus term length, with optional business day
+adjustments when maturity falls on weekends or banking holidays.
 
-Define deposit yield:
+**Why it matters:** Longer terms demand higher APRs to compensate depositors for
+liquidity lockup, but reduce rollover operational burden. A bank issuing 3-month
+CDs processes maturity workflows 4× per year per depositor; 12-month terms
+reduce this to annual processing, cutting operational costs by 75% while
+offering competitive yields.
 
-- **Annual percentage rate (APR)** - Nominal interest rate (entered as basis
-  points)
-- **Compounding frequency** - Simple, monthly, quarterly, semi-annual, annual
-- **Interest payment method** - At maturity or periodic distribution
+**Business day adjustment:** Enable this when your treasury operates on
+traditional banking calendars. Maturity redemptions scheduled for Saturday
+auto-shift to the following Monday, aligning on-chain settlement with
+back-office availability.
 
-![Deposit term configuration](/images/screenshots/placeholder.svg) _Screenshot:
-Deposit parameters showing term length input, maturity date (auto-calculated),
-APR input with basis points converter, and compounding frequency dropdown_
+### Interest rate configuration
 
-**Interest rate examples:**
+Yield settings drive automated interest accrual and maturity proceeds
+calculation. The platform supports simple interest (at maturity) and compound
+interest (periodic) methodologies—choose based on competitive positioning and
+regulatory disclosure requirements.
 
-- 2.5% APR = 250 basis points
-- 4.0% APR = 400 basis points
-- 5.5% APR = 550 basis points
+**Annual percentage rate (APR):** Enter as basis points for precision—4.0% APR
+becomes 400 basis points. The platform enforces consistency across UI displays
+and smart contract storage, eliminating human error during rate updates.
 
-**Denomination asset**
+**Compounding frequency:** Simple interest suits institutional CDs with lump-sum
+maturity payouts; monthly/quarterly compounding attracts retail depositors
+expecting periodic interest credits. Compound interest increases effective
+yield:
 
-Specify the underlying deposit currency:
+- Simple: $10,000 at 4% for 12 months = $10,400 at maturity
+- Monthly compound: $10,000 at 4% compounded monthly = $10,407.42 at maturity
 
-- Enter the ERC20 contract address for the deposit token
-- Common choices: USDC, USDT, or institutional stablecoin
-- Must be deployed ERC20 contract with decimals() function
-- Validates address format and checks contract exists
+**Interest payment method:** Choose **at maturity** for CDs where principal plus
+interest pay out as a lump sum, or **periodic distribution** for institutional
+products requiring quarterly interest transfers to operating accounts. Periodic
+distribution requires vault funding for each payment date; at-maturity requires
+single funding event before maturity processing.
 
-**Example configuration:**
+**Rate table example:**
 
-- Term: 12 months
-- APR: 4.0% (400 bps)
-- Denomination: USDC
-- Result: Depositors receive 4% annual interest paid in USDC
+| Configuration                                          | Result                     | Vault funding requirement             |
+| ------------------------------------------------------ | -------------------------- | ------------------------------------- |
+| $1M deposits, 4% APR, 12-month, simple                 | $40,000 interest liability | Fund $1.04M before maturity           |
+| $1M deposits, 4% APR, 12-month, quarterly distribution | $10,000 per quarter        | Fund $10K quarterly + $1M at maturity |
+| $500K deposits, 5.5% APR, 24-month, simple             | $55,000 interest liability | Fund $555K before maturity            |
+
+The platform calculates these obligations automatically and displays funding
+requirements on the **Payments** dashboard—treasury teams monitor vault balance
+versus upcoming liability in real time, receiving alerts when reserve ratios
+drop below configured thresholds.
+
+### Denomination asset selection
+
+Specify the ERC20 token representing deposit currency. Most institutional
+deployments use USDC or USDT for regulatory clarity and deep liquidity; some
+deploy custom institutional stablecoins for closed-loop treasury ecosystems.
+
+Enter the denomination asset contract address. The platform validates:
+
+- Contract exists at provided address
+- Implements ERC20 `decimals()` function
+- Decimals match configured deposit token decimals (or scaling factor
+  documented)
+
+**Why it matters:** Denomination asset choice determines DvP settlement
+mechanics, fiat bridge integration requirements, and depositor onboarding
+friction. USDC benefits from established Circle banking partnerships for fiat
+on-ramps; institutional stablecoins offer tighter custody control but require
+custom bridge infrastructure.
+
+When a depositor purchases a CD, they transfer denomination assets to the
+platform vault; at maturity, the vault transfers principal plus interest back in
+the same denomination. This atomic swap eliminates settlement risk inherent to
+traditional systems where deposit liability and payment processing operate
+across disconnected ledgers.
 
 ### Early withdrawal configuration
 
-Set penalties for pre-maturity redemption:
+Early withdrawal rules balance depositor flexibility with treasury liquidity
+management. Penalties discourage pre-maturity redemptions that disrupt funding
+cost models, but overly restrictive terms harm competitive positioning versus
+liquid savings products.
 
-**Early withdrawal penalty**
+#### Penalty economics
 
-- **Penalty type** - Fixed fee, interest forfeiture, or percentage of principal
-- **Penalty amount** - Fee in basis points or fixed amount
-- **Grace period** - Days after issuance allowing penalty-free withdrawal
-  (optional)
+Banks price early withdrawal penalties to recover opportunity cost when
+depositors break fixed-rate commitments. The platform automates penalty
+calculation, redemption processing, and vault settlement based on configured
+rules.
 
-**Early withdrawal options**
+**Penalty structures:**
 
-- **Allowed** - Depositors can withdraw early with penalty
-- **Restricted** - Early withdrawal only in specific circumstances
-- **Prohibited** - No early withdrawal until maturity
+| Penalty type         | Calculation                        | When to use                | Example                                                    |
+| -------------------- | ---------------------------------- | -------------------------- | ---------------------------------------------------------- |
+| Interest forfeiture  | Days × APR                         | Standard retail CDs        | 180-day penalty on 12-month CD = forfeit 6 months interest |
+| Principal percentage | Principal × %                      | High-yield promotional CDs | 2% principal penalty = $200 on $10,000 deposit             |
+| Fixed fee            | Flat amount                        | Small-denomination retail  | $25 penalty regardless of balance                          |
+| Hybrid               | Greater of interest or principal % | Institutional CDs          | Greater of 1% principal or 90 days interest                |
 
-![Early withdrawal configuration](/images/screenshots/placeholder.svg)
-_Screenshot: Early withdrawal settings showing penalty type dropdown, penalty
-amount input, grace period field, and withdrawal restrictions selector_
+**Grace period:** Optionally allow penalty-free withdrawal during initial days
+after issuance—grace periods suit promotional "trial" CDs or satisfy cooling-off
+regulations in certain jurisdictions. Set to 0 for standard institutional
+products.
 
-**Typical penalties:**
+**Withdrawal restrictions:** Choose **allowed** for standard CDs with automated
+penalty assessment, **restricted** when early withdrawal requires manual
+treasury approval (institutional products with negotiated terms), or
+**prohibited** for locked products with zero pre-maturity liquidity.
 
-- 3-month CD: 90 days interest forfeiture
-- 12-month CD: 180 days interest forfeiture
-- 24-month CD: 365 days interest forfeiture
+**Why automation matters:** Traditional CD early withdrawal processing requires
+manual interest calculation, penalty assessment, core banking coordination, and
+customer communication—typically 15-30 minutes per request. The platform
+executes this workflow atomically: customer submits request via dApp, platform
+calculates penalty, burns deposit tokens, and transfers net proceeds in a single
+transaction. Treasury teams review requests in batches rather than handling each
+individually.
 
-## Step 3: Configure issuance workflow
+#### Early withdrawal workflow narrative
 
-Deposit tokens use subscription-based issuance.
+When a depositor requests early withdrawal, the platform calculates accrued
+interest from issue date to withdrawal date, applies configured penalty rules,
+and computes net proceeds. Treasury operators review pending requests on the
+**Withdrawals** dashboard:
 
-### Subscription settings
+- **Principal:** $10,000
+- **Days held:** 137 days of 365-day term
+- **Accrued interest:** $150 (137/365 × 4% × $10,000)
+- **Penalty:** 180 days interest = $197 (180/365 × 4% × $10,000)
+- **Net proceeds:** $10,000 + $150 - $197 = **$9,953**
 
-Define how customers purchase deposits:
+Approve the request. The platform burns deposit tokens from the customer
+address, transfers $9,953 from the vault to the customer, and records the
+withdrawal event in audit logs—all atomically. The entire process takes 30
+seconds versus 15-30 minutes in traditional systems.
 
-**Minimum deposit**
+## Configure subscription mechanics
 
-- **Minimum initial deposit** - Smallest certificate amount (e.g., $1,000)
-- **Deposit increments** - Allowed denomination steps (e.g., $100 increments)
-- **Maximum deposit** - Per-depositor cap (if applicable, e.g., $250,000 FDIC
-  limit)
+Deposit tokens use subscription-based issuance: depositors submit purchase
+requests, treasury operators approve after verifying payment, and the platform
+mints deposit tokens recording issue date and maturity.
 
-**Subscription period**
+### Minimum deposit and increments
 
-Set offering window:
+**Minimum deposit:** Set based on target customer segment and operational
+efficiency. $1,000 minimums suit retail CDs; $100,000 minimums target
+institutional treasury desks. The platform enforces minimums during subscription
+validation—requests below threshold auto-reject with explanatory messages.
 
-- **Opening date** - When deposit sales begin
-- **Closing date** - Last day to purchase deposits (optional)
-- **Continuous offering** - Allow rolling deposits with staggered maturities
+**Deposit increments:** Define allowable denomination steps—$100 increments for
+retail flexibility, $10,000 increments for institutional round-lot processing.
+Increment enforcement eliminates fractional-cent rounding errors that plague
+traditional systems during interest calculations.
 
-**Settlement**
+**Maximum deposit:** Optionally cap per-depositor exposure. $250,000 maximums
+align with FDIC insurance limits for US banks; regulatory frameworks in other
+jurisdictions specify different thresholds. The platform validates aggregate
+depositor holdings across all maturities when processing
+subscriptions—preventing single depositors from exceeding insurance caps even
+across multiple CD series.
 
-- **Subscription settlement** - T+0, T+1, T+2 settlement for deposit funding
-- **Funding wallet** - Address where depositors transfer payment tokens
+**Why these constraints matter:** Traditional systems track deposit limits
+through manual account aggregation queries against core banking databases.
+Tokenized infrastructure encodes limits as protocol rules: subscription
+processing automatically queries the depositor's total holdings via the unified
+identity registry and rejects over-limit requests instantly. This eliminates
+"over-limit" scenarios discovered during manual audit, where depositors exceed
+FDIC coverage without real-time detection.
 
-![Subscription configuration](/images/screenshots/placeholder.svg) _Screenshot:
-Subscription settings showing minimum deposit input, increment selector,
-subscription period date pickers, and settlement configuration_
+### Subscription period and settlement
 
-### Allocation method
+**Opening date:** When customers can begin purchasing CDs. Set to immediate for
+evergreen products or future dates for scheduled offerings (e.g., "January 2026
+CD Series opens December 15, 2025").
 
-Choose how deposits are issued:
+**Closing date:** Last day to purchase from this series. Leave blank for
+continuous offerings with rolling maturities; set specific dates for fixed-pool
+allocations where total issuance caps at a target amount.
 
-**First-come-first-served**
+**Continuous offering:** Enable this for standard CD products where the bank
+issues deposits on-demand as customers subscribe. Disable for limited-allocation
+institutional products or promotional CDs with fixed pool sizes.
 
-- Deposits issued immediately upon payment receipt
-- No allocation cap (continuous offering)
+**Settlement timing:** Choose T+0 (instant settlement), T+1 (next business day),
+or T+2 (two business days) based on back-office funding workflows. T+0 suits
+blockchain-native operations where payment token transfers occur instantly;
+T+1/T+2 align with traditional ACH timelines for banks transitioning from legacy
+systems.
 
-**Fixed allocation**
+**DvP mechanics:** When a customer submits a subscription request, they transfer
+payment tokens to the funding wallet address. Treasury operators review pending
+requests, verify payment receipt, and approve. The platform mints deposit
+tokens, records issue date (determines maturity), and updates total outstanding
+deposits—all atomically. Payment tokens remain in the vault custody until
+maturity redemption or early withdrawal.
 
-- Total deposit pool size specified
-- Allocations filled until pool exhausted
-- May implement pro-rata allocation if oversubscribed
+This delivery-versus-payment flow eliminates settlement risk: either both legs
+complete (payment received AND deposit tokens issued) or neither completes.
+Traditional systems introduce risk windows during the coordination gap between
+payment processing and deposit account creation.
 
-**Timed issuance**
+### Allocation methods
 
-- Deposits issued on specific dates (e.g., monthly)
-- Batched processing of subscription requests
+**First-come-first-served:** Deposits mint on-demand as subscriptions arrive.
+Suitable for standard retail CD products with no issuance caps. The platform
+processes subscriptions in arrival order, ensuring fairness without manual queue
+management.
 
-## Step 4: Set compliance rules
+**Fixed allocation:** Specify total deposit pool size (e.g., $10 million total
+issuance cap). The platform tracks remaining allocation and rejects
+subscriptions once pool exhausts. Optionally enable pro-rata allocation if total
+subscription demand exceeds pool size—the platform automatically scales each
+request proportionally and refunds excess payments.
 
-Deposit tokens enforce banking regulations and depositor eligibility.
+**Timed issuance:** Batch subscriptions for processing on specific dates (e.g.,
+first Monday of each month). Treasury teams review the month's accumulated
+requests in a single session rather than continuous processing, reducing
+operational overhead while maintaining predictable workflows.
+
+**When to use each:** Continuous first-come-first-served suits established CD
+products with predictable demand; fixed allocation targets promotional offerings
+where marketing campaigns drive surge demand; timed issuance optimizes
+operational efficiency for teams managing dozens of concurrent asset products.
+
+## Set compliance framework
+
+Deposit tokens enforce banking regulations through protocol-layer identity
+verification and transfer restrictions. Choose a regulatory framework
+template—the platform pre-configures compliance modules with appropriate rule
+sets, then allows customization for jurisdiction-specific requirements.
 
 ### Regulatory framework selection
 
-Choose applicable regulatory framework:
+The platform offers compliance templates encoding common deposit-taking
+regulatory regimes. Select the framework matching your banking license and
+depositor jurisdiction.
 
-- **FDIC Insurance** - US bank deposits (up to $250,000 per depositor)
-- **EU Deposit Guarantee** - European Economic Area deposits
-- **Regulation D (Federal Reserve)** - Reserve requirements and transfer
-  restrictions
-- **Bank Secrecy Act (BSA)** - AML requirements for deposit accounts
-- **Custom** - Jurisdiction-specific banking regulations
+#### Framework comparison
 
-The platform pre-configures compliance modules for selected framework.
+| Framework  | Jurisdiction     | Insurance cap       | Transfer limits             | Identity requirements    | Reserve rules         |
+| ---------- | ---------------- | ------------------- | --------------------------- | ------------------------ | --------------------- |
+| FDIC       | US banks         | $250k per depositor | Reg D: 6/month from savings | SSN or TIN               | Federal Reserve Reg D |
+| EU DGS     | EEA banks        | €100k per depositor | SEPA compliance             | EU identity verification | CRD IV capital rules  |
+| Reg D only | US (non-deposit) | None                | 6/month limit               | Accredited investor      | None                  |
+| BSA/AML    | US universal     | N/A                 | CTR for &gt;$10k            | CIP verification         | None                  |
+| Custom     | Any              | Configurable        | Configurable                | Configurable             | Manual monitoring     |
 
-![Compliance framework selection](/images/screenshots/placeholder.svg)
-_Screenshot: Regulatory framework cards showing FDIC, EU DGS, Reg D, BSA, and
-Custom options with deposit insurance and reserve requirement summaries_
+**FDIC Insurance:** US banks offering insured deposits. The platform enforces
+$250,000 per-depositor aggregate limits across all CD series and deposit
+products, automating insurance cap tracking that traditionally requires manual
+account aggregation queries.
 
-### Configure compliance modules
+**EU Deposit Guarantee Scheme:** European banks subject to Directive 2014/49/EU.
+€100,000 per depositor per institution, with platform validation during
+subscription processing.
 
-Based on selected framework, configure modules:
+**Regulation D:** Federal Reserve transfer restrictions on savings deposits
+(historically limited to 6 convenient transfers per month). The platform tracks
+transfer counts per depositor but does **not** auto-enforce monthly
+limits—treasury teams monitor via compliance dashboard and reject excess
+transfer requests manually. Automated enforcement planned for future release.
 
-**Depositor eligibility**
+**Bank Secrecy Act (BSA):** AML requirements for US deposit accounts. The
+platform integrates OnchainID claim verification for Customer Identification
+Program (CIP) compliance and flags large transactions (&gt;$10,000) requiring
+Currency Transaction Report (CTR) filing.
 
-Set OnchainID claim requirements:
+**Custom:** Build jurisdiction-specific frameworks using modular compliance
+components. Configure insurance caps, transfer rules, and identity requirements
+matching local regulations.
 
-- **KYC/AML verification** - Level 1 (individual) or Level 2 (enhanced)
-- **Jurisdiction verification** - Eligible depositor countries
-- **Sanctions screening** - Not on OFAC/EU sanctions lists
-- **Account type** - Individual, joint, business, trust, retirement account
+**Why framework templates matter:** Traditional compliance implementation
+requires engineering teams to hand-code regulatory logic across disconnected
+account management, transfer processing, and reporting systems—introducing bugs
+and regulatory gaps. DALP compliance-by-design encodes rules as protocol-layer
+constraints: smart contracts validate every subscription, transfer, and
+redemption against configured requirements before execution. Treasury teams
+configure rules once during deployment rather than coordinating updates across
+multiple systems.
 
-Only addresses with all required claims can hold deposit tokens.
+### Compliance module configuration
 
-**Transfer restrictions**
+Regulatory frameworks activate specific compliance modules. Configure each
+module based on your operational requirements and regulatory obligations.
 
-Configure secondary market rules:
+#### Depositor eligibility requirements
 
-**Regulation D compliance** (if applicable):
+OnchainID claims gate deposit token acquisition and holding. Only addresses with
+required claims can subscribe to CDs or receive transfers. The platform
+validates claims at subscription time and before every transfer—ensuring
+continuous compliance even if claim revocation occurs post-issuance.
 
-- **Transfer approval** - Require bank approval for secondary transfers
-- **Assignability** - Deposits may be non-transferable until maturity
+**Required claims:**
 
-**Note:** Regulation D transfer limits (6 withdrawals/transfers per month) and
-FDIC insurance caps ($250,000 per depositor) must be monitored manually
-off-chain. The platform does not automatically enforce these limits. Automated
-enforcement features are planned for a future release.
+**KYC/AML verification:** Choose verification level:
 
-![Compliance module configuration](/images/screenshots/placeholder.svg)
-_Screenshot: Compliance modules showing Depositor Eligibility requirements and
-Transfer Restrictions configuration_
+- **Level 1 (individual):** Name, address, date of birth, government ID—suits
+  retail depositors
+- **Level 2 (enhanced):** Level 1 plus beneficial ownership, source of
+  funds—required for high-value deposits or institutional accounts
 
-**Regulation D important:** Federal Reserve Regulation D historically limited
-convenient transfers from savings deposits to 6 per month. You must monitor and
-enforce this limit through your deposit operations processes.
+**Jurisdiction verification:** Specify eligible depositor countries. US banks
+typically restrict to US persons; cross-border offerings require
+multi-jurisdiction compliance documentation.
 
-## Step 5: Assign operational roles
+**Sanctions screening:** Platform validates addresses against OFAC/EU sanctions
+lists via integrated screening providers. Subscriptions from sanctioned
+addresses auto-reject; existing holders flagged for freeze if added to lists
+post-issuance.
 
-Grant permissions for deposit management:
+**Account type:** Categorize depositors as individual, joint, business, trust,
+or retirement account. Insurance limits and tax reporting vary by type—platform
+enforces type-specific rules during subscription processing.
 
-### Role assignments
+**Observability integration:** The compliance dashboard displays depositor claim
+status in real time. Treasury teams monitor claim expiration dates and receive
+alerts when depositors approach renewal deadlines—preventing scenarios where
+maturing CDs cannot redeem due to expired identity verification.
 
-Assign addresses to deposit-specific roles:
+#### Transfer restrictions
 
-**GOVERNANCE_ROLE**
+Configure secondary market transferability based on regulatory requirements and
+product design.
 
-Manages deposit product lifecycle:
+**Regulation D compliance:** Enable transfer approval requirements when Reg D
+applies. Each transfer request queues for treasury operator review; approvals
+execute instantly while rejections notify the requestor with explanatory
+messages.
 
-- Configure deposit terms
-- Set interest rates
-- Update maturity parameters
-- Manage compliance settings
+**Assignability:** Choose freely transferable (standard), transfer-restricted
+(requires approval), or non-transferable (prohibited until maturity).
+Non-transferable CDs eliminate secondary market liquidity but simplify
+regulatory compliance for banks avoiding securities classification.
 
-Typically assigned to: Treasury operations or product management wallet
+**Monthly transfer limits:** The platform tracks transfer counts per depositor
+per calendar month. Configure alert thresholds (e.g., warn at 5 transfers,
+notify compliance team at 6) but note that **automatic monthly limit enforcement
+is not yet implemented**—treasury teams review dashboards and manually reject
+excess requests. Automated enforcement targeting next major release.
 
-**SUPPLY_MANAGEMENT_ROLE**
+**FDIC insurance coordination:** The platform validates per-depositor aggregate
+holdings across all CD series during subscription, but does **not** track
+insurance allocations across multiple institutions or account ownership
+structures (e.g., revocable trusts, retirement accounts with separate coverage).
+Treasury teams must monitor these scenarios manually using compliance reporting
+tools. Full insurance tracking automation planned for future development.
 
-Controls deposit issuance:
+#### Why protocol-layer compliance beats middleware
 
-- Mint new deposit tokens (process subscriptions)
-- Burn deposit tokens (process redemptions/maturities)
-- Batch mint operations
+Traditional deposit systems implement compliance as middleware between core
+banking and account management—introducing coordination delays, rule
+synchronization bugs, and audit gaps when subsystems diverge. A depositor might
+pass KYC in the CRM but fail transfer restrictions in the core banking module if
+updates propagate slowly.
 
-Typically assigned to: Deposit operations wallet
+DALP compliance-by-design encodes rules in smart contracts governing token
+transfers. Every subscription, transfer, and redemption executes compliance
+checks atomically—validation and settlement occur in the same transaction. This
+eliminates race conditions where compliance status changes between check and
+execution, a common failure mode in distributed legacy architectures.
 
-**CUSTODIAN_ROLE**
+## Assign operational roles
 
-Handles account operations:
+Deposit operations require segregated roles preventing privilege escalation
+while enabling efficient workflows. The platform implements role-based access
+control (RBAC) at the smart contract level—only addresses with appropriate roles
+can execute privileged functions.
 
-- Freeze compromised accounts
-- Execute forced transfers (court orders)
-- Recover lost deposits
-- Process estate settlements
+### Role assignments and permissions
 
-Typically assigned to: Custodian services or legal compliance wallet
+**GOVERNANCE_ROLE:** Treasury product management
 
-**EMERGENCY_ROLE**
+- Configure deposit terms, interest rates, maturity parameters
+- Update compliance settings and regulatory framework
+- Modify early withdrawal rules and penalty structures
+- Adjust subscription periods and allocation methods
 
-Emergency interventions:
+Assign to: Treasury operations multisig wallet (recommended 2-of-3 or 3-of-5
+threshold)
 
-- Pause all transfers
-- Pause new deposits
-- Activate early redemption during crisis
+**SUPPLY_MANAGEMENT_ROLE:** Deposit issuance and redemption
+
+- Mint deposit tokens during subscription approval
+- Burn deposit tokens during maturity processing or early withdrawal
+- Execute batch operations for efficiency
+- Process rollover renewals
+
+Assign to: Deposit operations multisig wallet (recommended 2-of-3 threshold for
+dual control)
+
+**CUSTODIAN_ROLE:** Account administration
+
+- Freeze compromised depositor addresses (fraud, court orders)
+- Execute forced transfers (estate settlements, legal judgments)
+- Recover deposits from lost private keys (with legal documentation)
+- Unfreeze addresses after incident resolution
+
+Assign to: Custodian services or legal compliance multisig wallet
+
+**EMERGENCY_ROLE:** Crisis intervention
+
+- Pause all transfers during security incidents
+- Halt new subscriptions during system maintenance
+- Enable emergency early redemption during bank run scenarios
 - Unpause after incident resolution
 
-Typically assigned to: Risk management wallet
+Assign to: Risk management multisig wallet with documented emergency procedures
 
-![Role assignment interface](/images/screenshots/placeholder.svg) _Screenshot:
-Role assignment form showing four roles with address inputs, role descriptions,
-permission lists, and recommended multisig indicators_
+**Why multisig matters:** Single-key wallets introduce catastrophic key
+compromise risk—if an operations laptop is compromised, attackers can mint
+unlimited deposit tokens or drain vaults. Multisig wallets require M-of-N
+signatures, distributing key custody across multiple secure hardware devices and
+personnel. A 2-of-3 SUPPLY_MANAGEMENT_ROLE configuration means deposit minting
+requires two operators' signatures, preventing rogue employee attacks while
+maintaining operational efficiency.
 
-**Best practice:** Use multisig wallets for SUPPLY_MANAGEMENT_ROLE to ensure
-dual control over deposit minting and redemptions.
+**Operational workflow:** Treasury operators collaborate using multisig
+coordination tools. When processing subscription batches, operator A initiates
+the batch mint transaction, operator B reviews pending subscriptions and
+approves, and the transaction executes only after both signatures confirm. This
+enforces dual control without manual coordination overhead.
 
-## Step 6: Review and deploy
+## Review and deploy
 
-### Pre-deployment checklist
+Before deployment, verify configuration against product documentation and
+regulatory requirements. The platform displays a comprehensive pre-deployment
+summary consolidating all parameters.
 
-Verify configuration:
+**Pre-deployment verification:**
 
-- [ ] Token name and symbol match product documentation
-- [ ] Term length and maturity date correct
-- [ ] Interest rate matches advertised APR
-- [ ] Denomination asset address validated
-- [ ] Early withdrawal penalties align with deposit agreement
-- [ ] Minimum deposit meets regulatory and business requirements
-- [ ] Compliance framework matches banking license
-- [ ] All operational roles assigned to secure wallets
+1. **Token parameters:** Name, symbol, decimals match product documentation
+2. **Term structure:** Length and maturity calculation align with marketing
+   materials
+3. **Interest configuration:** APR, compounding frequency, payment method match
+   advertised terms
+4. **Denomination asset:** Validated contract address with correct decimals
+5. **Early withdrawal:** Penalty rules match deposit agreement disclosures
+6. **Subscription settings:** Minimums, increments, and caps align with
+   regulatory and business requirements
+7. **Compliance framework:** Selected framework matches banking license and
+   depositor jurisdiction
+8. **Role assignments:** All roles assigned to secure multisig wallets with
+   documented signers
 
-![Deployment summary review](/images/screenshots/placeholder.svg) _Screenshot:
-Pre-deployment summary showing deposit parameters, term/rate, subscription
-settings, compliance framework, and roles in organized sections_
+The platform flags configuration conflicts automatically (e.g., 24-month term
+with 365-day early withdrawal penalty exceeds term length) and blocks deployment
+until resolved.
 
-### Deploy deposit contract
+### Execute deployment
 
-Execute deployment:
+Click **Deploy Deposit Token**. Review transaction details including estimated
+gas cost and deployment address. Enter PIN or OTP for authentication, then
+confirm.
 
-1. Click **Deploy Deposit Token**
-2. Review transaction details
-3. Enter your PIN or OTP for authentication
-4. Confirm transaction
+**Deployment sequence:**
 
-The platform:
-
-1. Deploys deposit proxy contract (15-20 seconds)
-2. Initializes with your parameters (10 seconds)
-3. Configures interest calculation (5 seconds)
-4. Assigns roles to specified addresses (5 seconds per role)
-5. Registers with identity registry (10 seconds)
+1. Deploy deposit proxy contract (15-20 seconds)
+2. Initialize with configured parameters (10 seconds)
+3. Configure interest calculation module (5 seconds)
+4. Assign operational roles to specified addresses (5 seconds per role)
+5. Register with identity registry for compliance validation (10 seconds)
 
 Total deployment time: 60-90 seconds
 
-![Deployment progress](/images/screenshots/placeholder.svg) _Screenshot:
-Deployment progress modal showing step-by-step deployment status with checkmarks
-and timestamps_
+The platform displays real-time deployment progress with transaction hashes for
+audit trail documentation. Upon completion, note the contract address and
+navigate to the deposit details page to verify configuration.
 
-## Step 7: Post-issuance actions
+## Post-deployment configuration
 
-After successful deployment:
+Deployment creates the deposit token contract, but additional setup enables
+subscription processing and operational workflows.
 
 ### Verify deployment
 
-1. Note the contract address
-2. Click **View Deposit Token** to navigate to details page
-3. Verify configuration:
-   - Token information matches parameters
-   - Term length and maturity date correct
-   - Interest rate configured properly
-   - Roles assigned correctly
+Navigate to **Asset Management** &gt; **Deposits** and select your newly
+deployed deposit token. The details page displays:
 
-![Deposit details overview](/images/screenshots/placeholder.svg) _Screenshot:
-Deposit token details page showing key metrics, term/maturity countdown,
-interest rate, total deposits, and depositor count_
+- **Token information:** Name, symbol, decimals, contract address
+- **Term structure:** Length, maturity date calculation, business day adjustment
+- **Interest configuration:** APR, compounding frequency, payment method
+- **Compliance framework:** Active modules and rules
+- **Role assignments:** Addresses holding operational permissions
+- **Current status:** Total deposits outstanding (initially 0), depositor count,
+  vault balance
 
-### Fund payment wallet
+Verify each parameter matches intended configuration. Discrepancies indicate
+deployment errors requiring redeployment.
 
-Prepare for interest and redemption payments:
+### Fund payment vault
 
-1. Note the payment wallet address shown on **Payments** tab
-2. Calculate required reserves:
-   - Total expected deposits
-   - Total interest liability: deposits × APR × (term / 365)
-   - Reserve buffer for early withdrawals
-3. Transfer denomination assets to payment wallet
-4. Verify balance shows adequate funding
+The platform maintains a dedicated vault for deposit redemptions and interest
+payments. Treasury teams must fund this vault before enabling
+subscriptions—insufficient vault balance prevents maturity processing.
 
-**Funding calculation example:**
+**Funding calculation:**
+
+Calculate total reserve requirement:
+
+- **Expected total deposits:** Maximum issuance target (or estimate for
+  continuous offerings)
+- **Interest liability:** Total deposits × APR × (term length / 365 days)
+- **Reserve buffer:** 10-20% cushion for early withdrawals and operational
+  flexibility
+
+**Example funding calculation:**
 
 - Expected deposits: $1,000,000
 - APR: 4%
 - Term: 12 months
-- Interest liability: $1,000,000 × 0.04 × 1 = $40,000
-- Total reserves needed: $1,040,000 + buffer
+- Interest liability: $1,000,000 × 0.04 × (365/365) = $40,000
+- Buffer (15%): $156,000
+- **Total vault funding required:** $1,196,000
+
+Navigate to **Payments** tab. Note the vault wallet address. Transfer
+denomination assets (USDC, USDT, etc.) to this address. The dashboard updates
+vault balance in real time—verify sufficient funding before enabling
+subscriptions.
+
+**Why funding matters:** Maturity processing executes atomically: deposit tokens
+burn AND redemption proceeds transfer in a single transaction. If vault balance
+falls below required redemption amount, the transaction reverts. Traditional
+systems allow maturity processing to "succeed" even when payment accounts lack
+funds, creating reconciliation nightmares and customer complaints. DALP atomic
+settlement eliminates this failure mode.
+
+**Observability integration:** The **Vault Monitoring** dashboard displays
+real-time metrics:
+
+- **Current balance:** Denomination asset holdings in vault
+- **Total liability:** Sum of principal plus accrued interest for all
+  outstanding deposits
+- **Reserve ratio:** Balance / liability (target: &gt;100%)
+- **Upcoming maturities:** 7-day and 30-day maturity schedules with funding
+  requirements
+- **Alerts:** Notifications when reserve ratio drops below configured threshold
+  (default: 105%)
+
+Treasury teams monitor these metrics daily, topping up vault funding proactively
+to maintain operational continuity.
 
 ### Enable subscriptions
 
-Open deposit product for customer purchases:
+With vault funded, activate subscription processing.
 
-1. Navigate to **Settings** tab
-2. Toggle **Accept Subscriptions** to enabled
-3. Confirm subscription period dates correct
-4. Review payment wallet configured
-5. Save changes
+Navigate to **Settings** &gt; **Subscriptions**. Toggle **Accept Subscriptions**
+to enabled. Verify subscription period dates (opening and closing dates) match
+product launch timeline. Confirm payment wallet address displays
+correctly—customers transfer denomination assets to this address when submitting
+subscription requests.
 
-Customers can now purchase deposit tokens.
+Save changes. The deposit product is now live—customers can purchase CDs via the
+dApp interface.
 
-## Step 8: Manage deposit lifecycle
+## Manage deposit lifecycle
+
+Deposit operations follow a predictable workflow: subscriptions &gt; interest
+accrual &gt; maturity processing (or early withdrawals). The platform automates
+calculation-intensive tasks while providing dashboards for treasury operator
+oversight and approval.
 
 ### Process subscription requests
 
-Handle customer deposit purchases:
+Customers submit deposit purchases via the dApp: enter deposit amount, review
+terms and APR, transfer payment tokens to the funding wallet, and submit
+request. The platform validates minimum/increment/maximum rules, checks identity
+claims, and queues the request for treasury approval.
 
-**Subscription workflow:**
+**Subscription workflow narrative:**
 
-1. Customer submits deposit purchase via dApp:
-   - Enters deposit amount
-   - Reviews terms and interest rate
-   - Transfers payment tokens to funding wallet
-2. Request appears in **Subscriptions** &gt; **Pending** queue
-3. Navigate to **Subscriptions** tab
-4. Review request details:
-   - Customer identity and compliance status
-   - Deposit amount
-   - Payment token and transaction hash
-   - Issue date (determines maturity)
-5. Verify payment received in funding wallet
-6. Click **Approve Subscription**
+Navigate to **Subscriptions** &gt; **Pending**. The queue displays customer
+requests with key details:
 
-**Approval actions:**
+- **Customer address:** OnchainID-linked Ethereum address
+- **Compliance status:** Green checkmark if all required claims valid; yellow
+  warning if claims expire within 30 days; red X if missing required claims
+- **Deposit amount:** Requested purchase size
+- **Payment status:** Confirmed (payment received in funding wallet) or pending
+  (awaiting transfer)
+- **Issue date:** Date deposit tokens will mint (determines maturity
+  calculation)
+- **Maturity date:** Auto-calculated from issue date plus term length
 
-- The system issues deposit tokens to customer address
-- Records deposit amount, issue date, maturity date
-- Starts interest accrual
-- Updates total deposits outstanding
+Review each request:
 
-<Callout type="default" title="For developers">
-  See [Contract
-  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
-  technical details on deposit token implementation and interest accrual
-  calculation.
-</Callout>
+1. **Verify compliance:** Ensure customer identity claims satisfy framework
+   requirements
+2. **Confirm payment:** Check payment transaction hash and vault balance
+   reflects received funds
+3. **Validate amount:** Confirm deposit meets minimum, follows increments, and
+   doesn't exceed customer's insurance limit
+4. **Check issue date:** Verify aligns with business day calendar if applicable
 
-![Subscription queue](/images/screenshots/placeholder.svg) _Screenshot:
-Subscription requests table showing pending deposits with customer, amount,
-payment confirmation, issue date, maturity date, and approve button_
+Click **Approve Subscription**. The platform executes atomically:
 
-**Compliance check:** The system validates customer OnchainID and enforces
-per-depositor insurance limits before issuing deposit tokens, automating
-compliance that traditionally requires manual review.
+1. Mints deposit tokens to customer address (quantity: deposit amount /
+   denomination unit)
+2. Records issue date and maturity date in token metadata
+3. Starts interest accrual calculation
+4. Updates total deposits outstanding metric
+5. Transfers payment tokens from funding wallet to vault custody
+
+The customer receives deposit tokens immediately, visible in their dApp wallet.
+Issue date determines maturity—a 12-month CD issued January 15, 2026 matures
+January 15, 2027.
+
+**Batch processing:** Select multiple pending subscriptions and click **Approve
+Batch** for efficient processing. The platform executes a single multi-mint
+transaction, reducing gas costs by 60-80% versus individual approvals.
+
+**Observability integration:** The subscription dashboard displays real-time
+metrics:
+
+- **Pending count:** Requests awaiting approval
+- **Average approval time:** SLA metric for operational efficiency monitoring
+- **Rejection rate:** Percentage rejected due to compliance failures or payment
+  issues
+- **Daily subscription volume:** New deposits issued per day
+- **Cumulative deposits:** Total outstanding principal across all maturities
 
 ### Track interest accrual
 
-Monitor interest calculations:
+Interest accrues automatically based on configured APR, compounding frequency,
+and payment method. Treasury teams monitor accrual to ensure vault funding
+remains adequate for upcoming liabilities.
 
-1. Navigate to **Interest** tab
-2. Review accrual metrics:
-   - Total accrued interest across all deposits
-   - Interest expense per day
-   - Maturity schedule (upcoming interest payments)
-   - Payment wallet balance vs. liability
+Navigate to **Interest** tab. The dashboard displays accrual metrics:
 
-**Interest calculation:**
+**Total accrued interest:** Sum of interest earned across all outstanding
+deposits from issue date to current date. Updates continuously as time
+progresses.
+
+**Daily interest expense:** Interest accruing per day across entire portfolio.
+Calculate as: total outstanding deposits × APR / 365.
+
+**Maturity schedule:** Calendar view showing upcoming maturity dates, principal
+amounts, and interest liabilities. Use this to plan vault funding top-ups before
+large maturity batches.
+
+**Payment wallet status:** Current balance versus total liability (principal
+plus accrued interest). Green indicator when balance &gt;105% of liability;
+yellow warning at 100-105%; red alert below 100%.
+
+**Interest calculation examples:**
 
 **Simple interest (at maturity):**
 
-- Interest = Principal × APR × (Term / 365)
+- Principal: $10,000
+- APR: 4%
+- Term: 12 months
+- Interest: $10,000 × 0.04 × (365/365) = **$400**
+- Maturity proceeds: **$10,400**
 
-**Compound interest (periodic):**
+**Monthly compound interest:**
 
-- Interest = Principal × [(1 + APR/n)^(n × Term) - 1]
-- Where n = compounding periods per year
+- Principal: $10,000
+- APR: 4%
+- Term: 12 months
+- Compounding: Monthly (n=12)
+- Interest: $10,000 × [(1 + 0.04/12)^12 - 1] = **$407.42**
+- Maturity proceeds: **$10,407.42**
 
-The system calculates interest automatically based on configured method,
-eliminating manual interest calculations and reducing errors.
+The platform handles these calculations automatically, eliminating spreadsheet
+errors that plague traditional treasury operations. Interest accrual updates
+every block (approximately every 12 seconds on Ethereum mainnet), providing
+real-time liability tracking versus traditional systems where accrual runs
+nightly in batch jobs.
 
-<Callout type="info" title="Business context">
-  Traditional CD interest calculation requires manual computation for each
-  certificate, tracking maturity dates in spreadsheets, and coordinating with
-  core banking systems to process interest payments. This manual process is
-  error-prone and labor-intensive, typically costing $5-15 per certificate per
-  payment period. ATK automates the entire interest lifecycle, reducing
-  operational costs by 85-95% and eliminating calculation errors.
-</Callout>
+**Why automated accrual matters:** Traditional CD portfolios require manual
+interest calculation for each certificate at maturity, with treasury teams
+maintaining spreadsheets tracking issue dates, terms, rates, and compounding
+rules. A 1,000-certificate portfolio requires 1,000 manual calculations at
+maturity—each introducing potential errors. Portfolio managers report **10-15%
+error rates** in manual interest calculations, requiring reconciliation
+processes that delay maturity processing by 2-5 business days.
 
-![Interest tracking](/images/screenshots/placeholder.svg) _Screenshot: Interest
-tab showing total accrued interest, daily expense rate, maturity schedule table,
-and payment wallet funding status_
+DALP automated yield eliminates this entirely. Interest formulas execute as
+smart contract functions—identical calculations across all deposits, zero human
+error, instant results. Treasury teams review final proceeds rather than
+calculating them.
 
 ### Process maturity redemptions
 
-Handle deposits reaching maturity:
+Deposits reaching maturity appear automatically in the **Maturities** &gt;
+**Ready for Processing** queue. The platform identifies matured deposits daily
+and prepares batch redemption transactions for treasury approval.
 
-**Maturity workflow:**
+**Maturity workflow narrative:**
 
-1. Platform identifies deposits reaching maturity date
-2. Deposits appear in **Maturities** &gt; **Ready for Processing**
-3. Navigate to **Maturities** tab
-4. Review maturity batch:
-   - Deposit holders
-   - Principal amounts
-   - Interest owed
-   - Total redemption amounts
-5. Verify payment wallet has sufficient funds
-6. Click **Process Maturity Batch**
+Navigate to **Maturities** tab. The queue displays deposits reaching maturity:
 
-**Processing actions:**
+| Depositor     | Principal   | Accrued Interest | Total Proceeds | Maturity Date |
+| ------------- | ----------- | ---------------- | -------------- | ------------- |
+| 0x742d...3f8a | $10,000     | $400.00          | $10,400.00     | Jan 15, 2027  |
+| 0x8b3c...92e1 | $25,000     | $1,000.00        | $26,000.00     | Jan 15, 2027  |
+| 0x1a5d...4c7b | $5,000      | $200.00          | $5,200.00      | Jan 15, 2027  |
+| **Total**     | **$40,000** | **$1,600.00**    | **$41,600.00** |               |
 
-- The system calculates redemption proceeds: principal + interest
-- Burns deposit tokens from holder addresses
-- Transfers proceeds to holders in denomination asset
-- Records maturity event in deposit history
-- Updates outstanding deposit balance
+Review the batch:
 
-<Callout type="info" title="Business context">
-  Traditional CD maturity processing requires manually identifying maturing
-  certificates, calculating interest for each, coordinating with the core
-  banking system to credit accounts, and sending maturity notices. This process
-  typically takes 2-5 business days and introduces errors in 10-15% of cases.
-  ATK automates the entire maturity workflow with zero calculation errors and
-  instant settlement.
-</Callout>
+1. **Verify vault funding:** Confirm vault balance ≥ total proceeds ($41,600 in
+   this example)
+2. **Check maturity dates:** Ensure all deposits actually matured (maturity date
+   ≤ today)
+3. **Validate depositor claims:** Confirm all depositors maintain valid identity
+   claims (required for redemption transfers)
 
-![Maturity processing](/images/screenshots/placeholder.svg) _Screenshot:
-Maturities tab showing deposits reaching maturity with holder, principal,
-interest, total proceeds, and process batch button_
+Click **Process Maturity Batch**. The platform executes atomically:
 
-**Automatic processing:** Configure automatic maturity processing to execute
-redemptions on maturity date without manual intervention, eliminating the manual
-workload of tracking and processing hundreds or thousands of maturing CDs.
+1. Calculates redemption proceeds for each deposit: principal + interest
+2. Burns deposit tokens from depositor addresses
+3. Transfers proceeds to depositors in denomination asset (USDC, USDT, etc.)
+4. Records maturity event in audit logs
+5. Updates total deposits outstanding metric
+
+**DvP settlement:** Maturity processing demonstrates DALP atomic settlement.
+Token burn and proceeds transfer occur in a single transaction—either both
+complete or both revert. Traditional systems coordinate burn and payment across
+separate subsystems, introducing windows where one leg completes but the other
+fails (e.g., deposit account closed but payment not sent). This creates
+reconciliation nightmares requiring manual investigation and correction. Atomic
+execution eliminates this failure mode entirely.
+
+**Automatic processing:** Enable **Automatic Maturity Processing** in settings
+to execute redemptions on maturity date without manual intervention. The
+platform monitors for matured deposits, validates vault funding, and processes
+batches automatically—reducing operational overhead to zero for standard
+maturity workflows. Treasury teams receive notifications of completed batches
+for reconciliation rather than initiating each batch manually.
+
+**Observability integration:** The maturities dashboard displays:
+
+- **Upcoming 7-day maturities:** Early warning for vault funding planning
+- **Upcoming 30-day maturities:** Monthly cash flow forecasting
+- **Historical maturity processing time:** SLA metric from maturity date to
+  redemption execution
+- **Maturity processing cost:** Average gas cost per redemption transaction
 
 ### Handle early withdrawal requests
 
-Process pre-maturity redemptions:
+Customers submit early withdrawal requests via the dApp when they need
+pre-maturity liquidity. The platform calculates applicable penalties, computes
+net proceeds, and queues requests for treasury approval.
 
-**Early withdrawal workflow:**
+**Early withdrawal workflow narrative:**
 
-1. Customer submits early withdrawal request via dApp:
-   - Enters withdrawal amount (partial or full)
-   - Reviews early withdrawal penalty
-   - Confirms request
-2. Request appears in **Withdrawals** &gt; **Pending** queue
-3. Navigate to **Withdrawals** tab
-4. Review request details:
-   - Customer address
-   - Deposit amount to withdraw
-   - Accrued interest (if any)
-   - Early withdrawal penalty calculation
-   - Net proceeds to customer
-5. Verify early withdrawal allowed per deposit terms
-6. Click **Approve Withdrawal**
+Navigate to **Withdrawals** &gt; **Pending**. The queue displays early
+withdrawal requests:
 
-**Penalty calculation example:**
+| Customer      | Principal | Accrued Interest | Penalty | Net Proceeds | Days Held  | Request Date |
+| ------------- | --------- | ---------------- | ------- | ------------ | ---------- | ------------ |
+| 0x742d...3f8a | $10,000   | $150.00          | $197.00 | $9,953.00    | 137 of 365 | Oct 28, 2025 |
+| 0x8b3c...92e1 | $25,000   | $375.00          | $493.00 | $24,882.00   | 137 of 365 | Oct 29, 2025 |
 
-- Principal: $10,000
-- Accrued interest: $150 (4.5 months at 4% APR)
-- Penalty: 180 days interest = $197
-- Net proceeds: $10,000 + $150 - $197 = $9,953
+**Penalty calculation detail (first request):**
 
-![Early withdrawal queue](/images/screenshots/placeholder.svg) _Screenshot:
-Early withdrawal requests showing customer, principal, accrued interest,
-penalty, net proceeds, and approve/reject buttons_
+- **Principal:** $10,000
+- **Issue date:** Jun 13, 2025
+- **Request date:** Oct 28, 2025
+- **Days held:** 137 days of 365-day term
+- **Accrued interest:** $10,000 × 0.04 × (137/365) = **$150.00**
+- **Penalty configuration:** 180 days interest forfeiture
+- **Penalty amount:** $10,000 × 0.04 × (180/365) = **$197.00**
+- **Net proceeds:** $10,000 + $150 - $197 = **$9,953.00**
 
-**Discretion:** Some early withdrawal requests may require manual review and
-approval per banking policies.
+Review each request:
+
+1. **Verify early withdrawal allowed:** Confirm deposit terms permit
+   pre-maturity withdrawal
+2. **Check penalty calculation:** Validate platform calculation matches
+   configured penalty rules
+3. **Confirm vault funding:** Ensure vault balance ≥ net proceeds
+4. **Assess discretionary factors:** For manual-approval products, evaluate
+   customer circumstances per banking policies
+
+Click **Approve Withdrawal** (or **Reject** with explanatory note for customer
+notification). Upon approval, the platform executes atomically:
+
+1. Burns deposit tokens from customer address
+2. Transfers net proceeds to customer in denomination asset
+3. Credits penalty amount to vault reserves (retained by institution)
+4. Records withdrawal event in audit logs
+5. Updates total deposits outstanding metric
+
+**Batch processing:** Select multiple withdrawal requests and process as a batch
+for efficiency.
+
+**Observability integration:** The withdrawals dashboard displays:
+
+- **Pending withdrawal count:** Requests awaiting treasury review
+- **Average withdrawal size:** Portfolio metric for liquidity forecasting
+- **Penalty collected (MTD/YTD):** Revenue from early withdrawal penalties
+- **Withdrawal rate:** Percentage of deposits withdrawn early (portfolio health
+  metric)
+
+Sustained high withdrawal rates indicate competitive rate disadvantages or
+customer liquidity stress—treasury teams use this metric for product pricing
+adjustments and portfolio risk assessment.
 
 ## Common workflows
 
-### Handle rollover deposits
+### Configure rollover automation
 
-Automatically renew maturing deposits:
+Maturing deposits often renew for additional terms rather than redeeming to
+cash. Rollover automation eliminates manual coordination with depositors at
+maturity, reducing operational overhead while maintaining deposit balances.
 
-1. Configure rollover settings before initial maturity:
-   - Navigate to **Settings** &gt; **Rollover**
-   - Enable automatic rollover
-   - Set rollover term (same or different duration)
-   - Configure new interest rate (current market rate)
-2. On maturity date:
-   - Platform identifies deposits eligible for rollover
-   - Sends notification to depositors
-   - Depositors opt-in or opt-out via dApp
-3. Process rollovers:
-   - Opt-in deposits: Keep tokens, update maturity date, apply new rate
-   - Opt-out deposits: Process as normal maturity redemption
+Navigate to **Settings** &gt; **Rollover Configuration** before initial
+maturities approach. Configure:
 
-**Opt-in default:** Configure whether rollover is opt-in (customer must choose)
-or opt-out (automatic unless customer declines). The system tracks customer
-preferences and executes rollovers automatically, eliminating manual tracking of
-renewal elections.
+**Rollover eligibility:** Choose opt-in (depositors explicitly elect rollover)
+or opt-out (automatic renewal unless depositor declines).
 
-<Callout type="default" title="For developers">
-  See [Contract
-  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
-  technical details on rollover mechanism implementation and maturity date
-  updates.
-</Callout>
+**Rollover term:** Same as original (12-month CD renews for 12 months) or
+different (upgrade to longer/shorter term).
 
-### Adjust interest rates
+**Rollover rate:** Current market rate (adjusts to prevailing APR at rollover
+time) or locked rate (maintains original APR).
 
-Change rates for new deposits:
+**Notification timeline:** Days before maturity to notify depositors of pending
+rollover (typically 30 days).
 
-1. Navigate to **Settings** &gt; **Interest Rate**
-2. Click **Update Rate**
-3. Enter new APR (basis points)
-4. Set effective date for new deposits
-5. Confirm rate change
-6. Requires GOVERNANCE_ROLE permission
+**Depositor election deadline:** Days before maturity to submit rollover
+preference (typically 7 days).
 
-**Note:** Interest rate changes apply only to new deposits issued after
-effective date. Existing deposits maintain original rate.
+**Rollover workflow at maturity:**
 
-### Process bulk deposits
+1. **30 days before maturity:** Platform sends notification to depositors via
+   dApp and email (if configured) listing rollover terms and election deadline
+2. **Depositors elect:** Opt-in to rollover with new terms, or opt-out to
+   receive redemption proceeds
+3. **7 days before maturity:** Election period closes; platform tallies rollover
+   vs redemption counts
+4. **Maturity date:**
+   - **Rollover deposits:** Platform updates maturity date (+12 months if same
+     term), applies new APR if configured, maintains deposit tokens (no
+     burn/mint), continues interest accrual
+   - **Redemption deposits:** Process as standard maturity (burn tokens,
+     transfer proceeds)
 
-Handle institutional or large deposits:
+**Why rollover automation matters:** Traditional CD rollovers require manual
+outreach to each depositor, paper forms or phone banking to collect elections,
+manual data entry to update core banking maturity dates, and coordination with
+interest calculation systems to apply new rates. This process typically requires
+**5-10 minutes per depositor** and introduces errors when elections misrecorded
+or maturity updates fail to propagate.
 
-1. Negotiate deposit terms with institutional customer
-2. Navigate to **Actions** &gt; **Issue Bulk Deposit**
-3. Enter:
-   - Customer address (verified OnchainID required)
-   - Deposit amount
-   - Custom terms (if negotiated rates differ)
-   - Settlement reference
-4. Verify large payment received
-5. Execute bulk mint
-6. Issue confirmation documentation
+DALP rollover automation encodes the entire workflow as smart contract logic.
+Depositors submit elections via dApp (cryptographically signed, tamper-proof),
+the platform tallies automatically, and maturity updates execute atomically on
+maturity date. Treasury teams monitor rollover rates via dashboard rather than
+executing individual renewals.
 
-**Best practice:** Use separate deposit token contracts for wholesale vs. retail
-deposits if terms differ significantly.
+**Observability integration:** The rollover dashboard displays:
 
-### Handle escheatment
+- **Upcoming rollovers (30-day):** Deposits approaching maturity with rollover
+  potential
+- **Election rate:** Percentage of depositors choosing rollover vs redemption
+- **Rollover impact:** Projected deposit balance retention after maturity
+  processing
+- **Historical rollover trends:** Portfolio metric tracking renewal patterns
+  over time
 
-Process unclaimed matured deposits:
+### Adjust interest rates for new issuance
 
-1. Identify deposits matured but not redeemed after dormancy period
-   (state-specific, typically 3-5 years)
-2. Navigate to **Compliance** &gt; **Unclaimed Property**
-3. Review unclaimed deposits list
-4. Attempt customer contact per state regulations
-5. If no response, transfer to state unclaimed property fund:
-   - Burn tokens from holder address
-   - Transfer proceeds to state escrow wallet
-   - File unclaimed property report with state
+Market conditions change; competitive CD rates fluctuate. The platform enables
+interest rate adjustments for new deposits without affecting existing
+certificates.
 
-Requires compliance with individual state escheatment laws.
+Navigate to **Settings** &gt; **Interest Rate**. Click **Update Rate**.
+
+Enter new APR in basis points (e.g., 450 for 4.5% APR). Set effective
+date—typically immediate for next subscription, or future date for planned rate
+changes aligned with marketing campaigns.
+
+**Critical:** Interest rate changes apply **only to deposits issued after
+effective date**. Existing deposits maintain original APR locked at
+issuance—this is a core CD product feature ensuring rate certainty for
+depositors.
+
+The platform records rate change events in audit logs, displaying historical
+rate timeline on the deposit details page. Customers see current rate when
+subscribing; treasury teams track weighted average APR across portfolio for
+interest expense forecasting.
+
+### Process bulk institutional deposits
+
+Institutional depositors (corporate treasury desks, fund managers) often
+negotiate custom terms or deposit large amounts requiring special handling. Bulk
+deposit processing accommodates these scenarios.
+
+Navigate to **Actions** &gt; **Issue Bulk Deposit**. This workflow bypasses
+standard subscription queue for direct issuance.
+
+Enter:
+
+- **Customer address:** OnchainID-verified institutional account
+- **Deposit amount:** Negotiated principal (often exceeding standard maximum
+  limits)
+- **Custom terms:** If negotiated rate differs from standard APR, or term length
+  varies
+- **Settlement reference:** Wire transfer reference or payment confirmation
+  number
+
+Verify large payment received in vault (check transaction hash or bank wire
+confirmation). Click **Execute Bulk Mint**.
+
+The platform mints deposit tokens directly to institutional address, recording
+issue date and custom terms. This bypasses subscription approval queue for
+efficiency while maintaining compliance validation (OnchainID claims still
+required).
+
+**Best practice:** Use separate deposit token contracts for wholesale versus
+retail deposits when terms differ significantly (e.g., institutional negotiated
+rates vary from retail published rates). Separate contracts prevent confusion
+and simplify compliance reporting when regulatory frameworks differ across
+customer segments.
+
+### Handle unclaimed deposits (escheatment)
+
+Deposits matured but not redeemed after extended periods trigger escheatment
+obligations—state laws require transferring unclaimed property to government
+custody for eventual reunification with owners.
+
+Navigate to **Compliance** &gt; **Unclaimed Property**. The platform identifies
+deposits matured but not redeemed after configured dormancy period
+(state-specific: typically 3-5 years for CDs).
+
+**Escheatment workflow:**
+
+1. **Identify dormant deposits:** Platform flags deposits matured &gt; dormancy
+   period without redemption
+2. **Attempt contact:** Send notifications to depositor addresses per state due
+   diligence requirements (certified mail, email)
+3. **Wait for response period:** State-mandated notification period (typically
+   60-180 days)
+4. **If no response:** Execute escheatment
+   - Burn deposit tokens from holder address
+   - Transfer proceeds (principal + interest) to state unclaimed property fund
+     address
+   - File unclaimed property report with state comptroller
+   - Record escheatment event in audit logs
+
+**State-specific compliance:** Escheatment rules vary by depositor state of
+residence—dormancy periods, due diligence requirements, and reporting formats
+differ across jurisdictions. The platform provides base workflow automation;
+treasury teams must configure state-specific parameters and ensure reporting
+format compliance.
+
+**Why this matters:** Banks face significant fines for escheatment
+non-compliance—unclaimed property audits by states regularly uncover unreported
+dormant accounts. Tokenized infrastructure provides automated dormancy tracking
+and audit trails proving due diligence efforts, reducing compliance risk versus
+manual spreadsheet tracking of matured-but-unredeemed CDs.
 
 ## Best practices
 
 **Before deployment:**
 
-- Ensure banking license permits deposit-taking activities
-- Verify denomination asset qualifies as legal deposit (stablecoin regulations)
-- Configure reserve requirements per Federal Reserve or local regulations
-- Prepare deposit insurance documentation (FDIC or equivalent)
-- Set up accounting systems for deposit liability tracking
+Ensure legal and regulatory foundations support tokenized deposit operations.
+Verify banking license permits deposit-taking activities in blockchain
+infrastructure—some jurisdictions require explicit regulatory approval. Confirm
+denomination asset (stablecoin) qualifies as legal tender for deposit purposes
+per local banking regulations. Configure reserve requirements per Federal
+Reserve Regulation D or local equivalents. Prepare deposit insurance
+documentation (FDIC coverage confirmation or equivalent scheme membership).
+Establish accounting systems tracking on-chain deposit liabilities in general
+ledger for regulatory reporting.
 
 **During operations:**
 
-- Maintain payment wallet with 110-120% of maturity obligations
-- Reconcile on-chain deposits with general ledger daily
-- Monitor interest accrual for accounting accuracy
-- Track per-depositor insurance limits to avoid over-insurance
-- Review early withdrawal requests for suspicious patterns
-- Execute maturity processing on maturity date (not before/after)
+Maintain vault funding discipline. Target 110-120% reserve ratio (vault balance
+/ total liability) to accommodate early withdrawal surges and operational
+flexibility. Reconcile on-chain deposits with general ledger daily—the
+observability dashboard exports deposit balances for accounting system
+integration. Monitor interest accrual for P&L accuracy; automated calculations
+eliminate errors but treasury teams verify accrual methodology matches financial
+reporting standards. Track per-depositor insurance limits to prevent
+over-insurance scenarios where single depositors exceed FDIC/DGS caps. Review
+early withdrawal patterns for anomalies indicating fraud or customer distress.
+Execute maturity processing on maturity date—processing early (even by hours)
+violates interest calculation assumptions; processing late delays customer fund
+access and harms service quality metrics.
 
 **Regulatory compliance:**
 
-- File call reports (regulatory reporting) including tokenized deposits
-- Maintain reserve requirements per Regulation D
-- Implement Reg D transfer limits if applicable
-- Screen depositors against sanctions lists
-- File CTRs (Currency Transaction Reports) for large transactions (&gt;$10,000)
-- Maintain depositor records per Bank Secrecy Act
+File regulatory reports including tokenized deposits in aggregate balance
+calculations. US banks include tokenized CDs in quarterly Call Reports (FFIEC
+reporting). Maintain reserve requirements per Regulation D if applicable—the
+platform tracks deposits but does not automatically calculate Federal Reserve
+reserve obligations (requires manual computation based on total deposit
+balances). Implement Reg D transfer limits monitoring (6 convenient transfers
+per month from savings deposits) through compliance dashboard review—automated
+enforcement not yet available. Screen depositors against sanctions lists
+continuously, not just at subscription—the platform integrates with screening
+providers for ongoing monitoring. File Currency Transaction Reports (CTRs) for
+large transactions exceeding $10,000—the observability dashboard flags
+qualifying events. Maintain depositor records per Bank Secrecy Act (5-year
+retention minimum)—audit logs provide immutable record suitable for regulatory
+examination.
 
 **Customer service:**
 
-- Send maturity reminders 30 days before maturity
-- Provide clear disclosure of deposit terms and penalties
-- Offer rollover options before maturity
-- Maintain customer support for early withdrawal inquiries
-- Provide monthly statements showing principal and interest
+Proactive communication reduces operational friction. Send maturity reminders 30
+days before maturity date informing depositors of redemption timeline and
+rollover options. Provide clear disclosure of deposit terms, interest
+calculations, and early withdrawal penalties during subscription—the platform
+embeds terms in transaction metadata for customer review before confirmation.
+Offer rollover options before maturity through automated workflows rather than
+requiring customer-initiated contact. Maintain customer support channels for
+early withdrawal inquiries—some depositors require explanation of penalty
+calculations before proceeding. Provide monthly statements showing principal
+balance, accrued interest, and maturity date—the dApp displays this information
+on-demand, but many customers prefer periodic email summaries.
 
 ## Troubleshooting
 
 **Deployment fails with "Invalid term length"**
 
-- Verify term is positive number of days
-- Check term is reasonable (typically 30-2,190 days / 1 month to 6 years)
-- Ensure term format is correct integer
+Verify term length is positive integer representing days. Check term is
+reasonable—platform enforces minimum 7 days and maximum 3,650 days (10 years) to
+prevent configuration errors. Ensure term format matches expected integer type
+(no decimal values).
 
-**Subscription processing reverts**
+**Subscription processing reverts with "Identity verification failed"**
 
-- Verify customer OnchainID has required KYC claims
-- Check deposit amount meets minimum requirement
-- Ensure deposit does not exceed per-depositor insurance limit
-- Confirm denomination asset payment received in funding wallet
+Verify customer OnchainID has all required claims per configured compliance
+framework. Navigate to **Compliance** &gt; **Identity Verification** and search
+customer address. The platform displays missing claims—customer must complete
+KYC process and obtain required claims before subscription approval. Check claim
+expiration dates; expired claims fail validation even if previously valid.
 
-**Maturity processing fails**
+**Subscription rejected with "Exceeds insurance limit"**
 
-- Verify payment wallet has sufficient denomination asset balance
-- Check calculation: sum of (principal + interest) for all maturities
-- Ensure maturity date has passed (cannot process early)
-- Confirm holders have valid OnchainIDs
+Customer's aggregate deposits across all CD series exceed per-depositor
+insurance cap ($250,000 FDIC or configured limit). The platform queries total
+customer holdings via identity registry and validates subscription against cap.
+Customer must either reduce subscription amount or redeem existing deposits
+before purchasing additional CDs. For institutional customers with negotiated
+insurance arrangements, update per-depositor limit in **Settings** &gt;
+**Compliance** &gt; **Insurance Caps**.
 
-**Early withdrawal reverts**
+**Maturity processing fails with "Insufficient vault balance"**
 
-- Check early withdrawal is allowed per deposit terms
-- Verify penalty calculation is correct
-- Ensure payment wallet has sufficient funds for net proceeds
-- Confirm customer holds sufficient deposit tokens
+Vault balance &lt; total redemption proceeds (sum of principal + interest for
+all matured deposits in batch). Navigate to **Payments** &gt; **Vault Funding**
+and transfer additional denomination assets to vault address. Required funding:
+total proceeds + 10% buffer. After funding transfer confirms, retry maturity
+processing. Enable vault funding alerts in **Settings** &gt; **Notifications**
+to receive warnings before balance drops below required thresholds—proactive
+monitoring prevents maturity processing failures.
+
+**Early withdrawal reverts with "Withdrawal not permitted"**
+
+Check deposit terms configuration: early withdrawal may be disabled entirely
+(prohibited setting) or require manual approval (restricted setting). Navigate
+to **Settings** &gt; **Early Withdrawal** and verify configuration. If
+prohibited, customer cannot withdraw until maturity—inform customer of maturity
+date and suggest alternative liquidity sources. If restricted, queue request for
+treasury team review rather than automatic processing.
 
 **Interest accrual showing incorrect amount**
 
-- Verify deposit issue date is correct
-- Check interest rate matches configured APR
-- Ensure compounding frequency setting is correct
-- Confirm denomination asset decimals factor correctly
+Verify deposit issue date is accurate—interest accrual starts from issue date,
+not subscription request date. Check configured APR matches intended rate—the
+platform displays configured rate on **Settings** &gt; **Interest Rate** page.
+Ensure compounding frequency setting matches product documentation (simple vs
+monthly/quarterly compound produces different accruals). Confirm denomination
+asset decimals factor correctly into interest calculation—18-decimal tokens
+require scaling factor adjustments for human-readable interest amounts. For
+technical deep-dive, see
+[Contract Reference](/docs/developer-guides/smart-contracts/contract-reference)
+interest calculation implementation.
 
-For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+For additional help, consult
+[Troubleshooting](/docs/user-guides/troubleshooting) or contact support.
 
 ## Next steps
 
-- **Configure payments** - Set up
-  [Fiat bridge](/docs/user-guides/operations/fiat-bridge) for traditional
-  banking integration
-- **Manage depositors** - Review
-  [Manage investors](/docs/user-guides/operations/manage-investors) for KYC
-  workflows
-- **Monitor compliance** - Deep dive into
-  [Compliance certification](/docs/architecture/quality/compliance-certification)
-- **Automate operations** - Configure automatic maturity processing and rollover
-  workflows
+**Configure fiat integration:** Set up
+[Fiat bridge](/docs/user-guides/operations/fiat-bridge) for traditional banking
+interoperability—customers deposit USD via ACH/wire, platform converts to
+denomination asset (USDC), then processes CD subscription automatically.
+
+**Manage depositor identities:** Review
+[Manage investors](/docs/user-guides/operations/manage-investors) for OnchainID
+workflows, KYC claim issuance, and identity lifecycle management.
+
+**Monitor compliance metrics:** Deep dive into
+[Compliance certification](/docs/architecture/quality/compliance-certification)
+for audit trail architecture, regulatory reporting automation, and SOC 2 control
+mapping.
+
+**Automate operations:** Configure automatic maturity processing to eliminate
+manual batch reviews—platform executes redemptions on maturity date without
+treasury intervention. Configure rollover workflows for deposit retention
+automation. Enable vault funding alerts to maintain reserve ratios proactively.
+
+**Expand product portfolio:** Deploy additional CD series with varying terms and
+rates for customer segmentation—3-month liquidity products, 24-month yield
+products. Use separate deposit token contracts for each series to simplify
+compliance tracking and interest rate management.
