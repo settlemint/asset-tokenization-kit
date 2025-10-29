@@ -1,11 +1,15 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { BasicInfoTile } from "@/components/participants/users/tiles/basic-info-tile";
+import { Badge } from "@/components/ui/badge";
 import { getUserDisplayName } from "@/lib/utils/user-display-name";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import * as z from "zod";
 
 const routeParamsSchema = z.object({
@@ -95,18 +99,89 @@ function RouteComponent() {
   );
 
   const user = queriedUser ?? loaderUser;
-  const displayName = getUserDisplayName(user);
+  type ExtendedUser = typeof user & {
+    roles?: Partial<Record<AccessControlRoles, boolean>>;
+    isAdmin?: boolean | null;
+    isRegistered?: boolean;
+    identity?: string | null;
+  };
+
+  const detailedUser = user as ExtendedUser;
+  const displayName = getUserDisplayName(detailedUser);
+  const { t } = useTranslation("user");
+  const isAdminType =
+    Boolean(detailedUser.isAdmin) ||
+    Boolean(detailedUser.roles?.admin) ||
+    Boolean(detailedUser.roles?.systemManager);
+  const isTrustedIssuerType =
+    Boolean(detailedUser.roles?.claimIssuer) ||
+    Boolean(detailedUser.roles?.trustedIssuersMetaRegistryModule);
+  const participantTypeKey = isAdminType
+    ? ("admin" as const)
+    : isTrustedIssuerType
+      ? ("trustedIssuer" as const)
+      : ("investor" as const);
+  const isRegistered = Boolean(detailedUser.isRegistered);
+  const statusKey = isRegistered ? "registered" : "pending";
+  const walletAddress = detailedUser.wallet ?? null;
+  const identityAddress = detailedUser.identity ?? null;
+  const noValueLabel = t("management.table.fallback.none");
+  const truncated = (value: string) =>
+    value.length <= 12 ? value : `${value.slice(0, 6)}…${value.slice(-4)}`;
 
   return (
     <div className="space-y-6 p-6">
       {/* Header Section */}
-      <div className="space-y-2">
-        <RouterBreadcrumb />
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold tracking-tight">
-              {displayName || user.email}
-            </h1>
+      <RouterBreadcrumb />
+      <div className="space-y-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <h1 className="text-3xl font-bold tracking-tight mr-2">
+            {displayName || user.email}
+          </h1>
+          <Badge variant="outline">
+            {t(`management.table.type.${participantTypeKey}`)}
+          </Badge>
+          <Badge variant={isRegistered ? "default" : "outline"}>
+            {t(`management.table.status.${statusKey}`)}
+          </Badge>
+        </div>
+        {user.email ? (
+          <p className="text-sm text-muted-foreground">{user.email}</p>
+        ) : null}
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wide">
+              {t("management.table.columns.wallet")}
+            </span>
+            {walletAddress ? (
+              <CopyToClipboard
+                value={walletAddress}
+                className="inline-flex items-center gap-2"
+              >
+                <Badge variant="outline" className="font-mono">
+                  {truncated(walletAddress)}
+                </Badge>
+              </CopyToClipboard>
+            ) : (
+              <span>{noValueLabel}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wide">
+              {t("management.table.columns.identity")}
+            </span>
+            {identityAddress ? (
+              <CopyToClipboard
+                value={identityAddress}
+                className="inline-flex items-center gap-2"
+              >
+                <Badge variant="outline" className="font-mono">
+                  {truncated(identityAddress)}
+                </Badge>
+              </CopyToClipboard>
+            ) : (
+              <span>{noValueLabel}</span>
+            )}
           </div>
         </div>
       </div>
