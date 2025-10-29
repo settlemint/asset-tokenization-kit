@@ -1,129 +1,259 @@
 ---
 title: Using the API
 description:
-  Complete guide to using the ORPC API in the Asset Tokenization Kit dApp
-pageTitle: How to use the ORPC API for frontend development
-tags: [how-to, api, orpc, frontend, tanstack-query]
+  Build DALP lifecycle operations with type-safe ORPC procedures. This guide
+  shows how to implement vault operations, DvP settlements, and yield claims
+  through composable API patterns that connect React components to blockchain
+  contracts and database state.
+pageTitle: Type-safe API integration for DALP asset operations
+tags: [how-to, api, orpc, frontend, tanstack-query, dalp, type-safety]
 ---
 
-This guide shows you how to use the type-safe ORPC API to build features in the
-Asset Tokenization Kit dApp. You'll learn how to call API procedures, handle
-mutations and queries, and integrate with TanStack Query for optimal data
-fetching.
+The Asset Tokenization Kit API layer bridges frontend components to blockchain
+operations and database state through ORPC—a type-safe RPC framework that
+enforces contracts at compile time. Unlike REST endpoints that accept arbitrary
+JSON, ORPC procedures validate inputs with Zod schemas and infer TypeScript
+types automatically, preventing runtime errors before deployment.
 
-## Understanding ORPC
+This architecture matters because DALP lifecycle operations—creating vaults,
+executing DvP settlements, distributing yield—require coordination across smart
+contracts, indexers, and database tables. A single operation might call a
+Hardhat deployment script, query TheGraph for indexed events, update PostgreSQL
+records, and invalidate TanStack Query caches. ORPC's middleware stack
+orchestrates these layers while maintaining end-to-end type safety from React
+form to Solidity function.
 
-ORPC (Open Remote Procedure Call) is a type-safe RPC framework that powers the
-ATK API layer. It provides:
+## ORPC architecture for DALP operations
 
-- **End-to-end type safety**: Input and output types are inferred automatically
-  from Zod schemas
-- **Isomorphic execution**: Same code runs on server (direct calls) and client
-  (HTTP requests)
-- **TanStack Query integration**: Automatic query and mutation hooks
-- **Contract-first design**: API contracts define the shape of every endpoint
-- **Middleware composition**: Layered authentication, validation, and context
-  enrichment
+The API layer implements a layered architecture where procedures compose
+middleware to enrich context, enforce authorization, and inject services.
 
-The API is organized into **routes** (grouped endpoints) that use **procedures**
-(middleware stacks) to enforce access control and provide context.
+<Mermaid
+  chart={`flowchart TB
+    Client(React Component<br/>useSuspenseQuery / useMutation)
+    ORPC(ORPC Client<br/>orpc.token.create)
+    Procedure(Procedure Middleware<br/>authRouter / onboardedRouter)
+    Handler(Route Handler<br/>Business Logic)
+    Services(Service Layer)
+    Blockchain(Smart Contracts<br/>via Viem)
+    Database(PostgreSQL<br/>via Drizzle ORM)
+    Indexer(TheGraph<br/>Subgraph Queries)
+    
+    Client --> ORPC
+    ORPC --> Procedure
+    Procedure --> Handler
+    Handler --> Services
+    Services --> Blockchain
+    Services --> Database
+    Services --> Indexer
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    
+    class Client,ORPC primary
+    class Procedure,Handler secondary
+    class Services tertiary
+    class Blockchain,Database,Indexer quaternary
+`}
+/>
 
-## Client setup
+### Why this architecture
 
-The ORPC client is pre-configured and available globally. Import it in your
-components:
+Traditional REST APIs require manual validation, authentication checks scattered
+across endpoints, and hand-written TypeScript types that drift from runtime
+behavior. ORPC procedures centralize these concerns in middleware stacks that
+compose vertically—`publicRouter` adds error formatting and i18n, `authRouter`
+enforces authentication, `onboardedRouter` verifies KYC completion and injects
+identity claims.
+
+For DALP operations, this means a token creation endpoint automatically
+validates that the user completed onboarding, loads their OnchainID claims,
+checks their wallet connection, and injects the system's token factory
+addresses—all before the handler executes. The handler focuses purely on
+business logic: validating bond parameters, deploying the contract via Hardhat,
+indexing the deployment in TheGraph, recording metadata in PostgreSQL.
+
+## Client setup and isomorphic execution
+
+The ORPC client adapts its transport based on execution context—server-side it
+calls routers directly, client-side it sends HTTP requests. Import the
+pre-configured client:
 
 ```typescript
 import { orpc } from "@/orpc/orpc-client";
 ```
 
-### Isomorphic behavior
+### Server-side execution in loaders
 
-The client adapts to where it runs:
+TanStack Router loaders run on the server during SSR and prefetching. The ORPC
+client detects this environment and invokes handlers directly without HTTP
+overhead:
 
-**Server-side (SSR/loaders)**:
+```typescript
+import { createFileRoute } from "@tanstack/react-router";
 
-- Direct router calls (no HTTP overhead)
-- Headers from TanStack Start automatically included
-- Perfect for data prefetching in route loaders
+export const Route = createFileRoute("/vaults/$vaultId")({
+  loader: async ({ params, context: { queryClient, orpc: orpcClient } }) => {
+    // Direct router invocation - no HTTP request
+    await queryClient.ensureQueryData(
+      orpcClient.vault.read.queryOptions({
+        input: { id: params.vaultId },
+      })
+    );
 
-**Client-side (browser)**:
+    // Prefetch related vault operations and reserve metrics
+    await Promise.all([
+      queryClient.ensureQueryData(
+        orpcClient.vault.reserves.queryOptions({
+          input: { vaultId: params.vaultId },
+        })
+      ),
+      queryClient.ensureQueryData(
+        orpcClient.vault.operations.queryOptions({
+          input: { vaultId: params.vaultId, limit: 20 },
+        })
+      ),
+    ]);
 
-- HTTP requests to `/api/rpc` endpoint
-- Credentials automatically included for authentication
-- Optimistic updates and cache management
+    return { vaultId: params.vaultId };
+  },
+  component: VaultDetailsPage,
+});
 
-## Making queries
+function VaultDetailsPage() {
+  const { vaultId } = Route.useLoaderData();
 
-Queries fetch data and integrate with TanStack Query for caching and background
-updates.
+  // Data already cached from loader
+  const { data: vault } = useSuspenseQuery(
+    orpc.vault.read.queryOptions({ input: { id: vaultId } })
+  );
 
-### Basic query usage
+  return <VaultDashboard vault={vault} />;
+}
+```
 
-Use `useSuspenseQuery` for guaranteed data or `useQuery` for optional loading
-states:
+### Client-side execution in components
+
+Browser environments send HTTP requests to `/api/rpc` with automatic credential
+inclusion:
 
 ```typescript
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { orpc } from "@/orpc/orpc-client";
 
-function UserProfile() {
-  // Suspense boundary handles loading state
-  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
-
-  return <div>{user.email}</div>;
-}
-```
-
-### Query with parameters
-
-Pass input through `queryOptions`:
-
-```typescript
-function TokenDetails({ tokenId }: { tokenId: string }) {
-  const { data: token } = useSuspenseQuery(
-    orpc.token.read.queryOptions({
-      input: { id: tokenId },
+function VaultReserveRatio({ vaultId }: { vaultId: string }) {
+  // HTTP request in browser, direct call in SSR
+  const { data: reserves } = useSuspenseQuery(
+    orpc.vault.reserves.queryOptions({
+      input: { id: vaultId },
     })
   );
 
+  const ratio = (reserves.balance / reserves.totalSupply) * 100;
+
   return (
     <div>
-      <h1>
-        {token.name} ({token.symbol})
-      </h1>
-      <p>Total Supply: {token.totalSupply}</p>
+      Reserve Ratio: {ratio.toFixed(2)}%
+      {ratio < 100 && <Alert>Undercollateralized vault</Alert>}
     </div>
   );
 }
 ```
 
-### Paginated queries
+## Queries: Fetching DALP state
 
-Many list endpoints support pagination:
+Queries read data from smart contracts (via TheGraph indexing), database tables,
+or computed aggregations. TanStack Query handles caching, background refetching,
+and stale data management.
+
+### Basic vault query with automatic type inference
 
 ```typescript
-function TokenList() {
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+
+function VaultOverview({ vaultId }: { vaultId: string }) {
+  // Suspense boundary handles loading state
+  const { data: vault } = useSuspenseQuery(
+    orpc.vault.read.queryOptions({
+      input: { id: vaultId },
+    })
+  );
+
+  // TypeScript infers vault shape from Zod schema
+  return (
+    <div>
+      <h1>{vault.name}</h1>
+      <p>Address: {vault.address}</p>
+      <p>Collateral: {vault.collateralToken}</p>
+      <p>Reserve Balance: {vault.reserveBalance}</p>
+    </div>
+  );
+}
+```
+
+The `vault` object's type is inferred from the procedure's output schema—no
+manual TypeScript interfaces required. If the backend schema changes (adding a
+`lastRebalanceTimestamp` field), TypeScript immediately flags components
+accessing the old shape.
+
+### Paginated DvP settlement history
+
+DvP (Delivery versus Payment) settlements execute atomically—token delivery and
+payment occur in the same transaction. Query paginated settlement history with
+filtering:
+
+```typescript
+import { useState } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+
+function DvPSettlementHistory({ tokenId }: { tokenId: string }) {
   const [page, setPage] = useState(1);
   const limit = 20;
 
   const { data } = useSuspenseQuery(
-    orpc.token.list.queryOptions({
+    orpc.settlement.list.queryOptions({
       input: {
+        tokenId,
         offset: (page - 1) * limit,
         limit,
-        orderBy: "createdAt",
+        orderBy: "settledAt",
         orderDirection: "desc",
-        typeId: "equity", // Optional filter
+        status: "completed", // Filter for successful settlements
       },
     })
   );
 
   return (
     <div>
-      {data.items.map((token) => (
-        <TokenCard key={token.id} token={token} />
-      ))}
+      <h2>DvP Settlement History</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Settlement ID</th>
+            <th>Buyer</th>
+            <th>Seller</th>
+            <th>Token Amount</th>
+            <th>Payment Amount</th>
+            <th>Settled At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.items.map((settlement) => (
+            <tr key={settlement.id}>
+              <td>{settlement.id}</td>
+              <td>{settlement.buyer}</td>
+              <td>{settlement.seller}</td>
+              <td>{settlement.tokenAmount}</td>
+              <td>{settlement.paymentAmount}</td>
+              <td>{new Date(settlement.settledAt).toLocaleString()}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <Pagination
         page={page}
         total={data.total}
@@ -135,364 +265,547 @@ function TokenList() {
 }
 ```
 
-### Conditional queries
+### Conditional queries based on user state
 
-Use `enabled` option to control when queries run:
+Only execute queries when prerequisites are met:
 
 ```typescript
-function UserTokens({ userId }: { userId?: string }) {
+import { useQuery } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+
+function UserYieldClaims({ userId }: { userId?: string }) {
   const { data } = useQuery(
-    orpc.token.list.queryOptions({
-      input: { ownerId: userId! },
-      enabled: !!userId, // Only run when userId exists
+    orpc.yield.claimHistory.queryOptions({
+      input: { userId: userId! },
+      enabled: !!userId, // Only query when user is authenticated
     })
   );
 
-  if (!userId) return <p>Select a user</p>;
-  if (!data) return <p>Loading...</p>;
+  if (!userId) return <p>Log in to view yield claims</p>;
+  if (!data) return <p>Loading claim history...</p>;
 
-  return <TokenGrid tokens={data.items} />;
+  const totalClaimed = data.claims.reduce(
+    (sum, claim) => sum + BigInt(claim.amount),
+    0n
+  );
+
+  return (
+    <div>
+      <h3>Total Claimed: {totalClaimed.toString()}</h3>
+      <ul>
+        {data.claims.map((claim) => (
+          <li key={claim.id}>
+            {claim.tokenSymbol}: {claim.amount} ({claim.claimedAt})
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 ```
 
-### Prefetching in loaders
+### Prefetching related data in loaders
 
-Prefetch data in TanStack Router loaders for instant rendering:
+Loaders prefetch interconnected data to avoid waterfall requests:
 
 ```typescript
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/tokens/$tokenId")({
+export const Route = createFileRoute("/bonds/$bondId")({
   loader: async ({ params, context: { queryClient, orpc: orpcClient } }) => {
-    // Prefetch token data
+    // Prefetch bond details
     await queryClient.ensureQueryData(
-      orpcClient.token.read.queryOptions({
-        input: { id: params.tokenId },
+      orpcClient.bond.read.queryOptions({
+        input: { id: params.bondId },
       })
     );
 
-    // Also prefetch related data
+    // Prefetch related data in parallel
     await Promise.all([
+      // Coupon payment schedule
       queryClient.ensureQueryData(
-        orpcClient.token.holders.queryOptions({
-          input: { tokenId: params.tokenId, limit: 10 },
+        orpcClient.bond.coupons.queryOptions({
+          input: { bondId: params.bondId },
         })
       ),
+      // Yield distribution history
       queryClient.ensureQueryData(
-        orpcClient.token.stats.queryOptions({
-          input: { tokenId: params.tokenId },
+        orpcClient.yield.history.queryOptions({
+          input: { tokenId: params.bondId, limit: 10 },
+        })
+      ),
+      // Current bondholders
+      queryClient.ensureQueryData(
+        orpcClient.token.holders.queryOptions({
+          input: { tokenId: params.bondId, limit: 50 },
         })
       ),
     ]);
 
-    return { tokenId: params.tokenId };
+    return { bondId: params.bondId };
   },
-  component: TokenDetailsPage,
+  component: BondDetailsPage,
 });
 
-function TokenDetailsPage() {
-  const { tokenId } = Route.useLoaderData();
+function BondDetailsPage() {
+  const { bondId } = Route.useLoaderData();
 
-  // Data is already in cache from loader
-  const { data: token } = useSuspenseQuery(
-    orpc.token.read.queryOptions({ input: { id: tokenId } })
+  // All data cached - no waterfalls
+  const { data: bond } = useSuspenseQuery(
+    orpc.bond.read.queryOptions({ input: { id: bondId } })
   );
 
-  return <TokenView token={token} />;
+  const { data: coupons } = useSuspenseQuery(
+    orpc.bond.coupons.queryOptions({ input: { bondId } })
+  );
+
+  const { data: yields } = useSuspenseQuery(
+    orpc.yield.history.queryOptions({ input: { tokenId: bondId, limit: 10 } })
+  );
+
+  return (
+    <div>
+      <BondHeader bond={bond} />
+      <CouponSchedule coupons={coupons} />
+      <YieldDistributions yields={yields} />
+    </div>
+  );
 }
 ```
 
-## Making mutations
+## Mutations: DALP lifecycle operations
 
-Mutations change data (create, update, delete operations) and often involve
-blockchain transactions.
+Mutations modify state—creating vaults, executing DvP settlements, claiming
+yield. These operations often trigger smart contract transactions that require
+waiting for blockchain confirmation.
 
-### Basic mutation
+### Creating a stablecoin vault with reserve configuration
+
+Stablecoin issuance requires configuring a DALP vault that holds reserve
+collateral:
 
 ```typescript
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { orpc } from "@/orpc/orpc-client";
 import { toast } from "sonner";
 
-function CreateTokenButton() {
+function CreateStablecoinVault() {
   const queryClient = useQueryClient();
 
-  const createToken = useMutation({
-    mutationFn: orpc.token.create.mutate,
+  const createVault = useMutation({
+    mutationFn: orpc.vault.create.mutate,
     onSuccess: (result) => {
-      toast.success(`Token creation initiated: ${result.transactionHash}`);
+      toast.success(
+        `Vault deployed at ${result.vaultAddress}. Transaction: ${result.transactionHash}`
+      );
 
-      // Invalidate token list to refetch
+      // Invalidate vault list to refetch
       queryClient.invalidateQueries({
-        queryKey: orpc.token.list.getQueryKey(),
+        queryKey: orpc.vault.list.getQueryKey(),
       });
     },
     onError: (error) => {
-      toast.error(`Failed to create token: ${error.message}`);
+      toast.error(`Vault creation failed: ${error.message}`);
+      console.error("Vault deployment error:", error);
     },
   });
 
   const handleCreate = () => {
-    createToken.mutate({
-      name: "My Equity Token",
-      symbol: "MET",
-      decimals: 18,
-      typeId: "equity",
-      initialSupply: "1000000",
+    createVault.mutate({
+      name: "PUSD Reserve Vault",
+      collateralToken: "0x...", // USDC address
+      minimumReserveRatio: 100, // 100% collateralization
+      rebalanceThreshold: 95, // Alert at 95%
     });
   };
 
   return (
-    <button onClick={handleCreate} disabled={createToken.isPending}>
-      {createToken.isPending ? "Creating..." : "Create Token"}
+    <button onClick={handleCreate} disabled={createVault.isPending}>
+      {createVault.isPending ? "Deploying Vault..." : "Create Stablecoin Vault"}
     </button>
   );
 }
 ```
 
-### Optimistic updates
+### Executing DvP settlement with optimistic updates
 
-Update UI immediately while mutation is processing:
+DvP settlements lock assets atomically—buyer receives tokens only if seller
+receives payment in the same transaction. Optimistic updates provide instant UI
+feedback:
 
 ```typescript
-function TransferTokenForm({ tokenId }: { tokenId: string }) {
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+import { toast } from "sonner";
+
+function ExecuteDvPSettlement({
+  settlementId,
+  tokenAmount,
+  paymentAmount,
+}: {
+  settlementId: string;
+  tokenAmount: string;
+  paymentAmount: string;
+}) {
   const queryClient = useQueryClient();
 
-  const transfer = useMutation({
-    mutationFn: orpc.token.transfer.mutate,
+  const executeSettlement = useMutation({
+    mutationFn: orpc.settlement.execute.mutate,
 
-    // Optimistically update balance before transaction confirms
+    // Optimistically update settlement status before blockchain confirmation
     onMutate: async (variables) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({
-        queryKey: orpc.token.read.getQueryKey({ input: { id: tokenId } }),
+        queryKey: orpc.settlement.read.getQueryKey({
+          input: { id: settlementId },
+        }),
       });
 
       // Snapshot previous value
-      const previousToken = queryClient.getQueryData(
-        orpc.token.read.getQueryKey({ input: { id: tokenId } })
+      const previousSettlement = queryClient.getQueryData(
+        orpc.settlement.read.getQueryKey({ input: { id: settlementId } })
       );
 
-      // Optimistically update
+      // Optimistically update status to "executing"
       queryClient.setQueryData(
-        orpc.token.read.getQueryKey({ input: { id: tokenId } }),
+        orpc.settlement.read.getQueryKey({ input: { id: settlementId } }),
         (old) => ({
           ...old!,
-          balance: (BigInt(old!.balance) - BigInt(variables.amount)).toString(),
+          status: "executing",
+          executedAt: new Date().toISOString(),
         })
       );
 
-      return { previousToken };
+      return { previousSettlement };
     },
 
     // Revert on error
     onError: (error, variables, context) => {
-      if (context?.previousToken) {
+      if (context?.previousSettlement) {
         queryClient.setQueryData(
-          orpc.token.read.getQueryKey({ input: { id: tokenId } }),
-          context.previousToken
+          orpc.settlement.read.getQueryKey({ input: { id: settlementId } }),
+          context.previousSettlement
         );
       }
-      toast.error("Transfer failed");
+      toast.error(`DvP settlement failed: ${error.message}`);
     },
 
-    // Always refetch after success
-    onSuccess: () => {
+    // Always refetch after success to get final blockchain state
+    onSuccess: (result) => {
       queryClient.invalidateQueries({
-        queryKey: orpc.token.read.getQueryKey({ input: { id: tokenId } }),
+        queryKey: orpc.settlement.read.getQueryKey({
+          input: { id: settlementId },
+        }),
       });
-      toast.success("Transfer successful");
+      toast.success(
+        `DvP settlement executed. Transaction: ${result.transactionHash}`
+      );
     },
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        transfer.mutate({
-          tokenId,
-          to: formData.get("to") as string,
-          amount: formData.get("amount") as string,
-        });
-      }}
+    <button
+      onClick={() =>
+        executeSettlement.mutate({
+          settlementId,
+          tokenAmount,
+          paymentAmount,
+        })
+      }
+      disabled={executeSettlement.isPending}
     >
-      <input name="to" placeholder="Recipient address" required />
-      <input name="amount" type="number" placeholder="Amount" required />
-      <button type="submit" disabled={transfer.isPending}>
-        Transfer
-      </button>
-    </form>
+      {executeSettlement.isPending
+        ? "Executing Settlement..."
+        : "Execute DvP Settlement"}
+    </button>
   );
 }
 ```
 
-### Handling transaction lifecycle
+### Claiming yield with transaction lifecycle tracking
 
-Many mutations return transaction hashes for on-chain operations:
+Yield claims withdraw accumulated dividends, interest, or coupon payments:
 
 ```typescript
-function MintTokens({ tokenId }: { tokenId: string }) {
-  const [txHash, setTxHash] = useState<string | null>(null);
-  const { publicClient } = usePublicClient();
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { usePublicClient } from "wagmi";
+import { orpc } from "@/orpc/orpc-client";
+import { toast } from "sonner";
 
-  const mint = useMutation({
-    mutationFn: orpc.token.mint.mutate,
+function ClaimYield({
+  tokenId,
+  availableYield,
+}: {
+  tokenId: string;
+  availableYield: string;
+}) {
+  const [txHash, setTxHash] = useState<string | null>(null);
+  const [txStatus, setTxStatus] = useState<
+    "pending" | "confirming" | "success" | "failed" | null
+  >(null);
+  const queryClient = useQueryClient();
+  const publicClient = usePublicClient();
+
+  const claimYield = useMutation({
+    mutationFn: orpc.yield.claim.mutate,
     onSuccess: async (result) => {
       setTxHash(result.transactionHash);
-      toast.info('Transaction submitted, waiting for confirmation...');
+      setTxStatus("confirming");
+      toast.info("Yield claim submitted, waiting for confirmation...");
 
-      // Wait for transaction confirmation
-      const receipt = await publicClient.waitForTransactionReceipt({
-        hash: result.transactionHash as `0x${string}`,
-      });
+      try {
+        // Wait for blockchain confirmation
+        const receipt = await publicClient.waitForTransactionReceipt({
+          hash: result.transactionHash as `0x${string}`,
+        });
 
-      if (receipt.status === 'success') {
-        toast.success('Tokens minted successfully!');
-      } else {
-        toast.error('Transaction failed');
+        if (receipt.status === "success") {
+          setTxStatus("success");
+          toast.success(
+            `Yield claimed: ${availableYield} tokens transferred to your wallet`
+          );
+
+          // Invalidate queries to refetch updated balances
+          queryClient.invalidateQueries({
+            queryKey: orpc.yield.available.getQueryKey({
+              input: { tokenId },
+            }),
+          });
+          queryClient.invalidateQueries({
+            queryKey: orpc.token.read.getQueryKey({
+              input: { id: tokenId },
+            }),
+          });
+        } else {
+          setTxStatus("failed");
+          toast.error("Transaction reverted on-chain");
+        }
+      } catch (error) {
+        setTxStatus("failed");
+        toast.error("Transaction confirmation failed");
+        console.error("Yield claim error:", error);
       }
+    },
+    onError: (error) => {
+      setTxStatus("failed");
+      toast.error(`Yield claim failed: ${error.message}`);
     },
   });
 
   return (
     <div>
-      <button onClick={() => mint.mutate({ tokenId, amount: '1000' })}>
-        Mint 1000 Tokens
+      <button
+        onClick={() => claimYield.mutate({ tokenId })}
+        disabled={claimYield.isPending || txStatus === "confirming"}
+      >
+        {claimYield.isPending || txStatus === "confirming"
+          ? "Processing Claim..."
+          : `Claim ${availableYield} Yield`}
       </button>
-      {txHash &amp;&amp; (
-        <p>Transaction: <a href={`https://etherscan.io/tx/${txHash}`}>{txHash}</a></p>
+
+      {txHash && (
+        <div>
+          <p>Transaction: {txHash}</p>
+          <p>Status: {txStatus}</p>
+          <a
+            href={`https://etherscan.io/tx/${txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View on Etherscan
+          </a>
+        </div>
       )}
     </div>
   );
 }
 ```
 
-## Type safety
+## Type safety and validation
 
-ORPC infers TypeScript types automatically from Zod schemas.
+ORPC enforces type contracts at compile time and runtime through Zod schemas.
 
-### Input validation
+### Input validation prevents invalid requests
 
-Types prevent invalid inputs at compile time:
+TypeScript catches invalid inputs before compilation:
 
 ```typescript
-// ✅ Valid - TypeScript knows the shape
-orpc.token.create.mutate({
-  name: "Token",
-  symbol: "TKN",
-  decimals: 18,
-  typeId: "equity",
-  initialSupply: "1000000",
+// ✅ Valid - all required fields provided
+orpc.vault.create.mutate({
+  name: "PUSD Reserve Vault",
+  collateralToken: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
+  minimumReserveRatio: 100,
+  rebalanceThreshold: 95,
 });
 
-// ❌ Type error - missing required fields
-orpc.token.create.mutate({
-  name: "Token",
-  // Missing symbol, decimals, typeId, initialSupply
+// ❌ Type error - missing required field 'collateralToken'
+orpc.vault.create.mutate({
+  name: "PUSD Reserve Vault",
+  minimumReserveRatio: 100,
+  rebalanceThreshold: 95,
 });
 
-// ❌ Type error - invalid typeId
-orpc.token.create.mutate({
-  name: "Token",
-  symbol: "TKN",
-  decimals: 18,
-  typeId: "invalid", // Not in enum
-  initialSupply: "1000000",
+// ❌ Type error - invalid reserve ratio (must be positive number)
+orpc.vault.create.mutate({
+  name: "PUSD Reserve Vault",
+  collateralToken: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  minimumReserveRatio: -10, // Negative ratio invalid
+  rebalanceThreshold: 95,
 });
 ```
 
-### Output types
+### Output types inferred from schemas
 
-Response types are automatically inferred:
+Response shapes are automatically typed:
+
+```typescript
+const { data: settlement } = useSuspenseQuery(
+  orpc.settlement.read.queryOptions({ input: { id: "0x123" } })
+);
+
+// TypeScript infers these properties from Zod output schema
+settlement.id; // string
+settlement.status; // 'pending' | 'executing' | 'completed' | 'failed'
+settlement.buyer; // `0x${string}`
+settlement.seller; // `0x${string}`
+settlement.tokenAmount; // string (BigInt serialized)
+settlement.paymentAmount; // string (BigInt serialized)
+settlement.settledAt; // string (ISO timestamp) | null
+settlement.transactionHash; // `0x${string}` | null
+```
+
+### Discriminated unions for polymorphic data
+
+Use type guards to narrow discriminated unions:
 
 ```typescript
 const { data: token } = useSuspenseQuery(
-  orpc.token.read.queryOptions({ input: { id: "0x123" } })
+  orpc.token.read.queryOptions({ input: { id: tokenId } })
 );
 
-// TypeScript knows token has these properties
-token.name; // string
-token.symbol; // string
-token.decimals; // number
-token.totalSupply; // string (BigInt serialized)
-token.address; // `0x${string}`
-token.typeId; // 'bond' | 'equity' | 'fund' | 'stablecoin' | 'deposit'
-```
-
-### Narrowing types
-
-Use discriminated unions for polymorphic data:
-
-```typescript
-const { data: identity } = useSuspenseQuery(
-  orpc.account.read.queryOptions({ input: { account: address } })
-);
-
-// TypeScript narrows based on registered status
-if (identity.registered) {
-  // TypeScript knows country exists here
-  console.log(identity.registered.country); // ISOCountryCode
-} else {
-  // TypeScript knows this user is not registered
-  console.log("Not registered");
+// TypeScript narrows based on token type
+if (token.typeId === "bond") {
+  // TypeScript knows bond-specific fields exist
+  console.log(token.maturityDate); // string
+  console.log(token.couponRate); // number
+  console.log(token.faceValue); // string
+} else if (token.typeId === "equity") {
+  // TypeScript knows equity-specific fields exist
+  console.log(token.dividendPolicy); // 'quarterly' | 'annual' | 'none'
+  console.log(token.votingRights); // boolean
+} else if (token.typeId === "fund") {
+  // TypeScript knows fund-specific fields exist
+  console.log(token.navPerShare); // string
+  console.log(token.managementFee); // number (basis points)
 }
 ```
 
-## Error handling
+## Error handling strategies
 
-ORPC standardizes error handling across the API.
+ORPC standardizes error responses with typed error codes.
 
-### Catching mutation errors
-
-```typescript
-const createToken = useMutation({
-  mutationFn: orpc.token.create.mutate,
-  onError: (error) => {
-    // Check error type
-    if (error.message.includes("UNAUTHORIZED")) {
-      toast.error("Please log in to create tokens");
-      router.navigate({ to: "/login" });
-    } else if (error.message.includes("FORBIDDEN")) {
-      toast.error("You do not have permission to create tokens");
-    } else if (error.message.includes("BAD_REQUEST")) {
-      toast.error("Invalid token configuration");
-    } else {
-      toast.error("An unexpected error occurred");
-    }
-  },
-});
-```
-
-### Validation errors
-
-Zod validation errors are formatted with field-level details:
+### Catching and categorizing mutation errors
 
 ```typescript
-import {
-  isValidationError,
-  getFieldErrors,
-} from "@/lib/utils/format-validation-error";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
+import { orpc } from "@/orpc/orpc-client";
+import { toast } from "sonner";
 
-const createToken = useMutation({
-  mutationFn: orpc.token.create.mutate,
-  onError: (error) => {
-    if (isValidationError(error)) {
-      const fieldErrors = getFieldErrors(error);
+function CreateBond() {
+  const router = useRouter();
 
-      // Display field-specific errors
-      fieldErrors.forEach(({ field, message }) => {
-        toast.error(`${field}: ${message}`);
-      });
-    }
-  },
-});
+  const createBond = useMutation({
+    mutationFn: orpc.bond.create.mutate,
+    onError: (error) => {
+      // Categorize errors by type
+      if (error.message.includes("UNAUTHORIZED")) {
+        toast.error("Please log in to create bonds");
+        router.navigate({ to: "/login" });
+      } else if (error.message.includes("FORBIDDEN")) {
+        toast.error(
+          "You must complete KYC onboarding to create bonds. Redirecting..."
+        );
+        router.navigate({ to: "/onboarding" });
+      } else if (error.message.includes("BAD_REQUEST")) {
+        toast.error(
+          "Invalid bond configuration. Check maturity date and coupon rate."
+        );
+      } else if (error.message.includes("INSUFFICIENT_BALANCE")) {
+        toast.error("Insufficient gas to deploy bond contract");
+      } else {
+        toast.error("Bond creation failed. Please try again.");
+        console.error("Unexpected bond creation error:", error);
+      }
+    },
+  });
+
+  return (
+    <button
+      onClick={() =>
+        createBond.mutate({
+          /* ... */
+        })
+      }
+    >
+      Create Bond
+    </button>
+  );
+}
 ```
 
-### Global error handling
+### Handling Zod validation errors with field details
 
-The error middleware automatically formats errors, but you can add global
-handlers:
+```typescript
+import { useMutation } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+import { toast } from "sonner";
+
+// Utility to parse Zod validation errors
+function parseValidationError(
+  error: Error
+): Array<{ field: string; message: string }> {
+  try {
+    const parsed = JSON.parse(error.message);
+    if (parsed.issues) {
+      return parsed.issues.map(
+        (issue: { path: string[]; message: string }) => ({
+          field: issue.path.join("."),
+          message: issue.message,
+        })
+      );
+    }
+  } catch {
+    // Not a Zod validation error
+  }
+  return [];
+}
+
+function CreateVault() {
+  const createVault = useMutation({
+    mutationFn: orpc.vault.create.mutate,
+    onError: (error) => {
+      const validationErrors = parseValidationError(error);
+
+      if (validationErrors.length > 0) {
+        // Display field-specific errors
+        validationErrors.forEach(({ field, message }) => {
+          toast.error(`${field}: ${message}`);
+        });
+      } else {
+        toast.error(`Vault creation failed: ${error.message}`);
+      }
+    },
+  });
+
+  return <VaultCreationForm onSubmit={createVault.mutate} />;
+}
+```
+
+### Global error handling and observability
+
+Configure global error handlers to log to observability systems:
 
 ```typescript
 import { QueryClient } from "@tanstack/react-query";
@@ -500,176 +813,350 @@ import { QueryClient } from "@tanstack/react-query";
 const queryClient = new QueryClient({
   defaultOptions: {
     mutations: {
-      onError: (error) => {
-        // Log all mutation errors
-        console.error("Mutation error:", error);
+      onError: (error, variables, context) => {
+        // Log to console in development
+        if (import.meta.env.DEV) {
+          console.error("Mutation error:", error);
+          console.debug("Variables:", variables);
+          console.debug("Context:", context);
+        }
 
         // Send to error tracking service
-        Sentry.captureException(error);
+        if (window.Sentry) {
+          window.Sentry.captureException(error, {
+            tags: {
+              category: "mutation",
+              procedure: context?.procedure || "unknown",
+            },
+            extra: { variables, context },
+          });
+        }
+
+        // Track mutation failures in analytics
+        if (window.analytics) {
+          window.analytics.track("Mutation Failed", {
+            error: error.message,
+            procedure: context?.procedure,
+          });
+        }
+      },
+    },
+    queries: {
+      onError: (error) => {
+        // Log query errors less aggressively (avoid noise)
+        if (import.meta.env.DEV) {
+          console.warn("Query error:", error);
+        }
+
+        // Only send critical query errors to Sentry
+        if (error.message.includes("INTERNAL_SERVER_ERROR")) {
+          window.Sentry?.captureException(error, {
+            tags: { category: "query" },
+          });
+        }
       },
     },
   },
 });
 ```
 
-## Authentication context
+## Authentication and authorization context
 
-Routes automatically enforce authentication based on their router type.
+Procedures enforce authentication through router middleware—`publicRouter`
+allows anonymous access, `authRouter` requires login, `onboardedRouter` requires
+KYC completion.
 
-### Public routes (publicRouter)
+### Public routes with optional authentication
 
-No authentication required; `context.auth` is optional:
+Public endpoints adapt behavior based on authentication state:
 
 ```typescript
-// In a route handler using publicRouter
-export const getStats = publicRouter.stats.public.handler(
-  async ({ context }) => {
+// Backend handler adapts to authentication context
+export const getTokenStats = publicRouter.stats.token.handler(
+  async ({ context, input }) => {
     if (context.auth) {
-      // User is logged in - return personalized stats
-      return getUserStats(context.auth.user.id);
+      // Authenticated user - return personalized stats
+      return getPersonalizedTokenStats(input.tokenId, context.auth.user.id);
     } else {
-      // Anonymous user - return public stats
-      return getPublicStats();
+      // Anonymous user - return public stats only
+      return getPublicTokenStats(input.tokenId);
     }
   }
 );
-```
 
-From frontend, no special handling needed:
-
-```typescript
-const { data: stats } = useSuspenseQuery(orpc.stats.public.queryOptions());
-```
-
-### Authenticated routes (authRouter)
-
-Authentication required; throws `UNAUTHORIZED` if not logged in:
-
-```typescript
-const { data: user } = useSuspenseQuery(
-  orpc.user.me.queryOptions()
-  // Automatically includes session cookie
-  // Throws error if not authenticated
-);
-```
-
-### Onboarded routes (onboardedRouter)
-
-Requires completed KYC and wallet connection:
-
-```typescript
-// This route requires full onboarding
-const createToken = useMutation({
-  mutationFn: orpc.token.create.mutate,
-  // Will fail with FORBIDDEN if user hasn't completed KYC
-});
-```
-
-## Accessing blockchain data
-
-The API abstracts blockchain interactions but exposes transaction details when
-needed.
-
-### TheGraph integration
-
-Many queries fetch indexed blockchain data:
-
-```typescript
-function TokenHolders({ tokenId }: { tokenId: string }) {
-  const { data: holders } = useSuspenseQuery(
-    orpc.token.holders.queryOptions({
-      input: {
-        tokenId,
-        limit: 50,
-        orderBy: "balance",
-        orderDirection: "desc",
-      },
-    })
+// Frontend usage - no special handling needed
+function TokenStats({ tokenId }: { tokenId: string }) {
+  const { data: stats } = useSuspenseQuery(
+    orpc.stats.token.queryOptions({ input: { tokenId } })
   );
 
+  return <StatsDisplay stats={stats} />;
+}
+```
+
+### Authenticated routes requiring login
+
+Auth router procedures throw `UNAUTHORIZED` if session is missing:
+
+```typescript
+// Backend handler assumes authentication
+export const getUserPortfolio = authRouter.portfolio.get.handler(
+  async ({ context }) => {
+    // context.auth guaranteed to exist
+    const userId = context.auth.user.id;
+    return getPortfolioForUser(userId);
+  }
+);
+
+// Frontend handles auth errors globally
+function UserPortfolio() {
+  const { data: portfolio } = useSuspenseQuery(
+    orpc.portfolio.get.queryOptions()
+    // Automatically includes session cookie
+    // Throws UNAUTHORIZED if not logged in (caught by error boundary)
+  );
+
+  return <PortfolioDashboard portfolio={portfolio} />;
+}
+```
+
+### Onboarded routes requiring KYC completion
+
+Onboarded router procedures verify wallet connection and OnchainID claims:
+
+```typescript
+// Backend handler assumes full onboarding
+export const createToken = onboardedRouter.token.create.handler(
+  async ({ context, input }) => {
+    // context.auth, context.wallet, context.system all guaranteed
+    const issuerAddress = context.wallet.address;
+    const identityClaims = context.userClaimTopics;
+
+    // Verify issuer has required claims
+    if (!identityClaims.includes("KYC_VERIFIED")) {
+      throw errors.FORBIDDEN("KYC verification required");
+    }
+
+    return deployTokenContract(input, issuerAddress, context.system);
+  }
+);
+
+// Frontend enforces onboarding through routing
+function CreateTokenPage() {
+  const createToken = useMutation({
+    mutationFn: orpc.token.create.mutate,
+    // Throws FORBIDDEN if user hasn't completed KYC
+  });
+
+  return <TokenCreationForm onSubmit={createToken.mutate} />;
+}
+```
+
+## Observability and performance monitoring
+
+Integrate API calls with observability dashboards to track latency, success
+rates, and error patterns.
+
+### Tracking API latency metrics
+
+Instrument queries and mutations to measure performance:
+
+```typescript
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+import { toast } from "sonner";
+
+function ExecuteDvPSettlement({ settlementId }: { settlementId: string }) {
+  const queryClient = useQueryClient();
+
+  const executeSettlement = useMutation({
+    mutationFn: async (input) => {
+      const startTime = performance.now();
+
+      try {
+        const result = await orpc.settlement.execute.mutate(input);
+        const duration = performance.now() - startTime;
+
+        // Track mutation latency
+        if (window.analytics) {
+          window.analytics.track("DvP Settlement Executed", {
+            settlementId: input.settlementId,
+            duration,
+            status: "success",
+          });
+        }
+
+        // Log to console in development
+        if (import.meta.env.DEV) {
+          console.log(`DvP settlement executed in ${duration.toFixed(2)}ms`);
+        }
+
+        return result;
+      } catch (error) {
+        const duration = performance.now() - startTime;
+
+        // Track mutation failure
+        if (window.analytics) {
+          window.analytics.track("DvP Settlement Failed", {
+            settlementId: input.settlementId,
+            duration,
+            status: "failed",
+            error: error.message,
+          });
+        }
+
+        throw error;
+      }
+    },
+    onSuccess: (result) => {
+      toast.success(
+        `DvP settlement executed. Check the Settlement Times dashboard for confirmation latency.`
+      );
+
+      queryClient.invalidateQueries({
+        queryKey: orpc.settlement.read.getQueryKey({
+          input: { id: settlementId },
+        }),
+      });
+    },
+  });
+
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Address</th>
-          <th>Balance</th>
-          <th>Percentage</th>
-        </tr>
-      </thead>
-      <tbody>
-        {holders.items.map((holder) => (
-          <tr key={holder.address}>
-            <td>{holder.address}</td>
-            <td>{holder.balance}</td>
-            <td>{holder.percentage}%</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <button onClick={() => executeSettlement.mutate({ settlementId })}>
+      Execute Settlement
+    </button>
   );
 }
 ```
 
-### Contract interactions
+### Monitoring mutation success rates
 
-Mutations that interact with contracts return transaction metadata:
+Track mutation outcomes to identify problematic operations:
 
 ```typescript
-const addCompliance = useMutation({
-  mutationFn: orpc.token.compliance.addModule.mutate,
-  onSuccess: (result) => {
-    // Result includes transaction hash and status
-    console.log("Transaction hash:", result.transactionHash);
-    console.log("Gas used:", result.gasUsed);
+import { QueryClient } from "@tanstack/react-query";
 
-    // Wait for confirmations if needed
-    waitForTransaction(result.transactionHash);
+const queryClient = new QueryClient({
+  defaultOptions: {
+    mutations: {
+      onSuccess: (data, variables, context) => {
+        // Track successful mutation
+        if (window.analytics) {
+          window.analytics.track("Mutation Success", {
+            procedure: context?.procedure || "unknown",
+            timestamp: new Date().toISOString(),
+          });
+        }
+      },
+      onError: (error, variables, context) => {
+        // Track failed mutation
+        if (window.analytics) {
+          window.analytics.track("Mutation Failed", {
+            procedure: context?.procedure || "unknown",
+            error: error.message,
+            errorCode: extractErrorCode(error),
+            timestamp: new Date().toISOString(),
+          });
+        }
+      },
+    },
   },
 });
+
+function extractErrorCode(error: Error): string {
+  // Extract structured error code from ORPC error
+  const match = error.message.match(/\[([A-Z_]+)\]/);
+  return match ? match[1] : "UNKNOWN";
+}
 ```
 
-## Common patterns
+### Referencing observability dashboards
 
-### Infinite scroll
+Link API operations to specific dashboards for troubleshooting:
+
+```typescript
+function VaultReserveMonitor({ vaultId }: { vaultId: string }) {
+  const { data: reserves } = useSuspenseQuery(
+    orpc.vault.reserves.queryOptions({ input: { id: vaultId } })
+  );
+
+  const ratio = (reserves.balance / reserves.totalSupply) * 100;
+
+  if (ratio < 100) {
+    return (
+      <Alert variant="warning">
+        Vault undercollateralized at {ratio.toFixed(2)}%.
+        <a href="/observability/vaults" target="_blank">
+          Check the Vault Reserve Ratio dashboard
+        </a>{" "}
+        for real-time metrics and historical trends.
+      </Alert>
+    );
+  }
+
+  return (
+    <div>
+      Vault Reserve Ratio: {ratio.toFixed(2)}%
+      <a href="/observability/vaults" target="_blank">
+        View Dashboard
+      </a>
+    </div>
+  );
+}
+```
+
+## Common integration patterns
+
+### Infinite scroll for transaction history
 
 Implement infinite scrolling with `useInfiniteQuery`:
 
 ```typescript
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
 
-function InfiniteTokenList() {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: orpc.token.list.getQueryKey(),
-    queryFn: async ({ pageParam }) => {
-      const result = await orpc.token.list.query({
-        input: {
-          offset: pageParam,
-          limit: 20,
-        }
-      });
-      return result;
-    },
-    initialPageParam: 0,
-    getNextPageParam: (lastPage, allPages) => {
-      const totalFetched = allPages.reduce((sum, page) => sum + page.items.length, 0);
-      return totalFetched < lastPage.total ? totalFetched : undefined;
-    },
-  });
+function InfiniteTransactionHistory({ tokenId }: { tokenId: string }) {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: orpc.transaction.list.getQueryKey({ input: { tokenId } }),
+      queryFn: async ({ pageParam }) => {
+        const result = await orpc.transaction.list.query({
+          input: {
+            tokenId,
+            offset: pageParam,
+            limit: 20,
+            orderBy: "timestamp",
+            orderDirection: "desc",
+          },
+        });
+        return result;
+      },
+      initialPageParam: 0,
+      getNextPageParam: (lastPage, allPages) => {
+        const totalFetched = allPages.reduce(
+          (sum, page) => sum + page.items.length,
+          0
+        );
+        return totalFetched < lastPage.total ? totalFetched : undefined;
+      },
+    });
 
-  const allTokens = data?.pages.flatMap(page => page.items) ?? [];
+  const allTransactions = data?.pages.flatMap((page) => page.items) ?? [];
 
   return (
     <div>
-      {allTokens.map(token => (
-        <TokenCard key={token.id} token={token} />
-      ))}
+      <h2>Transaction History</h2>
+      <ul>
+        {allTransactions.map((tx) => (
+          <li key={tx.id}>
+            {tx.type}: {tx.amount} {tx.tokenSymbol} ({tx.timestamp})
+          </li>
+        ))}
+      </ul>
 
-      {hasNextPage &amp;&amp; (
-        <button
-          onClick={() => fetchNextPage()}
-          disabled={isFetchingNextPage}
-        >
-          {isFetchingNextPage ? 'Loading...' : 'Load More'}
+      {hasNextPage && (
+        <button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+          {isFetchingNextPage ? "Loading..." : "Load More"}
         </button>
       )}
     </div>
@@ -677,85 +1164,386 @@ function InfiniteTokenList() {
 }
 ```
 
-### Dependent queries
+### Dependent queries for complex data relationships
 
-Chain queries where one depends on another:
+Chain queries where one depends on another's output:
 
 ```typescript
-function UserTokenStats({ userId }: { userId: string }) {
-  // First query: get user
-  const { data: user } = useSuspenseQuery(
-    orpc.user.read.queryOptions({ input: { id: userId } })
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+
+function VaultWithSettlements({ vaultId }: { vaultId: string }) {
+  // First query: get vault details
+  const { data: vault } = useSuspenseQuery(
+    orpc.vault.read.queryOptions({ input: { id: vaultId } })
   );
 
-  // Second query: get tokens owned by user
+  // Second query: get tokens managed by this vault
   const { data: tokens } = useSuspenseQuery(
     orpc.token.list.queryOptions({
-      input: { ownerId: user.walletAddress },
+      input: { vaultId: vault.id },
     })
   );
 
-  // Third query: get stats for those tokens
-  const { data: stats } = useSuspenseQuery(
-    orpc.token.stats.queryOptions({
+  // Third query: get DvP settlements for those tokens
+  const { data: settlements } = useSuspenseQuery(
+    orpc.settlement.list.queryOptions({
       input: {
         tokenIds: tokens.items.map((t) => t.id),
+        limit: 50,
       },
     })
   );
 
-  return <StatsDisplay stats={stats} />;
-}
-```
-
-### Polling for updates
-
-Poll for real-time updates:
-
-```typescript
-function LiveTokenPrice({ tokenId }: { tokenId: string }) {
-  const { data: price } = useQuery({
-    ...orpc.token.price.queryOptions({ input: { id: tokenId } }),
-    refetchInterval: 10000, // Refetch every 10 seconds
-  });
-
-  return <div>Current Price: ${price?.usd}</div>;
-}
-```
-
-### Batching requests
-
-TanStack Query automatically batches requests made at the same time:
-
-```typescript
-function Dashboard() {
-  // These queries run in parallel automatically
-  const userQuery = useSuspenseQuery(orpc.user.me.queryOptions());
-  const tokensQuery = useSuspenseQuery(
-    orpc.token.list.queryOptions({ input: { limit: 10 } })
-  );
-  const statsQuery = useSuspenseQuery(orpc.stats.overview.queryOptions());
-
   return (
     <div>
-      <UserProfile user={userQuery.data} />
-      <TokenGrid tokens={tokensQuery.data.items} />
-      <StatsPanel stats={statsQuery.data} />
+      <VaultHeader vault={vault} />
+      <TokenList tokens={tokens.items} />
+      <SettlementHistory settlements={settlements.items} />
     </div>
   );
 }
 ```
 
+### Polling for real-time yield updates
+
+Poll queries to display live yield accumulation:
+
+```typescript
+import { useQuery } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+
+function LiveYieldAccumulation({ tokenId }: { tokenId: string }) {
+  const { data: yield } = useQuery({
+    ...orpc.yield.available.queryOptions({ input: { tokenId } }),
+    refetchInterval: 10000, // Refetch every 10 seconds
+  });
+
+  if (!yield) return <p>Loading yield data...</p>;
+
+  return (
+    <div>
+      <h3>Available Yield: {yield.amount}</h3>
+      <p>Last Updated: {new Date(yield.lastCalculatedAt).toLocaleString()}</p>
+      <p>
+        Yield updates automatically every 10 seconds. Check the{" "}
+        <a href="/observability/yield" target="_blank">
+          Yield Distribution dashboard
+        </a>{" "}
+        for detailed metrics.
+      </p>
+    </div>
+  );
+}
+```
+
+### Batching parallel requests for dashboards
+
+TanStack Query automatically batches concurrent requests:
+
+```typescript
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+
+function ComprehensiveDashboard() {
+  // These queries run in parallel automatically
+  const userQuery = useSuspenseQuery(orpc.user.me.queryOptions());
+
+  const vaultsQuery = useSuspenseQuery(
+    orpc.vault.list.queryOptions({ input: { limit: 10 } })
+  );
+
+  const settlementsQuery = useSuspenseQuery(
+    orpc.settlement.list.queryOptions({
+      input: { status: "completed", limit: 20 },
+    })
+  );
+
+  const yieldsQuery = useSuspenseQuery(
+    orpc.yield.summary.queryOptions({ input: { userId: userQuery.data.id } })
+  );
+
+  return (
+    <div>
+      <UserProfile user={userQuery.data} />
+      <VaultGrid vaults={vaultsQuery.data.items} />
+      <RecentSettlements settlements={settlementsQuery.data.items} />
+      <YieldSummary yields={yieldsQuery.data} />
+    </div>
+  );
+}
+```
+
+## End-to-end workflow: Bond issuance with yield distribution
+
+This scenario demonstrates a complete DALP lifecycle: issuing a bond, tracking
+coupon payments, and claiming yield.
+
+### Step 1: Issue bond with coupon schedule
+
+```typescript
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+import { toast } from "sonner";
+
+function IssueBond() {
+  const queryClient = useQueryClient();
+
+  const issueBond = useMutation({
+    mutationFn: orpc.bond.create.mutate,
+    onSuccess: (result) => {
+      toast.success(
+        `Bond issued at ${result.tokenAddress}. Transaction: ${result.transactionHash}`
+      );
+
+      // Invalidate bond list
+      queryClient.invalidateQueries({
+        queryKey: orpc.bond.list.getQueryKey(),
+      });
+    },
+  });
+
+  const handleIssue = () => {
+    issueBond.mutate({
+      name: "Corporate Bond 2025",
+      symbol: "CB2025",
+      faceValue: "1000000000000000000000", // 1000 tokens (18 decimals)
+      couponRate: 500, // 5.00% (basis points)
+      maturityDate: "2025-12-31T23:59:59Z",
+      couponFrequency: "quarterly", // Pay coupon every 3 months
+      paymentToken: "0x...", // USDC address for coupon payments
+    });
+  };
+
+  return (
+    <button onClick={handleIssue} disabled={issueBond.isPending}>
+      {issueBond.isPending ? "Issuing Bond..." : "Issue Bond"}
+    </button>
+  );
+}
+```
+
+### Step 2: Monitor yield accumulation
+
+```typescript
+import { useQuery } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+
+function BondYieldTracker({ bondId }: { bondId: string }) {
+  const { data: yield } = useQuery({
+    ...orpc.yield.available.queryOptions({ input: { tokenId: bondId } }),
+    refetchInterval: 30000, // Check every 30 seconds
+  });
+
+  const { data: nextCoupon } = useQuery(
+    orpc.bond.nextCoupon.queryOptions({ input: { bondId } })
+  );
+
+  if (!yield || !nextCoupon) return <p>Loading yield data...</p>;
+
+  return (
+    <div>
+      <h3>Bond Yield Tracker</h3>
+      <p>Available to Claim: {yield.amount} USDC</p>
+      <p>
+        Next Coupon Payment:{" "}
+        {new Date(nextCoupon.paymentDate).toLocaleDateString()}
+      </p>
+      <p>Next Coupon Amount: {nextCoupon.amount} USDC</p>
+      <a href="/observability/yield" target="_blank">
+        View Yield Distribution Dashboard
+      </a>
+    </div>
+  );
+}
+```
+
+### Step 3: Claim accumulated yield
+
+```typescript
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { usePublicClient } from "wagmi";
+import { orpc } from "@/orpc/orpc-client";
+import { toast } from "sonner";
+
+function ClaimBondYield({
+  bondId,
+  availableYield,
+}: {
+  bondId: string;
+  availableYield: string;
+}) {
+  const queryClient = useQueryClient();
+  const publicClient = usePublicClient();
+
+  const claimYield = useMutation({
+    mutationFn: orpc.yield.claim.mutate,
+    onSuccess: async (result) => {
+      toast.info("Yield claim submitted, waiting for confirmation...");
+
+      // Wait for blockchain confirmation
+      const receipt = await publicClient.waitForTransactionReceipt({
+        hash: result.transactionHash as `0x${string}`,
+      });
+
+      if (receipt.status === "success") {
+        toast.success(
+          `Yield claimed: ${availableYield} USDC transferred to your wallet`
+        );
+
+        // Invalidate queries
+        queryClient.invalidateQueries({
+          queryKey: orpc.yield.available.getQueryKey({
+            input: { tokenId: bondId },
+          }),
+        });
+        queryClient.invalidateQueries({
+          queryKey: orpc.yield.history.getQueryKey({
+            input: { tokenId: bondId },
+          }),
+        });
+      } else {
+        toast.error("Transaction reverted");
+      }
+    },
+    onError: (error) => {
+      toast.error(`Yield claim failed: ${error.message}`);
+    },
+  });
+
+  return (
+    <button
+      onClick={() => claimYield.mutate({ tokenId: bondId })}
+      disabled={claimYield.isPending}
+    >
+      {claimYield.isPending
+        ? "Claiming Yield..."
+        : `Claim ${availableYield} USDC`}
+    </button>
+  );
+}
+```
+
+### Step 4: View complete yield history
+
+```typescript
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { orpc } from "@/orpc/orpc-client";
+
+function BondYieldHistory({ bondId }: { bondId: string }) {
+  const { data: history } = useSuspenseQuery(
+    orpc.yield.history.queryOptions({
+      input: {
+        tokenId: bondId,
+        limit: 50,
+        orderBy: "claimedAt",
+        orderDirection: "desc",
+      },
+    })
+  );
+
+  const totalClaimed = history.claims.reduce(
+    (sum, claim) => sum + BigInt(claim.amount),
+    0n
+  );
+
+  return (
+    <div>
+      <h3>Yield Claim History</h3>
+      <p>Total Claimed: {totalClaimed.toString()} USDC</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Transaction</th>
+          </tr>
+        </thead>
+        <tbody>
+          {history.claims.map((claim) => (
+            <tr key={claim.id}>
+              <td>{new Date(claim.claimedAt).toLocaleString()}</td>
+              <td>{claim.amount} USDC</td>
+              <td>
+                <a
+                  href={`https://etherscan.io/tx/${claim.transactionHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {claim.transactionHash.slice(0, 10)}...
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+```
+
+## Query and mutation workflow diagram
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph Query["Query Workflow (Read Operations)"]
+        QueryStart(Component mounts)
+        QueryCache{Data in cache?}
+        QueryFetch(Fetch from API)
+        QueryRender(Render with data)
+        QueryBG(Background refetch)
+        
+        QueryStart --> QueryCache
+        QueryCache -->|Yes| QueryRender
+        QueryCache -->|No| QueryFetch
+        QueryFetch --> QueryRender
+        QueryRender --> QueryBG
+    end
+    
+    subgraph Mutation["Mutation Workflow (Write Operations)"]
+        MutStart(User action)
+        MutOptimistic(Optimistic update)
+        MutExecute(Execute mutation)
+        MutSuccess{Success?}
+        MutRevert(Revert optimistic)
+        MutInvalidate(Invalidate queries)
+        MutRefetch(Refetch updated data)
+        
+        MutStart --> MutOptimistic
+        MutOptimistic --> MutExecute
+        MutExecute --> MutSuccess
+        MutSuccess -->|No| MutRevert
+        MutSuccess -->|Yes| MutInvalidate
+        MutInvalidate --> MutRefetch
+    end
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    
+    class QueryStart,MutStart primary
+    class QueryCache,MutSuccess secondary
+    class QueryFetch,MutExecute,MutInvalidate tertiary
+`}
+/>
+
+This diagram shows how queries cache data and refetch in the background, while
+mutations optimistically update the UI, execute the operation, and invalidate
+affected queries on success.
+
 ## Next steps
 
-- **Explore the API reference**: See all available routes in
-  [API Reference](/docs/developer-guides/api-integration/api-reference)
-- **Review contract schemas**: Check
+- **Explore procedure middleware**: Understand authentication layers in
+  [`kit/dapp/src/orpc/procedures/README.md`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/orpc/procedures/README.md)
+- **Review route schemas**: Check
   `kit/dapp/src/orpc/routes/*/routes/*.schema.ts` for input/output types
-- **Read middleware docs**: Understand authentication layers in
-  `kit/dapp/src/orpc/procedures/README.md`
-- **Check route implementations**: Study handlers in
-  `kit/dapp/src/orpc/routes/*/routes/*.ts`
-
-For details on the data models backing these APIs, continue to
-[Data Model Reference](/docs/developer-guides/data-model/data-model-reference).
+- **Study handler implementations**: Read handlers in
+  `kit/dapp/src/orpc/routes/*/routes/*.ts` for business logic patterns
+- **Reference API endpoints**: See all available routes in
+  [API Reference](/docs/developer-guides/api-integration/api-reference)
+- **Understand data models**: Learn about backing schemas in
+  [Data Model Reference](/docs/developer-guides/data-model/data-model-reference)
+- **Monitor API performance**: Use
+  [Observability & Monitoring](/docs/developer-guides/deployment-ops/observability-monitoring)
+  to track API latency and success rates

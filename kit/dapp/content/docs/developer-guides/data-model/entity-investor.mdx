@@ -1,188 +1,311 @@
 ---
 title: Investor entities
 description:
-  Investor entities span both off-chain (PostgreSQL) and on-chain (subgraph)
-  layers, connecting authenticated users to their KYC profiles and blockchain
-  identities.
+  Investor entities bridge authentication, identity verification, and blockchain
+  state. This dual-layer architecture enables compliance-aware settlement, vault
+  custody operations, and regulatory reporting by linking off-chain KYC profiles
+  to on-chain identity contracts.
 pageTitle: Investor entity reference (User, KYC, Identity)
-tags: [user, investor, kyc, identity, erc-734, erc-735]
+tags:
+  [user, investor, kyc, identity, erc-734, erc-735, compliance, verification]
 ---
 
-## Data layer overview
+## Why investor entities span two layers
 
-```
-Off-Chain (PostgreSQL)          On-Chain (Subgraph)
-┌─────────────┐                 ┌─────────────┐
-│ User        │                 │ Account     │
-│  - email    │◄───wallet────►│  - address  │
-│  - wallet   │                 │  - balances │
-└──────┬──────┘                 └──────┬──────┘
-       │                               │
-       │1:1                            │1:N
-       │                               │
-┌──────▼──────┐                 ┌──────▼──────┐
-│ KYC Profile │                 │ Identity    │
-│  - name     │                 │  - contract │
-│  - country  │                 │  - claims   │
-└─────────────┘                 └─────────────┘
-```
+Asset tokenization platforms face a fundamental challenge: investors must exist
+in both regulatory (off-chain) and transaction (on-chain) contexts. A user
+authenticates with email and password, submits government-issued identity
+documents for KYC verification, then receives an on-chain identity contract that
+blockchain-based compliance rules can validate before every token transfer.
 
-**Link**: `user.wallet === Account.id`
+This dual representation enables three critical DALP lifecycle features:
+
+- **DvP settlement** — Delivery-versus-payment operations verify that both
+  parties have verified identities before atomically exchanging tokens and
+  stablecoin payments
+- **Vault custody** — Vault deposit/withdrawal operations check identity claims
+  to enforce jurisdictional restrictions and accredited investor requirements
+- **Yield distribution** — Automated dividend and interest payments rely on
+  identity registry queries to filter eligible recipients and calculate pro-rata
+  allocations
+
+The data model reflects this split: PostgreSQL stores authentication credentials
+and personally identifiable information (PII) that remain private, while the
+subgraph indexes public blockchain state—identity contract addresses,
+verification status, and compliance claims—that smart contracts use for transfer
+restriction checks.
+
+<Mermaid
+  chart={`
+flowchart TB
+    subgraph OffChain["Off-chain layer (PostgreSQL)"]
+        User(User<br/>email, wallet address)
+        KYC(KYC Profile<br/>name, country, national ID)
+        User -->|1:1| KYC
+    end
+    
+    subgraph OnChain["On-chain layer (Subgraph)"]
+        Account(Account<br/>Ethereum address)
+        Identity(Identity<br/>ERC-734/735 contract)
+        RegIdentity(Registered Identity<br/>country code, verified status)
+        Account -->|1:N| Identity
+        Identity -->|1:1| RegIdentity
+    end
+    
+    User -.->|wallet address links| Account
+    
+    classDef offchain fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef onchain fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef registry fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    
+    class User,KYC offchain
+    class Account,Identity onchain
+    class RegIdentity registry
+`}
+/>
+
+**Cross-layer link:** `user.wallet === account.id` (lowercase Ethereum address)
 
 ## Off-chain entities (PostgreSQL)
 
+Off-chain tables store PII and authentication state that must remain private.
+The
+[Better Auth](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/auth.ts)
+schema handles sessions and multi-factor authentication, while the
+[KYC schema](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/kyc.ts)
+captures verification documents and regulatory attributes.
+
 ### User
 
-Core authentication and profile table.
+The core authentication and profile table. Each user record represents a natural
+person who can authenticate to the platform, connect a wallet, and eventually
+receive an on-chain identity contract.
 
-**Schema location**:
+**Schema location:**
 [`kit/dapp/src/lib/db/schemas/auth.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/auth.ts)
+
+**Business context:** The `user.wallet` field is the critical bridge to
+blockchain state. When a user connects a wallet via WalletConnect or MetaMask,
+that Ethereum address is stored here and later used to deploy their identity
+contract. The `role` field gates admin functions like issuing new assets or
+approving KYC submissions. Ban functionality supports regulatory
+actions—suspicious accounts can be suspended pending investigation.
 
 #### Fields
 
-```typescript
-{
-  id: string; // Primary key (UUID)
-  name: string; // User display name
-  email: string; // Unique email address
-  emailVerified: boolean; // Email verification status
-  image: string | null; // Profile image URL
-  createdAt: Date; // Account creation timestamp
-  updatedAt: Date; // Last update timestamp
-  role: UserRole | null; // 'admin' | 'user'
-  banned: boolean | null; // Ban status
-  banReason: string | null; // Reason for ban
-  banExpires: Date | null; // Ban expiration date
-  wallet: Address | null; // Connected wallet address
-  lastLoginAt: Date | null; // Last login timestamp
+| Field                      | Type               | Purpose                                                                        |
+| -------------------------- | ------------------ | ------------------------------------------------------------------------------ |
+| `id`                       | `string`           | Primary key (UUID); stable identifier for cross-table joins                    |
+| `name`                     | `string`           | Display name shown in UI; user-editable                                        |
+| `email`                    | `string`           | Unique; used for login and notifications                                       |
+| `emailVerified`            | `boolean`          | Email confirmation status; gates KYC submission                                |
+| `image`                    | `string \| null`   | Profile avatar URL (optional)                                                  |
+| `createdAt`                | `Date`             | Account creation timestamp for audit trails                                    |
+| `updatedAt`                | `Date`             | Last modification time; updated on profile changes                             |
+| `role`                     | `UserRole \| null` | `'admin'` for platform operators, `'user'` for investors; defaults to `'user'` |
+| `banned`                   | `boolean \| null`  | Ban status for regulatory enforcement                                          |
+| `banReason`                | `string \| null`   | Explanation displayed to banned users                                          |
+| `banExpires`               | `Date \| null`     | Automatic unban timestamp (null = permanent)                                   |
+| `wallet`                   | `Address \| null`  | Connected Ethereum address (checksummed); links to `Account.id` on-chain       |
+| `lastLoginAt`              | `Date \| null`     | Session tracking for security monitoring                                       |
+| `pincodeEnabled`           | `boolean`          | PIN-based MFA enabled (mobile-friendly)                                        |
+| `pincodeVerificationId`    | `string \| null`   | Reference to pending PIN verification                                          |
+| `twoFactorEnabled`         | `boolean`          | TOTP authenticator enabled                                                     |
+| `twoFactorVerificationId`  | `string \| null`   | Reference to pending 2FA verification                                          |
+| `secretCodesConfirmed`     | `boolean`          | Backup recovery codes acknowledged                                             |
+| `secretCodeVerificationId` | `string \| null`   | Reference to backup code setup                                                 |
 
-  // Multi-factor authentication
-  pincodeEnabled: boolean; // PIN code MFA enabled
-  pincodeVerificationId: string | null;
-  twoFactorEnabled: boolean; // TOTP 2FA enabled
-  twoFactorVerificationId: string | null;
-  secretCodesConfirmed: boolean; // Backup codes confirmed
-  secretCodeVerificationId: string | null;
-}
-```
-
-#### Indexes
+**Indexes:**
 
 - Primary key: `id`
-- Unique: `email`
+- Unique constraint: `email` (prevents duplicate accounts)
 
-#### Relationships
+**Relationships:**
 
-- `sessions` (one-to-many) - Active login sessions
-- `accounts` (one-to-many) - OAuth provider links
-- `kycProfiles` (one-to-one) - KYC verification data
-- `apikeys` (one-to-many) - API access keys
-- `passkeys` (one-to-many) - WebAuthn credentials
+- `sessions` (1:N) — Active login sessions tracked for security
+- `accounts` (1:N) — OAuth provider links (Google, GitHub, etc.)
+- `kycProfiles` (1:1) — Identity verification data (see below)
+- `apikeys` (1:N) — Programmatic access for integrations
+- `passkeys` (1:N) — WebAuthn credentials for passwordless login
 
-#### Usage example
+#### Usage example: Investor wallet lookup
 
 ```typescript
 import { db } from "@/lib/db";
 import { user } from "@/lib/db/schemas";
 import { eq } from "drizzle-orm";
 
-// Get user with wallet
+// Retrieve user by wallet address for compliance checks
 const investor = await db
   .select()
   .from(user)
   .where(eq(user.wallet, walletAddress))
   .get();
-```
 
-### KYC Profile
+if (!investor) {
+  throw new Error("No user associated with this wallet");
+}
 
-Identity verification data linked to users.
-
-**Schema location**:
-[`kit/dapp/src/lib/db/schemas/kyc.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/kyc.ts)
-
-#### Fields
-
-```typescript
-{
-  id: string; // Primary key
-  userId: string; // FK to user.id (unique)
-  firstName: string; // Legal first name
-  lastName: string; // Legal last name
-  dob: Date; // Date of birth
-  country: string; // ISO country code
-  residencyStatus: ResidencyStatus; // 'citizen' | 'permanent_resident' | 'temporary_resident'
-  nationalId: string; // National ID number
-  createdAt: Date; // Profile creation timestamp
-  updatedAt: Date; // Last update timestamp
+// Check admin privileges before allowing asset issuance
+if (investor.role !== "admin") {
+  throw new Error("Unauthorized: admin role required");
 }
 ```
 
-#### Indexes
+**Observability:** Monitor the `user` table for:
+
+- **Registration rate** — Track `createdAt` timestamps to measure user growth
+- **Email verification lag** — Alert when `emailVerified` remains `false`
+  &gt;24h after `createdAt`
+- **Wallet connection rate** — Percentage of users with non-null `wallet` field
+- **Ban actions** — Audit log of `banned` flag changes for compliance reporting
+
+See the user activity dashboard (Helm chart: `atk-observability`) for
+pre-configured panels tracking these metrics.
+
+### KYC Profile
+
+Identity verification data linked 1:1 to users. The platform uses a simplified
+KYC model suitable for development and testing; production deployments typically
+integrate external KYC providers like Sumsub or Onfido via the API layer.
+
+**Schema location:**
+[`kit/dapp/src/lib/db/schemas/kyc.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/lib/db/schemas/kyc.ts)
+
+**Business context:** KYC profiles store the regulatory attributes that on-chain
+compliance rules evaluate. The `country` field determines which identity
+registries the user can register with (some tokens restrict transfers to
+specific jurisdictions). The `residencyStatus` field supports accredited
+investor checks—permanent residents may have different investment limits than
+temporary visa holders. After KYC approval, backend automation deploys an
+identity contract and registers it in the appropriate country-specific identity
+registry.
+
+#### Fields
+
+| Field             | Type              | Purpose                                                                                 |
+| ----------------- | ----------------- | --------------------------------------------------------------------------------------- |
+| `id`              | `string`          | Primary key (UUID)                                                                      |
+| `userId`          | `string`          | Foreign key to `user.id` (unique constraint enforces 1:1)                               |
+| `firstName`       | `string`          | Legal first name from government ID                                                     |
+| `lastName`        | `string`          | Legal last name; combined with `firstName` for identity claims                          |
+| `dob`             | `Date`            | Date of birth; used for age verification rules                                          |
+| `country`         | `string`          | ISO 3166-1 alpha-2 code (e.g., `"US"`, `"GB"`); determines registry eligibility         |
+| `residencyStatus` | `ResidencyStatus` | `'citizen'`, `'permanent_resident'`, or `'temporary_resident'`; gates investment limits |
+| `nationalId`      | `string`          | National ID number (encrypted at rest); for audit purposes only                         |
+| `createdAt`       | `Date`            | KYC submission timestamp                                                                |
+| `updatedAt`       | `Date`            | Last modification time; updated when admin approves/rejects                             |
+
+**Indexes:**
 
 - Primary key: `id`
-- Unique: `userId`
-- Index: `country`, `firstName`, `lastName`
+- Unique constraint: `userId` (one KYC profile per user)
+- Non-unique indexes: `country`, `firstName`, `lastName` (optimize compliance
+  queries)
 
-#### Foreign keys
+**Foreign keys:**
 
-`userId` → `user.id` (cascade delete)
+- `userId` → `user.id` with `onDelete: cascade` (deleting a user removes their
+  KYC data)
 
-#### Usage example
+#### Usage example: Country-based compliance queries
 
 ```typescript
 import { db } from "@/lib/db";
 import { user, kycProfiles } from "@/lib/db/schemas";
 import { eq } from "drizzle-orm";
 
-// Get user with KYC profile
-const userWithKyc = await db
-  .select()
+// Find all verified US investors for regulatory reporting
+const usInvestors = await db
+  .select({
+    userId: user.id,
+    email: user.email,
+    wallet: user.wallet,
+    residency: kycProfiles.residencyStatus,
+  })
   .from(user)
-  .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
-  .where(eq(user.id, userId))
-  .get();
+  .innerJoin(kycProfiles, eq(kycProfiles.userId, user.id))
+  .where(eq(kycProfiles.country, "US"))
+  .all();
+
+// Filter for accredited investors (citizens and permanent residents)
+const accredited = usInvestors.filter(
+  (inv) => inv.residency === "citizen" || inv.residency === "permanent_resident"
+);
 ```
+
+**DALP lifecycle integration:** The KYC approval workflow triggers on-chain
+identity deployment:
+
+1. Admin approves KYC submission (sets `updatedAt` to current time)
+2. Backend job detects approval and calls identity factory contract
+3. New identity contract deployed with `user.wallet` as owner
+4. Identity registered in country-specific registry using `kycProfiles.country`
+5. Subgraph indexes `Identity` and `RegisteredIdentity` entities
+6. User can now pass transfer restriction checks for country-specific tokens
+
+**Observability:** Monitor KYC processing with:
+
+- **Approval latency** — Time between `createdAt` and `updatedAt` for approved
+  profiles
+- **Pending KYC queue depth** — Count of records where `updatedAt == createdAt`
+  (not yet reviewed)
+- **Country distribution** — Breakdown of `country` values to identify
+  geographic concentration
+- **Residency status mix** — Ratio of citizens to residents for risk assessment
+
+The compliance dashboard (Grafana panel: `kyc-metrics`) visualizes these metrics
+in real-time.
 
 ## On-chain entities (Subgraph)
 
+On-chain entities capture blockchain state that smart contracts use for transfer
+restriction logic. The subgraph indexes events emitted by identity contracts,
+identity registries, and token contracts, maintaining a queryable graph database
+that the dApp uses for portfolio views and compliance checks.
+
+**Schema location:**
+[`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
+
 ### Account
 
-Represents any Ethereum address (EOA or smart contract).
+Represents any Ethereum address—externally owned accounts (EOAs) or smart
+contracts. Every address that appears in a transaction or event log gets an
+`Account` entity.
 
-**Schema location**:
-[`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
+**Business context:** Accounts are the universal entity for all on-chain
+participants. When an investor receives tokens, their wallet address becomes an
+`Account` with a `TokenBalance` relationship. When a DvP settlement completes,
+both buyer and seller `Account` entities are updated with new balances. Vault
+contracts also have `Account` entities, enabling balance queries for custody
+reporting.
 
 #### Fields
 
-```graphql
-type Account @entity {
-  id: Bytes! # Ethereum address
-  isContract: Boolean! # Smart contract vs EOA
-  contractName: String # Name if known contract
-  balances: [TokenBalance!]! # Token holdings
-  stats: AccountStatsState # Aggregated metrics
-  systemStats: [AccountSystemStatsState!]!
-  tokenFactoryStats: [AccountTokenFactoryStatsState!]!
-  identities: [Identity!]! # Linked identities
-  registeredIdentities: [RegisteredIdentity!]!
-}
-```
+| Field                  | Type                                | Purpose                                                                  |
+| ---------------------- | ----------------------------------- | ------------------------------------------------------------------------ |
+| `id`                   | `Bytes!`                            | Ethereum address (lowercase); primary key                                |
+| `isContract`           | `Boolean!`                          | `true` for smart contracts, `false` for EOAs                             |
+| `contractName`         | `String`                            | Human-readable name if address is a known contract (e.g., `"BondVault"`) |
+| `balances`             | `[TokenBalance!]!`                  | Token holdings across all asset types                                    |
+| `stats`                | `AccountStatsState`                 | Aggregated metrics (total value, transaction count)                      |
+| `systemStats`          | `[AccountSystemStatsState!]!`       | System-level activity statistics                                         |
+| `tokenFactoryStats`    | `[AccountTokenFactoryStatsState!]!` | Asset issuance statistics for admins                                     |
+| `identities`           | `[Identity!]!`                      | Identity contracts owned by this account (usually 0 or 1 for investors)  |
+| `registeredIdentities` | `[RegisteredIdentity!]!`            | Registry entries linking account to verified identities                  |
 
-#### Relationships
+**Relationships:**
 
-- **One-to-many**:
-  - `balances` → Token holdings (see
-    [Token entities](/docs/developer-guides/data-model/entity-token))
-  - `identities` → Identity contracts owned
-  - `registeredIdentities` → Registry entries
-- **One-to-one**:
-  - `stats` → Account statistics
+- **1:N** — `balances` (see
+  [Token entities](/docs/developer-guides/data-model/entity-token))
+- **1:N** — `identities` (identity contracts where this account is the owner)
+- **1:N** — `registeredIdentities` (registry entries for this account)
+- **1:1** — `stats` (aggregated account metrics)
 
-#### Usage example
+#### Usage example: Portfolio query
 
 ```graphql
-query GetInvestorAccount($address: Bytes!) {
+query GetInvestorPortfolio($address: Bytes!) {
   account(id: $address) {
     id
     isContract
@@ -190,8 +313,10 @@ query GetInvestorAccount($address: Bytes!) {
       token {
         name
         symbol
+        assetType
       }
       balance
+      valueUSD
     }
     identities {
       id
@@ -202,43 +327,59 @@ query GetInvestorAccount($address: Bytes!) {
 }
 ```
 
+**DALP lifecycle context:** DvP settlement queries both buyer and seller
+`Account` entities to verify:
+
+- Both accounts have `identities` entries (not anonymous addresses)
+- Both identities have `isVerified: true` (KYC approved)
+- Both identities are registered in the token's allowed countries
+
+Vault deposit operations check the depositor's `Account` to ensure they have
+sufficient token balance before accepting custody.
+
 ### Identity
 
-On-chain identity contract (ERC-734/735) with management keys and claims.
+On-chain identity contract implementing ERC-734 (key management) and ERC-735
+(claims). Each verified investor receives one identity contract that holds
+management keys and regulatory claims.
+
+**Business context:** Identity contracts are the on-chain representation of KYC
+approval. Smart contracts call `identity.isVerified()` before allowing token
+transfers. The claims array stores attestations from trusted issuers (e.g.,
+"this address is a US accredited investor"). Keys allow delegated management—an
+investor can grant a financial advisor an ACTION key to trade on their behalf
+without transferring funds.
 
 #### Fields
 
-```graphql
-type Identity @entity {
-  id: Bytes! # Identity contract address
-  account: Account! # Linked account
-  keys: [IdentityKey!]! # Management keys
-  claims: [IdentityClaim!]! # Attached claims
-  isVerified: Boolean! # Verification status
-  country: Int # Country code (if registered)
-}
-```
+| Field        | Type                | Purpose                                                                      |
+| ------------ | ------------------- | ---------------------------------------------------------------------------- |
+| `id`         | `Bytes!`            | Identity contract address; primary key                                       |
+| `account`    | `Account!`          | Owner account (the investor's wallet)                                        |
+| `keys`       | `[IdentityKey!]!`   | ERC-734 keys for management and actions                                      |
+| `claims`     | `[IdentityClaim!]!` | ERC-735 claims attached by issuers                                           |
+| `isVerified` | `Boolean!`          | Verification status (claimed by trusted issuer)                              |
+| `country`    | `Int`               | ISO 3166-1 numeric country code if registered in a country-specific registry |
 
-#### Relationships
+**Relationships:**
 
-- **Many-to-one**:
-  - `account` → Owner account
-- **One-to-many**:
-  - `keys` → Management and action keys
-  - `claims` → Identity claims (see
-    [Compliance entities](/docs/developer-guides/data-model/entity-compliance))
+- **N:1** — `account` (many identities can theoretically belong to one account,
+  but typically 1:1)
+- **1:N** — `keys` (management and action keys)
+- **1:N** — `claims` (see
+  [Compliance entities](/docs/developer-guides/data-model/entity-compliance))
 
-#### Usage example
+#### Usage example: Identity verification check
 
 ```graphql
-query GetIdentity($address: Bytes!) {
+query CheckIdentityStatus($address: Bytes!) {
   identity(id: $address) {
     id
     isVerified
     country
-    keys {
+    keys(where: { isActive: true, purposes_contains: [1] }) {
+      key
       keyType
-      purposes
     }
     claims(where: { isActive: true }) {
       topic
@@ -251,37 +392,78 @@ query GetIdentity($address: Bytes!) {
 }
 ```
 
+**DALP lifecycle integration:**
+
+- **DvP pre-settlement checks** — Query both buyer and seller identities to
+  verify `isVerified: true` before locking funds
+- **Vault access control** — Vault contracts call
+  `identity.keyHasPurpose(msg.sender, ACTION)` to allow delegated withdrawals
+- **Yield eligibility** — Interest distribution logic filters recipients where
+  `identity.country` matches allowed jurisdictions
+
+**Observability:** Track identity contract deployment and usage:
+
+- **Identity creation rate** — Monitor `Identity` entity count growth over time
+- **Verification lag** — Time between identity contract deployment and
+  `isVerified` changing to `true`
+- **Key rotation events** — Alert on `IdentityKey` additions/removals for
+  security auditing
+- **Claim attestations** — Track `IdentityClaim` count per identity to measure
+  verification depth
+
+The identity verification dashboard (Grafana panel: `identity-metrics`)
+visualizes these metrics.
+
 ### RegisteredIdentity
 
-Identity registered in the system's identity registry.
+Identity registered in the system's identity registry. While `Identity` entities
+can exist independently, `RegisteredIdentity` entries indicate formal
+registration in a country-specific registry that tokens reference for compliance
+checks.
+
+**Business context:** Token contracts don't check identities directly—they query
+identity registries. A US corporate bond token's compliance module calls
+`usIdentityRegistry.isVerified(investorAddress)`, which looks up the
+`RegisteredIdentity` entry. This indirection allows token issuers to revoke
+access (by removing the registry entry) without modifying the investor's
+identity contract.
 
 #### Fields
 
-```graphql
-type RegisteredIdentity @entity {
-  id: Bytes! # Registry address + account
-  account: Account! # Registered account
-  identity: Identity! # Linked identity contract
-  country: Int! # Country code
-  registeredAt: BigInt! # Registration timestamp
-  updatedAt: BigInt! # Last update
-  isVerified: Boolean! # Verification status
-}
-```
+| Field          | Type        | Purpose                                             |
+| -------------- | ----------- | --------------------------------------------------- |
+| `id`           | `Bytes!`    | Composite key: `registryAddress + accountAddress`   |
+| `account`      | `Account!`  | Registered investor account                         |
+| `identity`     | `Identity!` | Linked identity contract                            |
+| `country`      | `Int!`      | ISO 3166-1 numeric country code (registry-specific) |
+| `registeredAt` | `BigInt!`   | Block timestamp of registration                     |
+| `updatedAt`    | `BigInt!`   | Last modification time (for re-verification events) |
+| `isVerified`   | `Boolean!`  | Current verification status (can be revoked)        |
 
-#### Relationships
+**Relationships:**
 
-- **Many-to-one**:
-  - `account` → Registered account
-  - `identity` → Identity contract
+- **N:1** — `account` (one account can be registered in multiple country
+  registries)
+- **N:1** — `identity` (one identity can appear in multiple registries)
 
-#### Usage example
+#### Usage example: Registry-filtered investor query
 
 ```graphql
-query GetRegisteredInvestors($registry: Bytes!) {
-  registeredIdentities(where: { isVerified: true, id_starts_with: $registry }) {
+query GetVerifiedInvestors($registryAddress: Bytes!) {
+  registeredIdentities(
+    where: { isVerified: true, id_starts_with: $registryAddress }
+    orderBy: registeredAt
+    orderDirection: desc
+  ) {
     account {
       id
+      balances(where: { token_: { registry: $registryAddress } }) {
+        token {
+          name
+          symbol
+        }
+        balance
+      }
     }
     identity {
       id
@@ -292,66 +474,143 @@ query GetRegisteredInvestors($registry: Bytes!) {
 }
 ```
 
+**DALP lifecycle context:**
+
+- **Token transfer validation** — Transfer restriction contracts query
+  `RegisteredIdentity.isVerified` before allowing transfers
+- **DvP eligibility** — Settlement logic verifies both parties have
+  `RegisteredIdentity` entries in the token's registry
+- **Yield distribution** — Interest payment contracts iterate
+  `RegisteredIdentity` entries to build recipient lists
+
+**Observability:** Monitor registry operations:
+
+- **Registration rate** — Track new `RegisteredIdentity` entities per day
+- **Revocation events** — Alert when `isVerified` changes from `true` to `false`
+- **Country distribution** — Breakdown of `country` values to track geographic
+  expansion
+- **Stale registrations** — Identify entries where `updatedAt` is very old
+  (potential re-verification candidates)
+
+The compliance registry dashboard (Grafana panel: `registry-metrics`) provides
+real-time visibility.
+
 ### IdentityKey
 
-ERC-734 key for identity management.
+ERC-734 key for identity management and delegation. Keys enable multi-party
+control of an identity contract—investors can grant advisors, custodians, or
+automated systems specific permissions without sharing private keys.
+
+**Business context:** Keys support operational workflows beyond simple wallet
+ownership. An institutional investor might grant their compliance officer a
+MANAGEMENT key to update claims, while giving their trading desk an ACTION key
+to initiate transfers. The `purposes` array defines what each key can do,
+enabling fine-grained access control.
 
 #### Fields
 
-```graphql
-type IdentityKey @entity {
-  id: Bytes! # identity.id + keyHash
-  identity: Identity! # Identity contract
-  key: Bytes! # Key hash
-  purposes: [BigInt!]! # Key purposes (1=MANAGEMENT, 2=ACTION, etc.)
-  keyType: BigInt! # Key type (1=ECDSA, 2=RSA, etc.)
-  addedAt: BigInt! # Addition timestamp
-  removedAt: BigInt # Removal timestamp
-  isActive: Boolean! # Currently valid
-}
-```
+| Field       | Type         | Purpose                                                     |
+| ----------- | ------------ | ----------------------------------------------------------- |
+| `id`        | `Bytes!`     | Composite key: `identityAddress + keyHash`                  |
+| `identity`  | `Identity!`  | Identity contract this key controls                         |
+| `key`       | `Bytes!`     | Key hash (typically `keccak256(address)` for Ethereum keys) |
+| `purposes`  | `[BigInt!]!` | Array of purpose codes (see below)                          |
+| `keyType`   | `BigInt!`    | Key type (1 = ECDSA, 2 = RSA, etc.)                         |
+| `addedAt`   | `BigInt!`    | Block timestamp when key was added                          |
+| `removedAt` | `BigInt`     | Block timestamp when key was revoked (null if still active) |
+| `isActive`  | `Boolean!`   | `true` if key is currently valid                            |
 
-#### Key purposes
+**Key purposes:**
 
-- `1` - MANAGEMENT (can add/remove keys)
-- `2` - ACTION (can execute actions)
-- `3` - CLAIM (can sign claims)
-- `4` - ENCRYPTION (can encrypt data)
+| Code | Purpose    | Description                                                   |
+| ---- | ---------- | ------------------------------------------------------------- |
+| 1    | MANAGEMENT | Can add/remove other keys                                     |
+| 2    | ACTION     | Can execute actions (e.g., token transfers, vault operations) |
+| 3    | CLAIM      | Can sign claims for other identities                          |
+| 4    | ENCRYPTION | Can encrypt/decrypt data (off-chain use)                      |
 
-#### Usage example
+**Note:** A single key can have multiple purposes (e.g., `[1, 2]` for combined
+management and action permissions).
+
+#### Usage example: Key audit query
 
 ```graphql
 query GetIdentityKeys($identityAddress: Bytes!) {
   identity(id: $identityAddress) {
-    keys(where: { isActive: true }) {
+    id
+    keys(orderBy: addedAt, orderDirection: desc) {
       key
       purposes
       keyType
       addedAt
+      removedAt
+      isActive
     }
   }
 }
 ```
 
-## Cross-system queries
+**DALP lifecycle integration:**
 
-### Link user to blockchain holdings
+- **Vault withdrawal delegation** — Vault contracts check
+  `keyHasPurpose(msg.sender, ACTION)` to allow non-owner withdrawals
+- **DvP automation** — Institutional participants grant ACTION keys to
+  settlement engines for atomic trades
+- **Compliance updates** — Issuers grant CLAIM keys to third-party KYC providers
+  for automated re-verification
+
+**Observability:** Track key lifecycle events:
+
+- **Key rotation frequency** — Monitor `IdentityKey` additions and removals over
+  time
+- **Permission escalation** — Alert when MANAGEMENT keys are added (requires
+  admin review)
+- **Dormant keys** — Identify keys with `isActive: true` but old `addedAt`
+  timestamps (potential cleanup candidates)
+- **Key type distribution** — Track `keyType` usage to identify unsupported key
+  types
+
+The identity security dashboard (Grafana panel: `key-audit-metrics`) provides
+real-time key monitoring.
+
+## Cross-system workflows
+
+Real-world operations require joining off-chain and on-chain data. These
+examples demonstrate common patterns for linking PostgreSQL user records to
+subgraph blockchain state.
+
+### Workflow: User portfolio with regulatory context
+
+Scenario: Display an investor's token holdings with their KYC verification
+status.
 
 ```typescript
 import { db } from "@/lib/db";
-import { user } from "@/lib/db/schemas";
+import { user, kycProfiles } from "@/lib/db/schemas";
 import { eq } from "drizzle-orm";
 import { graphqlClient } from "@/lib/graphql";
+import { gql } from "@apollo/client";
 
-// 1. Get user from database
-const dbUser = await db.select().from(user).where(eq(user.id, userId)).get();
+// Step 1: Load user and KYC data from PostgreSQL
+const dbUser = await db
+  .select({
+    id: user.id,
+    email: user.email,
+    wallet: user.wallet,
+    country: kycProfiles.country,
+    residencyStatus: kycProfiles.residencyStatus,
+  })
+  .from(user)
+  .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
+  .where(eq(user.id, userId))
+  .get();
 
 if (!dbUser?.wallet) {
-  throw new Error("User has no connected wallet");
+  throw new Error("User has not connected a wallet");
 }
 
-// 2. Query subgraph for holdings
-const result = await graphqlClient.query({
+// Step 2: Query subgraph for on-chain holdings and identity status
+const { data } = await graphqlClient.query({
   query: gql`
     query GetPortfolio($address: Bytes!) {
       account(id: $address) {
@@ -359,67 +618,193 @@ const result = await graphqlClient.query({
           token {
             name
             symbol
+            assetType
           }
           balance
+          valueUSD
+        }
+        identities {
+          id
+          isVerified
+          country
+          claims(where: { isActive: true }) {
+            topic
+            issuer {
+              id
+            }
+          }
         }
       }
     }
   `,
   variables: { address: dbUser.wallet.toLowerCase() },
 });
+
+// Step 3: Combine data for UI rendering
+const portfolio = {
+  user: {
+    email: dbUser.email,
+    kycCountry: dbUser.country,
+    residencyStatus: dbUser.residencyStatus,
+  },
+  holdings: data.account?.balances || [],
+  identity: {
+    contract: data.account?.identities[0]?.id,
+    verified: data.account?.identities[0]?.isVerified || false,
+    claimCount: data.account?.identities[0]?.claims.length || 0,
+  },
+};
 ```
 
-### Find users by country
+**DALP context:** This pattern supports DvP settlement pre-checks—before
+initiating a trade, the UI verifies the user has a verified identity and
+sufficient token balance.
+
+### Workflow: Country-based compliance reporting
+
+Scenario: Generate a report of all US investors and their token holdings for
+regulatory filing.
 
 ```typescript
-// PostgreSQL query
-const investorsInCountry = await db
-  .select()
-  .from(kycProfiles)
-  .where(eq(kycProfiles.country, "US"));
+import { db } from "@/lib/db";
+import { user, kycProfiles } from "@/lib/db/schemas";
+import { eq } from "drizzle-orm";
+import { graphqlClient } from "@/lib/graphql";
+import { gql } from "@apollo/client";
 
-// Get their blockchain identities
-const addresses = await db
-  .select({ wallet: user.wallet })
+// Step 1: Find all US investors in PostgreSQL
+const usInvestors = await db
+  .select({
+    userId: user.id,
+    email: user.email,
+    wallet: user.wallet,
+    firstName: kycProfiles.firstName,
+    lastName: kycProfiles.lastName,
+  })
   .from(user)
   .innerJoin(kycProfiles, eq(kycProfiles.userId, user.id))
-  .where(eq(kycProfiles.country, "US"));
+  .where(eq(kycProfiles.country, "US"))
+  .all();
 
-// Query subgraph for on-chain data
-const onChainData = await graphqlClient.query({
+// Step 2: Query subgraph for on-chain holdings (batch query)
+const walletAddresses = usInvestors
+  .map((inv) => inv.wallet?.toLowerCase())
+  .filter(Boolean);
+
+const { data } = await graphqlClient.query({
   query: gql`
     query GetAccountsByCountry($addresses: [Bytes!]!) {
       accounts(where: { id_in: $addresses }) {
         id
-        balances {
+        balances(where: { balance_gt: "0" }) {
           token {
             name
+            symbol
+            assetType
           }
           balance
+          valueUSD
         }
       }
     }
   `,
-  variables: { addresses: addresses.map((a) => a.wallet?.toLowerCase()) },
+  variables: { addresses: walletAddresses },
+});
+
+// Step 3: Join data and generate report
+const report = usInvestors.map((inv) => {
+  const onChainData = data.accounts.find(
+    (acc) => acc.id === inv.wallet?.toLowerCase()
+  );
+  return {
+    name: `${inv.firstName} ${inv.lastName}`,
+    email: inv.email,
+    wallet: inv.wallet,
+    holdings: onChainData?.balances || [],
+    totalValueUSD: onChainData?.balances.reduce(
+      (sum, bal) => sum + Number.parseFloat(bal.valueUSD),
+      0
+    ),
+  };
 });
 ```
 
-## Authentication flow
+**Observability:** This query pattern powers the compliance reporting dashboard
+(Grafana panel: `investor-holdings-by-country`), which refreshes hourly to
+provide up-to-date regulatory filing data.
 
-1. **User registers** → Creates `user` record
-2. **Email verification** → Sets `emailVerified: true`
-3. **Wallet connection** → Populates `user.wallet`
-4. **KYC submission** → Creates `kyc_profiles` record
-5. **KYC approval** → Backend triggers identity registration on-chain
-6. **Identity created** → Subgraph indexes `Identity` and `RegisteredIdentity`
+### Workflow: Identity verification lifecycle
+
+End-to-end flow from user registration to on-chain identity deployment:
+
+<Mermaid
+  chart={`
+flowchart TB
+    Register(User registers<br/>email & password)
+    EmailVerify(Email verification)
+    WalletConnect(Wallet connection)
+    KYCSubmit(KYC submission)
+    AdminReview(Admin reviews KYC)
+    DeployIdentity(Backend deploys<br/>identity contract)
+    RegisterCountry(Register in<br/>country registry)
+    SubgraphIndex(Subgraph indexes<br/>Identity & RegisteredIdentity)
+    TransferEnabled(User can receive<br/>compliant tokens)
+    
+    Register --> EmailVerify
+    EmailVerify --> WalletConnect
+    WalletConnect --> KYCSubmit
+    KYCSubmit --> AdminReview
+    AdminReview --> DeployIdentity
+    DeployIdentity --> RegisterCountry
+    RegisterCountry --> SubgraphIndex
+    SubgraphIndex --> TransferEnabled
+    
+    classDef offchain fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef onchain fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef indexing fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    
+    class Register,EmailVerify,WalletConnect,KYCSubmit,AdminReview offchain
+    class DeployIdentity,RegisterCountry onchain
+    class SubgraphIndex,TransferEnabled indexing
+`}
+/>
+
+**Timeline (typical):**
+
+1. **User registers** → `user` record created, `emailVerified: false`
+2. **Email verification** (1-5 min) → Sets `emailVerified: true`, enables wallet
+   connection
+3. **Wallet connection** (immediate) → Populates `user.wallet` field
+4. **KYC submission** (user action) → Creates `kycProfiles` record with
+   `createdAt` timestamp
+5. **Admin approval** (manual, 1-24h) → Sets `kycProfiles.updatedAt` to approval
+   time
+6. **Identity deployment** (automated, ~1 min) → Backend job deploys identity
+   contract, fires `IdentityCreated` event
+7. **Registry registration** (automated, ~30s) → Backend calls
+   `identityRegistry.registerIdentity()`
+8. **Subgraph indexing** (2-5 blocks) → `Identity` and `RegisteredIdentity`
+   entities created
+9. **Transfer enabled** → User can now receive tokens that require verified
+   identities
+
+**Observability checkpoints:**
+
+- Monitor approval lag (step 5) in the KYC metrics dashboard
+- Track deployment failures (step 6) via the blockchain transaction error panel
+- Verify indexing latency (step 8) in the subgraph sync status dashboard
 
 ## See also
 
-- **[Token entities](/docs/developer-guides/data-model/entity-token)** - Query
-  investor token holdings
-- **[Compliance entities](/docs/developer-guides/data-model/entity-compliance)** -
-  Identity claims and access control
-- **[Data model overview](/docs/developer-guides/data-model/data-model-reference)** -
-  Complete data architecture
-- **[Authentication guide](/docs/developer-guides/api-integration/api-reference#authentication)** -
-  User login and wallet connection
+- **[Token entities](/docs/developer-guides/data-model/entity-token)** — Query
+  investor token holdings and balances
+- **[Compliance entities](/docs/developer-guides/data-model/entity-compliance)**
+  — Identity claims and access control rules
+- **[DvP settlement](/docs/developer-guides/settlement/dvp-settlement)** — How
+  identity verification enables atomic trades
+- **[Vault operations](/docs/developer-guides/custody/vault-operations)** —
+  Identity-based access control for custody
+- **[Data model overview](/docs/developer-guides/data-model/data-model-reference)**
+  — Complete data architecture reference
+- **[Authentication guide](/docs/developer-guides/api-integration/api-reference#authentication)**
+  — User login and wallet connection flows

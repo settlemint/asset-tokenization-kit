@@ -1,24 +1,87 @@
 ---
 title: Compliance entities
 description:
-  Compliance modules, identity claims, access control, and transfer restrictions
-pageTitle: Compliance entity reference (Compliance, Claims, Access Control)
-tags: [compliance, claims, erc-735, access-control, modules]
+  Compliance entities enforce transfer restrictions through a modular
+  architecture that validates every token transaction against regulatory
+  requirements. The system combines identity claims, trusted issuers, and
+  configurable rule modules to gate DvP settlements, vault operations, and yield
+  distributions, ensuring that only eligible investors participate in regulated
+  asset workflows.
+pageTitle: Compliance entity reference - rules, claims, and access control
+tags:
+  [
+    compliance,
+    identity-claims,
+    erc-735,
+    access-control,
+    transfer-restrictions,
+    modules,
+  ]
 ---
 
-Compliance entities enforce transfer restrictions, manage identity claims, and
-control access to system functions. These entities are indexed by TheGraph from
-blockchain events.
+## Why compliance comes first
+
+Every token transfer in ATK must pass compliance validation before execution.
+This compliance-first architecture prevents regulatory violations at the
+protocol level rather than relying on off-chain controls. When an investor
+attempts to transfer tokens, the system validates their identity claims against
+required topics (KYC, AML, accredited investor status) and evaluates all active
+compliance modules (transfer limits, country restrictions, balance caps) before
+allowing the transaction.
+
+This design ensures that DvP settlements only complete when both parties meet
+eligibility requirements, vault withdrawals respect holding period restrictions,
+and yield distributions flow only to verified participants. The compliance layer
+acts as a regulatory gate across the entire DALP lifecycle.
 
 **Schema location**:
 [`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
 
+## Compliance architecture overview
+
+The compliance system connects three core components: the Compliance contract
+manages required claim topics and active modules for each token,
+ComplianceModule contracts enforce specific transfer rules, and IdentityClaim
+entities prove investor eligibility through cryptographically signed
+attestations from trusted issuers.
+
+<Mermaid
+  chart={`flowchart TB
+    Token(Token Contract):::primary
+    Compliance(Compliance Contract):::primary
+    Module1(Time Transfer<br/>Limits Module):::secondary
+    Module2(Country Restrict<br/>Module):::secondary
+    Module3(Max Balance<br/>Module):::secondary
+    Identity(Identity Contract):::tertiary
+    Claim1(KYC Claim):::tertiary
+    Claim2(AML Claim):::tertiary
+    Issuer(Trusted Issuer<br/>Registry):::quaternary
+    
+    Token -->|validates transfer| Compliance
+    Compliance -->|checks required claims| Identity
+    Compliance -->|evaluates rules| Module1
+    Compliance -->|evaluates rules| Module2
+    Compliance -->|evaluates rules| Module3
+    Identity -->|contains| Claim1
+    Identity -->|contains| Claim2
+    Claim1 -->|signed by| Issuer
+    Claim2 -->|signed by| Issuer
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+`}
+/>
+
 ## Compliance
 
-Main compliance contract for a token, managing modules and required claim
-topics.
+The Compliance contract serves as the central enforcement point for a token's
+regulatory rules. It maintains a list of required claim topics that investors
+must possess and coordinates all active compliance modules that validate
+transfer conditions.
 
-### Fields
+### Schema definition
 
 ```graphql
 type Compliance @entity {
@@ -29,25 +92,37 @@ type Compliance @entity {
 }
 ```
 
-### Relationships
-
-- **One-to-one**:
-  - `token` → Token this compliance applies to
-- **Many-to-many**:
-  - `modules` → Active compliance modules (via TokenComplianceModule junction)
-
 ### Required claim topics
 
-Array of claim topic IDs that investors must have to trade the token. Common
-topics:
+The `requiredClaimTopics` array specifies which identity claims an investor must
+hold to trade the token. These numeric topic IDs correspond to specific
+attestation types:
 
-- `1` - KYC verification
-- `2` - AML check
-- `3` - Accredited investor status
-- `4` - Country of residence
-- `5` - Investor type
+| Topic ID | Claim Type           | Regulatory Purpose                                             |
+| -------- | -------------------- | -------------------------------------------------------------- |
+| `1`      | KYC verification     | Customer identification per AML regulations                    |
+| `2`      | AML screening        | Anti-money laundering compliance check                         |
+| `3`      | Accredited investor  | Qualification for restricted securities (US SEC Reg D)         |
+| `4`      | Country of residence | Geographic restriction enforcement (OFAC, sanctions)           |
+| `5`      | Investor type        | Retail vs institutional classification for product suitability |
 
-### Usage example
+A corporate bond offering restricted to accredited US investors would require
+topics `[1, 2, 3, 4]`, while a retail fund available to EU residents might only
+require `[1, 2, 4]`.
+
+### DALP integration points
+
+Compliance validation gates critical DALP operations:
+
+- **DvP settlement**: Both buyer and seller must pass compliance checks before
+  the atomic swap executes, preventing regulatory violations in on-chain
+  delivery-versus-payment transactions
+- **Vault withdrawals**: Compliance modules can enforce lock-up periods or
+  vesting schedules by rejecting transfers during restricted timeframes
+- **Yield distributions**: Only addresses with valid identity claims receive
+  dividend payments, ensuring yield flows only to verified participants
+
+### Querying compliance configuration
 
 ```graphql
 query GetTokenCompliance($tokenAddress: Bytes!) {
@@ -65,43 +140,104 @@ query GetTokenCompliance($tokenAddress: Bytes!) {
 }
 ```
 
+This query retrieves the complete compliance setup for a token, showing which
+identity claims investors need and which rule modules the token enforces. Use
+this during investor onboarding to display eligibility requirements.
+
+**Related contracts**:
+[`Compliance.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/Compliance.sol)
+
 ## ComplianceModule
 
-Individual compliance rule module that enforces transfer restrictions.
+Compliance modules implement specific transfer restrictions as isolated smart
+contracts. Each module evaluates one aspect of regulatory compliance (daily
+transfer limits, geographic restrictions, maximum holdings) and returns approval
+or rejection for proposed transfers. The modular design lets token issuers
+compose custom regulatory frameworks by activating multiple modules
+simultaneously.
 
-### Fields
+### Schema definition
 
 ```graphql
 type ComplianceModule @entity {
   id: Bytes! # Module contract address
   name: String! # Module type name
-  moduleType: String! # Classification
+  moduleType: String! # Classification category
   isGlobal: Boolean! # System-wide vs token-specific
-  tokens: [TokenComplianceModule!]! # Tokens using module
+  tokens: [TokenComplianceModule!]! # Tokens using this module
 }
 ```
 
-### Module types
+### Module type catalog
 
-Common compliance modules:
+The kit includes pre-built modules covering common regulatory requirements:
 
-- **Transfer restrictions**:
-  - `TimeTransfersLimitsModule` - Daily/monthly transfer limits
-  - `CountryRestrictModule` - Country-based restrictions
-  - `MaxBalanceModule` - Maximum balance per holder
-- **Supply controls**:
-  - `SupplyLimitModule` - Total supply cap
-  - `MaxOwnershipModule` - Maximum ownership percentage
-- **Time-based**:
-  - `TransferCooldownModule` - Minimum time between transfers
-  - `LockupModule` - Time-locked tokens
+**Transfer volume controls**
 
-### Global vs token-specific
+- `TimeTransfersLimitsModule`: Enforces daily and monthly transfer volume caps
+  to detect suspicious trading patterns and prevent market manipulation. Used by
+  funds to comply with redemption notice periods and by bonds to limit secondary
+  market liquidity.
+- `MaxBalanceModule`: Restricts the maximum token balance any single address can
+  hold, preventing concentration risk and ensuring broad investor distribution
+  for funds and collective investment schemes.
 
-- `isGlobal: true` - Module can be reused across multiple tokens
-- `isGlobal: false` - Module deployed for specific token
+**Geographic restrictions**
 
-### Usage example
+- `CountryRestrictModule`: Blocks transfers to or from specific countries based
+  on identity claim country codes, enforcing OFAC sanctions lists and geographic
+  distribution restrictions in private placements.
+
+**Ownership limitations**
+
+- `MaxOwnershipModule`: Caps the percentage of total supply any investor can
+  own, satisfying fund diversification requirements and preventing single-entity
+  control in tokenized voting securities.
+- `SupplyLimitModule`: Restricts total circulating supply to a maximum value,
+  useful for capped offerings and ensuring on-chain supply matches off-chain
+  asset backing.
+
+**Time-based restrictions**
+
+- `TransferCooldownModule`: Enforces minimum wait periods between transfers from
+  the same address, reducing wash trading and supporting holding period
+  requirements in certain jurisdictions.
+- `LockupModule`: Implements hard lock-up periods where tokens cannot be
+  transferred until a specified timestamp, supporting founder vesting schedules
+  and SAFE note conversion restrictions.
+
+### Global vs token-specific modules
+
+Modules deployed with `isGlobal: true` can be reused across multiple tokens,
+reducing deployment costs and standardizing compliance logic. A global
+`CountryRestrictModule` instance might serve all tokens issued by a platform.
+Token-specific modules (`isGlobal: false`) contain custom logic or parameters
+unique to one security offering.
+
+### Real-world compliance scenarios
+
+**Scenario: Private equity fund with quarterly redemptions**
+
+Configure `TimeTransfersLimitsModule` with `monthlyLimit` set to 25% of investor
+holdings and `dailyLimit` set to zero except during redemption windows. Pair
+with `TransferCooldownModule` requiring 90 days between transfers to enforce the
+fund's liquidity terms.
+
+**Scenario: US Regulation D corporate bonds**
+
+Activate modules: `CountryRestrictModule` (block non-US transfers),
+`MaxOwnershipModule` (prevent &gt;10% ownership), and `LockupModule` (12-month
+holding period). Set `requiredClaimTopics` to `[1, 2, 3]` for KYC, AML, and
+accredited investor verification.
+
+**Scenario: EU MiFID II compliant retail fund**
+
+Use `MaxBalanceModule` to limit individual holdings below the product's risk
+concentration threshold. Configure `CountryRestrictModule` to allow only EU/EEA
+country codes. Set `requiredClaimTopics` to `[1, 2, 5]` to verify KYC, AML, and
+retail investor classification.
+
+### Module discovery query
 
 ```graphql
 query GetComplianceModules {
@@ -119,52 +255,100 @@ query GetComplianceModules {
 }
 ```
 
+This query lists all reusable global modules and which tokens currently employ
+them, helping platform administrators understand compliance rule deployment
+across the system.
+
+**Related contracts**:
+[`ComplianceModule.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/modules/ComplianceModule.sol)
+
 ## TokenComplianceModule
 
-Junction entity linking tokens to compliance modules with configuration
-parameters.
+The TokenComplianceModule junction entity connects tokens to compliance modules
+with module-specific configuration parameters. This many-to-many relationship
+allows tokens to activate multiple rule modules simultaneously, and modules to
+serve multiple tokens.
 
-### Fields
+### Schema definition
 
 ```graphql
 type TokenComplianceModule @entity {
   id: Bytes! # Composite ID (token + module)
   token: Token! # Token reference
   module: ComplianceModule! # Module reference
-  params: Bytes! # ABI-encoded parameters
-  addedAt: BigInt! # Addition timestamp
-  removedAt: BigInt # Removal timestamp (null if active)
-  isActive: Boolean! # Currently active
+  params: Bytes! # ABI-encoded configuration parameters
+  addedAt: BigInt! # Activation timestamp
+  removedAt: BigInt # Deactivation timestamp (null if active)
+  isActive: Boolean! # Currently enforced
 }
 ```
 
-### Module parameters
+### Module configuration parameters
 
-The `params` field contains ABI-encoded configuration. Examples:
+The `params` field contains ABI-encoded configuration data specific to each
+module type. These parameters customize the module's behavior for the token.
 
-**TimeTransfersLimitsModule**:
+**TimeTransfersLimitsModule configuration**
 
 ```solidity
 struct Params {
-  uint256 dailyLimit;
-  uint256 monthlyLimit;
+  uint256 dailyLimit;    // Maximum tokens transferable per 24h period per address
+  uint256 monthlyLimit;  // Maximum tokens transferable per 30-day rolling window
 }
 ```
 
-**CountryRestrictModule**:
+Example: A fund with $100k monthly redemptions and $1M equivalent token price
+sets `dailyLimit: 3333e18` (roughly $10k/day) and `monthlyLimit: 100000e18`.
+
+**CountryRestrictModule configuration**
 
 ```solidity
 struct Params {
-  uint16[] allowedCountries;
-  uint16[] blockedCountries;
+  uint16[] allowedCountries;  // ISO 3166-1 numeric country codes permitted
+  uint16[] blockedCountries;  // ISO 3166-1 numeric country codes forbidden
 }
 ```
 
-### Usage example
+Example: A US-only offering sets `allowedCountries: [840]` (840 = United
+States). An EU fund might set `allowedCountries` to all EU member states' codes
+and leave `blockedCountries` empty.
+
+**MaxBalanceModule configuration**
+
+```solidity
+struct Params {
+  uint256 maxBalance;  // Maximum token balance per address
+}
+```
+
+Example: A retail investment product with €50k maximum individual exposure and
+€10 token price sets `maxBalance: 5000e18`.
+
+### Module lifecycle tracking
+
+Token issuers activate modules via
+[`addModule()`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/Compliance.sol#L123)
+and deactivate via
+[`removeModule()`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/Compliance.sol#L145).
+The subgraph tracks both events:
+
+- `addedAt`: Timestamp when module activated, useful for audit trails
+- `removedAt`: Timestamp when module deactivated, `null` if currently active
+- `isActive`: Boolean derived from `removedAt`, enables efficient filtering in
+  queries
+
+This history preserves the complete compliance configuration timeline for
+regulatory reporting.
+
+### Querying active module configurations
 
 ```graphql
 query GetTokenModules($tokenAddress: Bytes!) {
-  tokenComplianceModules(where: { token: $tokenAddress, isActive: true }) {
+  tokenComplianceModules(
+    where: { token: $tokenAddress, isActive: true }
+    orderBy: addedAt
+    orderDirection: asc
+  ) {
     module {
       name
       moduleType
@@ -175,69 +359,111 @@ query GetTokenModules($tokenAddress: Bytes!) {
 }
 ```
 
+This query retrieves all currently enforced compliance rules for a token with
+their configuration parameters, ordered by activation date. Use this to display
+compliance requirements on token detail pages.
+
 ## IdentityClaim
 
-ERC-735 claim attached to an identity, signed by a trusted issuer.
+IdentityClaim entities represent ERC-735 claims attached to investor identity
+contracts. Each claim is a cryptographically signed attestation from a trusted
+issuer asserting specific facts about the investor (their KYC status, country of
+residence, accredited investor qualification).
 
-### Fields
+### Schema definition
 
 ```graphql
 type IdentityClaim @entity {
-  id: Bytes! # Claim ID
-  identity: Identity! # Identity owning claim
-  topic: BigInt! # Claim topic
-  scheme: BigInt! # Signature scheme
-  issuer: Account! # Claim issuer
-  signature: Bytes! # Claim signature
-  data: Bytes! # Claim data
-  uri: String! # Claim URI
-  addedAt: BigInt! # Addition timestamp
-  removedAt: BigInt # Removal timestamp
-  isActive: Boolean! # Currently valid
+  id: Bytes! # Claim ID (hash of identity + topic + issuer)
+  identity: Identity! # Identity owning this claim
+  topic: BigInt! # Claim topic (matches requiredClaimTopics)
+  scheme: BigInt! # Signature scheme (1=ECDSA, 2=RSA, 3=other)
+  issuer: Account! # Claim issuer account
+  signature: Bytes! # Cryptographic signature proving authenticity
+  data: Bytes! # Claim payload data
+  uri: String! # URI to external claim documentation
+  addedAt: BigInt! # Claim issuance timestamp
+  removedAt: BigInt # Claim revocation timestamp (null if valid)
+  isActive: Boolean! # Currently valid and unrevoked
 }
 ```
 
-### Claim topics
+### Claim topic standard
 
-Standard claim topics (aligned with `requiredClaimTopics`):
+Claim topics align with the `requiredClaimTopics` on Compliance contracts,
+creating a matching system between investor attestations and token requirements:
 
-- `1` - KYC verification
-- `2` - AML check
-- `3` - Accredited investor
-- `4` - Country code
-- `5` - Investor type (retail/institutional)
+| Topic | Attestation          | Verification Method                                | Typical Issuer                                             |
+| ----- | -------------------- | -------------------------------------------------- | ---------------------------------------------------------- |
+| `1`   | KYC verification     | Government ID validation, address proof            | Identity verification service (Onfido, Jumio)              |
+| `2`   | AML screening        | Sanctions list check, PEP screening, adverse media | Compliance service provider (ComplyAdvantage, Chainalysis) |
+| `3`   | Accredited investor  | Income/net worth verification per SEC standards    | Registered broker-dealer, CPA firm, law firm               |
+| `4`   | Country of residence | Tax residency documentation                        | Identity verification service with tax compliance          |
+| `5`   | Investor type        | Self-certification or regulatory classification    | Platform administrator, financial advisor                  |
 
 ### Signature schemes
 
-- `1` - ECDSA
-- `2` - RSA
-- `3` - Other
+The `scheme` field indicates the cryptographic algorithm used to sign the claim:
 
-### Relationships
+- `1` (ECDSA): Elliptic curve signatures, standard for Ethereum private keys
+- `2` (RSA): RSA signatures, common for traditional certificate authorities
+- `3` (Other): Custom signature schemes for specialized use cases
 
-- **Many-to-one**:
-  - `identity` → Identity contract (see
-    [Investor entities](/docs/developer-guides/data-model/entity-investor))
-  - `issuer` → Claim issuer account
+Most claims use ECDSA signatures from issuer Ethereum addresses.
 
-### Usage example
+### Claim lifecycle workflow
+
+<Mermaid
+  chart={`flowchart TB
+    Start(Investor Submits<br/>Verification Documents):::primary
+    Issuer(Trusted Issuer<br/>Reviews & Validates):::secondary
+    Issue(Issuer Calls<br/>addClaim on Identity):::secondary
+    Claim(IdentityClaim Created<br/>isActive: true):::tertiary
+    Transfer(Investor Attempts<br/>Token Transfer):::primary
+    Validate(Compliance Validates<br/>Claim & Signature):::secondary
+    Approve(Transfer Approved):::tertiary
+    Revoke(Issuer or Identity Owner<br/>Calls removeClaim):::quaternary
+    Expired(Claim Marked Inactive<br/>removedAt set):::quaternary
+    Block(Future Transfers Blocked):::quaternary
+    
+    Start --> Issuer
+    Issuer --> Issue
+    Issue --> Claim
+    Claim --> Transfer
+    Transfer --> Validate
+    Validate --> Approve
+    Claim --> Revoke
+    Revoke --> Expired
+    Expired --> Block
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+`}
+/>
+
+**Step 1: Issue** - Trusted issuer validates investor documentation off-chain
+then calls
+[`addClaim()`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/identity/Identity.sol#L89)
+on the investor's identity contract, creating an on-chain attestation.
+
+**Step 2: Verify** - During transfer validation, the Compliance contract
+retrieves claims by topic, verifies the signature matches the issuer's address,
+and confirms the issuer is in the TrustedIssuersRegistry.
+
+**Step 3: Revoke** - If investor status changes (moves countries, loses
+accredited status, fails AML re-screening), the issuer calls
+[`removeClaim()`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/identity/Identity.sol#L123),
+setting `removedAt` and marking `isActive: false`.
+
+**Step 4: Expire** - Some claims include expiration timestamps in their `data`
+field, requiring periodic re-verification to maintain active trading
+eligibility.
+
+### Pre-transfer claim validation query
 
 ```graphql
-query GetIdentityClaims($identityAddress: Bytes!) {
-  identity(id: $identityAddress) {
-    claims(where: { isActive: true }) {
-      topic
-      issuer {
-        id
-        contractName
-      }
-      data
-      addedAt
-    }
-  }
-}
-
-# Check if investor has required claims
 query CheckInvestorCompliance(
   $identityAddress: Bytes!
   $requiredTopics: [BigInt!]!
@@ -247,72 +473,131 @@ query CheckInvestorCompliance(
       topic
       issuer {
         id
+        contractName
       }
+      addedAt
+      data
     }
   }
 }
 ```
 
-### Claim lifecycle
+This query verifies whether an investor possesses all required claim topics
+before initiating a transfer. The dApp uses this to show eligibility status and
+prevent users from attempting transactions that will fail compliance validation.
 
-1. **Issue** - Trusted issuer adds claim to identity
-2. **Verify** - Compliance checks claim signature and issuer
-3. **Revoke** - Issuer or identity owner removes claim (sets `removedAt`)
-4. **Expire** - Claim becomes invalid after time period
+### Observability: Claim verification metrics
+
+Monitor claim verification performance and coverage using the observability
+stack:
+
+- **Claim verification rate**: Percentage of transfer attempts where investors
+  have all required claims vs. missing claims (tracked in Hasura analytics
+  dashboard)
+- **Claim issuance latency**: Time from investor document submission to claim
+  issuance, indicates issuer processing efficiency
+- **Claim revocation frequency**: Number of active claims revoked per time
+  period, signals compliance risk events
+- **Topic coverage by token**: Percentage of active investors holding each
+  required claim topic for each token, identifies onboarding gaps
+
+**Related contracts**:
+[`Identity.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/identity/Identity.sol),
+[`ClaimTopicsRegistry.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/ClaimTopicsRegistry.sol)
+
+**Cross-reference**: See
+[Investor entities](/docs/developer-guides/data-model/entity-investor) for
+Identity contract details and investor-claim relationships.
 
 ## TrustedIssuersRegistry
 
-Registry of authorized claim issuers.
+The TrustedIssuersRegistry contract maintains the authoritative list of identity
+verification providers and attestation services whose claims the platform
+accepts. Only issuers registered in this contract can create claims that satisfy
+compliance requirements.
 
-### Fields
+### Schema definition
 
 ```graphql
 type TrustedIssuersRegistry @entity {
   id: Bytes! # Registry contract address
-  system: System! # Owning system
-  issuers: [TrustedIssuer!]! # Registered issuers
+  system: System! # Owning platform system
+  issuers: [TrustedIssuer!]! # Registered claim issuers
 }
 ```
 
-### Usage example
+### Registry purpose
+
+This registry serves as the root of trust for the identity verification system.
+Platform administrators with the `claimIssuer` role add reputable verification
+services to the registry before those services can issue claims. The registry
+pattern centralizes trust management, making it efficient to add or revoke
+issuer authorization across all tokens simultaneously.
+
+### Querying trusted issuers
 
 ```graphql
 query GetTrustedIssuers($registryAddress: Bytes!) {
   trustedIssuersRegistry(id: $registryAddress) {
-    issuers {
+    issuers(where: { isActive: true }) {
       issuer {
         id
         contractName
       }
       claimTopics
-      isActive
+      addedAt
     }
   }
 }
 ```
 
+This query lists all currently trusted issuers with the claim topics they're
+authorized to certify. Use this to display available verification providers to
+investors during onboarding.
+
+**Related contracts**:
+[`TrustedIssuersRegistry.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/TrustedIssuersRegistry.sol)
+
 ## TrustedIssuer
 
-Authorized issuer in the trusted issuers registry.
+TrustedIssuer entities represent individual claim issuers registered in the
+TrustedIssuersRegistry with specific authorization scopes. Each issuer can only
+certify the claim topics explicitly granted to them.
 
-### Fields
+### Schema definition
 
 ```graphql
 type TrustedIssuer @entity {
-  id: Bytes! # registry + issuer address
+  id: Bytes! # Composite ID (registry + issuer address)
   registry: TrustedIssuersRegistry! # Parent registry
-  issuer: Account! # Issuer identity
-  claimTopics: [BigInt!]! # Topics issuer can certify
+  issuer: Account! # Issuer identity contract or EOA
+  claimTopics: [BigInt!]! # Topics this issuer can certify
   addedAt: BigInt! # Registration timestamp
-  removedAt: BigInt # Removal timestamp
-  isActive: Boolean! # Currently trusted
+  removedAt: BigInt # Removal timestamp (null if active)
+  isActive: Boolean! # Currently authorized
 }
 ```
 
-### Usage example
+### Issuer authorization model
+
+The `claimTopics` array restricts which attestation types each issuer can
+provide. This principle of least privilege prevents a KYC provider from issuing
+accredited investor claims (topic 3) if they're only authorized for identity
+verification (topic 1) and AML screening (topic 2).
+
+Example authorization matrix:
+
+| Issuer                   | Topics   | Rationale                                                                         |
+| ------------------------ | -------- | --------------------------------------------------------------------------------- |
+| Onfido Identity Services | `[1, 4]` | Authorized for KYC verification and country residence based on ID documents       |
+| Chainalysis Compliance   | `[2]`    | Authorized for AML screening only, specializes in sanctions and PEP checks        |
+| VerifyInvestor Inc       | `[3]`    | Authorized for accredited investor status, licensed for income/asset verification |
+| Platform Admin           | `[5]`    | Authorized for investor type classification based on account setup                |
+
+### Issuer authorization validation
 
 ```graphql
-query CheckIssuerTrusted($issuerAddress: Bytes!, $topic: BigInt!) {
+query CheckIssuerAuthorization($issuerAddress: Bytes!, $topic: BigInt!) {
   trustedIssuers(
     where: {
       issuer: $issuerAddress
@@ -324,150 +609,378 @@ query CheckIssuerTrusted($issuerAddress: Bytes!, $topic: BigInt!) {
       id
     }
     claimTopics
+    addedAt
   }
 }
 ```
+
+This query verifies whether a specific issuer is authorized to certify a claim
+topic. The Compliance contract executes this check during claim verification to
+ensure attestations come from authorized sources.
+
+**Related contracts**:
+[`TrustedIssuersRegistry.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/TrustedIssuersRegistry.sol)
 
 ## AccessControl
 
-Role-based access control configuration for the system.
+The AccessControl entity manages role-based permissions across the entire
+platform. It defines which accounts can perform administrative actions
+(deploying tokens, adding compliance modules, issuing claims) and which smart
+contracts have system-level privileges.
 
-### Fields
+### Schema definition
 
 ```graphql
 type AccessControl @entity {
-  id: Bytes! # Access control address
-  system: System! # Owning system
-  roleAdmins: [AccessControlRoleAdmin!]!
-
+  id: Bytes! # Access control contract address
+  system: System! # Owning platform system
+  roleAdmins: [AccessControlRoleAdmin!]! # Role hierarchy configuration
   # Core roles
-  admin: [Account!]!
-
-  # People roles
-  systemManager: [Account!]!
-  identityManager: [Account!]!
-  tokenManager: [Account!]!
-  complianceManager: [Account!]!
-  addonManager: [Account!]!
-  claimPolicyManager: [Account!]!
-  claimIssuer: [Account!]!
-  auditor: [Account!]!
-  organisationIdentityManager: [Account!]!
-
-  # System roles
-  systemModule: [Account!]!
-  identityRegistryModule: [Account!]!
-  tokenFactoryRegistryModule: [Account!]!
-  tokenFactoryModule: [Account!]!
-  addonRegistryModule: [Account!]!
-  addonModule: [Account!]!
-
-  # Asset roles
-  governance: [Account!]!
-  supplyManagement: [Account!]!
-  custodian: [Account!]!
-  emergency: [Account!]!
-
-  # Addon roles
-  fundsManager: [Account!]!
-  saleAdmin: [Account!]!
+  admin: [Account!]! # Full system control
+  # People roles (human operators)
+  systemManager: [Account!]! # System configuration
+  identityManager: [Account!]! # Identity registration
+  tokenManager: [Account!]! # Token deployment
+  complianceManager: [Account!]! # Compliance rule configuration
+  addonManager: [Account!]! # Addon deployment
+  claimPolicyManager: [Account!]! # Claim topic management
+  claimIssuer: [Account!]! # Identity claim issuance
+  auditor: [Account!]! # Read-only audit access
+  organisationIdentityManager: [Account!]! # Organization identity management
+  # System roles (smart contracts)
+  systemModule: [Account!]! # System contract modules
+  identityRegistryModule: [Account!]! # Identity registry contracts
+  tokenFactoryRegistryModule: [Account!]! # Token factory registry
+  tokenFactoryModule: [Account!]! # Token factory contracts
+  addonRegistryModule: [Account!]! # Addon registry
+  addonModule: [Account!]! # Addon contracts
+  # Asset roles (token-level operations)
+  governance: [Account!]! # Protocol governance votes
+  supplyManagement: [Account!]! # Mint and burn tokens
+  custodian: [Account!]! # Custody operations
+  emergency: [Account!]! # Emergency pause and recovery
+  # Addon roles (lifecycle operations)
+  fundsManager: [Account!]! # Funds addon operations
+  saleAdmin: [Account!]! # Sale addon administration
 }
 ```
 
-### Role categories
+### Role categories and purposes
 
-**Core roles**:
+**Core roles**
 
-- `admin` - Full system control
+The `admin` role has unrestricted access to all platform functions. This role
+should be held by a multi-signature wallet or governance contract, never a
+single externally owned account. Admins can grant and revoke all other roles.
 
-**People roles** (human operators):
+**People roles**
 
-- `systemManager` - System configuration
-- `identityManager` - Identity registration
-- `tokenManager` - Token deployment
-- `complianceManager` - Compliance configuration
-- `claimIssuer` - Issue identity claims
+These roles are assigned to human operators managing the platform:
 
-**System roles** (smart contracts):
+- `systemManager`: Configure platform-wide settings like fee structures and
+  registry addresses
+- `identityManager`: Register new investor identity contracts in the
+  IdentityRegistry
+- `tokenManager`: Deploy new token contracts through the TokenFactory
+- `complianceManager`: Add/remove compliance modules and configure transfer
+  restrictions
+- `claimIssuer`: Issue and revoke identity claims through TrustedIssuer
+  contracts
+- `auditor`: Read-only role for compliance auditors and regulators to inspect
+  system state
 
-- `systemModule` - System contract modules
-- `tokenFactoryModule` - Token factory contracts
-- `addonModule` - Addon contracts
+**System roles**
 
-**Asset roles** (token operations):
+These roles are assigned to smart contracts that need elevated privileges:
 
-- `governance` - Protocol governance
-- `supplyManagement` - Mint/burn tokens
-- `custodian` - Custody operations
-- `emergency` - Emergency controls
+- `systemModule`: Core protocol contracts (Compliance, IdentityRegistry) that
+  modify system state
+- `tokenFactoryModule`: Factory contracts authorized to deploy new tokens
+- `addonModule`: Addon contracts (DvP, Vault, Yield) that interact with tokens
+  and compliance
 
-### Usage example
+**Asset roles**
+
+These roles operate at the individual token level:
+
+- `governance`: Execute protocol governance decisions like parameter updates
+- `supplyManagement`: Mint new tokens for primary issuance and burn tokens for
+  redemptions
+- `custodian`: Perform forced transfers for custody operations and legal
+  compliance
+- `emergency`: Pause trading and freeze accounts during security incidents
+
+**Addon roles**
+
+These roles manage DALP lifecycle operations:
+
+- `fundsManager`: Configure fund parameters, process subscriptions and
+  redemptions
+- `saleAdmin`: Manage primary issuance campaigns, set pricing and allocation
+  rules
+
+### Role-based compliance workflow example
+
+**Token deployment with compliance configuration**
+
+1. `tokenManager` calls TokenFactory to deploy new security token
+2. Token deployment automatically creates Compliance contract
+3. `complianceManager` adds required compliance modules
+   (TimeTransfersLimitsModule, CountryRestrictModule) to token's Compliance
+   contract
+4. `complianceManager` sets `requiredClaimTopics` to `[1, 2, 3]` (KYC, AML,
+   accredited)
+5. `claimIssuer` role holders issue claims to investor identities as they
+   complete verification
+6. Investors can now transfer tokens if they have valid claims and pass module
+   checks
+
+This separation of duties prevents any single account from both deploying tokens
+and issuing the claims that authorize trading, reducing insider risk.
+
+### Querying account roles
 
 ```graphql
-query GetSystemRoles($systemAddress: Bytes!) {
-  system(id: $systemAddress) {
-    systemAccessManager {
-      admin
-      tokenManager
-      complianceManager
-      claimIssuer
+query GetAccountRoles($accessControlAddress: Bytes!, $account: Bytes!) {
+  accessControl(id: $accessControlAddress) {
+    admin(where: { id: $account }) {
+      id
+    }
+    tokenManager(where: { id: $account }) {
+      id
+    }
+    complianceManager(where: { id: $account }) {
+      id
+    }
+    claimIssuer(where: { id: $account }) {
+      id
     }
   }
 }
-
-# Check if account has role
-query CheckAccountRole($accessControlAddress: Bytes!, $account: Bytes!) {
-  accessControl(id: $accessControlAddress) {
-    admin(where: { id: $account })
-    tokenManager(where: { id: $account })
-    complianceManager(where: { id: $account })
-  }
-}
 ```
 
-## Compliance flow
+This query checks which roles a specific account holds. The dApp uses this to
+show/hide administrative UI features based on user permissions.
 
-### Transfer compliance check
+### Observability: Role activity monitoring
 
-```
-1. User initiates transfer
-   ↓
-2. Token calls Compliance.canTransfer()
-   ↓
-3. Compliance checks:
-   - Sender has required claims
-   - Recipient has required claims
-   - All active modules approve
-   ↓
-4. Each module validates:
-   - Transfer limits not exceeded
-   - Country restrictions pass
-   - Balance limits not exceeded
-   ↓
-5. Transfer approved or rejected
-```
+Track role usage and detect anomalies using the observability stack:
 
-### Claim verification
+- **Role grant/revoke events**: Monitor AccessControl events for unexpected
+  permission changes, alerts on admin role modifications
+- **Action attribution**: Log which role performed each administrative action
+  (module addition, claim issuance) for audit trails
+- **Role usage frequency**: Identify dormant accounts with elevated privileges
+  that should have roles revoked
+- **Cross-role activity correlation**: Detect suspicious patterns like an
+  account receiving `complianceManager` and immediately disabling all compliance
+  modules
 
-```
-1. Check identity has claim for topic
-   ↓
-2. Verify claim issuer is trusted
-   ↓
-3. Verify claim signature
-   ↓
-4. Check claim not removed/expired
-   ↓
-5. Claim valid or invalid
-```
+**Related contracts**:
+[`AccessControl.sol`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/access/AccessControl.sol)
+
+## Transfer validation flow
+
+This section details how Compliance, ComplianceModule, and IdentityClaim
+entities coordinate to evaluate every token transfer attempt.
+
+<Mermaid
+  chart={`flowchart TB
+    Start(Investor Initiates Transfer<br/>token.transfer recipient, amount):::primary
+    TokenCheck(Token Contract Calls<br/>compliance.canTransfer sender, recipient, amount):::primary
+    ClaimCheck(Compliance Retrieves<br/>requiredClaimTopics):::secondary
+    SenderClaims(Validate Sender Identity<br/>Has All Required Claims?):::tertiary
+    RecipientClaims(Validate Recipient Identity<br/>Has All Required Claims?):::tertiary
+    ModuleLoop(Iterate Active Modules<br/>Call moduleCanTransfer):::secondary
+    Module1(TimeTransfersLimitsModule<br/>Check Daily/Monthly Limits):::quaternary
+    Module2(CountryRestrictModule<br/>Check Country Eligibility):::quaternary
+    Module3(MaxBalanceModule<br/>Check Balance Cap):::quaternary
+    AllPass(All Checks Pass):::tertiary
+    Execute(Transfer Executes):::tertiary
+    AnyFail(Any Check Fails):::quaternary
+    Reject(Transfer Reverted):::quaternary
+    
+    Start --> TokenCheck
+    TokenCheck --> ClaimCheck
+    ClaimCheck --> SenderClaims
+    SenderClaims -->|Pass| RecipientClaims
+    SenderClaims -->|Fail| AnyFail
+    RecipientClaims -->|Pass| ModuleLoop
+    RecipientClaims -->|Fail| AnyFail
+    ModuleLoop --> Module1
+    ModuleLoop --> Module2
+    ModuleLoop --> Module3
+    Module1 -->|Pass| AllPass
+    Module2 -->|Pass| AllPass
+    Module3 -->|Pass| AllPass
+    Module1 -->|Fail| AnyFail
+    Module2 -->|Fail| AnyFail
+    Module3 -->|Fail| AnyFail
+    AllPass --> Execute
+    AnyFail --> Reject
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+`}
+/>
+
+### Validation sequence
+
+**Step 1: Transfer initiation**
+
+Investor calls
+[`transfer(recipient, amount)`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/token/Token.sol#L234)
+or
+[`transferFrom(sender, recipient, amount)`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/token/Token.sol#L256)
+on the token contract.
+
+**Step 2: Compliance invocation**
+
+Token contract calls
+[`compliance.canTransfer(sender, recipient, amount)`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/Compliance.sol#L178)
+before executing the balance update.
+
+**Step 3: Identity claim verification**
+
+Compliance contract retrieves the Identity contracts for sender and recipient
+from the IdentityRegistry, then checks that both identities have active claims
+for all topics in `requiredClaimTopics`. For each required topic:
+
+1. Query identity contract for claims with that topic
+2. Verify claim issuer is in TrustedIssuersRegistry and authorized for that
+   topic
+3. Validate claim signature matches issuer address
+4. Confirm claim is active (`isActive: true`, `removedAt` is null)
+
+If either identity is missing any required claim, validation fails immediately.
+
+**Step 4: Module rule evaluation**
+
+Compliance contract iterates through all active modules (where `isActive: true`
+in TokenComplianceModule) and calls each module's
+[`canTransfer(sender, recipient, amount)`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/modules/ComplianceModule.sol#L67)
+function. Modules return boolean approval.
+
+Each module applies its specific logic:
+
+- TimeTransfersLimitsModule: Queries sender's transfer history, calculates
+  rolling daily and monthly totals, rejects if `amount` would exceed limits
+- CountryRestrictModule: Reads sender and recipient country claims (topic 4),
+  checks against allowed/blocked lists in module `params`
+- MaxBalanceModule: Calculates `recipient.balance + amount`, rejects if result
+  exceeds `maxBalance` from module `params`
+
+If any module returns false, validation fails.
+
+**Step 5: Transfer execution or rejection**
+
+If all claim checks pass and all modules approve, `compliance.canTransfer()`
+returns true and the token contract executes the transfer. If any check fails,
+the function returns false and the transfer transaction reverts with an error
+message indicating the failure reason (missing claim topic, exceeded limit,
+restricted country).
+
+### Observability: Compliance monitoring
+
+Track compliance system health and effectiveness using platform dashboards:
+
+- **Transfer rejection rate**: Percentage of attempted transfers rejected by
+  compliance, by failure reason (missing claim, module rejection), indicates
+  investor education gaps or misconfigured modules
+- **Module evaluation latency**: Gas cost and execution time per module type,
+  identifies performance bottlenecks in complex compliance stacks
+- **Claim verification cache hit rate**: Percentage of compliance checks served
+  from cached claim data vs. on-chain lookups (if caching implemented), affects
+  transaction cost
+- **Rule evaluation distribution**: Heatmap showing which modules reject
+  transfers most frequently, guides compliance tuning
+
+The compliance metrics dashboard aggregates these statistics across all tokens,
+providing platform administrators with a real-time view of regulatory
+enforcement effectiveness.
+
+## Claim verification workflow
+
+This section details how the system validates identity claims during compliance
+checks.
+
+<Mermaid
+  chart={`flowchart TB
+    Start(Compliance Checks Required Claim<br/>topic: BigInt):::primary
+    GetClaims(Query Identity Contract<br/>getClaim topic):::secondary
+    ClaimExists(Claim Exists?):::tertiary
+    CheckRegistry(Query TrustedIssuersRegistry<br/>isTrustedIssuer claimIssuer, topic):::secondary
+    IsTrusted(Issuer Authorized?):::tertiary
+    VerifySig(Verify Claim Signature<br/>ecrecover claimSignature == claimIssuer):::quaternary
+    SigValid(Signature Valid?):::tertiary
+    CheckActive(Check Claim Status<br/>isActive == true):::secondary
+    Active(Claim Active?):::tertiary
+    Valid(Claim Valid):::tertiary
+    Invalid(Claim Invalid):::quaternary
+    
+    Start --> GetClaims
+    GetClaims --> ClaimExists
+    ClaimExists -->|No| Invalid
+    ClaimExists -->|Yes| CheckRegistry
+    CheckRegistry --> IsTrusted
+    IsTrusted -->|No| Invalid
+    IsTrusted -->|Yes| VerifySig
+    VerifySig --> SigValid
+    SigValid -->|No| Invalid
+    SigValid -->|Yes| CheckActive
+    CheckActive --> Active
+    Active -->|No| Invalid
+    Active -->|Yes| Valid
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+`}
+/>
+
+### Verification steps
+
+**Step 1: Retrieve claim from identity**
+
+Compliance calls
+[`identity.getClaim(topic)`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/identity/Identity.sol#L156)
+to fetch the claim data. If no claim exists for the required topic, verification
+fails immediately.
+
+**Step 2: Validate issuer authorization**
+
+System queries
+[`trustedIssuersRegistry.isTrustedIssuer(claimIssuer, topic)`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/TrustedIssuersRegistry.sol#L89)
+to confirm the claim issuer is registered and authorized to certify that
+specific topic. Unauthorized issuers result in rejection.
+
+**Step 3: Verify cryptographic signature**
+
+System uses `ecrecover` on the claim signature to extract the signing address
+and compares it to the claim issuer address. Signature mismatch indicates claim
+tampering and fails verification.
+
+**Step 4: Check claim active status**
+
+System verifies `claim.isActive == true` and `claim.removedAt` is null. Revoked
+or expired claims are rejected.
+
+Only claims passing all four checks satisfy compliance requirements.
 
 ## See also
 
-- **[Token entities](/docs/developer-guides/data-model/entity-token)** - Tokens
-  subject to compliance
+- **[Token entities](/docs/developer-guides/data-model/entity-token)** - Token
+  contracts subject to compliance enforcement
 - **[Investor entities](/docs/developer-guides/data-model/entity-investor)** -
-  Identity contracts with claims
+  Identity contracts that hold claims
+- **[System entities](/docs/developer-guides/data-model/entity-system)** -
+  System-level configuration including AccessControl
 - **[Data model overview](/docs/developer-guides/data-model/data-model-reference)** -
-  Complete data architecture
-- **[Contract reference](/docs/developer-guides/smart-contracts/contract-reference)** -
-  Compliance contract methods
+  Complete entity relationship architecture
+- **[Smart contract reference](/docs/developer-guides/smart-contracts/contract-reference)** -
+  Compliance contract method documentation
+- **[Identity architecture](/docs/architecture/identity-compliance)** - Identity
+  and compliance system design

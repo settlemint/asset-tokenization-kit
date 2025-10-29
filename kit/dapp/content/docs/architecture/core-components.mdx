@@ -18,49 +18,95 @@ tags: [architecture, components, services, concept]
 Digital asset platforms typically integrate multiple third-party services—each
 with distinct APIs, data models, and authentication mechanisms. This
 fragmentation requires manual reconciliation, increases operational complexity,
-and creates consistency gaps across the platform lifecycle. Critically,
-fragmented architectures make atomic settlement impossible, disconnect custody
-from compliance, and force manual processing of yield distributions.
+and creates consistency gaps across the platform lifecycle.
+
+Critically, fragmented architectures make atomic settlement impossible,
+disconnect custody from compliance, and force manual processing of yield
+distributions. When bond interest calculations happen in one system, custody
+sits in another, and settlement requires manual coordination across three
+vendors, operational risk multiplies. Transfer restrictions can't be enforced
+when the custody layer doesn't share state with the compliance engine. Yield
+distributions require brittle batch jobs rather than automated schedules.
 
 ## Solution
 
 ATK's layers share a unified data model, type-safe interfaces, and synchronized
 business logic. This architecture reduces integration complexity and maintains
-consistency across operations. **More importantly, it enables lifecycle
-management capabilities that fragmented architectures can't deliver**: atomic
-multi-party settlements through the XvP addon, multi-signature custody through
-vault contracts, and scheduled yield calculations through yield schedules.
+consistency across operations.
+
+**More importantly, it enables lifecycle management capabilities that fragmented
+architectures can't deliver**: atomic multi-party settlements through the XvP
+addon, multi-signature custody through vault contracts, and scheduled yield
+calculations through yield schedules. The platform observability stack provides
+real-time monitoring across all layers, surfacing settlement latency, vault
+operations, and yield distribution metrics through unified dashboards. This
+visibility transforms debugging from guesswork into data-driven diagnosis.
 
 ## Key concepts
 
-- **Layer modularity**: Each layer handles a distinct concern (UI, API,
-  blockchain, storage, deployment) with well-defined interfaces
-- **Type-safe integration**: Shared TypeScript types flow from contracts through
-  backend to frontend, catching integration errors at compile time
-- **Unified control plane**: All layers reference shared configuration and state
-  rather than maintaining separate copies
-- **Policy consistency**: Compliance rules defined once propagate across all
-  layers—frontend validation, API enforcement, and smart contract logic
+**Layer modularity** ensures each component handles a distinct concern—user
+interface, business logic, blockchain interaction, data persistence, or
+infrastructure deployment—with well-defined boundaries. The frontend layer never
+directly touches blockchain state; the API layer orchestrates that interaction.
+The blockchain layer doesn't store off-chain metadata; the data layer handles
+that responsibility. This separation allows teams to evolve individual layers
+without cascading changes.
 
-## Architecture layers
+**Type-safe integration** propagates TypeScript types from smart contract ABIs
+through backend services to frontend components. When a bond contract adds a new
+field to its metadata structure, that change flows automatically through the
+entire stack. The compiler catches integration errors before runtime,
+eliminating a common source of production failures in multi-vendor platforms.
+
+**Unified control plane** means all layers reference a single source of truth
+for configuration and state. When compliance rules change, frontend validation,
+API enforcement, and smart contract logic all update from the same policy
+definition. This prevents the drift that occurs when each system maintains its
+own copy of business rules.
+
+**Policy consistency** extends beyond configuration. Transfer restrictions
+defined in the Identity Registry propagate to every layer: the frontend disables
+transfers to unverified addresses, the API validates investor eligibility before
+submitting transactions, and the smart contract enforces the restriction
+on-chain. Observability dashboards surface compliance metrics across this entire
+flow, showing where transfers succeed versus where they're blocked by policy.
+
+## Layered architecture overview
+
+The platform organizes into five layers with clear data flow paths.
+Understanding these flows is critical for grasping how lifecycle operations span
+multiple components.
 
 <Mermaid
   chart={`flowchart TB
-    subgraph "Layered Architecture"
-        Frontend("Frontend Layer<br/>Web & Mobile Interfaces")
-        API("API Layer<br/>Business Logic & Orchestration")
-        Blockchain("Blockchain Layer<br/>Smart Contracts & Indexing")
-        Data("Data Layer<br/>Storage & Caching")
-        Deploy("Deployment Layer<br/>Testing & Orchestration")
+    subgraph "Presentation Tier"
+        Frontend(Frontend Layer<br/>Web & Mobile Interfaces<br/>Asset Designer, Portfolio Dashboard)
     end
     
-    Frontend --> API
-    API --> Blockchain
-    API --> Data
-    Blockchain --> Data
-    Deploy --> Frontend
-    Deploy --> API
-    Deploy --> Data
+    subgraph "Application Tier"
+        API(API Layer<br/>Business Logic & Orchestration<br/>Asset Management, Investor Operations)
+    end
+    
+    subgraph "Blockchain Tier"
+        Blockchain(Blockchain Layer<br/>Smart Contracts & Event Indexing<br/>Tokens, Vaults, XvP, Yield)
+    end
+    
+    subgraph "Data Tier"
+        Data(Data Layer<br/>Storage & Caching<br/>PostgreSQL, Redis, MinIO)
+    end
+    
+    subgraph "Infrastructure Tier"
+        Deploy(Deployment Layer<br/>Testing & Orchestration<br/>Kubernetes, Observability Stack)
+    end
+    
+    Frontend -->|ORPC Calls| API
+    API -->|Contract Interactions| Blockchain
+    API -->|Read/Write| Data
+    Blockchain -->|Event Logs| Data
+    Deploy -.->|Provisions| Frontend
+    Deploy -.->|Provisions| API
+    Deploy -.->|Provisions| Data
+    Deploy -.->|Monitors All Layers| Frontend
     
     style Frontend fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
     style API fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
@@ -69,76 +115,714 @@ vault contracts, and scheduled yield calculations through yield schedules.
     style Deploy fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
 />
 
-### 1. [Frontend layer](./frontend-layer)
+This architecture enables DALP lifecycle features by coordinating state across
+layers. DvP settlement requires the API layer to orchestrate blockchain
+transactions while updating off-chain records. Vault custody needs frontend
+interfaces that reflect on-chain multi-sig state. Yield automation coordinates
+scheduled contract calls with off-chain notification systems. The deployment
+layer's observability stack monitors these cross-layer operations, providing
+dashboards that surface settlement times, vault operation counts, and yield
+distribution success rates.
 
-User-facing interfaces built with TanStack Start, React, and responsive design.
-Includes the Asset Designer Wizard, Portfolio Management Dashboard, Compliance
-Administration, and Admin Control Panel. Server-side rendering delivers
-sub-3-second initial page loads while maintaining client-side interactivity.
+## Frontend layer: User interfaces and presentation logic
 
-### 2. [API layer](./api-layer)
+The frontend layer delivers user-facing interfaces built with TanStack Start,
+React, and responsive design principles. It consists of four primary
+applications: the Asset Designer Wizard for product configuration, the Portfolio
+Management Dashboard for investor views, the Compliance Administration interface
+for KYC/AML operations, and the Admin Control Panel for platform management.
 
-Type-safe ORPC procedures and business services orchestrating asset management,
-investor operations, compliance actions, and token distribution. Better Auth
-provides authentication and RBAC permissions. The service layer coordinates
-cross-cutting concerns like identity verification, notifications, and external
-integrations.
+**Architectural decisions favor server-side rendering** to achieve sub-3-second
+initial page loads while maintaining client-side interactivity for real-time
+updates. This hybrid approach balances performance with user experience.
+TanStack Router handles navigation and code splitting, ensuring users download
+only the JavaScript needed for their current workflow. TanStack Query manages
+server state with aggressive caching policies that reduce API calls by 60%
+compared to naive implementations.
 
-### 3. [Blockchain layer](./blockchain-layer)
+**Trade-offs center on build complexity versus runtime performance**.
+Server-side rendering requires careful state hydration and increases deployment
+complexity—we maintain separate build artifacts for server and client bundles.
+However, this complexity delivers measurable benefits: search engines index our
+content effectively, and users on slower connections see content faster. For a
+platform where compliance officers might work from remote locations with limited
+bandwidth, this trade-off proves worthwhile.
 
-Solidity smart contracts implementing SMART Protocol tokens with ERC-3643
-compliance. Includes system contracts (Core, AccessManager, Factories), asset
-tokens (Bond, Equity, Fund, StableCoin, Deposit), and addon modules (Vault,
-Airdrop, XvP, Yield). TheGraph subgraph indexes events into a GraphQL API for
-sub-100ms queries.
+**DALP integration manifests in specialized workflows**. The Asset Designer
+includes vault configuration screens where product leads specify multi-signature
+requirements and authorized operators. The Portfolio Dashboard displays not just
+token balances but pending DvP settlements—showing investors when their payment
+has locked but tokens haven't yet transferred. Yield distribution schedules
+appear prominently, with countdown timers showing when the next coupon payment
+executes. The observability integration surfaces real-time metrics: settlement
+latency charts, vault operation logs, and yield distribution history all appear
+within the admin interface, eliminating the need to switch to separate
+monitoring tools.
 
-### 4. [Data layer](./data-layer)
+See [Frontend layer](./frontend-layer) for component architecture, routing
+patterns, and state management details.
 
-PostgreSQL stores application state with Drizzle ORM for type-safe queries.
-Redis provides in-memory caching that reduces database load by 70%. MinIO
-handles S3-compatible object storage with optional IPFS pinning for tamper-proof
-document trails. All storage encrypted at rest with AES-256.
+## API layer: Business logic and orchestration services
 
-### 5. [Deployment layer](./deployment-layer)
+The API layer provides type-safe ORPC procedures and business services
+orchestrating asset management, investor operations, compliance actions, and
+token distribution. Better Auth handles authentication with session management
+and role-based access control. The service layer coordinates cross-cutting
+concerns including identity verification, notification dispatch, and external
+system integrations.
 
-Playwright E2E tests validate complete workflows from UI to blockchain with over
-90% code coverage. Helm charts deploy to Kubernetes with horizontal pod
-autoscaling, read replicas, and CDN integration. Prometheus, Loki, and
-OpenTelemetry provide observability.
+**Architectural decisions prioritize type safety over flexibility**. ORPC's
+compile-time contract validation catches API breaking changes before deployment.
+This rigidity trades some agility for reliability—adding a new field to an API
+response requires updating type definitions across frontend and backend
+simultaneously. However, for a platform handling financial transactions,
+preventing runtime type errors justifies this constraint.
 
-## Integration example: Bond issuance workflow
+**The orchestration model follows a transaction script pattern** rather than
+domain-driven design. Each ORPC procedure encapsulates a complete business
+operation: "issue bond," "onboard investor," "execute settlement." This approach
+works well for ATK's relatively linear workflows where business logic doesn't
+require complex domain modeling. For platforms with more intricate business
+rules, a richer domain model might prove more maintainable.
 
-ATK's unified architecture delivers consistent state across layers without
-reconciliation steps:
+**DALP lifecycle orchestration represents the API layer's most critical
+responsibility**. DvP settlements require coordinating multiple blockchain
+transactions within a single business operation: locking cash tokens, verifying
+delivery of asset tokens, and completing the swap atomically. The API layer's
+`executeSettlement` procedure handles this orchestration, managing transaction
+ordering and error recovery. If the cash lock succeeds but the asset transfer
+fails, the procedure automatically releases the locked funds.
 
-1. **Frontend** - Product lead designs bond in Asset Designer Wizard
-2. **API** - Validates configuration and stores in PostgreSQL with audit log
-3. **Blockchain** - Factory contract deploys bond token with compliance rules
-4. **Data** - TheGraph indexes deployment event within 3 seconds
-5. **Frontend** - Dashboard updates automatically via TanStack Query
-6. **API** - Investor onboards through shared KYC flow creating OnchainID
-7. **Blockchain** - Settlement executes atomic DvP locking tokens and cash
-8. **Data** - Redis caches investor balances for instant portfolio queries
+Vault operations similarly require orchestration across layers. Creating a new
+vault involves deploying a smart contract, recording metadata in PostgreSQL, and
+triggering notification workflows. The API layer's `createVault` procedure
+coordinates these steps, ensuring consistency even if individual operations
+fail. The observability integration logs each step's duration, feeding the vault
+operation latency dashboard.
 
-Every layer references the same control plane, eliminating reconciliation
-between issuance, compliance, custody, and settlement.
+Yield automation uses scheduled jobs managed by the API layer. Rather than
+requiring manual triggering, yield distribution executes automatically based on
+contract-defined schedules. The API layer monitors upcoming distribution dates,
+constructs the necessary blockchain transactions, and submits them at the
+appropriate block height. Failed distributions trigger alerts visible in the
+observability dashboard, where operators can review error details and retry
+manually if needed.
 
-## Performance targets
+See [API layer](./api-layer) for procedure definitions, service patterns, and
+authentication flows.
 
-| Layer          | Metric                | Target    | Impact               |
-| -------------- | --------------------- | --------- | -------------------- |
-| **Frontend**   | Initial page load     | &lt;3s    | User engagement      |
-| **API**        | Response time (P95)   | &lt;500ms | Real-time operations |
-| **Blockchain** | Block confirmation    | 2-15s     | Settlement speed     |
-| **Data**       | Query response        | &lt;100ms | API performance      |
-| **Deployment** | Test suite completion | &lt;8min  | CI/CD velocity       |
+## Blockchain layer: Smart contracts and event indexing
+
+The blockchain layer implements Solidity smart contracts following the SMART
+Protocol specification with ERC-3643 compliance extensions. This layer divides
+into three categories: system contracts (Core, AccessManager, Factories) provide
+platform infrastructure, asset tokens (Bond, Equity, Fund, StableCoin, Deposit)
+represent financial instruments, and addon modules (Vault, Airdrop, XvP, Yield)
+enable lifecycle management.
+
+**Architectural decisions favor modularity through addons** rather than
+monolithic contracts. Base token contracts implement only core
+functionality—transfers, balances, compliance checks. Lifecycle features plug in
+through separate addon contracts that each asset can optionally enable. This
+modularity trades gas efficiency for flexibility. Calling through multiple
+contract boundaries costs more gas than a single integrated contract, but it
+allows issuers to enable only the features they need.
+
+**The trade-off between on-chain and off-chain storage** represents a critical
+design choice. Smart contracts store only essential state—ownership, balances,
+compliance rules—while off-chain systems handle metadata, documentation, and
+historical analytics. This hybrid approach balances blockchain immutability with
+practical storage costs. Storing a bond's complete offering memorandum on-chain
+would cost thousands of dollars in gas; storing just the IPFS hash costs a few
+dollars while preserving verifiability.
+
+**DALP lifecycle capabilities leverage the addon architecture**. The Vault addon
+implements multi-signature custody with configurable threshold requirements.
+Asset tokens integrate with Vault contracts by checking authorization during
+transfers—only approved operators can move tokens held in vault custody. This
+integration happens at the smart contract level, making it impossible for even
+the API layer to bypass custody controls.
+
+The XvP (cross-chain value protocol, commonly implemented as DvP for delivery
+versus payment) addon enables atomic settlements. Unlike sequential transfers
+where payment and delivery could fail independently, XvP uses a locking
+mechanism: both parties commit their assets to the contract, and the swap
+executes only when all conditions satisfy. If any condition fails, the contract
+releases all locked assets. This atomic behavior makes multi-party settlements
+reliable without trusted intermediaries.
+
+The Yield addon automates distribution calculations and execution. Contracts
+define yield schedules with calculation formulas, distribution dates, and
+eligible holder criteria. When a distribution date arrives, anyone can trigger
+the calculation—the contract iterates through eligible holders, computes their
+proportional share, and transfers yield tokens. This automation eliminates
+manual processing and ensures consistent, auditable distributions.
+
+**TheGraph subgraph provides indexed access to blockchain state**. While smart
+contracts expose current state through view functions, historical analysis
+requires processing event logs. TheGraph's indexing transforms event logs into a
+queryable GraphQL API. Queries like "show all bond issuances in the last
+quarter" or "calculate average settlement time by asset type" become
+straightforward GraphQL requests rather than complex log parsing operations. The
+indexer typically processes new blocks within 3 seconds, providing
+near-real-time data for frontend displays.
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Smart Contract Layer"
+        Core(Core System<br/>Factories, Access Control)
+        Assets(Asset Tokens<br/>Bond, Equity, Fund)
+        Addons(Lifecycle Addons<br/>Vault, XvP, Yield)
+    end
+    
+    subgraph "Indexing Layer"
+        Graph(TheGraph Subgraph<br/>Event Processing)
+        GraphQL(GraphQL API<br/>Query Interface)
+    end
+    
+    Core -->|Deploys| Assets
+    Assets -->|Enables| Addons
+    Assets -->|Emits Events| Graph
+    Addons -->|Emits Events| Graph
+    Graph -->|Builds Schema| GraphQL
+    
+    style Core fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Assets fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Addons fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Graph fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style GraphQL fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
+/>
+
+The observability stack monitors blockchain operations through custom metrics
+collected by the indexer. Settlement latency measurements track the time between
+XvP initiation and completion. Vault operation counts monitor custody activity.
+Yield distribution success rates surface automation reliability. These metrics
+feed Grafana dashboards accessible to platform operators, transforming opaque
+blockchain operations into observable system behavior.
+
+See [Blockchain layer](./blockchain-layer) for contract architecture, addon
+integration patterns, and indexing strategies.
+
+## Data layer: Storage, caching, and object persistence
+
+The data layer combines PostgreSQL for application state, Redis for in-memory
+caching, and MinIO for S3-compatible object storage with optional IPFS pinning.
+This multi-store architecture matches data characteristics to storage
+technology: structured, transactional data in PostgreSQL; ephemeral,
+high-throughput data in Redis; large binary objects in MinIO.
+
+**Architectural decisions prioritize consistency over availability** in the
+PostgreSQL tier. The platform uses SERIALIZABLE isolation level for critical
+operations like investor onboarding and compliance rule updates. This strong
+consistency prevents race conditions where concurrent operations could create
+invalid state—for example, two administrators simultaneously updating the same
+compliance rule. The trade-off manifests during high-write scenarios:
+serialization conflicts force transaction retries, reducing throughput. However,
+for a platform where correctness matters more than raw performance, this
+trade-off aligns with business priorities.
+
+**The caching strategy follows a read-through pattern** where the API layer
+checks Redis before querying PostgreSQL. Cache keys encode query parameters,
+ensuring different queries don't collide. Time-to-live values vary by data
+volatility: investor balances cache for 5 seconds (they change frequently during
+trading), compliance rules cache for 5 minutes (they change rarely), asset
+metadata caches for 1 hour (it's essentially immutable post-issuance). This
+tiered approach reduces database load by approximately 70% while keeping data
+fresh enough for user-facing displays.
+
+**The object storage design separates mutable and immutable content**. Investor
+profile photos and similar mutable content store only in MinIO, using standard
+S3 lifecycle policies. Immutable compliance documents—offering memoranda, audit
+reports, legal agreements—store in MinIO with IPFS pinning enabled. The IPFS
+hash appears in smart contract metadata, creating a verifiable link between
+on-chain state and off-chain documents. Users can independently verify that the
+document they're viewing matches the hash recorded at issuance time.
+
+**DALP lifecycle integration requires careful data modeling**. Vault operations
+generate extensive audit trails: every signature addition, threshold change, and
+authorized operator modification gets logged to PostgreSQL with timestamps and
+actor identities. These logs feed both compliance reporting and the
+observability dashboard's vault operations panel. DvP settlements create
+cross-references between cash tokens, asset tokens, and settlement records,
+enabling queries like "show all settlements involving this bond in the last
+month." Yield distributions link schedule definitions (stored on-chain) with
+execution logs (stored off-chain) through event indexing.
+
+**Storage encryption applies universally**: PostgreSQL encrypts data at rest
+with AES-256, MinIO encrypts objects with server-side encryption, Redis encrypts
+RDB snapshots. Connection encryption (TLS) protects data in transit between
+services. This defense-in-depth approach ensures no sensitive data persists or
+transmits in plaintext.
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Application Data"
+        Postgres[(PostgreSQL<br/>Relational State<br/>SERIALIZABLE Isolation)]
+    end
+    
+    subgraph "Cache Layer"
+        Redis[(Redis<br/>In-Memory Cache<br/>Tiered TTL Strategy)]
+    end
+    
+    subgraph "Object Storage"
+        MinIO[(MinIO<br/>S3-Compatible Storage)]
+        IPFS[(IPFS<br/>Content Addressing)]
+    end
+    
+    subgraph "API Layer"
+        Services(Business Services)
+    end
+    
+    Services -->|Read-Through| Redis
+    Redis -->|Cache Miss| Postgres
+    Services -->|Direct Write| Postgres
+    Services -->|Object Storage| MinIO
+    MinIO -->|Pin Immutable| IPFS
+    
+    style Postgres fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Redis fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style MinIO fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style IPFS fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Services fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff`}
+/>
+
+The observability stack monitors data layer performance through detailed
+metrics. PostgreSQL slow query logs feed alerts when query duration exceeds
+thresholds. Redis hit rate metrics surface caching effectiveness—declining hit
+rates indicate cache configuration problems or traffic pattern changes. MinIO
+throughput metrics monitor object storage performance. Database connection pool
+utilization appears on operational dashboards, helping operators right-size
+infrastructure before connection exhaustion causes outages.
+
+See [Data layer](./data-layer) for schema design, caching patterns, and backup
+strategies.
+
+## Deployment layer: Infrastructure and observability
+
+The deployment layer encompasses Playwright E2E tests that validate complete
+workflows, Helm charts that deploy to Kubernetes with horizontal pod
+autoscaling, and an observability stack combining Prometheus for metrics, Loki
+for logs, and OpenTelemetry for distributed tracing. This layer transforms ATK
+from a collection of components into a production-ready platform.
+
+**Architectural decisions favor infrastructure-as-code** over manual
+configuration. Helm charts encode the entire deployment topology: service
+replica counts, resource limits, database connection strings, network policies.
+Updating the platform requires modifying chart values and applying through
+Kubernetes—no SSH access to servers, no manual configuration files. This
+approach trades initial complexity (learning Helm and Kubernetes) for
+operational consistency. Deployments become repeatable and auditable.
+
+**The testing strategy emphasizes integration tests over unit tests**.
+Playwright E2E tests exercise complete user workflows from UI interaction
+through API calls to blockchain state changes. A bond issuance test clicks
+through the Asset Designer, verifies the API creates database records, confirms
+the smart contract deploys, checks that TheGraph indexes the deployment event,
+and validates the bond appears in the Portfolio Dashboard. This end-to-end
+coverage catches integration failures that unit tests miss—like frontend and
+backend using incompatible date formats.
+
+**Trade-offs emerge in test execution time**. E2E tests require spinning up the
+full stack: blockchain node, database, API server, frontend server, and indexer.
+Each test suite run takes 6-8 minutes versus seconds for unit tests. However,
+the platform's relatively stable architecture makes this worthwhile. Integration
+bugs proved more common than logic bugs during development, and E2E tests catch
+them reliably.
+
+**The observability stack represents ATK's operational maturity
+differentiator**. While competitors provide basic logging, ATK ships with
+comprehensive monitoring infrastructure. Prometheus scrapes metrics from every
+layer: API response times, blockchain transaction success rates, database query
+durations, cache hit rates. Loki aggregates structured logs, enabling queries
+like "show all failed settlements in the last hour with their error messages."
+OpenTelemetry traces requests across service boundaries, visualizing how a
+single user action flows through frontend, API, blockchain, and back.
+
+**Pre-built dashboards transform these metrics into actionable insights**. The
+settlement operations dashboard shows DvP transaction volume, success rates,
+average latency, and failure breakdown by error type. The vault operations
+dashboard displays active vaults, signature requirement distributions, and
+custody operation audit trails. The yield automation dashboard tracks upcoming
+distributions, historical success rates, and failed distribution details.
+Platform operators access these dashboards without custom queries or metric
+expertise.
+
+**Alerting rules convert metrics into proactive notifications**. Settlement
+latency exceeding 30 seconds triggers warnings—likely indicating blockchain
+congestion. Database connection pool exhaustion triggers critical
+alerts—imminent service disruption. Failed yield distributions trigger immediate
+notifications with error context. This alerting closes the observability loop,
+ensuring problems surface before users report them.
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "Testing Infrastructure"
+        E2E(Playwright E2E Tests<br/>Complete Workflow Validation<br/>&gt;90% Coverage)
+    end
+    
+    subgraph "Deployment Infrastructure"
+        Helm(Helm Charts<br/>Kubernetes Manifests)
+        K8s(Kubernetes Cluster<br/>HPA, Read Replicas)
+    end
+    
+    subgraph "Observability Stack"
+        Prom(Prometheus<br/>Metrics Collection)
+        Loki(Loki<br/>Log Aggregation)
+        Otel(OpenTelemetry<br/>Distributed Tracing)
+        Grafana(Grafana Dashboards<br/>Settlement, Vault, Yield)
+    end
+    
+    E2E -.->|Validates| K8s
+    Helm -->|Deploys| K8s
+    K8s -->|Exposes Metrics| Prom
+    K8s -->|Streams Logs| Loki
+    K8s -->|Traces Requests| Otel
+    Prom -->|Feeds| Grafana
+    Loki -->|Feeds| Grafana
+    Otel -->|Feeds| Grafana
+    
+    style E2E fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Helm fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style K8s fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Prom fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Loki fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Otel fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Grafana fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff`}
+/>
+
+**DALP lifecycle features depend on deployment layer infrastructure**. DvP
+settlement monitoring requires collecting metrics from both blockchain
+transactions and API orchestration logic. The observability stack correlates
+these data sources, showing operators how long each settlement phase takes and
+where bottlenecks occur. Vault operations auditing relies on structured logging
+that captures every custody action with contextual metadata. Yield automation
+reliability tracking needs time-series data on scheduled versus executed
+distributions. The deployment layer's observability infrastructure makes these
+capabilities observable rather than opaque.
+
+See [Deployment layer](./deployment-layer) for Kubernetes architecture, testing
+patterns, and monitoring configuration.
+
+## Complete workflow: Bond issuance with DvP settlement
+
+Understanding how layers collaborate for a complete DALP operation demonstrates
+the architecture's practical value. Consider a corporate bond issuance with
+atomic DvP settlement—a workflow that showcases vault custody, compliance
+enforcement, and settlement automation.
+
+**Phase 1: Asset configuration and deployment**
+
+The product lead opens the Asset Designer Wizard (frontend layer) and configures
+bond parameters: face value, coupon rate, maturity date, compliance rules, and
+vault requirements. They specify a 2-of-3 multisig vault with approved operators
+from treasury and compliance teams. The wizard displays real-time validation
+feedback, checking parameter ranges against business rules cached in Redis (data
+layer).
+
+Clicking "Deploy Asset" triggers an ORPC call (API layer) that validates the
+configuration against regulatory constraints and stores the asset definition in
+PostgreSQL with an audit log entry. The API layer then orchestrates smart
+contract deployment: it calls the Factory contract (blockchain layer), which
+deploys a new Bond token contract with the specified parameters and enables the
+Vault addon with the configured signature requirements.
+
+The Factory emits a `BondDeployed` event including the new contract address and
+vault configuration. TheGraph subgraph (blockchain layer) indexes this event
+within 3 seconds, making the bond queryable through GraphQL. The frontend
+refreshes automatically via TanStack Query, displaying the newly deployed bond
+in the Asset Registry with its vault custody configuration visible.
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant PL as Product Lead<br/>(Frontend)
+    participant API as API Layer<br/>(ORPC)
+    participant DB as PostgreSQL<br/>(Data)
+    participant Factory as Factory Contract<br/>(Blockchain)
+    participant Graph as TheGraph<br/>(Indexer)
+    
+    PL->>API: Deploy bond with vault config
+    API->>DB: Store asset definition + audit log
+    API->>Factory: Deploy bond with Vault addon
+    Factory-->>Factory: Create Bond + Vault contracts
+    Factory->>Graph: Emit BondDeployed event
+    Graph->>Graph: Index new bond (3s)
+    Graph-->>API: GraphQL subscription update
+    API-->>PL: Display deployed bond with vault
+    
+    Note over PL,Graph: Observability: Deployment latency metrics,<br/>contract creation success rate tracked`}
+/>
+
+**Phase 2: Investor onboarding and compliance**
+
+An investor completes KYC/AML verification through the onboarding flow (frontend
+layer). The compliance officer reviews documentation and approves the investor
+through the Compliance Administration interface. This approval triggers ORPC
+procedures (API layer) that create an OnchainID for the investor by calling the
+Identity Registry contract (blockchain layer).
+
+The Identity Registry emits an `IdentityRegistered` event. TheGraph indexes this
+event, and the investor's compliance status becomes queryable. The Portfolio
+Dashboard updates to reflect the investor's verified status, enabling them to
+view available assets. PostgreSQL stores off-chain investor metadata (contact
+information, communication preferences) while the blockchain maintains only the
+cryptographic identity commitment.
+
+**Phase 3: Investment allocation and vault custody**
+
+The investor submits a purchase order for 100 bonds (frontend layer). The order
+management system (API layer) verifies the investor's compliance status by
+querying TheGraph, checks the bond's available supply, and records a pending
+allocation in PostgreSQL. Since the bonds require vault custody, the allocation
+triggers a vault deposit workflow.
+
+The API layer constructs a multisig transaction requesting vault deposit
+approval. This transaction goes to the configured vault operators (treasury and
+compliance team members). Each operator receives a notification and reviews the
+deposit request in the Admin Control Panel. When two of three operators sign the
+transaction, it executes on-chain: the Vault contract transfers the allocated
+bonds from the issuer's holding address to the vault, marking them as held for
+the investor's benefit.
+
+The Vault emits `DepositApproved` and `TokensDeposited` events. TheGraph indexes
+these, and the investor's Portfolio Dashboard updates to show their allocated
+bonds under vault custody with the vault's signature requirements and current
+signers visible. The observability dashboard records this vault operation,
+feeding metrics on approval latency and custody transaction volume.
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant Inv as Investor<br/>(Frontend)
+    participant API as API Layer
+    participant Ops as Vault Operators<br/>(Multisig)
+    participant Vault as Vault Contract<br/>(Blockchain)
+    participant Graph as TheGraph
+    
+    Inv->>API: Submit purchase order (100 bonds)
+    API->>API: Verify compliance via TheGraph
+    API->>Ops: Request vault deposit approval
+    Ops->>Vault: Sign multisig transaction (2-of-3)
+    Vault-->>Vault: Transfer bonds to vault custody
+    Vault->>Graph: Emit DepositApproved + TokensDeposited
+    Graph->>Graph: Index custody events
+    Graph-->>Inv: Update portfolio with vault status
+    
+    Note over Inv,Graph: Observability: Vault operation latency,<br/>multisig approval time, custody audit trail`}
+/>
+
+**Phase 4: Atomic DvP settlement**
+
+The investor initiates payment by depositing cash tokens into the XvP settlement
+contract (blockchain layer). The contract locks these funds and emits a
+`CashLocked` event. Simultaneously, the vault operators approve bond transfer
+from vault custody to the XvP contract, locking the investor's allocated bonds.
+The contract emits a `BondsLocked` event.
+
+With both assets locked, anyone can trigger settlement execution by calling the
+XvP contract's `executeSettlement` function. This function performs atomic
+verification: it checks that locked cash equals the purchase price and locked
+bonds equal the allocation quantity, verifies both parties' compliance status
+through the Identity Registry, and ensures vault custody approvals are valid.
+
+If all conditions satisfy, the contract executes the swap atomically: cash
+tokens transfer from the investor to the issuer, bond tokens transfer from vault
+custody to the investor's wallet, and the settlement completes. If any condition
+fails—perhaps compliance status changed between locking and execution—the
+contract releases all locked assets without executing the swap. This atomic
+behavior eliminates settlement risk.
+
+TheGraph indexes the `SettlementExecuted` event, updating both parties'
+portfolio displays. PostgreSQL records the settlement transaction with complete
+audit details. The observability dashboard tracks settlement latency (time from
+first lock to execution) and records the transaction's gas cost and block
+number. If settlement latency exceeds thresholds, alerts notify operators of
+potential blockchain congestion.
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant Inv as Investor
+    participant XvP as XvP Contract<br/>(Settlement)
+    participant Vault as Vault Contract
+    participant ID as Identity Registry<br/>(Compliance)
+    participant Issuer as Bond Issuer
+    
+    Inv->>XvP: Lock cash tokens (payment)
+    XvP->>XvP: Emit CashLocked event
+    Vault->>XvP: Lock bond tokens (delivery)
+    XvP->>XvP: Emit BondsLocked event
+    Inv->>XvP: Execute settlement
+    XvP->>ID: Verify compliance status
+    ID-->>XvP: Both parties verified
+    XvP->>XvP: Atomic swap execution
+    XvP->>Inv: Transfer bonds
+    XvP->>Issuer: Transfer cash
+    XvP->>XvP: Emit SettlementExecuted
+    
+    Note over Inv,Issuer: Observability: Settlement latency dashboard,<br/>atomic operation success rate, gas cost tracking`}
+/>
+
+**Phase 5: Yield distribution automation**
+
+The bond contract includes a Yield addon configured with quarterly coupon
+payments at 5% annual interest. The yield schedule specifies distribution dates
+and calculation methodology. When a distribution date arrives, the API layer's
+scheduled job system detects the upcoming payment and triggers the yield
+distribution workflow.
+
+The workflow calls the Yield contract's `calculateAndDistribute` function. This
+function iterates through all bond holders (including vault-held positions),
+computes each holder's proportional share based on their balance, and transfers
+coupon tokens accordingly. The investor receives their quarterly interest
+payment automatically—no manual intervention required.
+
+The Yield contract emits `YieldCalculated` and `YieldDistributed` events for
+each recipient. TheGraph indexes these events, and the Portfolio Dashboard
+updates to show the received coupon payment. PostgreSQL stores yield
+distribution history for reporting. The observability dashboard tracks yield
+automation success: number of distributions executed, total value distributed,
+per-recipient calculation accuracy, and any failed distributions with error
+details.
+
+Failed distributions trigger alerts visible in the operational dashboard.
+Operators can review the failure reason (perhaps a recipient's compliance status
+changed), address the issue, and manually retry the distribution. This
+automation-with-oversight approach balances efficiency with operational control.
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant Scheduler as API Scheduler<br/>(Automated)
+    participant Yield as Yield Contract<br/>(Blockchain)
+    participant Holders as Bond Holders<br/>(Vault + Direct)
+    participant Graph as TheGraph
+    participant Dash as Observability<br/>Dashboard
+    
+    Scheduler->>Yield: Trigger quarterly distribution
+    Yield->>Yield: Calculate holder shares
+    Yield->>Holders: Transfer proportional coupons
+    Yield->>Graph: Emit YieldDistributed events
+    Graph->>Graph: Index distribution records
+    Graph-->>Holders: Update portfolio with payment
+    Graph->>Dash: Feed yield metrics
+    Dash->>Dash: Track success rate, value, timing
+    
+    Note over Scheduler,Dash: Observability: Distribution success rate,<br/>calculation accuracy, failed distribution alerts`}
+/>
+
+This complete workflow demonstrates how ATK's layered architecture coordinates
+to deliver DALP lifecycle capabilities. Each layer contributes its
+specialty—frontend provides user interaction, API orchestrates complex
+operations, blockchain enforces rules and custody, data persists state,
+deployment monitors everything—while maintaining consistency through shared
+types and unified control plane. The observability infrastructure surfaces every
+operation's status, transforming opaque processes into transparent, auditable
+workflows.
+
+## Performance considerations and scalability
+
+The layered architecture enables horizontal scaling at each tier independently.
+Understanding performance characteristics and scaling strategies proves
+essential for production deployments.
+
+**Frontend scaling leverages CDN distribution and edge computing**. Static
+assets (JavaScript bundles, CSS, images) deploy to CDN edge locations, serving
+users from geographically nearby servers. Server-side rendering executes on edge
+compute workers when possible, reducing latency for initial page loads. The
+architecture supports deploying additional frontend server instances behind load
+balancers, though CDN caching typically handles traffic spikes without requiring
+server scaling.
+
+**API layer scaling follows a stateless service model**. Each API server
+instance handles requests independently without shared in-process state.
+Kubernetes horizontal pod autoscaling monitors CPU utilization and request queue
+depth, launching additional API server pods when thresholds exceed. During bond
+issuance campaigns when traffic spikes, the cluster automatically scales from
+baseline (3 pods) to peak (12+ pods) within minutes. The read-through caching
+pattern proves critical here—without Redis caching, database load would
+bottleneck before API servers reached capacity.
+
+**Blockchain layer scaling faces fundamental constraints**. Smart contract
+execution happens sequentially on a single blockchain, limiting transaction
+throughput. ATK mitigates this through several strategies: batch operations
+where possible (a single yield distribution processes multiple recipients),
+optimize contract code to minimize gas costs (reducing execution time), and use
+multiple transaction submission strategies (priority fees during congestion).
+For truly high-throughput scenarios, the architecture supports layer-2
+deployments where settlement happens on rollup chains with higher transaction
+capacity.
+
+**Data layer scaling employs different strategies per component**. PostgreSQL
+uses read replicas to distribute query load—read-heavy operations (portfolio
+displays, analytics) query replicas while writes go to the primary. The database
+shards by tenant for multi-tenant deployments, keeping each customer's data
+isolated. Redis scales horizontally through cluster mode, partitioning cache
+keys across multiple nodes. MinIO scales through distributed object storage,
+spreading objects across multiple storage nodes with erasure coding for
+redundancy.
+
+**Observability infrastructure must scale alongside the platform**. Prometheus
+remote storage sends metrics to scalable time-series databases (Thanos or
+Cortex) rather than storing locally. Loki distributes log ingestion across
+multiple nodes, partitioning by service label. Grafana queries these distributed
+backends, aggregating metrics and logs across the entire cluster. This scaling
+ensures observability doesn't degrade as platform traffic grows—monitoring must
+remain reliable precisely when load increases.
+
+**Performance targets reflect real-world operational requirements**:
+
+| Layer          | Metric                | Target       | Scaling Strategy                           |
+| -------------- | --------------------- | ------------ | ------------------------------------------ |
+| **Frontend**   | Initial page load     | &lt;3s       | CDN caching, edge SSR, code splitting      |
+| **Frontend**   | Time to interactive   | &lt;1s       | Lazy component loading, prefetching        |
+| **API**        | Response time (P95)   | &lt;500ms    | Horizontal pod scaling, Redis caching      |
+| **API**        | Concurrent requests   | 1,000/s      | Load balancing, connection pooling         |
+| **Blockchain** | Block confirmation    | 2-15s        | Layer-2 deployment, batch operations       |
+| **Blockchain** | Gas cost per transfer | &lt;200k gas | Contract optimization, proxy patterns      |
+| **Data**       | Query response (P95)  | &lt;100ms    | Read replicas, query optimization, indexes |
+| **Data**       | Cache hit rate        | &gt;80%      | Tiered TTL strategy, cache warming         |
+| **Deployment** | Test suite completion | &lt;8min     | Parallel test execution, test sharding     |
+| **Deployment** | Deployment duration   | &lt;5min     | Rolling updates, health checks             |
+
+These targets emerged from production deployments and user experience
+requirements. The sub-3-second page load reflects user research showing
+engagement drops sharply beyond 3 seconds. The 500ms API response target ensures
+real-time interfaces feel responsive. The 80% cache hit rate balances cache
+memory usage against database load reduction.
+
+**Bottleneck identification relies on observability infrastructure**. The
+settlement latency dashboard quickly reveals whether slow transactions stem from
+blockchain congestion (high block times), API orchestration delays (slow
+signature gathering), or data access latency (database query duration).
+Operators diagnose performance issues through these dashboards rather than
+guessing, then apply targeted optimizations—perhaps increasing API pod count,
+optimizing a slow database query, or adjusting settlement retry logic.
+
+**Capacity planning uses historical metrics**. The observability stack tracks
+platform usage patterns: daily active users, transaction volume by hour, peak
+vault operations per day, yield distributions per month. These metrics feed
+capacity models predicting when current infrastructure will reach limits.
+Proactive scaling happens before performance degrades—when metrics show 70% of
+current capacity utilized, infrastructure teams add resources rather than
+waiting for 95% utilization and user complaints.
 
 ## See also
 
-- [Frontend layer](./frontend-layer) - TanStack Start architecture and React
-  components
-- [API layer](./api-layer) - ORPC procedures and business services
-- [Blockchain layer](./blockchain-layer) - Smart contracts and TheGraph indexing
-- [Data layer](./data-layer) - PostgreSQL, Redis, and MinIO storage
-- [Deployment layer](./deployment-layer) - Kubernetes and E2E testing
-- [System architecture](./system-architecture) - High-level layered architecture
+- [Frontend layer](./frontend-layer) — TanStack Start architecture, React
+  component patterns, server-side rendering strategy, and state management with
+  TanStack Query
+- [API layer](./api-layer) — ORPC procedure definitions, business service
+  orchestration, authentication flows with Better Auth, and DALP lifecycle
+  operation coordination
+- [Blockchain layer](./blockchain-layer) — Smart contract architecture, addon
+  integration patterns, ERC-3643 compliance implementation, TheGraph indexing
+  strategies, and event schema design
+- [Data layer](./data-layer) — PostgreSQL schema design, Redis caching patterns,
+  MinIO object storage configuration, IPFS pinning for immutable documents, and
+  encryption strategies
+- [Deployment layer](./deployment-layer) — Kubernetes architecture, Helm chart
+  configuration, Playwright E2E testing patterns, observability stack setup with
+  Prometheus/Loki/OpenTelemetry, and pre-built Grafana dashboards
+- [System architecture](./system-architecture) — High-level layered architecture
+  overview, cross-layer integration patterns, and design principles
+- [DALP lifecycle overview](../features/dalp-lifecycle) — Detailed DvP
+  settlement mechanics, vault custody workflows, and yield automation scheduling
+- [Observability and monitoring](../operations/observability) — Dashboard
+  reference, alerting rules, metric definitions, and troubleshooting workflows

@@ -1,155 +1,492 @@
 ---
 title: Troubleshooting guide
 description:
-  ATK's observability stack surfaces issues before they impact users, giving you
-  diagnostic dashboards, real-time metrics, and structured logs to resolve
-  problems at every layer—from wallet connections to DALP lifecycle operations
-  like DvP settlement and yield distribution.
-pageTitle: Troubleshooting overview - Resolve common user issues quickly
+  ATK's observability stack surfaces issues before they impact users. Diagnostic
+  dashboards, real-time metrics, and structured logs help you resolve problems
+  at every layer—from wallet connections to DALP lifecycle operations like DvP
+  settlement and yield distribution—faster than traditional blockchain
+  platforms.
+pageTitle: Troubleshooting overview - Resolve issues with observability
 tags: [user-guides, troubleshooting, support, observability, diagnostics]
 ---
 
 ## Troubleshooting philosophy
 
-ATK treats observability as a first-class feature, not an afterthought. Every
-component emits structured metrics and logs that flow into centralized
-dashboards deployed via Helm charts. When something breaks, you start with the
-metrics—transaction latency spikes, compliance rule rejections, vault balance
-mismatches—and drill down from there. This proactive approach means you often
-catch problems before users report them.
+Most blockchain platforms leave you blind when something breaks. You're stuck
+parsing raw transaction hashes, decoding revert reasons manually, and guessing
+whether a failed transfer stems from a wallet issue, a gas problem, or a
+compliance rule rejection. ATK flips that model by treating observability as a
+first-class feature from day one.
 
-The troubleshooting guides below mirror the platform's architecture:
-wallet/identity issues live at the user layer, transaction failures happen in
-the smart contract and settlement layer, compliance blocks stem from the
-identity registry and rule engine, and asset management problems touch the DALP
-lifecycle features (DvP, vaults, yield distribution). Each guide links to
-specific observability dashboards and metrics that help you diagnose root causes
-fast.
+Every component—wallet connections, smart contract interactions, compliance rule
+evaluations, DALP lifecycle operations—emits structured metrics and logs that
+flow into centralized dashboards deployed via Helm charts. When a DvP settlement
+fails or a yield distribution calculates the wrong amount, you don't hunt for
+clues in transaction receipts. You open the DALP lifecycle dashboard, see the
+exact operation that failed, read the structured error message, and jump to the
+fix. This proactive approach often surfaces problems before users report them:
+vault balance drift triggers an alert, you reconcile the discrepancy, and
+investors never notice the issue.
+
+The troubleshooting philosophy mirrors the platform architecture. Wallet and
+identity issues live at the user layer—connection failures, signature
+rejections, permission errors. Transaction problems happen in the smart contract
+and settlement layer—reverts, gas estimation failures, front-running during high
+traffic. Compliance blocks stem from the identity registry and rule
+engine—KYC/AML rejections, expired claims, jurisdictional restrictions. Asset
+management issues touch the DALP lifecycle features that differentiate ATK: DvP
+settlement mismatches, vault balance reconciliation errors, yield distribution
+calculation failures.
+
+Each category below maps to specific observability dashboards and metrics. When
+an alert fires or a user reports trouble, you start at the dashboard layer,
+narrow the scope, then drill into structured logs. This workflow reduces mean
+time to resolution from hours to minutes because the observability stack guides
+you to the root cause instead of forcing you to reconstruct what happened from
+scattered data.
 
 ## Diagnostic flow
 
-When a user reports an issue or an alert fires, follow this flow to triage and
-resolve:
+When an alert fires or a user reports an issue, the diagnostic flow moves
+through observability first, then into targeted troubleshooting.
 
-<Mermaid chart={`flowchart TB
+<Mermaid
+  chart={`flowchart TB
   Alert(Alert or user report):::primary
   Dashboards(Check observability dashboards):::secondary
-  Scope(Scope: Wallet, TX, Compliance, or Asset?):::tertiary
-  Wallet(Wallet troubleshooting guide):::quaternary
-  TX(Transaction troubleshooting guide):::quaternary
-  Compliance(Compliance troubleshooting guide):::quaternary
-  Asset(Asset troubleshooting guide):::quaternary
-  Logs(Drill into structured logs):::secondary
-  Fix(Apply fix & verify metrics):::primary
-  Escalate(Escalate to SettleMint support):::tertiary
-
-Alert --> Dashboards Dashboards --> Scope Scope -->|Wallet connection/signing|
-Wallet Scope -->|Failed transfer or gas error| TX Scope -->|KYC/AML or rule
-rejection| Compliance Scope -->|Supply, vault, or yield mismatch| Asset Wallet
---> Logs TX --> Logs Compliance --> Logs Asset --> Logs Logs --> Fix Fix
--->|Metrics normal| Alert Fix -->|Metrics still abnormal| Escalate
-
-classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
-classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff `}
+  Scope(Identify layer: Wallet, Transaction, Compliance, or Asset):::tertiary
+  
+  WalletGuide(Wallet troubleshooting:<br/>Connection, signing, permissions):::quaternary
+  TXGuide(Transaction troubleshooting:<br/>Reverts, gas, settlement):::quaternary
+  ComplianceGuide(Compliance troubleshooting:<br/>KYC/AML, rules, identity):::quaternary
+  AssetGuide(Asset troubleshooting:<br/>Supply, vaults, yield, DvP):::quaternary
+  
+  Logs(Drill into structured logs<br/>for transaction details):::secondary
+  Fix(Apply fix and verify<br/>metrics return to normal):::primary
+  Escalate(Escalate to SettleMint support<br/>with dashboard screenshots and logs):::tertiary
+  
+  Alert --> Dashboards
+  Dashboards --> Scope
+  
+  Scope -->|Wallet connection<br/>or signing failure| WalletGuide
+  Scope -->|Failed transfer<br/>or gas error| TXGuide
+  Scope -->|KYC/AML or<br/>rule rejection| ComplianceGuide
+  Scope -->|Supply mismatch,<br/>vault, or yield issue| AssetGuide
+  
+  WalletGuide --> Logs
+  TXGuide --> Logs
+  ComplianceGuide --> Logs
+  AssetGuide --> Logs
+  
+  Logs --> Fix
+  Fix -->|Metrics normal,<br/>issue resolved| Alert
+  Fix -->|Metrics still abnormal,<br/>root cause unclear| Escalate
+  
+  classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+  classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+  classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+  classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff`}
 />
 
-Start at the observability layer to narrow the scope, then jump to the relevant
-troubleshooting guide. If metrics confirm the fix, you're done; if not, escalate
-with structured logs and dashboard screenshots attached.
+The flow starts with **triage at the observability layer**. Dashboards show you
+real-time connection success rates, transaction latency, compliance rule
+rejection counts, and DALP lifecycle operation status. Within seconds you know
+whether the problem is a wallet issue (connection rates dropped), a transaction
+problem (latency spiked or revert rates climbed), a compliance block (rule
+rejection spike), or an asset management issue (vault balance drift or yield
+distribution failure).
 
-## Observability dashboards for diagnostics
+Next, you **jump to the relevant troubleshooting guide** for that layer. Each
+guide walks through common scenarios with observability checkpoints at every
+step. For example, if you identify a transaction problem, the transaction
+troubleshooting guide shows you how to read the revert reason dashboard, decode
+the structured logs, check gas estimation metrics, and apply the fix.
 
-Each troubleshooting category maps to dashboards and metrics that surface the
-most common root causes. Reference these starting points before diving into
-detailed guides:
+After applying a fix, you **verify metrics return to normal**. If transaction
+latency drops back under 10 seconds and revert rates fall to baseline, you're
+done. If metrics remain abnormal or the root cause is unclear, you escalate to
+SettleMint support with dashboard screenshots, structured log excerpts, and
+reproduction steps. The observability data you've already gathered becomes the
+starting point for deeper investigation.
 
-**Wallet issues**
+## Observability as a competitive advantage
 
-- **Wallet connection dashboard**: Tracks connection success rate,
-  MetaMask/WalletConnect failures, and RPC endpoint health
-- **Signature failure metrics**: Counts rejected signatures, timeout events, and
-  nonce mismatches
-- Check the wallet troubleshooting guide when connection rates drop below 95% or
-  signature failures spike
+Traditional blockchain platforms force you to reconstruct what happened from raw
+transaction data. ATK's observability stack gives you the story immediately:
+which operation failed, why it failed, and which metric to monitor to confirm
+your fix worked.
 
-**Transaction failures**
+This advantage compounds during DALP lifecycle operations. When a DvP settlement
+fails on a traditional platform, you might spend hours tracing the atomic swap
+logic, checking both payment and delivery transactions, and manually verifying
+vault balances. On ATK, the **DALP lifecycle dashboard** shows you the exact
+settlement that failed, the revert reason from the smart contract, and the
+current vault balance compared to expected values. You fix the issue—maybe a gas
+estimation problem or a compliance rule that inadvertently blocked the
+delivery—and watch the settlement completion rate return to 100% in the
+dashboard.
 
-- **Transaction latency dashboard**: Shows settlement times, pending TX queue
-  depth, and gas price trends
-- **Revert reason logs**: Structured logs capture revert messages with function
-  signatures and parameters
-- Use the transaction troubleshooting guide when latency exceeds 10s or revert
-  rates climb above 2%
+Similarly, when yield distribution calculations produce unexpected amounts,
+traditional platforms leave you auditing smart contract state manually or
+writing custom scripts to query holder balances. ATK's **yield distribution
+metrics panel** surfaces holder balance deltas, distribution event counts, and
+per-address amounts in real time. You cross-reference the structured logs, spot
+the rounding error or the stale price feed, apply the fix, and verify the next
+distribution cycle produces correct amounts by watching the dashboard metrics.
 
-**Compliance blocks**
+Cross-reference the
+[Observability monitoring guide](/docs/user-guides/operations/monitoring) for
+detailed guidance on dashboard usage, alerting thresholds, and preventative
+monitoring strategies. That guide explains how to set up proactive alerts so you
+catch vault balance drift or compliance rule misconfigurations before they
+impact users.
 
-- **Compliance rule evaluation panel**: Real-time stats on KYC/AML checks,
-  jurisdiction filters, and transfer restrictions
-- **OnchainID registry metrics**: Tracks verification success rates, claim
-  issuance, and identity updates
-- Jump to the compliance troubleshooting guide when rule rejection rates spike
-  or identity verification fails
+## Preventative monitoring guidance
 
-**Asset management**
+The observability stack does more than troubleshoot after the fact—it helps you
+prevent issues from reaching users in the first place.
 
-- **DALP lifecycle metrics**: Monitors DvP settlement completion, vault balance
-  reconciliation, and yield distribution events
-- **Supply and distribution panel**: Tracks token supply changes, mint/burn
-  events, and holder balance deltas
-- Open the asset troubleshooting guide for supply mismatches, vault balance
-  drift, or yield calculation errors
+**Transaction layer monitoring** should trigger alerts when latency exceeds your
+SLA threshold (e.g., 10 seconds for settlement operations) or when revert rates
+climb above 2%. These alerts often surface problems before users experience
+failures: a sudden latency spike might indicate network congestion, prompting
+you to increase gas prices temporarily; a revert rate increase might reveal a
+compliance rule that inadvertently blocks legitimate transfers, prompting you to
+adjust the rule before more transactions fail.
 
-## Troubleshooting guides by category
+**DALP lifecycle monitoring** should alert on vault balance drift—when the
+vault's actual token balance diverges from the expected balance tracked in smart
+contract state. This drift can indicate a failed settlement operation that left
+assets stuck, or a reconciliation bug that miscalculated balances after a DvP
+swap. Catching drift early lets you reconcile before investors notice
+discrepancies. Similarly, monitoring yield distribution event counts and
+comparing them to expected schedules surfaces missed distributions or
+calculation errors before investors file support tickets.
 
-### Wallet issues
+**Compliance layer monitoring** should alert when rule rejection rates spike or
+when identity verification success rates drop. A sudden increase in rule
+rejections might indicate a misconfigured compliance policy that inadvertently
+blocks legitimate investors; a drop in verification success rates might reveal
+an integration issue with your OnchainID provider. Both scenarios benefit from
+early detection via observability metrics rather than reactive troubleshooting
+after users complain.
 
-[Wallet troubleshooting guide](/docs/user-guides/troubleshooting/wallet) covers
-wallet connection failures, signing problems, and permission errors. Common
-scenarios: MetaMask stuck on "Connecting," rejected signatures during DvP
-settlement, or insufficient permissions for vault withdrawals. The guide walks
-through RPC endpoint validation, browser extension conflicts, and nonce resets,
-with observability checkpoints at each step.
+The [Observability monitoring guide](/docs/user-guides/operations/monitoring)
+provides specific alerting threshold recommendations, dashboard configuration
+examples, and integration guidance for external monitoring systems like
+Prometheus and Grafana.
+
+## Troubleshooting by category
+
+Each troubleshooting category below corresponds to a platform layer. Use the
+observability dashboards to narrow the scope, then jump to the relevant guide.
+
+### Wallet and identity issues
+
+**Scenario:** Users report wallet connection failures, rejected signatures
+during DvP settlement, or permission errors when attempting vault withdrawals.
+
+**Observability starting point:** Check the **wallet connection dashboard** for
+connection success rates, MetaMask/WalletConnect failure counts, and RPC
+endpoint health metrics. Check the **signature failure panel** for rejected
+signatures, timeout events, and nonce mismatches.
+
+**Common patterns:**
+
+- **Connection success rate drops below 95%:** Indicates RPC endpoint issues,
+  browser extension conflicts, or network connectivity problems. The dashboard
+  shows which RPC endpoints are failing and which wallet types are affected.
+- **Signature rejection spike during DvP operations:** Users often reject
+  signatures accidentally during multi-step DvP settlements because they don't
+  understand why multiple signatures are required. The observability dashboard
+  shows which specific operation prompted the rejection (payment approval,
+  delivery confirmation, vault custody transfer).
+- **Nonce mismatch errors:** Occur when users interact with multiple dApps
+  concurrently or when transactions are submitted out of order. The dashboard
+  tracks nonce mismatch frequency per address, helping you identify power users
+  who need guidance on sequential transaction submission.
+
+**Detailed guide:**
+[Wallet troubleshooting guide](/docs/user-guides/troubleshooting/wallet) walks
+through RPC endpoint validation, browser extension troubleshooting, nonce reset
+procedures, and permission grant workflows. It includes observability
+checkpoints at each step so you verify the fix worked before moving on.
+
+**Prevention:** Monitor wallet connection rates continuously. Set alerts to fire
+when connection success drops below 95% or when signature rejection rates for
+DvP operations exceed 5%. These thresholds catch issues before they cascade into
+widespread user complaints.
 
 ### Transaction failures
 
+**Scenario:** Transfers fail with revert errors, DvP settlements time out, gas
+estimation produces insufficient values for complex operations, or front-running
+occurs during high-traffic periods.
+
+**Observability starting point:** Check the **transaction latency dashboard**
+for settlement times, pending transaction queue depth, and gas price trends.
+Check the **revert reason logs panel** for structured error messages with
+function signatures and parameters.
+
+**Common patterns:**
+
+- **Latency exceeds 10 seconds:** Indicates network congestion, under-priced
+  gas, or complex smart contract operations that exceed block gas limits. The
+  dashboard shows average settlement time, 95th percentile latency, and pending
+  transaction queue depth. If latency spikes correlate with increased queue
+  depth, you need to increase gas prices or optimize contract logic.
+- **Revert rate climbs above 2%:** Signals a systemic issue like a misconfigured
+  compliance rule, an insufficient gas estimate for a new DALP operation, or a
+  smart contract bug. The revert reason dashboard surfaces the exact function
+  that reverted and the error message. For example, if most reverts come from
+  `validateTransfer` with "Recipient not verified," you know the compliance
+  layer is rejecting transactions—jump to compliance troubleshooting rather than
+  transaction troubleshooting.
+- **DvP settlement timeouts:** Occur when one side of the atomic swap completes
+  but the other side fails or times out. The DALP lifecycle dashboard shows
+  partial settlements—where payment succeeded but delivery failed, or vice
+  versa. Structured logs reveal whether the timeout stemmed from gas issues,
+  compliance blocks, or vault custody transfer failures.
+
+**Detailed guide:**
 [Transaction troubleshooting guide](/docs/user-guides/troubleshooting/transactions)
-addresses failed transfers, settlement errors, and gas-related problems. You'll
-diagnose reverts from compliance rules, insufficient gas estimates for complex
-DvP operations, and front-running issues during high-traffic periods. Dashboards
-show you exactly which function reverted and why, saving hours of manual log
-parsing.
+covers revert reason decoding, gas estimation debugging, front-running
+mitigation, and DvP settlement failure scenarios. Each section links to the
+specific observability metrics that indicate each problem type.
+
+**DALP lifecycle example: DvP settlement failure**
+
+A user attempts to purchase tokenized bonds via DvP settlement. The payment
+transaction succeeds—USDC transfers from buyer to seller—but the bond delivery
+transaction fails with a revert. The DALP lifecycle dashboard shows:
+
+- **Settlement status:** Partial (payment complete, delivery failed)
+- **Revert reason:** "Transfer restricted: Recipient jurisdiction blocked"
+- **Affected operation:** `deliverAsset` in DvP contract
+- **Vault balance:** Unchanged (bonds remain in seller's vault)
+
+The structured logs show the `validateTransfer` function reverted because the
+buyer's OnchainID has a jurisdiction claim of "US" and the bond has a transfer
+restriction that blocks US investors. You realize the bond was issued with
+overly restrictive compliance rules.
+
+**Resolution workflow:**
+
+1. Verify the compliance rule configuration in the identity registry
+   dashboard—it confirms US jurisdiction is blocked for this bond.
+2. Consult the bond issuer to determine whether the restriction is intentional.
+   The issuer confirms it was a mistake; the bond should allow US investors.
+3. Update the compliance rule via the admin interface to permit US jurisdiction.
+4. Retry the DvP settlement—the delivery transaction now succeeds because
+   `validateTransfer` passes.
+5. Verify the DALP lifecycle dashboard shows the settlement as complete and the
+   vault balance updated correctly.
+
+This resolution workflow took 15 minutes because the observability stack
+surfaced the exact revert reason and pointed you to the compliance layer
+immediately. On a traditional platform without structured observability, you
+might have spent hours decoding the revert reason from transaction receipts and
+manually tracing the compliance rule logic.
+
+**Prevention:** Set alerts to fire when DvP settlement completion rates drop
+below 98% or when partial settlements persist for more than 5 minutes. These
+thresholds catch settlement failures in near real-time, allowing you to
+intervene before users escalate.
 
 ### Compliance blocks
 
+**Scenario:** Transfers fail due to KYC/AML rule rejections, expired OnchainID
+claims, or jurisdictional restrictions. Users often encounter these during
+cross-border transfers or when their identity verification expires.
+
+**Observability starting point:** Check the **compliance rule evaluation panel**
+for real-time KYC/AML check statistics, jurisdiction filter rejection counts,
+and transfer restriction breakdowns. Check the **OnchainID registry metrics**
+for verification success rates, claim issuance counts, and identity update
+frequencies.
+
+**Common patterns:**
+
+- **Rule rejection rate spikes:** Indicates a newly configured compliance rule
+  that inadvertently blocks legitimate transfers, or a sudden influx of
+  non-compliant users attempting transfers. The compliance dashboard breaks down
+  rejections by rule type (KYC, jurisdiction, transfer cap, accreditation
+  requirement) so you identify which rule is causing the spike.
+- **Identity verification success rate drops:** Signals an integration problem
+  with your OnchainID provider, an expired signing key for claim issuance, or a
+  misconfigured identity registry contract. The dashboard shows verification
+  success rates per claim type (KYC, jurisdiction, accreditation) so you
+  pinpoint which claim is failing.
+- **Expired claim rejections increase:** Occur when investors' identity claims
+  expire and they attempt transfers without renewing. The dashboard tracks
+  expired claim rejection counts and shows which claim types expire most
+  frequently, helping you identify which claims need proactive renewal
+  reminders.
+
+**Detailed guide:**
 [Compliance troubleshooting guide](/docs/user-guides/troubleshooting/compliance)
-handles OnchainID verification failures, KYC/AML rule rejections, and
-jurisdictional restrictions. Users often hit these when attempting cross-border
-transfers or when identity claims expire. The guide explains how to read
-compliance rule evaluation logs, refresh OnchainID claims, and adjust transfer
-restrictions for legitimate edge cases.
+explains how to read compliance rule evaluation logs, refresh OnchainID claims
+via the admin interface, adjust transfer restrictions for legitimate edge cases,
+and diagnose identity registry integration issues.
 
-### Asset management
+**Prevention:** Monitor compliance rule rejection rates continuously. Set alerts
+to fire when rejection rates exceed 5% or when identity verification success
+drops below 95%. Proactively remind investors to renew expiring claims before
+they lapse—use the observability dashboard to identify claims expiring within 30
+days and trigger automated renewal reminders.
 
-[Asset troubleshooting guide](/docs/user-guides/troubleshooting/assets) resolves
-supply mismatches, distribution errors, and reconciliation problems across DALP
-lifecycle operations. This includes vault balance drift after DvP settlement,
-yield distribution amounts that don't match expectations, and supply cap
-enforcement failures. Observability metrics surface these issues
-immediately—often before users notice.
+### Asset management issues
+
+**Scenario:** Supply mismatches between on-chain token supply and expected
+values, vault balance drift after DvP settlements, yield distribution amounts
+that don't match expectations, or supply cap enforcement failures.
+
+**Observability starting point:** Check the **DALP lifecycle metrics panel** for
+DvP settlement completion rates, vault balance reconciliation status, and yield
+distribution event counts. Check the **supply and distribution dashboard** for
+token supply changes, mint/burn event logs, and holder balance deltas.
+
+**Common patterns:**
+
+- **Vault balance drift:** The vault's actual token balance diverges from the
+  expected balance tracked in smart contract state. This often happens after a
+  failed DvP settlement where the payment succeeded but the delivery failed,
+  leaving tokens stuck in an intermediate state. The dashboard shows the delta
+  between expected and actual balances per vault, helping you identify which
+  vaults need reconciliation.
+- **Yield distribution calculation errors:** Yield amounts distributed to
+  holders don't match expected values based on holder balances and yield rates.
+  This can stem from rounding errors in smart contract logic, stale price feeds
+  for non-native yield currencies, or incorrect snapshot blocks for holder
+  balances. The dashboard shows per-address yield amounts and compares them to
+  expected values calculated from on-chain state.
+- **Supply cap enforcement failures:** Token mints succeed despite exceeding the
+  configured supply cap. This indicates a smart contract bug or a misconfigured
+  supply cap value. The dashboard tracks total supply over time and highlights
+  when supply exceeds the configured cap, triggering alerts for immediate
+  investigation.
+
+**Detailed guide:**
+[Asset troubleshooting guide](/docs/user-guides/troubleshooting/assets) covers
+supply reconciliation procedures, vault balance correction workflows, yield
+distribution debugging, and supply cap enforcement verification. It includes
+detailed examples of DALP lifecycle troubleshooting scenarios.
+
+**DALP lifecycle example: Vault balance mismatch after DvP settlement**
+
+The observability dashboard shows a vault balance drift alert: the vault
+contract's actual token balance is 10,000 tokens, but the expected balance
+tracked in the vault registry is 9,500 tokens. This 500-token discrepancy
+appeared after a high-volume day of DvP settlements.
+
+The structured logs reveal that one DvP settlement failed mid-transaction:
+
+- **Settlement ID:** `0xabc123...`
+- **Operation:** DvP for 500 tokenized equities
+- **Payment:** Succeeded (buyer paid USDC to seller)
+- **Delivery:** Failed (out of gas during vault custody transfer)
+- **Result:** Tokens remained in seller's vault, but vault registry didn't
+  update to reflect failed delivery
+
+**Resolution workflow:**
+
+1. Identify the failed settlement transaction hash from structured logs.
+2. Verify on-chain that the vault custody transfer transaction reverted due to
+   out-of-gas error—the gas estimate was insufficient for the complex vault
+   transfer logic.
+3. Manually reconcile the vault balance by triggering a vault registry update
+   transaction that corrects the tracked balance to match the actual balance.
+4. Adjust gas estimation parameters for vault custody transfers to prevent
+   future out-of-gas errors during DvP settlements.
+5. Verify the dashboard shows vault balance drift resolved and monitor DvP
+   settlement completion rates to confirm the gas adjustment works.
+
+This reconciliation took 20 minutes because the observability stack surfaced the
+exact settlement that caused the drift and showed the expected versus actual
+balances side-by-side. Without observability, you might have spent hours
+reconstructing the settlement flow from transaction receipts and manually
+querying vault balances.
+
+**DALP lifecycle example: Yield distribution calculation error**
+
+Investors report receiving incorrect dividend amounts for tokenized corporate
+bonds. The expected dividend per token is $0.50, but some investors received
+$0.49 or $0.51 instead.
+
+The **yield distribution metrics panel** shows:
+
+- **Distribution event:** Quarterly dividend for BondToken contract
+- **Expected amount per token:** $0.50 (based on 5% annual coupon)
+- **Actual amounts distributed:** Range from $0.49 to $0.51 per token
+- **Affected addresses:** 23 of 150 holders
+
+The structured logs reveal that the yield distribution smart contract uses
+integer arithmetic with fixed-point precision, and rounding errors accumulate
+when distributing to holders with fractional token balances.
+
+**Resolution workflow:**
+
+1. Verify the smart contract's yield calculation logic—it uses 18-decimal
+   fixed-point arithmetic but rounds intermediate calculations prematurely.
+2. Calculate the exact discrepancy per affected address by comparing expected
+   versus actual amounts from the observability dashboard.
+3. Manually send corrective payments to the 23 affected addresses to make them
+   whole—the total correction is $12 (less than the cost of re-deploying the
+   contract).
+4. Open a GitHub issue to fix the rounding logic in the next contract
+   version—use a yield accumulator pattern that defers rounding until final
+   distribution.
+5. Document the issue in the release notes so other bond issuers using ATK are
+   aware of the rounding edge case.
+
+This resolution took 30 minutes and cost $12 in corrective payments. Without
+observability, investors might have filed support tickets over weeks, requiring
+manual audits of each distribution transaction to identify the rounding error.
+The dashboard made the problem visible immediately and showed exactly which
+addresses needed corrections.
+
+**Prevention:** Set alerts to fire when vault balance drift exceeds 1% of
+expected balance or when yield distribution amounts deviate more than 0.5% from
+expected values. These thresholds catch reconciliation issues and calculation
+errors before they compound across multiple distributions.
 
 ## Escalation path
 
 If the troubleshooting guides and observability dashboards don't resolve the
-issue, escalate to SettleMint support with this information:
+issue within a reasonable timeframe—usually 30-60 minutes for straightforward
+problems—escalate to SettleMint support with structured information.
 
-- Dashboard screenshots showing abnormal metrics (with timestamps)
-- Structured log excerpts (transaction hashes, revert reasons, error codes)
-- Steps to reproduce, including user role, asset type, and specific operation
-- Expected vs. actual behavior, with reference to DALP lifecycle features if
-  applicable
+**Required escalation information:**
+
+- **Dashboard screenshots showing abnormal metrics:** Include timestamps so
+  support engineers can correlate with backend logs. Highlight the specific
+  metrics that remain abnormal after your troubleshooting attempts.
+- **Structured log excerpts:** Provide transaction hashes, revert reasons, error
+  codes, and relevant function call parameters. The observability stack outputs
+  logs in JSON format—copy the relevant excerpts rather than screenshots to
+  preserve structure.
+- **Steps to reproduce:** Include user role (admin, investor, issuer), asset
+  type (bond, equity, fund, stablecoin, deposit), and the specific operation
+  that failed (transfer, DvP settlement, vault withdrawal, yield distribution).
+- **Expected versus actual behavior:** Describe what should have happened based
+  on DALP lifecycle feature documentation versus what actually occurred.
+  Reference specific observability metrics that show the deviation.
+- **Troubleshooting steps attempted:** List which troubleshooting guide sections
+  you followed and which observability metrics you checked. This helps support
+  engineers avoid redundant diagnostics and jump straight to deeper
+  investigation.
+
+**Escalation channels:**
+
+- **Support portal:** [support.settlemint.com](https://support.settlemint.com)
+  for non-urgent issues—response within 24 hours
+- **Slack channel:** Join the SettleMint Slack workspace for real-time support
+  during business hours (EMEA timezone)
+- **Emergency hotline:** For production-critical issues affecting live investor
+  operations—phone number provided in your enterprise support agreement
 
 For broader operational guidance beyond troubleshooting—like adjusting admin
 settings, configuring new asset types, or optimizing gas usage—cross-reference
-the [Operations guides](/docs/user-guides/operations/admin-settings).
+the [Operations guides](/docs/user-guides/operations/admin-settings). Those
+guides cover proactive platform management rather than reactive problem
+resolution.
