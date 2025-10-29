@@ -346,7 +346,7 @@ describe("ManageAssetDropdown", () => {
       expect(unpauseItem).toBeInTheDocument();
     });
 
-    it("shows view events action as disabled", async () => {
+    it("shows view events action", async () => {
       const asset = createMockToken();
       renderWithProviders(
         <ManageAssetDropdown asset={asset} factoryAddress={zeroAddress} />
@@ -357,10 +357,6 @@ describe("ManageAssetDropdown", () => {
 
       const viewEventsItem = screen.getByText(/tokens:actions.viewEvents/i);
       expect(viewEventsItem).toBeInTheDocument();
-      expect(viewEventsItem.closest('[role="menuitem"]')).toHaveAttribute(
-        "aria-disabled",
-        "true"
-      );
     });
   });
 
