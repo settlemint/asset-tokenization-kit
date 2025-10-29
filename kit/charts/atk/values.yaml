@@ -54,17 +54,17 @@ global:
         existingSecret: ""
         # -- (object) Secret key mapping for ERPC Redis data
         existingSecretKeys:
-          # - (object) Redis host value key
+          # - (string) Redis host value key
           host: host
-          # - (object) Redis port value key
+          # - (string) Redis port value key
           port: port
-          # - (object) Redis username value key
+          # - (string) Redis username value key
           username: username
-          # - (object) Redis password value key
+          # - (string) Redis password value key
           password: password
-          # - (object) Redis cache query parameters key (value like dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50)
+          # - (string) Redis cache query parameters key (value like dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50)
           cacheQuery: cacheQuery
-          # - (object) Redis shared state query parameters key (value like dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50)
+          # - (string) Redis shared state query parameters key (value like dial_timeout=5s&read_timeout=2s&write_timeout=2s&pool_size=50)
           sharedStateQuery: sharedStateQuery
     # -- (object) Portal-specific datastore configuration for identity and access management
     portal:
@@ -80,7 +80,7 @@ global:
         existingSecret: ""
         # -- (object) Secret key mapping for Portal PostgreSQL data
         existingSecretKeys:
-          # - (object) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
+          # - (string) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
           url: url
       # -- (object) Redis database for Portal session and caching
       redis:
@@ -90,13 +90,13 @@ global:
         existingSecret: ""
         # -- (object) Secret key mapping for Portal Redis data
         existingSecretKeys:
-          # - (object) Redis host value key
+          # - (string) Redis host value key
           host: host
-          # - (object) Redis port value key
+          # - (string) Redis port value key
           port: port
-          # - (object) Redis username value key
+          # - (string) Redis username value key
           username: username
-          # - (object) Redis password value key
+          # - (string) Redis password value key
           password: password
     # -- (object) Transaction Signer specific datastore configuration
     txsigner:
@@ -112,7 +112,7 @@ global:
         existingSecret: ""
         # -- (object) Secret key mapping for TxSigner PostgreSQL data
         existingSecretKeys:
-          # - (object) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
+          # - (string) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
           url: url
     # -- (object) The Graph Node specific datastore configuration for blockchain indexing
     graphNode:
@@ -128,15 +128,15 @@ global:
         existingSecret: ""
         # -- (object) Secret key mapping for Graph Node PostgreSQL data
         existingSecretKeys:
-          # - (object) DB Username
+          # - (string) DB Username
           username: username
-          # - (object) DB Password
+          # - (string) DB Password
           password: password
-          # - (object) DB Host
+          # - (string) DB Host
           host: host
-          # - (object) DB Port
+          # - (string) DB Port
           port: port
-          # - (object) DB Database
+          # - (string) DB Database
           database: database
     # -- (object) Blockscout specific datastore configuration for blockchain explorer
     blockscout:
@@ -152,7 +152,7 @@ global:
         existingSecret: ""
         # -- (object) Secret key mapping for Blockscout PostgreSQL data
         existingSecretKeys:
-          # - (object) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
+          # - (string) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
           url: url
     # -- (object) Hasura GraphQL Engine specific datastore configuration
     hasura:
@@ -168,7 +168,7 @@ global:
         existingSecret: ""
         # -- (object) Secret key mapping for Hasura PostgreSQL data
         existingSecretKeys:
-          # - (object) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
+          # - (string) DB URL in the format postgresql://username:password@dburl:5432/dbname?sslmode=disable
           url: url
       # -- (object) Redis databases for Hasura caching and rate limiting
       redis:
@@ -180,9 +180,9 @@ global:
         existingSecret: ""
         # -- (object) Secret key mapping for Hasura Redis data
         existingSecretKeys:
-          # - (object) Redis cache URL value key
+          # - (string) Redis cache URL value key
           cacheUrl: cacheUrl
-          # - (object) Redis rate limit URL value key
+          # - (string) Redis rate limit URL value key
           rateLimitUrl: rateLimitUrl
 
 # -- (object) Blockchain network infrastructure configuration
