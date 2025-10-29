@@ -1,8 +1,5 @@
 import { pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
-export type { SettingKey, DEFAULT_SETTINGS } from "./settings.constants";
-export { SETTING_KEYS } from "./settings.constants";
-
 /**
  * Settings table schema for storing application-wide settings
  * Currently supports:
