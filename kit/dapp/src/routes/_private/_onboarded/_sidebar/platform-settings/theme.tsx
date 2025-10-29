@@ -111,7 +111,7 @@ function ThemeSettingsPage() {
 
   if (!isAdmin) {
     return (
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="w-full p-6 space-y-6">
         <RouterBreadcrumb />
         <Alert variant="destructive">
           <Shield className="h-4 w-4" />
@@ -844,7 +844,7 @@ function ThemeSettingsPage() {
   }, [t, lightTokens.length, darkTokens.length]);
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="w-full p-6 space-y-6">
       <RouterBreadcrumb />
 
       <div className="flex flex-wrap items-start justify-between gap-4">
