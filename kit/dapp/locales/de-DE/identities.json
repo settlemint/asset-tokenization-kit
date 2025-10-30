@@ -70,8 +70,10 @@
     "verified": "Verifiziert",
     "rejected": "Abgelehnt",
     "expired": "Abgelaufen",
-    "registered": "Registriert",
-    "notRegistered": "Nicht registriert",
+    "registered": "Aktiv",
+    "notRegistered": "Inaktiv",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
     "verifiedAriaLabel": "Identität mit Ansprüchen verifiziert",
     "registeredAriaLabel": "Identität ohne Ansprüche registriert",
     "notRegisteredAriaLabel": "Keine Identität registriert"

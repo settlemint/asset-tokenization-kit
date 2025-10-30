@@ -8,8 +8,10 @@
     "description": "You do not have permission to manage entities. Contact an administrator for additional access."
   },
   "status": {
-    "registered": "Registered",
-    "pending": "Pending registration"
+    "registered": "Active",
+    "pending": "Inactive",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "entityTable": {
     "columns": {

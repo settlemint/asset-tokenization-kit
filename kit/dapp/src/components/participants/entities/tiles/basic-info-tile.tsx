@@ -1,7 +1,6 @@
 import {
   Tile,
   TileContent,
-  TileFooter,
   TileHeader,
   TileTitle,
 } from "@/components/tile/tile";
@@ -24,6 +23,24 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
   const contractAddress = identity.account?.id ?? identity.id;
   const identityAddress = identity.id;
   const paused = token?.pausable?.paused ?? false;
+  const contractTypeKey = token?.type ?? null;
+
+  const toTitleCase = (value: string) =>
+    value
+      .split(/[\s_-]+/)
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+
+  const contractTypeLabel = useMemo(() => {
+    if (!contractTypeKey) {
+      return null;
+    }
+
+    return t(`asset-types.types.${contractTypeKey}.name`, {
+      defaultValue: toTitleCase(contractTypeKey),
+    });
+  }, [contractTypeKey, t]);
 
   const displayName = useMemo(() => {
     if (token?.name) {
@@ -40,16 +57,16 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
   }, [identity.account.contractName, t, token?.name, token?.symbol]);
 
   const description = useMemo(() => {
-    if (token?.type) {
-      return t(`asset-types.types.${token.type}.description`, {
-        defaultValue: token.type,
+    if (contractTypeKey) {
+      return t(`asset-types.types.${contractTypeKey}.description`, {
+        defaultValue: contractTypeLabel ?? toTitleCase(contractTypeKey),
       });
     }
 
     return t("entities:page.description", {
       defaultValue: "Entity managed through the platform",
     });
-  }, [t, token?.type]);
+  }, [contractTypeKey, contractTypeLabel, t]);
 
   const contractLabel = t("entities:entityTable.columns.address", {
     defaultValue: "Contract Address",
@@ -59,12 +76,13 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
     defaultValue: "Identity Address",
   });
 
-  const formatAddress = (value: string) =>
-    value.length <= 12 ? value : `${value.slice(0, 6)}…${value.slice(-4)}`;
+  const showDescription = Boolean(
+    description && description !== contractTypeLabel
+  );
 
   return (
     <Tile>
-      <TileHeader>
+      <TileHeader className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           <span className="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
             <Building2 className="size-5" aria-hidden="true" />
@@ -75,7 +93,14 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
                 defaultValue: "Basic Info",
               })}
             </TileTitle>
-            <p className="text-sm text-muted-foreground">{description}</p>
+            {contractTypeLabel ? (
+              <p className="text-sm font-medium text-muted-foreground">
+                {contractTypeLabel}
+              </p>
+            ) : null}
+            {showDescription ? (
+              <p className="text-sm text-muted-foreground">{description}</p>
+            ) : null}
           </div>
         </div>
       </TileHeader>
@@ -91,10 +116,13 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
             <dd>
               <CopyToClipboard
                 value={contractAddress}
-                className="inline-flex items-center gap-2"
+                className="inline-flex w-full flex-wrap items-center gap-2"
               >
-                <span className="rounded-md bg-muted px-3 py-1 font-mono text-sm text-foreground">
-                  {formatAddress(contractAddress)}
+                <span
+                  className="block w-full truncate rounded-md bg-muted px-3 py-1 font-mono text-sm text-foreground"
+                  title={contractAddress}
+                >
+                  {contractAddress}
                 </span>
               </CopyToClipboard>
             </dd>
@@ -106,19 +134,24 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
             <dd>
               <CopyToClipboard
                 value={identityAddress}
-                className="inline-flex items-center gap-2"
+                className="inline-flex w-full flex-wrap items-center gap-2"
               >
-                <span className="rounded-md bg-muted px-3 py-1 font-mono text-sm text-foreground">
-                  {formatAddress(identityAddress)}
+                <span
+                  className="block w-full truncate rounded-md bg-muted px-3 py-1 font-mono text-sm text-foreground"
+                  title={identityAddress}
+                >
+                  {identityAddress}
                 </span>
               </CopyToClipboard>
             </dd>
           </div>
         </dl>
+        <TokenStatusBadge
+          paused={paused}
+          showIcon={false}
+          className="self-start"
+        />
       </TileContent>
-      <TileFooter className="justify-start border-0 p-0">
-        <TokenStatusBadge paused={paused} showIcon={false} />
-      </TileFooter>
     </Tile>
   );
 }

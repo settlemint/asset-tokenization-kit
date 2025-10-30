@@ -8,8 +8,10 @@
     "description": "Sie haben keine Berechtigung, Entitäten zu verwalten. Kontaktieren Sie einen Administrator für zusätzliche Zugriffe."
   },
   "status": {
-    "registered": "Registriert",
-    "pending": "Registrierung ausstehend"
+    "registered": "Aktiv",
+    "pending": "Inaktiv",
+    "active": "Aktiv",
+    "inactive": "Inaktiv"
   },
   "entityTable": {
     "columns": {

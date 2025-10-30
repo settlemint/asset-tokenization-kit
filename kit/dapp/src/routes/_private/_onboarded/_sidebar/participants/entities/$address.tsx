@@ -2,9 +2,9 @@ import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
-import { ManageIdentityDropdown } from "@/components/manage-dropdown/manage-identity-dropdown";
 import { BasicInfoTile } from "@/components/participants/entities/tiles/basic-info-tile";
 import { Badge } from "@/components/ui/badge";
+import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
@@ -137,15 +137,35 @@ function RouteComponent() {
     identity?.account?.contractName ??
     `${address.slice(0, 6)}…${address.slice(-4)}`;
 
-  const entityTypeLabel = token?.type
-    ? t(`asset-types.types.${token.type}.name`, { defaultValue: token.type })
+  const assetTypeKey = token?.type ?? null;
+  const toTitleCase = (value: string) =>
+    value
+      .split(/[\s_-]+/)
+      .filter(Boolean)
+      .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+      .join(" ");
+
+  const entityTypeLabel = assetTypeKey
+    ? t(`asset-types.types.${assetTypeKey}.name`, {
+        defaultValue: toTitleCase(assetTypeKey),
+      })
     : undefined;
 
-  const entityDescription = token?.type
-    ? t(`asset-types.types.${token.type}.description`, {
-        defaultValue: token.type,
+  const entityDescription = assetTypeKey
+    ? t(`asset-types.types.${assetTypeKey}.description`, {
+        defaultValue: entityTypeLabel ?? toTitleCase(assetTypeKey),
       })
     : (identity?.account?.contractName ?? "");
+
+  const contractAddress = identity?.account?.id ?? identity?.id;
+  const identityAddress = identity?.id ?? address;
+
+  const truncatedAddress = (value: string) =>
+    value.length <= 12 ? value : `${value.slice(0, 6)}…${value.slice(-4)}`;
+
+  const showEntityDescription = Boolean(
+    entityDescription && entityDescription !== entityTypeLabel
+  );
 
   if (!identity || !identity.account) {
     return (
@@ -158,25 +178,54 @@ function RouteComponent() {
   return (
     <div className="space-y-6 p-6">
       <RouterBreadcrumb />
-      <div className="space-y-1">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-3xl font-bold tracking-tight mr-2">
-                {displayName}
-              </h1>
-              {entityTypeLabel ? (
-                <Badge variant="outline">{entityTypeLabel}</Badge>
-              ) : null}
-              <IdentityStatusBadge isRegistered={claimsData.isRegistered} />
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <h1 className="text-3xl font-bold tracking-tight mr-2">
+            {displayName}
+          </h1>
+          <IdentityStatusBadge isRegistered={claimsData.isRegistered} />
+        </div>
+        {entityTypeLabel ? (
+          <p className="text-sm font-medium text-muted-foreground">
+            {entityTypeLabel}
+          </p>
+        ) : null}
+        {showEntityDescription ? (
+          <p className="text-sm text-muted-foreground">{entityDescription}</p>
+        ) : null}
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          {contractAddress ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide">
+                {t("entities:entityTable.columns.address", {
+                  defaultValue: "Contract Address",
+                })}
+              </span>
+              <CopyToClipboard
+                value={contractAddress}
+                className="inline-flex items-center gap-2"
+              >
+                <Badge variant="outline" className="font-mono">
+                  {truncatedAddress(contractAddress)}
+                </Badge>
+              </CopyToClipboard>
             </div>
-            {entityDescription ? (
-              <p className="text-sm text-muted-foreground">
-                {entityDescription}
-              </p>
-            ) : null}
+          ) : null}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wide">
+              {t("entities:entityTable.columns.identityAddress", {
+                defaultValue: "Identity Address",
+              })}
+            </span>
+            <CopyToClipboard
+              value={identityAddress}
+              className="inline-flex items-center gap-2"
+            >
+              <Badge variant="outline" className="font-mono">
+                {truncatedAddress(identityAddress)}
+              </Badge>
+            </CopyToClipboard>
           </div>
-          <ManageIdentityDropdown identity={claimsData} />
         </div>
       </div>
       <div className="grid auto-rows-fr items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
