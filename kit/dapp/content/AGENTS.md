@@ -343,8 +343,7 @@ accuracy and clarity, optimized for both human readers and AI search indexing.
     `[validateTransfer](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/compliance/TransferRestrictions.sol#L45)`
     function in compliance contracts
   - For line ranges, use `#L10-L25` format
-  - Always use permalinks (commit SHA) for stability when possible, or `main`
-    branch for current version
+  - Always use `main` branch for current version
   - This applies to all documentation: guides, architecture docs, API
     references, tutorials
 

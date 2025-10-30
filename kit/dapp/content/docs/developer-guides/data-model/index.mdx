@@ -1,168 +1,412 @@
 ---
 title: Data model overview
 description:
-  The Asset Tokenization Kit uses a dual-layer data architecture combining
-  off-chain PostgreSQL storage with on-chain TheGraph indexing. This design
-  provides fast access to user data while maintaining an immutable audit trail
-  of all blockchain events.
-pageTitle: Data model architecture overview
-tags: [data-model, architecture, database, subgraph, postgresql, thegraph]
+  The Asset Tokenization Kit employs a dual-layer data architecture that
+  combines off-chain PostgreSQL storage with on-chain TheGraph indexing. This
+  hybrid approach delivers fast user experiences while maintaining an immutable
+  audit trail of all blockchain state changes, enabling both real-time
+  operational queries and comprehensive historical analysis.
+pageTitle: Data model architecture and entity relationships
+tags:
+  [
+    data-model,
+    architecture,
+    database,
+    subgraph,
+    postgresql,
+    thegraph,
+    observability,
+  ]
 ---
 
-## Data architecture
+## Why dual-layer architecture matters
 
-```
-Off-Chain Data (PostgreSQL + Drizzle)
-├── Authentication & Users
-├── KYC Profiles
-├── Exchange Rates
-└── Settings
+Traditional blockchain applications face a fundamental tension between data
+accessibility and immutability. Querying blockchain state directly is
+prohibitively slow for interactive applications, while relying solely on
+off-chain databases sacrifices the auditability guarantees that make blockchain
+valuable. The Asset Tokenization Kit resolves this by maintaining two
+complementary data layers that serve distinct purposes while remaining
+synchronized through wallet addresses.
 
-On-Chain Data (TheGraph Subgraph)
-├── Accounts & Identities
-├── Tokens & Balances
-├── Compliance & Access Control
-├── Events & Transactions
-└── Statistics & Analytics
-```
+The PostgreSQL layer handles high-velocity operations like user authentication,
+KYC profile management, and application settings—data that changes frequently
+and requires fast reads. Meanwhile, the TheGraph subgraph indexes blockchain
+events into a queryable format, capturing token transfers, compliance rule
+evaluations, and identity claims with cryptographic proof of their occurrence.
+This separation allows the platform to deliver sub-100ms API responses for
+user-facing features while preserving the full audit trail required for
+regulatory compliance and dispute resolution.
 
-### Data flow
+This architecture directly supports the DALP lifecycle features that
+differentiate the platform. DvP settlement operations write atomic state changes
+to the blockchain (indexed by TheGraph) while maintaining settlement metadata in
+PostgreSQL. Vault custody operations log every state transition on-chain for
+auditability while caching current balances and permissions in the database for
+instant access. Yield distribution events are permanently recorded on-chain with
+full participant lists and amounts, while the database tracks aggregated
+statistics and user-specific claim status for dashboard displays.
 
-1. Blockchain events → TheGraph indexer → GraphQL API → dApp
-2. User actions → dApp → PostgreSQL → API responses
-3. Transaction metadata → Both systems for complete view
+<Mermaid
+  chart={`flowchart TB
+    subgraph OffChain["Off-Chain Layer (PostgreSQL)"]
+        Auth(Authentication & Sessions)
+        KYC(KYC/AML Profiles)
+        Rates(Exchange Rate Cache)
+        Settings(Application Settings)
+    end
+    
+    subgraph OnChain["On-Chain Layer (TheGraph)"]
+        Accounts(Accounts & Identities)
+        Tokens(Tokens & Balances)
+        Compliance(Compliance Rules & Claims)
+        Events(Transfer & Settlement Events)
+        Stats(Analytics & Statistics)
+    end
+    
+    subgraph Integration["Data Integration"]
+        WalletLink(Wallet Address Linking)
+    end
+    
+    Auth --> WalletLink
+    KYC --> WalletLink
+    WalletLink --> Accounts
+    WalletLink --> Tokens
+    
+    classDef primaryStyle fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondaryStyle fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiaryStyle fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternaryStyle fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    
+    class Auth,KYC,Rates,Settings primaryStyle
+    class Accounts,Tokens,Compliance,Events,Stats secondaryStyle
+    class WalletLink tertiaryStyle
+`}
+/>
 
-### Linking layers
+## Entity documentation and schema locations
 
-The two data layers connect through Ethereum addresses:
+The data model documentation is organized into four entity groups, each mapping
+to specific schema files in the codebase. This flowchart shows how documentation
+pages relate to the actual schema implementations:
 
-- Database: `user.wallet` (Address)
-- Subgraph: `Account.id` (Bytes)
-- Link: `user.wallet === Account.id`
+<Mermaid
+  chart={`flowchart TB
+    DataModel(Data Model)
+    
+    DataModel --> TokenEntities(Token Entities)
+    DataModel --> InvestorEntities(Investor Entities)
+    DataModel --> ComplianceEntities(Compliance Entities)
+    DataModel --> DALPEntities(DALP Entities)
+    
+    TokenEntities --> TokenDoc["entity-token.mdx"]
+    TokenDoc --> SubgraphSchema["kit/subgraph/schema.graphql<br/>Token, TokenBalance,<br/>Transfer, Mint, Burn"]
+    
+    InvestorEntities --> InvestorDoc["entity-investor.mdx"]
+    InvestorDoc --> AuthSchema["kit/dapp/src/lib/db/schemas/auth.ts<br/>User, Session"]
+    InvestorDoc --> KYCSchema["kit/dapp/src/lib/db/schemas/kyc.ts<br/>Investor, KYCDocument"]
+    InvestorDoc --> IdentitySchema["kit/subgraph/schema.graphql<br/>Identity, RegisteredIdentity"]
+    
+    ComplianceEntities --> ComplianceDoc["entity-compliance.mdx"]
+    ComplianceDoc --> ComplianceSchema["kit/subgraph/schema.graphql<br/>Compliance, ComplianceModule,<br/>IdentityClaim, AccessControl"]
+    
+    DALPEntities --> DALPDoc["DALP Lifecycle Entities"]
+    DALPDoc --> VaultSchema["kit/subgraph/schema.graphql<br/>Vault operations &amp; custody"]
+    DALPDoc --> YieldSchema["kit/subgraph/schema.graphql<br/>DividendDistribution,<br/>DividendClaim"]
+    DALPDoc --> SettlementSchema["kit/subgraph/schema.graphql<br/>DvP settlement events"]
+    
+    classDef primaryStyle fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondaryStyle fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiaryStyle fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternaryStyle fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    
+    class DataModel primaryStyle
+    class TokenEntities,InvestorEntities,ComplianceEntities,DALPEntities secondaryStyle
+    class TokenDoc,InvestorDoc,ComplianceDoc,DALPDoc tertiaryStyle
+    class SubgraphSchema,AuthSchema,KYCSchema,IdentitySchema,ComplianceSchema,VaultSchema,YieldSchema,SettlementSchema quaternaryStyle
+`}
+/>
 
-This enables queries like "fetch KYC profile for this token holder" by joining
-on wallet address.
+This organization allows developers to quickly navigate from conceptual
+understanding (documentation) to implementation (schema files). Each entity
+guide provides detailed field descriptions, relationships, and query examples,
+while the schema files contain the authoritative type definitions and indexes.
 
-## Entity groups
+## Data flow patterns and integration points
 
-### Token & holder entities
+Understanding how data moves through the system is critical for building
+features that leverage both layers effectively. The platform implements three
+primary data flow patterns, each optimized for its use case.
 
-Core entities for security tokens, balances, and transfers.
+**Blockchain events to application state**: When a user executes a token
+transfer or compliance rule triggers a state change, the transaction emits
+events that TheGraph's indexer processes within seconds. The indexer updates the
+subgraph's GraphQL schema, making the new state immediately queryable by the
+dApp. This flow powers real-time balance displays, transaction history views,
+and compliance monitoring dashboards. The observability stack tracks indexer lag
+and query latency, alerting operators if the subgraph falls behind or query
+performance degrades.
+
+**User actions to persistent storage**: User-initiated operations like updating
+KYC documents or configuring notification preferences write directly to
+PostgreSQL through the ORPC API layer. These writes complete in milliseconds and
+immediately affect subsequent API responses, ensuring a responsive user
+experience. The database schema uses Drizzle ORM for type-safe migrations and
+query building, reducing the risk of schema drift between environments.
+
+**Cross-layer queries for complete context**: Many features require joining data
+from both layers—for example, displaying token holder lists with KYC status
+indicators, or generating compliance reports that correlate on-chain rule
+evaluations with off-chain investor classifications. The dApp resolves the
+wallet address from the database user record, queries the subgraph for that
+address's on-chain activity, and merges the results before rendering. The
+observability dashboards track these compound query patterns to identify
+performance bottlenecks and guide optimization efforts.
+
+## Linking layers through wallet addresses
+
+The integration point between the two data layers is the Ethereum address. Every
+database user record contains a `wallet` field (typed as `Address` from viem)
+that stores the user's primary Ethereum address. Every subgraph entity
+representing an on-chain actor (accounts, token holders, identity registries)
+uses that same address as its primary key (typed as `Bytes`). This shared
+identifier enables joins across the data boundary.
+
+For instance, when displaying a token holder's compliance status, the dApp
+queries PostgreSQL for the user's KYC tier and verification timestamps, then
+queries TheGraph for that address's `RegisteredIdentity` entity to retrieve
+on-chain claims and compliance module evaluations. The UI merges these datasets
+to show a unified view: "John Doe (KYC: Tier 2, verified 2024-03-15) holds 1,000
+tokens and meets all transfer restrictions." The link remains stable even if the
+user updates their email or profile information, since the wallet address is
+immutable once set.
+
+This linking strategy also supports DALP lifecycle operations. DvP settlements
+record both buyer and seller addresses on-chain, which the settlement monitoring
+dashboard correlates with off-chain user profiles to display human-readable
+transaction logs. Vault operations tie custody records (on-chain) to vault
+administrator profiles (off-chain) for access control and audit trails. Yield
+distributions log recipient addresses on-chain while the claim status UI fetches
+user-friendly names and contact information from the database.
+
+## Entity groups and their roles
+
+The data model organizes entities into four functional groups, each supporting a
+distinct aspect of the platform's capabilities. Understanding these groups helps
+developers locate the right schemas when building features or debugging issues.
+
+### Token and holder entities
+
+These entities capture the lifecycle of security tokens and their ownership. The
+**Token** entity represents an ERC-3643 compliant security with its name,
+symbol, total supply, and associated contract addresses (identity registry,
+compliance module, etc.). The **TokenBalance** entity tracks each holder's
+current position, updating in real-time as transfers occur. The **Transfer**,
+**Mint**, and **Burn** entities provide the immutable transaction log, recording
+every state change with timestamps and transaction hashes.
+
+This group directly supports DvP settlement operations by providing the
+authoritative source of holder balances and transfer history. Settlement
+contracts query token balances before executing atomic swaps, ensuring
+sufficient liquidity. The observability dashboards display transfer volumes,
+holder concentration metrics, and mint/burn rates to help operators monitor
+token economics and detect anomalous activity.
 
 **[Token entities reference →](/docs/developer-guides/data-model/entity-token)**
 
-Covers:
+### Investor and identity entities
 
-- Token (ERC-3643 security tokens)
-- TokenBalance (holder positions)
-- Transfer, Mint, Burn (transaction events)
+User accounts and their compliance credentials span both data layers. The
+**User** entity (database) stores authentication details, profile information,
+and KYC documentation references. The **Investor** entity (database) extends
+user profiles with jurisdiction-specific compliance data like tax IDs and
+accreditation status. On-chain, the **Identity** entity represents ERC-734/735
+identity contracts that hold cryptographic claims, while **RegisteredIdentity**
+entities link addresses to these identities within token-specific registries.
 
-### Investor & identity entities
-
-User accounts, KYC profiles, and on-chain identities.
+This layered identity model enables flexible compliance workflows. KYC providers
+submit claims to on-chain identities, which compliance modules verify before
+approving transfers. The database layer caches KYC status for fast UI rendering
+and API filtering, while the blockchain layer provides the cryptographic proofs
+required for regulatory audits. Vault custody operations rely on verified
+identities to enforce access control policies, ensuring only authorized parties
+can initiate withdrawals or configuration changes.
 
 **[Investor entities reference →](/docs/developer-guides/data-model/entity-investor)**
 
-Covers:
-
-- User (authentication and profiles)
-- Investor (off-chain KYC data)
-- Identity (ERC-734/735 on-chain identities)
-- RegisteredIdentity (identity registry entries)
-
 ### Compliance entities
 
-Compliance modules, claim topics, and access control.
+Compliance is enforced through modular on-chain rules that the subgraph indexes
+for analysis and troubleshooting. The **Compliance** entity represents the main
+compliance contract for a token, while **ComplianceModule** entities represent
+individual rule engines (transfer limits, country restrictions, lockup periods,
+etc.). The **IdentityClaim** entity captures ERC-735 claims issued by trusted
+verifiers, and **AccessControl** entities track role-based permissions for
+administrative functions.
+
+These entities power real-time compliance monitoring dashboards that alert
+operators to rule violations, claim expirations, or permission changes. The
+observability stack correlates failed transfers with specific compliance module
+rejections, helping developers diagnose misconfigurations or debug rule logic.
+Yield management operations consult compliance modules to determine distribution
+eligibility, ensuring only qualified holders receive payments.
 
 **[Compliance entities reference →](/docs/developer-guides/data-model/entity-compliance)**
 
-Covers:
-
-- Compliance (main compliance contract)
-- ComplianceModule (rule engines)
-- IdentityClaim (ERC-735 claims)
-- AccessControl (role-based permissions)
-
 ### Corporate action entities
 
-Dividends, voting, and other corporate actions.
+Lifecycle events like dividend distributions and shareholder votes generate
+entities that capture participation and outcomes. The **DividendDistribution**
+entity records announced distributions with amounts, currencies, and payment
+schedules. The **VotingProposal** entity tracks governance proposals with vote
+counts and resolution status. The **CorporateAction** entity provides a generic
+container for other lifecycle events, while **DividendClaim** entities track
+individual investor claims against distributions.
+
+This group directly implements the yield management capabilities that
+differentiate the platform. Automated dividend distributions create on-chain
+distribution records that the subgraph indexes, enabling the dApp to display
+claim status and payment history. The observability dashboards show distribution
+coverage (percentage of eligible holders who claimed), payment volumes, and
+processing latencies to help operators optimize yield distribution workflows.
 
 **[Corporate action entities reference →](/docs/developer-guides/data-model/entity-corporate-actions)**
 
-Covers:
+## Schema locations and development workflow
 
-- DividendDistribution (dividend events)
-- VotingProposal (shareholder voting)
-- CorporateAction (general actions)
-- DividendClaim (investor claims)
+Understanding where schemas are defined and how to evolve them safely is
+critical for maintaining data integrity across environments.
 
-## Schema locations
+### Database schemas (PostgreSQL with Drizzle ORM)
 
-### Database schemas (PostgreSQL)
+All PostgreSQL tables are defined as TypeScript schemas using Drizzle ORM in
+[`kit/dapp/src/lib/db/schemas/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/lib/db/schemas).
+Each schema file exports table definitions with typed columns, indexes, and
+foreign key constraints. Drizzle's type inference ensures that queries written
+against these schemas are checked at compile time, preventing entire classes of
+runtime errors.
 
-All database schemas are defined using Drizzle ORM in
-[`kit/dapp/src/lib/db/schemas/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/lib/db/schemas):
-
-- `auth.ts` - Authentication tables
-- `kyc.ts` - KYC profiles
-- `exchange-rates.ts` - Currency rates
-- `settings.ts` - Application config
-
-### Subgraph schema (TheGraph)
-
-Blockchain entity definitions in
-[`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql).
-
-## Schema migrations
-
-### Database migrations
-
-Managed by Drizzle Kit in
-[`kit/dapp/drizzle.config.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/drizzle.config.ts).
-
-**Generate migration**:
+When adding new fields or tables, follow the migration workflow defined in
+[`kit/dapp/drizzle.config.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/drizzle.config.ts):
 
 ```bash
 cd kit/dapp
-bun run db:generate
+bun run db:generate  # Generate migration SQL from schema changes
+bun run db:migrate   # Apply migrations to the database
 ```
 
-**Apply migration**:
+The observability stack monitors migration status and database schema version
+to detect drift between deployed environments. Always use migrations in
+production to maintain schema consistency and enable rollback capabilities.
+
+Key schema files:
+
+- `auth.ts` - User accounts, sessions, and authentication tokens
+- `kyc.ts` - Investor profiles, KYC documents, and verification status
+- `exchange-rates.ts` - Currency conversion rates and update timestamps
+- `settings.ts` - Application configuration and feature flags
+
+### Subgraph schema (TheGraph with GraphQL)
+
+Blockchain entity definitions live in
+[`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
+using TheGraph's schema language. Each entity maps to a queryable GraphQL type
+with relationships to other entities. The schema defines indexes for common
+query patterns and aggregation fields for statistics.
+
+Subgraph schema changes require a multi-step deployment process:
 
 ```bash
-bun run db:migrate
+cd kit/subgraph
+# 1. Edit schema.graphql with new entities or fields
+# 2. Generate TypeScript types for mapping handlers
+bun run codegen
+# 3. Update event handlers in kit/subgraph/src/ to populate new fields
+# 4. Deploy updated subgraph
+bun run publish
 ```
 
-**Push schema directly** (dev only):
+Unlike database migrations which preserve existing data, subgraph redeployments
+trigger a full re-index of historical blockchain events. For large chains with
+extensive history, this can take hours or days. The observability dashboards
+track indexer sync status and estimated completion time, helping operators plan
+maintenance windows.
 
-```bash
-bun run db:push
-```
+## Observability and troubleshooting
 
-### Subgraph updates
+The dual-layer architecture's complexity demands comprehensive observability to
+diagnose issues and validate correct operation. The platform's Helm charts
+deploy dashboards that instrument both data layers and their integration points.
 
-Subgraph schema changes require redeployment.
+**Database layer metrics**: Connection pool utilization, query latencies
+(p50/p95/p99), slow query logs, and migration status. Alerts trigger if
+connection pools exhaust, query latencies exceed thresholds, or migrations fail.
+The slow query dashboard helps developers identify N+1 query patterns or missing
+indexes that degrade performance.
 
-**Update schema**:
+**Subgraph layer metrics**: Indexer block height lag, entity count growth rates,
+query latencies by operation, and failed event handler executions. Alerts
+trigger if the indexer falls more than 10 blocks behind chain head, indicating
+infrastructure issues or event handler crashes. The entity growth dashboard
+reveals abnormal activity like spam token minting or compliance rule thrashing.
 
-1. Edit
-   [`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
-2. Run `bun run subgraph:codegen`
-3. Update mappings in
-   [`kit/subgraph/src/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/subgraph/src)
-4. Redeploy: `bun run deploy`
+**Integration metrics**: Cross-layer query latencies, wallet address match
+rates, and schema version mismatches. If the match rate drops (indicating
+addresses in one layer missing from the other), it signals synchronization
+failures that require investigation. The schema version dashboard detects drift
+between environments, preventing production deployments with incompatible
+database and subgraph versions.
+
+For detailed troubleshooting procedures and dashboard screenshots, see the
+[Observability guide](/docs/developer-guides/deployment-ops/observability-monitoring)
+and
+[Architecture observability section](/docs/developer-guides/deployment-ops/observability-monitoring).
+
+## Schema migrations and version management
+
+Managing schema evolution across both data layers requires coordination to
+prevent breaking changes from creating inconsistent states.
+
+**Database migration strategy**: Use Drizzle's migration system to generate
+timestamped SQL files for all schema changes. Apply migrations sequentially in
+all environments (dev → staging → production) to ensure consistency. Never edit
+generated migration files directly—instead, generate a new migration to correct
+mistakes. The migration table tracks applied versions, allowing rollback by
+running down migrations in reverse order.
+
+**Subgraph versioning strategy**: Treat subgraph deployments as immutable
+versions. When making breaking schema changes (removing fields, changing types),
+deploy a new subgraph version and update the dApp to query the new endpoint. For
+additive changes (new entities, new fields), update the existing subgraph in
+place. Always test subgraph changes in a staging environment with historical
+data before deploying to production, since reindexing cannot be easily rolled
+back.
+
+**Cross-layer coordination**: Before deploying changes that affect both layers
+(like adding a new compliance module type), ensure the deployment sequence
+maintains compatibility. Typically this means: (1) deploy backward-compatible
+subgraph changes first, (2) deploy database migrations, (3) deploy dApp code
+that uses new schemas, (4) clean up deprecated fields in a subsequent release.
+The observability dashboards validate that all environments run compatible
+schema versions before marking deployments as healthy.
 
 ## Next steps
 
+Now that you understand the data architecture's structure and purpose, explore
+the detailed entity schemas:
+
 - **[Token entities](/docs/developer-guides/data-model/entity-token)** -
-  Security tokens and balances
+  Security tokens, balances, and transfer events
 - **[Investor entities](/docs/developer-guides/data-model/entity-investor)** -
-  Users and identities
+  User accounts, KYC profiles, and on-chain identities
 - **[Compliance entities](/docs/developer-guides/data-model/entity-compliance)** -
-  Rules and claims
+  Compliance modules, claims, and access control
 - **[Corporate action entities](/docs/developer-guides/data-model/entity-corporate-actions)** -
-  Dividends and voting
-- **[API Reference](/docs/developer-guides/api-integration/api-reference)** -
-  Query patterns and examples
-- **[Contract Reference](/docs/developer-guides/smart-contracts/contract-reference)** -
-  Smart contract interfaces
+  Dividend distributions, voting proposals, and lifecycle events
+
+For integration patterns and query examples, see the
+[API Reference](/docs/developer-guides/api-integration/api-reference). To
+understand how these entities map to smart contract interfaces, review the
+[Contract Reference](/docs/developer-guides/smart-contracts/contract-reference).
+For operational monitoring and troubleshooting, consult the
+[Observability guide](/docs/developer-guides/deployment-ops/observability-monitoring).
