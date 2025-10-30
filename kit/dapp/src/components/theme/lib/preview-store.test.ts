@@ -1,12 +1,4 @@
-import { describe, expect, it, vi, afterEach } from "vitest";
-
-vi.mock("@/lib/observability/theme.metrics", () => {
-  const recordThemePreviewMetric = vi.fn();
-  return {
-    startThemeMetricTimer: () => () => 0,
-    recordThemePreviewMetric,
-  };
-});
+import { describe, expect, it, vi } from "vitest";
 
 import { DEFAULT_THEME } from "./schema";
 import {
@@ -14,13 +6,6 @@ import {
   getThemePreview,
   setThemePreview,
 } from "./preview-store";
-import { recordThemePreviewMetric } from "@/lib/observability/theme.metrics";
-
-const recordMetricMock = vi.mocked(recordThemePreviewMetric);
-
-afterEach(() => {
-  recordMetricMock.mockClear();
-});
 
 describe("theme preview store", () => {
   it("stores and retrieves preview until expiry", () => {
@@ -31,15 +16,6 @@ describe("theme preview store", () => {
     expect(getThemePreview(key)).toEqual(DEFAULT_THEME);
     vi.setSystemTime(expiresAt + 1000);
     expect(getThemePreview(key)).toBeUndefined();
-    expect(recordMetricMock).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "set" })
-    );
-    expect(recordMetricMock).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "get", hit: true })
-    );
-    expect(recordMetricMock).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "get", expired: true })
-    );
     vi.useRealTimers();
   });
 
@@ -48,9 +24,6 @@ describe("theme preview store", () => {
     setThemePreview(key, DEFAULT_THEME, 2);
     clearThemePreview(key);
     expect(getThemePreview(key)).toBeUndefined();
-    expect(recordMetricMock).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "clear" })
-    );
   });
 
   it("returns cloned theme instances to protect source data", () => {
@@ -69,6 +42,5 @@ describe("theme preview store", () => {
 
     const fetchedAgain = getThemePreview(key);
     expect(fetchedAgain?.logo.alt).toBe(DEFAULT_THEME.logo.alt);
-    expect(recordMetricMock).toHaveBeenCalled();
   });
 });

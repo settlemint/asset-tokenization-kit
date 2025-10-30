@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { orpc } from "@/orpc/orpc-client";
 import {
   DEFAULT_THEME,
+  type ImagesConfig,
   type LogoConfig,
   type ThemeConfig,
   type ThemeMetadata,
@@ -9,17 +10,20 @@ import {
 
 type ThemeAssets = {
   logo: LogoConfig;
+  images: ImagesConfig;
   metadata: ThemeMetadata;
 };
 
 const DEFAULT_ASSETS: ThemeAssets = {
   logo: DEFAULT_THEME.logo,
+  images: DEFAULT_THEME.images,
   metadata: DEFAULT_THEME.metadata,
 };
 
 function selectThemeAssets(theme: ThemeConfig): ThemeAssets {
   return {
     logo: theme.logo,
+    images: theme.images,
     metadata: theme.metadata,
   };
 }

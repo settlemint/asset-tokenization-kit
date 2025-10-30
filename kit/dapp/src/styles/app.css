@@ -79,7 +79,7 @@
 }
 
 :root {
-  /* Onboarding Background */
+  /* Onboarding Background - DEPRECATED: Now configured via theme.images.backgroundLightUrl */
   --onboarding-background: url("/backgrounds/background-lm.svg");
   /* SettleMint Brand Colors */
   /* ThemeToken: sm-text */
@@ -219,7 +219,7 @@
 }
 
 .dark {
-  /* Onboarding Background */
+  /* Onboarding Background - DEPRECATED: Now configured via theme.images.backgroundDarkUrl */
   --onboarding-background: url("/backgrounds/background-dm.svg");
   /* SettleMint Brand Colors */
   /* ThemeToken: sm-text */

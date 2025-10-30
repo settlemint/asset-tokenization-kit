@@ -1,7 +1,7 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { FontSettingsCard } from "@/components/theme/components/font-settings-card";
-import { LogoSettingsCard } from "@/components/theme/components/logo-settings-card";
+import { UnifiedImagesCard } from "@/components/theme/components/unified-images-card";
 import { PaletteCard } from "@/components/theme/components/palette-card";
 import { StatusBanner } from "@/components/theme/components/status-banner";
 import { ThemePreviewPanel } from "@/components/theme/components/theme-preview-panel";
@@ -31,7 +31,6 @@ import {
   THEME_COMPILE_THRESHOLD,
 } from "@/components/theme/lib/theme-editor-helpers";
 import type { ThemeFormApi } from "@/components/theme/lib/types";
-import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -55,7 +54,6 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Shield } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -78,13 +76,10 @@ export const Route = createFileRoute(
     const user = await queryClient.ensureQueryData(
       orpcClient.user.me.queryOptions()
     );
-    const isAdmin = user.role === "admin";
 
-    if (isAdmin) {
-      await queryClient.ensureQueryData(
-        orpcClient.settings.theme.get.queryOptions({ input: {} })
-      );
-    }
+    await queryClient.ensureQueryData(
+      orpcClient.settings.theme.get.queryOptions({ input: {} })
+    );
 
     return {
       breadcrumb: [
@@ -93,7 +88,6 @@ export const Route = createFileRoute(
         }),
         createI18nBreadcrumbMetadata("settings.theme.title"),
       ],
-      isAdmin,
       userId: user.id,
     };
   },
@@ -103,24 +97,10 @@ export const Route = createFileRoute(
 function ThemeSettingsPage() {
   const { t } = useTranslation(["navigation", "settings"]);
   const { t: tTheme } = useTranslation("settings", { keyPrefix: "theme" });
-  const { isAdmin, userId } = Route.useLoaderData();
+  const { userId } = Route.useLoaderData();
 
   const normalizeFieldPath = (path: string): string =>
     path.replaceAll(/\[(\w+)\]/g, "." + "$1").replace(/^[.]+/, "");
-
-  if (!isAdmin) {
-    return (
-      <div className="w-full p-6 space-y-6">
-        <RouterBreadcrumb />
-        <Alert variant="destructive">
-          <Shield className="h-4 w-4" />
-          <AlertTitle>
-            {t("settings.theme.notAuthorized", { ns: "navigation" })}
-          </AlertTitle>
-        </Alert>
-      </div>
-    );
-  }
 
   const { data: baseTheme } = useSuspenseQuery(
     orpc.settings.theme.get.queryOptions({ input: {} })
@@ -169,6 +149,14 @@ function ThemeSettingsPage() {
     dark: false,
     lightIcon: false,
     darkIcon: false,
+    authLight: false,
+    authDark: false,
+    backgroundLight: false,
+    backgroundDark: false,
+    favicon: false,
+    appleTouchIcon: false,
+    favicon96: false,
+    faviconSvg: false,
   });
 
   const logoObjectUrls = useRef<Partial<Record<ThemeLogoMode, string>>>({});
@@ -176,6 +164,14 @@ function ThemeSettingsPage() {
   const darkLogoInputRef = useRef<HTMLInputElement | null>(null);
   const lightIconLogoInputRef = useRef<HTMLInputElement | null>(null);
   const darkIconLogoInputRef = useRef<HTMLInputElement | null>(null);
+  const authLightInputRef = useRef<HTMLInputElement | null>(null);
+  const authDarkInputRef = useRef<HTMLInputElement | null>(null);
+  const backgroundLightInputRef = useRef<HTMLInputElement | null>(null);
+  const backgroundDarkInputRef = useRef<HTMLInputElement | null>(null);
+  const faviconInputRef = useRef<HTMLInputElement | null>(null);
+  const appleTouchIconInputRef = useRef<HTMLInputElement | null>(null);
+  const favicon96InputRef = useRef<HTMLInputElement | null>(null);
+  const faviconSvgInputRef = useRef<HTMLInputElement | null>(null);
   const lastSavedDraftRef = useRef<string | null>(null);
   const previewStyleElementRef = useRef<HTMLStyleElement | null>(null);
 
@@ -276,6 +272,14 @@ function ThemeSettingsPage() {
       dark: false,
       lightIcon: false,
       darkIcon: false,
+      authLight: false,
+      authDark: false,
+      backgroundLight: false,
+      backgroundDark: false,
+      favicon: false,
+      appleTouchIcon: false,
+      favicon96: false,
+      faviconSvg: false,
     });
     clearLogoObjectUrls();
   };
@@ -459,7 +463,19 @@ function ThemeSettingsPage() {
 
   const resolveLogoFieldKey = (
     mode: ThemeLogoMode
-  ): "lightUrl" | "darkUrl" | "lightIconUrl" | "darkIconUrl" => {
+  ):
+    | "lightUrl"
+    | "darkUrl"
+    | "lightIconUrl"
+    | "darkIconUrl"
+    | "authLightUrl"
+    | "authDarkUrl"
+    | "backgroundLightUrl"
+    | "backgroundDarkUrl"
+    | "faviconUrl"
+    | "appleTouchIconUrl"
+    | "favicon96Url"
+    | "faviconSvgUrl" => {
     switch (mode) {
       case "light":
         return "lightUrl";
@@ -469,10 +485,26 @@ function ThemeSettingsPage() {
         return "lightIconUrl";
       case "darkIcon":
         return "darkIconUrl";
+      case "authLight":
+        return "authLightUrl";
+      case "authDark":
+        return "authDarkUrl";
+      case "backgroundLight":
+        return "backgroundLightUrl";
+      case "backgroundDark":
+        return "backgroundDarkUrl";
+      case "favicon":
+        return "faviconUrl";
+      case "appleTouchIcon":
+        return "appleTouchIconUrl";
+      case "favicon96":
+        return "favicon96Url";
+      case "faviconSvg":
+        return "faviconSvgUrl";
     }
   };
 
-  const resolveFallbackLogo = (mode: ThemeLogoMode): string => {
+  const resolveFallbackLogo = (mode: ThemeLogoMode): string | undefined => {
     switch (mode) {
       case "light":
         return "/logos/settlemint-logo-h-lm.svg";
@@ -482,6 +514,22 @@ function ThemeSettingsPage() {
         return "/logos/settlemint-logo-i-lm.svg";
       case "darkIcon":
         return "/logos/settlemint-logo-i-dm.svg";
+      case "authLight":
+        return undefined;
+      case "authDark":
+        return undefined;
+      case "backgroundLight":
+        return "/backgrounds/background-lm.svg";
+      case "backgroundDark":
+        return "/backgrounds/background-dm.svg";
+      case "favicon":
+        return "/favicon.ico";
+      case "appleTouchIcon":
+        return "/apple-touch-icon.png";
+      case "favicon96":
+        return "/favicon-96x96.png";
+      case "faviconSvg":
+        return "/favicon.svg";
     }
   };
 
@@ -491,9 +539,22 @@ function ThemeSettingsPage() {
     }
 
     const fieldKey = resolveLogoFieldKey(mode);
-    const fieldPath = `logo.${fieldKey}` as const;
+    const isImageField =
+      mode === "authLight" ||
+      mode === "authDark" ||
+      mode === "backgroundLight" ||
+      mode === "backgroundDark" ||
+      mode === "favicon" ||
+      mode === "appleTouchIcon" ||
+      mode === "favicon96" ||
+      mode === "faviconSvg";
+    const fieldPath = isImageField
+      ? (`images.${fieldKey}` as const)
+      : (`logo.${fieldKey}` as const);
     const currentValues = form.state.values as ThemeConfig;
-    const previousValue = currentValues.logo[fieldKey];
+    const previousValue = isImageField
+      ? currentValues.images[fieldKey as keyof typeof currentValues.images]
+      : currentValues.logo[fieldKey as keyof typeof currentValues.logo];
 
     const previousObjectUrl = logoObjectUrls.current[mode];
     if (previousObjectUrl) {
@@ -505,7 +566,11 @@ function ThemeSettingsPage() {
     form.setFieldValue(fieldPath, objectUrl);
 
     const optimisticDraft = cloneThemeConfig(draft);
-    optimisticDraft.logo[fieldKey] = objectUrl;
+    if (isImageField) {
+      (optimisticDraft.images as Record<string, unknown>)[fieldKey] = objectUrl;
+    } else {
+      (optimisticDraft.logo as Record<string, unknown>)[fieldKey] = objectUrl;
+    }
     updatePreviewDraft(optimisticDraft);
 
     setLogoUploadStatus((state) => ({ ...state, [mode]: true }));
@@ -518,12 +583,17 @@ function ThemeSettingsPage() {
       (typeof previousValue === "string" && previousValue.length > 0
         ? previousValue
         : (() => {
-            const baseUrl = baseTheme.logo[fieldKey] ?? "";
-            if (baseUrl.length > 0) {
+            const baseUrl = isImageField
+              ? (baseTheme.images[fieldKey as keyof typeof baseTheme.images] ??
+                "")
+              : (baseTheme.logo[fieldKey as keyof typeof baseTheme.logo] ?? "");
+            if (typeof baseUrl === "string" && baseUrl.length > 0) {
               return baseUrl;
             }
             return resolveFallbackLogo(mode);
-          })()) ?? resolveFallbackLogo(mode);
+          })()) ??
+      resolveFallbackLogo(mode) ??
+      "";
 
     const contentType = file.type as ThemeLogoUploadInput["contentType"];
 
@@ -561,20 +631,39 @@ function ThemeSettingsPage() {
     uploadPromise
       .then(({ result, etag, uploadedAt }) => {
         const nextDraft = getDraftSnapshot();
-        nextDraft.logo[fieldKey] = result.publicUrl;
-        nextDraft.logo.etag = etag.length > 0 ? etag : nextDraft.logo.etag;
-        nextDraft.logo.updatedAt = uploadedAt;
+        if (isImageField) {
+          (nextDraft.images as Record<string, unknown>)[fieldKey] =
+            result.publicUrl;
+          nextDraft.images.etag =
+            etag.length > 0 ? etag : nextDraft.images.etag;
+          nextDraft.images.updatedAt = uploadedAt;
+          if (etag.length > 0) {
+            form.setFieldValue("images.etag", etag);
+          }
+          form.setFieldValue("images.updatedAt", uploadedAt);
+        } else {
+          (nextDraft.logo as Record<string, unknown>)[fieldKey] =
+            result.publicUrl;
+          nextDraft.logo.etag = etag.length > 0 ? etag : nextDraft.logo.etag;
+          nextDraft.logo.updatedAt = uploadedAt;
+          if (etag.length > 0) {
+            form.setFieldValue("logo.etag", etag);
+          }
+          form.setFieldValue("logo.updatedAt", uploadedAt);
+        }
         updatePreviewDraft(nextDraft);
         form.setFieldValue(fieldPath, result.publicUrl);
-        if (etag.length > 0) {
-          form.setFieldValue("logo.etag", etag);
-        }
-        form.setFieldValue("logo.updatedAt", uploadedAt);
         toast.success(tTheme("logoUploadSuccess"));
       })
       .catch((error: unknown) => {
         const fallbackDraft = getDraftSnapshot();
-        fallbackDraft.logo[fieldKey] = fallbackUrl;
+        if (isImageField) {
+          (fallbackDraft.images as Record<string, unknown>)[fieldKey] =
+            fallbackUrl;
+        } else {
+          (fallbackDraft.logo as Record<string, unknown>)[fieldKey] =
+            fallbackUrl;
+        }
         updatePreviewDraft(fallbackDraft);
         form.setFieldValue(fieldPath, fallbackUrl);
         toast.error(error instanceof Error ? error.message : String(error));
@@ -597,6 +686,22 @@ function ThemeSettingsPage() {
           return lightIconLogoInputRef.current;
         case "darkIcon":
           return darkIconLogoInputRef.current;
+        case "authLight":
+          return authLightInputRef.current;
+        case "authDark":
+          return authDarkInputRef.current;
+        case "backgroundLight":
+          return backgroundLightInputRef.current;
+        case "backgroundDark":
+          return backgroundDarkInputRef.current;
+        case "favicon":
+          return faviconInputRef.current;
+        case "appleTouchIcon":
+          return appleTouchIconInputRef.current;
+        case "favicon96":
+          return favicon96InputRef.current;
+        case "faviconSvg":
+          return faviconSvgInputRef.current;
       }
     })();
     target?.click();
@@ -809,9 +914,9 @@ function ThemeSettingsPage() {
   const editorTabs = useMemo(() => {
     const tabs: Array<{ value: string; label: string; description: string }> = [
       {
-        value: "logos",
-        label: tTheme("logoSectionTitle"),
-        description: tTheme("logoSectionDescription"),
+        value: "images",
+        label: tTheme("imagesSectionTitle"),
+        description: tTheme("imagesSectionDescription"),
       },
       {
         value: "fonts",
@@ -888,10 +993,10 @@ function ThemeSettingsPage() {
         t={tTheme}
       />
       <form.AppForm>
-        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] lg:gap-6">
-          <div className="space-y-6">
+        <div className="flex flex-col xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] xl:gap-6 gap-6">
+          <div className="space-y-6 order-1">
             <Tabs
-              defaultValue={editorTabs[0]?.value ?? "logos"}
+              defaultValue={editorTabs[0]?.value ?? "images"}
               className="space-y-6"
             >
               <div className="overflow-x-auto">
@@ -909,9 +1014,9 @@ function ThemeSettingsPage() {
                 </TabsList>
               </div>
 
-              <TabsContent value="logos" className="space-y-4">
-                <LogoSettingsCard
-                  sectionId="theme-logo"
+              <TabsContent value="images" className="space-y-4">
+                <UnifiedImagesCard
+                  sectionId="theme-images"
                   form={form}
                   draft={draft}
                   baseTheme={baseTheme}
@@ -921,6 +1026,14 @@ function ThemeSettingsPage() {
                   darkInputRef={darkLogoInputRef}
                   lightIconInputRef={lightIconLogoInputRef}
                   darkIconInputRef={darkIconLogoInputRef}
+                  authLightInputRef={authLightInputRef}
+                  authDarkInputRef={authDarkInputRef}
+                  backgroundLightInputRef={backgroundLightInputRef}
+                  backgroundDarkInputRef={backgroundDarkInputRef}
+                  faviconInputRef={faviconInputRef}
+                  appleTouchIconInputRef={appleTouchIconInputRef}
+                  favicon96InputRef={favicon96InputRef}
+                  faviconSvgInputRef={faviconSvgInputRef}
                   uploadStatus={logoUploadStatus}
                   t={tTheme}
                 />

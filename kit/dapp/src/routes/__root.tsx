@@ -134,6 +134,14 @@ export const Route = createRootRouteWithContext<{
       ...seo({}),
     ];
 
+    // Use custom icons from theme if available, otherwise use defaults
+    const images = loaderData?.theme?.images;
+    const appleTouchIconUrl =
+      images?.appleTouchIconUrl ?? "/apple-touch-icon.png";
+    const faviconUrl = images?.faviconUrl ?? "/favicon.ico";
+    const favicon96Url = images?.favicon96Url ?? "/favicon-96x96.png";
+    const faviconSvgUrl = images?.faviconSvgUrl ?? "/favicon.svg";
+
     const baseLinks = [
       {
         rel: "stylesheet",
@@ -142,20 +150,20 @@ export const Route = createRootRouteWithContext<{
       {
         rel: "apple-touch-icon",
         sizes: "180x180",
-        href: "/apple-touch-icon.png",
+        href: appleTouchIconUrl,
       },
       {
-        rel: "icon",
+        rel: "icon" as const,
         type: "image/png",
         sizes: "96x96",
-        href: "/favicon-96x96.png",
+        href: favicon96Url,
       },
       {
-        rel: "icon",
+        rel: "icon" as const,
         type: "image/svg+xml",
-        href: "/favicon.svg",
+        href: faviconSvgUrl,
       },
-      { rel: "shortcut icon", href: "/favicon.ico" },
+      { rel: "shortcut icon" as const, href: faviconUrl },
       { rel: "manifest", href: "/site.webmanifest", color: "#ffffff" },
     ];
 
@@ -306,7 +314,7 @@ function RootDocument({
           fontVariables={fontVariables}
         >
           {children}
-          <Toaster richColors />
+          <Toaster richColors position="top-center" />
           <TanStackDevtools
             plugins={[
               {

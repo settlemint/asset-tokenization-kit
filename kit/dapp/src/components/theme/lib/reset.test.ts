@@ -2,11 +2,7 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 
 import { compileThemeCSS } from "./compile-css";
 import { DEFAULT_THEME } from "./schema";
-import {
-  DEFAULT_BUCKET,
-  extractObjectKey,
-  resetThemeToDefaults,
-} from "./reset";
+import { extractObjectKey, resetThemeToDefaults } from "./reset";
 
 const { deleteFileMock, getThemeMock, resetThemeMock } = vi.hoisted(() => ({
   deleteFileMock: vi.fn(),
@@ -28,6 +24,8 @@ vi.mock("@/components/theme/lib/repository", () => ({
 }));
 
 describe("theme reset utilities", () => {
+  const TEST_BUCKET = "atk";
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -35,21 +33,16 @@ describe("theme reset utilities", () => {
   it("extracts object key from URL containing bucket prefix", () => {
     expect(
       extractObjectKey(
-        `https://assets.example.com/${DEFAULT_BUCKET}/logos/light/custom.svg`,
-        DEFAULT_BUCKET
+        `https://assets.example.com/${TEST_BUCKET}/logos/light/custom.svg`,
+        TEST_BUCKET
       )
     ).toBe("logos/light/custom.svg");
 
     expect(
-      extractObjectKey(
-        `/${DEFAULT_BUCKET}/logos/dark/custom.svg`,
-        DEFAULT_BUCKET
-      )
+      extractObjectKey(`/${TEST_BUCKET}/logos/dark/custom.svg`, TEST_BUCKET)
     ).toBe("logos/dark/custom.svg");
 
-    expect(
-      extractObjectKey("/logos/dark/custom.svg", DEFAULT_BUCKET)
-    ).toBeNull();
+    expect(extractObjectKey("/logos/dark/custom.svg", TEST_BUCKET)).toBeNull();
   });
 
   it("deletes branding assets and resets theme to defaults", async () => {
@@ -58,26 +51,26 @@ describe("theme reset utilities", () => {
       ...DEFAULT_THEME,
       logo: {
         ...DEFAULT_THEME.logo,
-        lightUrl: `https://cdn.example.com/${DEFAULT_BUCKET}/logos/light/custom.svg`,
-        darkUrl: `/${DEFAULT_BUCKET}/logos/dark/custom.svg`,
+        lightUrl: `https://cdn.example.com/${TEST_BUCKET}/logos/light/custom.svg`,
+        darkUrl: `/${TEST_BUCKET}/logos/dark/custom.svg`,
       },
     });
     resetThemeMock.mockResolvedValue(undefined);
 
-    const result = await resetThemeToDefaults();
+    const result = await resetThemeToDefaults({ bucket: TEST_BUCKET });
 
     expect(deleteFileMock).toHaveBeenCalledTimes(2);
     expect(deleteFileMock).toHaveBeenNthCalledWith(
       1,
       expect.anything(),
       "logos/light/custom.svg",
-      DEFAULT_BUCKET
+      TEST_BUCKET
     );
     expect(deleteFileMock).toHaveBeenNthCalledWith(
       2,
       expect.anything(),
       "logos/dark/custom.svg",
-      DEFAULT_BUCKET
+      TEST_BUCKET
     );
 
     expect(resetThemeMock).toHaveBeenCalled();
