@@ -2,7 +2,7 @@
  * Topic Scheme Update Handler
  *
  * This handler updates the signature of an existing topic scheme through the
- * ATKTopicSchemeRegistry contract. The signature defines how claims for a topic
+ * ATKTopicSchemeRegistry contract. The claim data ABI types define how claims for a topic
  * should be verified. Only the signature can be updated - the topic name and ID
  * remain immutable once created.
  *
@@ -53,7 +53,7 @@ const UPDATE_TOPIC_SCHEME_MUTATION = portalGraphql(`
 /**
  * Update the signature of an existing topic scheme
  *
- * Updates the function signature used for claim verification for a specific topic.
+ * Updates the claim data ABI types used for claim verification for a specific topic.
  * The topic must already exist in the registry. System-reserved topics (ID 1-100)
  * may have additional restrictions on updates.
  *
@@ -61,7 +61,7 @@ const UPDATE_TOPIC_SCHEME_MUTATION = portalGraphql(`
  *
  * @param input - The topic update parameters
  * @param input.name - Name of the existing topic scheme to update
- * @param input.signature - New function signature for claim verification
+ * @param input.signature - New claim data ABI types for claim verification
  * @returns Transaction hash and updated topic information
  */
 export const topicUpdate = systemRouter.system.claimTopics.topicUpdate

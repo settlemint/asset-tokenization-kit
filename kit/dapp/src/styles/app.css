@@ -458,6 +458,20 @@
       0 5px 15px var(--sm-colored-shadow);
   }
 
+  [data-slot="tile"] {
+    @apply border-0;
+    background: linear-gradient(
+        45deg,
+        var(--sm-background-gradient-start) 0%,
+        var(--sm-background-gradient-end) 100%
+      )
+      0% 0% no-repeat padding-box;
+    box-shadow:
+      0 0 var(--sm-text),
+      0 0 var(--sm-text),
+      0 5px 15px var(--sm-colored-shadow);
+  }
+
   [data-slot="accordion"] {
     @apply border-0;
     background: linear-gradient(

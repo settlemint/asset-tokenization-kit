@@ -2,12 +2,13 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
 import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
-import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import type { baseRouter } from "@/orpc/procedures/base.router";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { getTokenFactory } from "@/orpc/routes/system/token-factory/helpers/factory-context";
+import { grantRole } from "@/orpc/routes/token/routes/mutations/access/token.grant-role";
+import type { TokenGrantRoleInput } from "@/orpc/routes/token/routes/mutations/access/token.grant-role.schema";
 import { tokenCreateHandlerMap } from "@/orpc/routes/token/routes/mutations/create/helpers/handler-map";
 import type {
   TokenCreateInput,
@@ -18,7 +19,7 @@ import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call, InferRouterCurrentContexts } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import * as z from "zod";
+import { z } from "zod";
 
 const logger = createLogger();
 
@@ -70,23 +71,6 @@ export const create = systemRouter.token.create
       requiredRoles: SYSTEM_PERMISSIONS.tokenCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
-      },
-    })
-  )
-  .use(
-    trustedIssuerMiddleware({
-      selectTopics: (input) => {
-        const topics = new Set<string>();
-        if (input.isin) {
-          topics.add(ClaimTopic.isin);
-        }
-        if ("basePrice" in input) {
-          topics.add(ClaimTopic.basePrice);
-        }
-        if ("class" in input && "category" in input) {
-          topics.add(ClaimTopic.assetClassification);
-        }
-        return [...topics];
       },
     })
   )
@@ -150,6 +134,15 @@ export const create = systemRouter.token.create
         ),
       });
     }
+
+    const grantInput: Extract<TokenGrantRoleInput, { roles: unknown }> = {
+      contract: token.id,
+      address: context.auth.user.wallet,
+      roles: ["governance"],
+      walletVerification: input.walletVerification,
+    };
+
+    await call(grantRole, grantInput, { context });
 
     await issueClaims(token, input, context, errors);
 

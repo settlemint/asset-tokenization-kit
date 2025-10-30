@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { TokenComplianceResponseSchema } from "@/orpc/routes/token/routes/token.compliance.schema";
-import * as z from "zod";
+import { z } from "zod";
 
 const READ_TOKEN_QUERY = theGraphGraphql(
   `

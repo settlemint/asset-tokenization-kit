@@ -15,6 +15,7 @@
  */
 
 import { AssetOverviewSection } from "@/components/dashboard/asset-overview/asset-overview-section";
+import { ClaimTopicsIssuersOverview } from "@/components/dashboard/claim-topics-issuers-overview/claim-topics-issuers-overview";
 import { IdentityMetrics } from "@/components/dashboard/identity-metrics/identity-metrics";
 import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
 import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";
@@ -63,6 +64,9 @@ function Home() {
       {system.userIdentity?.registered && <PortfolioDetails />}
       {system.userPermissions?.roles.tokenManager && <AssetOverviewSection />}
       {system.userPermissions?.roles.identityManager && <IdentityMetrics />}
+      {system.userPermissions?.roles.claimPolicyManager && (
+        <ClaimTopicsIssuersOverview />
+      )}
       <LatestEvents />
     </div>
   );

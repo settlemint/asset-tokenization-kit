@@ -10,7 +10,7 @@
 import { ActionsListInputSchema } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { describe, expect, it } from "vitest";
-import * as z from "zod";
+import { z } from "zod";
 
 // Logger is mocked via vitest.config.ts alias
 

@@ -16,7 +16,7 @@
 
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { userRoles } from "@atk/zod/user-roles";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Input schema for user search endpoint.

@@ -1,714 +1,1050 @@
 ---
 title: Identity & compliance
 description:
-  The identity and compliance system provides the foundation for
-  regulatory-compliant tokenization. Built on OnchainID standards (ERC-734/735)
-  and modular compliance rules, it enables sophisticated identity management and
-  flexible compliance enforcement for regulated assets.
+  The identity and compliance system ensures regulatory adherence throughout the
+  DALP lifecycle. Built on ERC-734/735 OnchainID standards and modular
+  compliance rules, it enables sophisticated identity verification and flexible
+  enforcement for transfers, DvP settlements, and redemptions across all
+  regulated asset types.
 pageTitle: Identity and compliance system - OnchainID and KYC/AML workflow
 tags: [compliance, identity, KYC, AML, onchainID, concept]
 ---
 
-## OnchainID extensions
+The identity and compliance architecture provides regulatory enforcement at
+every stage of the Digital Asset Lifecycle Protocol (DALP). When a transfer
+executes, a DvP settlement locks funds, or a redemption pays out principal, the
+compliance engine validates that all participants hold the required claims and
+meet the configured rules. This pre-execution validation ensures non-compliant
+operations never reach the blockchain state, protecting issuers from regulatory
+violations and investors from invalid transactions.
 
-OnchainID extensions are reusable building blocks and utility contracts that
-extend the base [OnchainID protocol](https://github.com/onchain-id/solidity)
-functionality. Rather than monolithic identity implementations, these provide
-modular components that can be composed together to create sophisticated
-identity management systems.
+## Compliance in the DALP lifecycle
 
-### Design philosophy
+Every DALP operation—transfer, issuance, redemption, DvP settlement—passes
+through the compliance engine before execution. The engine loads participant
+identities from the registry, evaluates each configured module sequentially, and
+reverts the entire operation if any rule fails. This architecture embeds
+regulatory requirements directly into the protocol layer rather than relying on
+off-chain processes.
 
-These extensions follow the **composition over inheritance** pattern, allowing
-developers to:
+<Mermaid
+  chart={`
+flowchart TB
+    Transfer(Transfer Request) --> Compliance
+    Issuance(Token Issuance) --> Compliance
+    Redemption(Redemption Request) --> Compliance
+    DvP(DvP Settlement) --> Compliance
+    
+    Compliance(Compliance Engine) --> LoadIdentities(Load Identities<br/>from Registry)
+    LoadIdentities --> Evaluate(Evaluate Modules<br/>Sequentially)
+    
+    Evaluate --> Pass{All Modules<br/>Pass?}
+    Pass -->|No| Revert(❌ Revert<br/>with Reason)
+    Pass -->|Yes| Execute(✅ Execute<br/>Operation)
+    
+    Execute --> TransferState(Update Token Balances)
+    Execute --> DvPState(Release Locked Funds)
+    Execute --> RedemptionState(Transfer Principal)
+    
+    style Compliance fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Evaluate fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Execute fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Revert fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+`}
+/>
 
-- **Mix and match** functionality based on specific requirements
-- **Extend existing implementations** without breaking compatibility
-- **Maintain upgradability** while preserving identity state
-- **Ensure compliance** with ERC-734/735 standards
+**DvP settlement integration**: When a DvP smart contract executes, both the
+security token transfer and the payment transfer must pass their respective
+compliance checks. The atomic settlement only completes when both sides validate
+successfully, preventing partial settlements that could create regulatory or
+operational failures.
 
-### Core building blocks
+**Yield distribution compliance**: Automated dividend and coupon distributions
+respect compliance rules. When the yield engine calculates payouts, it only
+transfers funds to recipients whose identities remain valid and compliant.
+Identities that lost required claims (expired KYC, sanctioned status)
+automatically skip distribution until compliance restores.
 
-The OnchainID directory provides building blocks for identity implementations:
+**Redemption enforcement**: Bond and deposit redemptions validate that the
+recipient identity maintains all required claims before releasing principal.
+This prevents redeemed funds from reaching non-compliant addresses even when the
+original purchase predated current compliance requirements.
 
-**Core constants**
+## The ERC-3643 standard
 
-- `ERC734KeyPurposes.sol` - Key purpose constants
-- `ERC734KeyTypes.sol` - Cryptographic key types
-- `ERC735ClaimSchemes.sol` - Signature scheme constants
+ERC-3643 defines the security token standard that the SMART Protocol implements.
+Originally developed by Tokeny and adopted by the Ethereum community, the
+standard specifies interfaces for identity-bound tokens that enforce transfer
+restrictions through modular compliance rules.
 
-**Interface definitions**
+**Core specifications**:
 
-- `IContractIdentity.sol` - Interface for contract identities
+- **Identity binding**: Every token holder must have an OnchainID (ERC-734/735
+  identity contract) registered in the token's identity registry
+- **Compliance validation**: Transfers execute only when the compliance contract
+  returns true for all configured modules
+- **Claim-based permissions**: Identity contracts hold claims issued by trusted
+  authorities (KYC providers, regulators, issuers)
+- **Modular architecture**: Compliance rules live in separate module contracts
+  that the compliance engine orchestrates
 
-**Extension implementations** (in `extensions/` folder)
+The standard separates concerns between token state management (balances,
+allowances), identity registry (address-to-identity mapping), and compliance
+enforcement (rule evaluation), enabling flexible configurations per jurisdiction
+and asset type without modifying core token logic.
 
-- `OnChainIdentity.sol` - Standard user identity implementation
-- `OnChainContractIdentity.sol` - Contract identity implementation
-- `OnChainIdentityWithRevocation.sol` - Identity with revocation support
-- `ERC734.sol` - ERC-734 key management extension
-- `ERC735.sol` - ERC-735 claim management extension
-- `ClaimAuthorizationExtension.sol` - Claim authorization logic
-- `IClaimAuthorizer.sol` - Claim authorizer interface
+ATK extends ERC-3643 with
+[SMART Protocol enhancements](/docs/architecture/smart-contracts/smart-protocol)
+including logical expressions for claim verification, supply limit tracking, and
+investor counting across multiple tokens.
 
-These files provide the building blocks for creating OnchainID-compliant
-identity systems with modular, extensible architecture.
+## OnchainID protocol integration
+
+OnchainID provides the decentralized identity layer for ERC-3643 compliance.
+Built on ERC-734 (key management) and ERC-735 (claim management) standards,
+OnchainID contracts serve as on-chain identity repositories that hold
+cryptographically-signed claims from trusted issuers.
+
+**Identity contract structure**:
+
+<Mermaid
+  chart={`
+flowchart TB
+    subgraph Identity["OnchainID Contract"]
+        Keys(ERC-734 Keys<br/>Management key<br/>Action key<br/>Claim key)
+        Claims(ERC-735 Claims<br/>KYC claim<br/>AML claim<br/>Accreditation claim<br/>Jurisdiction claim)
+    end
+    
+    subgraph Authorities("Trusted Authorities")
+        KYCProvider(KYC Provider)
+        Regulator(Regulator)
+        Issuer(Issuer)
+    end
+    
+    KYCProvider -->|Signs claim| Claims
+    Regulator -->|Signs claim| Claims
+    Issuer -->|Signs claim| Claims
+    
+    User(User Wallet) -->|Controls| Keys
+    
+    style Identity fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Keys fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Claims fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+`}
+/>
+
+**Key types and purposes**: ERC-734 defines four key purposes that control
+identity operations. Management keys (purpose 1) add and remove other keys.
+Action keys (purpose 2) execute operations on behalf of the identity. Claim
+signer keys (purpose 3) sign and approve claims. Encryption keys (purpose 4)
+decrypt data sent to the identity. Each key type uses a numerical identifier
+that smart contracts validate when authorizing operations.
+
+**Claim structure**: ERC-735 claims contain a topic identifier (what the claim
+certifies), the issuer's signature, the claim data (arbitrary bytes), and a URI
+pointing to additional proof. Topic identifiers follow the keccak256 hash of
+descriptive strings—topic `keccak256("KYC")` certifies identity verification,
+topic `keccak256("AML")` certifies anti-money-laundering checks, topic
+`keccak256("ACCREDITED_INVESTOR")` certifies investor accreditation status.
+
+**Claim verification flow**: When a compliance module evaluates an identity, it
+queries the identity contract for claims matching required topics. The identity
+contract returns the claim data and issuer address. The module then validates
+that the issuer address appears in the token's trusted issuer registry for that
+topic. This two-step validation ensures both that the claim exists and that a
+trusted authority issued it.
+
+### OnchainID extensions and composition
+
+ATK provides modular OnchainID extensions that compose into complete identity
+implementations. Rather than monolithic contracts, these building blocks allow
+customization for specific requirements while maintaining ERC-734/735
+compliance.
+
+**Core building blocks**:
+
+| Component                       | Purpose                                                       | Location       | GitHub Link                                                                                                                                                           |
+| ------------------------------- | ------------------------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ERC734KeyPurposes`             | Key purpose constants (MANAGEMENT, ACTION, CLAIM, ENCRYPTION) | Constants      | [View on GitHub](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/ERC734KeyPurposes.sol)                        |
+| `ERC734KeyTypes`                | Cryptographic key type constants (ECDSA, RSA)                 | Constants      | [View on GitHub](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/ERC734KeyTypes.sol)                           |
+| `ERC735ClaimSchemes`            | Signature scheme constants (ECDSA, RSA, CONTRACT)             | Constants      | [View on GitHub](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/ERC735ClaimSchemes.sol)                       |
+| `ERC734`                        | Key management implementation                                 | Extension      | [View on GitHub](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/extensions/ERC734.sol)                        |
+| `ERC735`                        | Claim management implementation                               | Extension      | [View on GitHub](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/extensions/ERC735.sol)                        |
+| `OnChainIdentity`               | Standard user identity                                        | Implementation | [View on GitHub](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/extensions/OnChainIdentity.sol)               |
+| `OnChainContractIdentity`       | Contract identity with direct issuance                        | Implementation | [View on GitHub](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/extensions/OnChainContractIdentity.sol)       |
+| `OnChainIdentityWithRevocation` | Identity supporting claim revocation                          | Implementation | [View on GitHub](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/extensions/OnChainIdentityWithRevocation.sol) |
+| `ClaimAuthorizationExtension`   | Programmatic claim authorization logic                        | Extension      | [View on GitHub](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/extensions/ClaimAuthorizationExtension.sol)   |
+| `IContractIdentity`             | Contract identity interface                                   | Interface      | [View on GitHub](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/IContractIdentity.sol)                        |
+| `IClaimAuthorizer`              | Claim authorizer interface                                    | Interface      | [View on GitHub](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/extensions/IClaimAuthorizer.sol)              |
+
+<Mermaid
+  chart={`
+flowchart TB
+    subgraph Constants("Shared Constants")
+        KeyPurposes(ERC734KeyPurposes)
+        KeyTypes(ERC734KeyTypes)
+        ClaimSchemes(ERC735ClaimSchemes)
+    end
+    
+    subgraph Extensions("Extension Layer")
+        ERC734Ext(ERC734<br/>Key Management)
+        ERC735Ext(ERC735<br/>Claim Management)
+        ClaimAuth(ClaimAuthorizationExtension)
+    end
+    
+    subgraph Implementations("Identity Implementations")
+        UserID(OnChainIdentity<br/>Standard User)
+        ContractID(OnChainContractIdentity<br/>Direct Issuance)
+        RevocationID(OnChainIdentityWithRevocation<br/>Revocation Support)
+    end
+    
+    Constants --> ERC734Ext
+    Constants --> ERC735Ext
+    
+    ERC734Ext --> UserID
+    ERC735Ext --> UserID
+    
+    ERC734Ext --> ContractID
+    ERC735Ext --> ContractID
+    
+    ERC734Ext --> RevocationID
+    ERC735Ext --> RevocationID
+    ClaimAuth --> RevocationID
+    
+    style UserID fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ContractID fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style RevocationID fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ERC734Ext fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style ERC735Ext fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+`}
+/>
+
+**Composition pattern**: Identity implementations inherit from extension
+contracts that each manage specific functionality. `OnChainIdentity` combines
+ERC734 key management with ERC735 claim management. `OnChainContractIdentity`
+adds the `issueClaimTo` function that allows the contract itself to issue claims
+to other identities without going through the authorization system.
+`OnChainIdentityWithRevocation` extends both standards with claim revocation
+capabilities using the `ClaimAuthorizationExtension`.
 
 ### Claim issuance mechanisms
 
-The system supports two different mechanisms for issuing claims to identities:
+The system supports two distinct mechanisms for issuing claims, each serving
+different authorization models and operational patterns.
 
-**1. Direct contract identity claims**
-
-Contract identities can issue claims directly to other identities using the
-`issueClaimTo` method without going through the authorization system:
+**Direct contract issuance**: Contract identities using
+[`OnChainContractIdentity`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/extensions/OnChainContractIdentity.sol)
+can issue claims directly to other identities using the
+[`issueClaimTo`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/extensions/OnChainContractIdentity.sol#L15)
+method. This bypasses the authorization system and allows smart contracts to
+programmatically issue claims. Use cases include automated claim issuance based
+on on-chain events, system-generated claims for protocol operations, and
+temporary claims for specific transaction contexts.
 
 ```solidity
 // Contract identity issuing a claim directly
 IContractIdentity contractIdentity = IContractIdentity(contractOnchainID);
 contractIdentity.issueClaimTo(
-    targetIdentity,
-    topicId,
-    claimData,
-    proofUri
+    targetIdentity,     // Address of identity contract receiving the claim
+    topicId,            // keccak256 hash of claim topic (e.g., keccak256("KYC"))
+    claimData,          // Arbitrary claim data (ABI-encoded details)
+    proofUri            // IPFS or HTTPS URI to additional proof documents
 );
 ```
 
-**2. Trusted issuer authorization**
-
-Trusted issuers add claims directly to identity contracts. The identity
-validates the issuer's authorization by checking with registered claim
-authorizers (like the trusted issuers registry).
-
-### Claim authorization system
-
-A sophisticated extension that enables programmatic claim management for trusted
-issuers. This system controls which trusted issuers can add claims through the
-trusted issuers registry—it does not control contract identities using
-`issueClaimTo` directly.
+**Trusted issuer authorization**: Human or organizational KYC providers add
+claims directly to identity contracts through the trusted issuer registry. The
+identity contract validates the issuer's authorization by checking whether the
+caller's address appears in the registry for the claim topic before accepting
+the claim.
 
 ```solidity
-contract ClaimAuthorizationSystem {
-    mapping(address => bool) public authorizedClaimAdders;
-    mapping(address => bool) public authorizedClaimRemovers;
-
-    function canAddClaim(address caller, uint256 topic) external view returns (bool);
-    function canRemoveClaim(address caller, bytes32 claimId) external view returns (bool);
-    function authorizeClaimAdder(address adder) external;
-    function revokeClaimAdder(address adder) external;
-}
-```
-
-**Key features:**
-
-1. **Programmatic authorization** - Contracts can be authorized to add/remove
-   claims
-2. **Topic-specific control** - Fine-grained permissions per claim topic
-3. **Revocable permissions** - Authorization can be granted and revoked
-   dynamically
-4. **Integration ready** - Designed to work with trusted issuer registries
-
-**Usage example:**
-
-```solidity
-// 1. Register KYC provider as trusted issuer for KYC topic
+// Step 1: Register KYC provider as trusted issuer for specific topic
 ITrustedIssuersRegistry(registry).addTrustedIssuer(
-    IClaimIssuer(kycProviderContract),
-    [KYC_TOPIC]
+    IClaimIssuer(kycProviderAddress),
+    [KYC_TOPIC_ID]  // Array of topic IDs this issuer can certify
 );
 
-// 2. Register the trusted issuers registry as a claim authorizer on the identity
+// Step 2: Register the registry as a claim authorizer on the identity
 IIdentity(userIdentity).registerClaimAuthorizationContract(registry);
 
-// 3. KYC provider can now add claims directly to the identity
-// The identity will check with the registry to validate authorization
+// Step 3: KYC provider adds claim directly to the identity
+// The identity validates authorization by querying the registry
 IIdentity(userIdentity).addClaim(
-    KYC_TOPIC,
-    1, // ECDSA signature scheme
-    kycProviderContract,
-    signature,
-    kycData,
-    "https://kyc-proof.com"
+    KYC_TOPIC_ID,                      // Topic identifier
+    1,                                  // ECDSA signature scheme
+    kycProviderAddress,                 // Issuer address
+    signature,                          // Cryptographic signature over claim data
+    kycData,                            // ABI-encoded claim details
+    "https://kyc-proof.example.com"     // URI to proof documentation
 );
 ```
 
-### Modular composition pattern
+**Claim authorization system**: The
+[`ClaimAuthorizationExtension`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/extensions/ClaimAuthorizationExtension.sol)
+provides programmatic control over claim management for trusted issuers. This
+system controls which trusted issuers can add claims through the registry—it
+does not control contract identities using `issueClaimTo` directly.
 
-Identity implementations use these extensions as building blocks:
+The extension maintains mappings of authorized addresses for adding and removing
+claims, provides topic-specific control for fine-grained permissions, supports
+revocable authorization that can be granted and revoked dynamically, and
+integrates with trusted issuer registries for centralized authorization
+management.
 
-<Mermaid chart={`
-graph TB
-    subgraph "Root Level"
-        Constants(ERC734KeyPurposes<br/>ERC734KeyTypes<br/>ERC735ClaimSchemes)
-        IContract(IContractIdentity.sol)
-    end
+Monitor claim issuance patterns through the identity registry dashboard in the
+observability stack. The dashboard tracks claims added per topic, issuer
+activity patterns, and authorization validation failures, helping operators
+identify suspicious claim patterns or misconfigured authorization rules.
 
-    subgraph "extensions/ Directory"
-        OnchainID(OnChainIdentity.sol)
-        ContractID(OnChainContractIdentity.sol)
-        RevocationID(OnChainIdentityWithRevocation.sol)
-        ERC734(ERC734.sol)
-        ERC735(ERC735.sol)
-        ClaimAuth(ClaimAuthorizationExtension.sol)
-        IClaimAuth(IClaimAuthorizer.sol)
-    end
+## Identity verification flow
 
-    OnchainID --> Constants
-    ContractID --> Constants
-    RevocationID --> Constants
-    ERC734 --> Constants
-    ERC735 --> Constants
-
-    ContractID --> IContract
-    ClaimAuth --> IClaimAuth
-
-    style OnchainID fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style ContractID fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style RevocationID fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-
-`} />
-
-### Extension integration points
-
-1. **Constructor composition** - Extensions are initialized during identity
-   deployment
-2. **Interface aggregation** - Multiple extension interfaces are exposed through
-   the main contract
-3. **State isolation** - Each extension manages its own state to prevent
-   conflicts
-4. **Upgrade compatibility** - Extensions can be upgraded independently
-
-### Extension reference
-
-| Extension                       | Purpose                             | Status | Integration Points                        |
-| ------------------------------- | ----------------------------------- | ------ | ----------------------------------------- |
-| `OnChainIdentity`               | Standard user identity              | Stable | Complete ERC-734/735 implementation       |
-| `OnChainContractIdentity`       | Contract identity with issueClaimTo | Stable | For smart contracts needing identity      |
-| `OnChainIdentityWithRevocation` | Identity with claim revocation      | Stable | Enhanced identity with revocation support |
-| `ERC734`                        | ERC-734 key management extension    | Stable | Key management building block             |
-| `ERC735`                        | ERC-735 claim management extension  | Stable | Claim management building block           |
-| `ERC734KeyPurposes`             | Key purpose constants               | Stable | Used by ERC734 extension                  |
-| `ERC734KeyTypes`                | Cryptographic key types             | Stable | Used by ERC734 extension                  |
-| `ERC735ClaimSchemes`            | Signature schemes                   | Stable | Used by ERC735 extension                  |
-| `ClaimAuthorizationExtension`   | Programmatic claim control          | Stable | Extension for authorization logic         |
-| `IContractIdentity`             | Contract identity interface         | Stable | Interface definition                      |
-| `IClaimAuthorizer`              | Claim authorizer interface          | Stable | Interface definition                      |
-
-## Compliance modules
-
-The SMART protocol provides a flexible, extensible compliance module system for
-regulatory compliance across different jurisdictions and use cases. Each module
-implements specific compliance rules that can be configured per-token while
-sharing global infrastructure.
-
-### Compliance check sequence
-
-Before diving into module architecture, understand how compliance checks execute
-during a transfer:
+The complete identity verification flow spans off-chain KYC processes, on-chain
+claim issuance, and runtime validation during token operations. Understanding
+this flow explains how compliance rules connect to real-world identity
+verification.
 
 <Mermaid
-  chart={`sequenceDiagram
+  chart={`
+sequenceDiagram
     participant User
+    participant KYCProvider as KYC Provider<br/>(Off-chain)
+    participant Identity as OnchainID Contract
+    participant Registry as Identity Registry
+    participant TrustedIssuers as Trusted Issuers<br/>Registry
     participant Token as Token Contract
-    participant Compliance as Compliance Engine
-    participant IR as Identity Registry
-    participant Module as Compliance Modules
     
-    User->>Token: transfer(to, amount)
-    Token->>Compliance: canTransfer(from, to, amount)?
+    User->>KYCProvider: Submit identity documents
+    KYCProvider->>KYCProvider: Verify identity (off-chain)
     
-    Compliance->>IR: getIdentity(from)
-    IR-->>Compliance: fromIdentity
+    Note over KYCProvider: KYC checks complete
     
-    Compliance->>IR: getIdentity(to)
-    IR-->>Compliance: toIdentity
+    KYCProvider->>TrustedIssuers: Check authorization
+    TrustedIssuers-->>KYCProvider: Authorized for KYC topic
     
-    loop Each Configured Module
-        Compliance->>Module: canTransfer(token, from, to, amount)
-        alt Module Allows
-            Module-->>Compliance: true
-        else Module Blocks
-            Module-->>Compliance: false (reason)
-            Compliance-->>Token: ❌ Revert with reason
-            Token-->>User: ❌ Transfer blocked
-        end
-    end
+    KYCProvider->>Identity: addClaim(KYC_TOPIC, data, signature)
+    Identity->>TrustedIssuers: Validate issuer authorization
+    TrustedIssuers-->>Identity: ✅ Authorized
+    Identity->>Identity: Store claim
     
-    Compliance-->>Token: ✅ All checks passed
-    Token->>Token: executeTransfer()
-    Token-->>User: ✅ Transfer complete
+    User->>Registry: registerIdentity(wallet, identity)
+    Registry->>Registry: Map wallet → identity
+    
+    Note over User,Token: Identity verified, ready for transactions
+    
+    User->>Token: transfer(recipient, amount)
+    Token->>Token: Check compliance
+    Token->>Registry: getIdentity(sender)
+    Registry-->>Token: sender identity address
+    Token->>Identity: getClaim(KYC_TOPIC)
+    Identity-->>Token: KYC claim data
+    Token->>TrustedIssuers: isTrustedIssuer(claimIssuer, KYC_TOPIC)
+    TrustedIssuers-->>Token: ✅ Trusted
+    Token->>Token: ✅ Execute transfer
+    
+    style Identity fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Registry fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style TrustedIssuers fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
 `}
 />
 
-**Compliance enforcement is pre-transfer validation**: Every transfer request
-passes through the compliance engine before execution. The engine loads both
-sender and recipient identities from the registry, then evaluates each
-configured module sequentially. If any module returns false, the entire transfer
-reverts with a specific reason code. Only when all modules pass does the token
-contract execute the state change. This architecture ensures non-compliant
-transfers never execute, not even temporarily.
+**Off-chain verification**: Users submit identity documents to KYC providers
+through secure channels. The provider performs identity verification, AML
+screening, sanctions checks, and jurisdiction-specific compliance checks. Once
+verification completes, the provider prepares claim data containing verification
+results, expiration dates, and jurisdiction information.
 
-### Architecture overview
+**On-chain claim issuance**: The KYC provider's Ethereum address (registered as
+a trusted issuer in the token's trusted issuer registry) calls the
+[`addClaim`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/onchainid/extensions/ERC735.sol#L45)
+function on the user's OnchainID contract. The identity contract validates that
+the caller is authorized for the claim topic by querying registered claim
+authorization contracts. If authorized, the identity stores the claim with the
+issuer's signature and emits a `ClaimAdded` event.
 
-<Mermaid chart={`
-graph TB
-    %% Top Row - Multiple Tokens
-    TokenA(Token A)
-    TokenB(Token B)
-    TokenC(Token C)
+**Identity registration**: The user (or an administrator) registers the wallet
+address to identity contract mapping in the token's identity registry by calling
+[`registerIdentity`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/interface/ERC-3643/IERC3643IdentityRegistry.sol#L15).
+This mapping persists throughout the token's lifetime and connects the user's
+transaction wallet to their verified identity claims.
 
-    %% Middle Row - Compliance Contract
-    CC(Compliance Contract<br/>Orchestration Engine)
+**Runtime validation**: When the user initiates a token transfer, the token
+contract queries its compliance contract. The compliance contract retrieves both
+sender and recipient identities from the registry, loads required claims from
+each identity contract, validates that trusted issuers issued those claims, and
+evaluates additional rules (transfer limits, investor counts, holding periods).
+Only when all validations pass does the token contract execute the state change.
 
-    %% Right Side - Compliance Modules
-    ModuleA(Module A<br/>Global Config)
-    ModuleB(Module B<br/>Global Config)
-    ModuleC(Module C<br/>Global Config)
+Use the compliance validation dashboard to monitor verification flow metrics
+including claim issuance latency (time from KYC completion to on-chain claim),
+identity registration rates, and validation failure reasons. These metrics help
+identify bottlenecks in the onboarding flow and common compliance issues that
+require process improvements.
 
-    %% Token to Compliance Contract
-    TokenA -->|uses| CC
-    TokenB -->|uses| CC
-    TokenC -->|uses| CC
+## Compliance module architecture
 
-    %% Compliance Contract to Modules
-    CC -->|orchestrates| ModuleA
-    CC -->|orchestrates| ModuleB
-    CC -->|orchestrates| ModuleC
+The compliance system separates orchestration (the compliance contract) from
+rule enforcement (individual compliance modules). This architecture enables
+sharing a single compliance infrastructure across multiple tokens while each
+token configures its own specific rules.
 
-    %% Token Configuration Parameters to Modules
-    TokenA -.->|"config: countries=US,UK<br/>topics=1,2"| ModuleA
-    TokenA -.->|"config: maxAmount=1000"| ModuleB
+<Mermaid
+  chart={`
+flowchart TB
+    subgraph Tokens("Token Contracts")
+        TokenA(Bond Token A<br/>Corporate Bonds)
+        TokenB(Fund Token B<br/>Investment Funds)
+        TokenC(Deposit Token C<br/>Bank Deposits)
+    end
+    
+    subgraph Orchestration("Compliance Engine")
+        Compliance(SMARTCompliance Contract<br/>Rule Orchestration)
+    end
+    
+    subgraph Modules("Compliance Modules<br/>Global Instances")
+        Country(Country Restrictions<br/>Allow/Block Lists)
+        Identity(Identity Verification<br/>Logical Expressions)
+        Supply(Supply Limits<br/>Lifetime/Period Caps)
+        Investor(Investor Count<br/>Per-Country Tracking)
+        Approval(Transfer Approval<br/>Pre-Authorization)
+        TimeLock(Time Lock<br/>Holding Periods)
+    end
+    
+    TokenA -->|canTransfer query| Compliance
+    TokenB -->|canTransfer query| Compliance
+    TokenC -->|canTransfer query| Compliance
+    
+    Compliance -->|orchestrates| Country
+    Compliance -->|orchestrates| Identity
+    Compliance -->|orchestrates| Supply
+    Compliance -->|orchestrates| Investor
+    Compliance -->|orchestrates| Approval
+    Compliance -->|orchestrates| TimeLock
+    
+    TokenA -.->|config: US/UK only<br/>accredited investors<br/>100 max| Country
+    TokenA -.->|config: accredited<br/>expression| Identity
+    TokenA -.->|config: 10M lifetime| Supply
+    
+    TokenB -.->|config: global except<br/>sanctioned countries| Country
+    TokenB -.->|config: KYC+AML only| Identity
+    TokenB -.->|config: 500 investors| Investor
+    
+    TokenC -.->|config: single<br/>jurisdiction| Country
+    TokenC -.->|config: retail<br/>investors only| Identity
+    TokenC -.->|config: 6-month lock| TimeLock
+    
+    style Compliance fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Country fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Identity fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Supply fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Investor fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Approval fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style TimeLock fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+`}
+/>
 
-    TokenB -.->|"config: countries=US,UK,DE<br/>topics=1,3"| ModuleA
-    TokenB -.->|"config: minBalance=100"| ModuleC
+**Separation of concerns**: The token contract defines what compliance is
+required by configuring modules and parameters. The
+[`SMARTCompliance`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/compliance/SMARTCompliance.sol)
+contract orchestrates rule evaluation and maintains per-token module
+configurations. Individual modules implement specific compliance rules with
+their own state management. This separation allows upgrading module
+implementations without touching token contracts and enables reusing module
+instances across hundreds of tokens while maintaining isolated configurations.
 
-    TokenC -.->|"config: maxHolders=50"| ModuleB
-    TokenC -.->|"config: lockPeriod=30days"| ModuleC
+**Module lifecycle**: When an issuer deploys a new token, they configure which
+compliance modules apply and set initial parameters for each module. The
+compliance contract stores these configurations in mappings indexed by token
+address and module address. During transfers, the compliance contract iterates
+through configured modules for that token and invokes each module's
+[`canTransfer`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/interface/ISMARTComplianceModule.sol#L35)
+function with the token address, sender, recipient, amount, and token-specific
+parameters. If any module returns false, the compliance contract immediately
+reverts the transaction with the module's reason string. After successful
+transfers, the compliance contract invokes optional
+[`transferred`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/interface/ISMARTComplianceModule.sol#L55)
+hooks that modules use to update state (investor counts, supply tracking, time
+locks).
 
-    style CC fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    style ModuleA fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style ModuleB fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style ModuleC fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+**Configuration management**: Module parameters encode as ABI-encoded bytes that
+the compliance contract passes to modules during evaluation. This flexible
+encoding supports simple parameters (country codes, investor limits) and complex
+structures (logical expressions, per-country limits, exemption rules). Modules
+define their own parameter structures and implement the
+[`validateParameters`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/interface/ISMARTComplianceModule.sol#L26)
+function that the compliance contract calls before accepting configuration
+changes. This validation prevents misconfigurations that could inadvertently
+block all transfers or allow non-compliant ones.
 
-`} />
+Monitor module performance through the compliance execution dashboard showing
+average gas consumption per module type, module evaluation latency percentiles
+(p50, p95, p99), and frequent rejection reasons by module. High gas consumption
+or latency indicates modules requiring optimization. Frequent rejections for
+specific modules suggest misconfigured rules or onboarding process issues.
 
-### Key principles
+### Transfer validation sequence
 
-- **Separation of concerns** - Token layer defines requirements, compliance
-  contract orchestrates, modules enforce specific rules
-- **Reusability** - Single compliance contract and modules serve multiple tokens
-  with different configurations
-- **Modularity** - Each module handles one specific compliance aspect
-- **Global + token-specific configuration** - Modules have both global settings
-  and per-token parameters
+Understanding the exact sequence of operations during transfer validation
+clarifies how compliance rules interact with the DALP lifecycle and where to
+diagnose issues.
 
-### Module categories
+<Mermaid
+  chart={`
+sequenceDiagram
+    participant User
+    participant Token as Token Contract
+    participant Compliance as Compliance Engine
+    participant Registry as Identity Registry
+    participant Identity as OnchainID Contracts
+    participant Modules as Compliance Modules
+    
+    User->>Token: transfer(to, amount)
+    Token->>Compliance: canTransfer(from, to, amount)
+    
+    Note over Compliance: Load identities
+    
+    Compliance->>Registry: getIdentity(from)
+    Registry-->>Compliance: fromIdentity address
+    
+    Compliance->>Registry: getIdentity(to)
+    Registry-->>Compliance: toIdentity address
+    
+    Note over Compliance,Modules: Evaluate configured modules
+    
+    loop Each Configured Module
+        Compliance->>Modules: canTransfer(token, from, to, amount, params)
+        
+        alt Module requires claims
+            Modules->>Identity: getClaim(topic)
+            Identity-->>Modules: claim data
+            Modules->>Modules: Validate claim & issuer
+        end
+        
+        alt Module allows
+            Modules-->>Compliance: true
+        else Module blocks
+            Modules-->>Compliance: false + reason
+            Compliance-->>Token: ❌ revert with reason
+            Token-->>User: ❌ Transfer blocked
+            Note over User,Modules: Transaction reverted
+        end
+    end
+    
+    Note over Compliance: All modules passed
+    
+    Compliance-->>Token: ✅ true
+    Token->>Token: _transfer(from, to, amount)
+    
+    Note over Token: Balances updated
+    
+    Token->>Compliance: transferred(from, to, amount)
+    
+    loop Each Configured Module
+        Compliance->>Modules: transferred(token, from, to, amount, params)
+        Modules->>Modules: Update module state
+    end
+    
+    Token-->>User: ✅ Transfer complete
+    
+    style Compliance fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Modules fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Token fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+`}
+/>
 
-<Mermaid chart={`
-graph LR
-    Base(ISMARTComplianceModule) --> Country(Country Modules)
-    Base --> Identity(Identity Modules)
-    Base --> Transfer(Transfer & Supply Modules)
-    Base --> Time(Time-Based Modules)
+**Pre-transfer validation**: The token contract's
+[`transfer`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/token/ERC3643.sol#L85)
+or
+[`transferFrom`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/token/ERC3643.sol#L95)
+function immediately calls the compliance contract's
+[`canTransfer`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/interface/ERC-3643/IERC3643Compliance.sol#L15)
+function before any state changes. This ensures that validation failures cost
+only the gas for identity lookups and module evaluation, not the full transfer
+execution gas.
 
-    Country --> CA(Country Allow List)
-    Country --> CB(Country Block List)
+**Identity resolution**: The compliance contract queries the identity registry
+to map wallet addresses to OnchainID contract addresses for both sender and
+recipient. If either mapping does not exist, the compliance check fails
+immediately with "Identity not registered" unless the transfer qualifies for
+exemptions (some modules exempt zero addresses for token burns or specific
+system addresses).
 
-    Identity --> IA(Identity Allow List)
-    Identity --> IB(Identity Block List)
-    Identity --> IV(Identity Verification)
-    Identity --> AB(Address Block List)
+**Sequential module evaluation**: The compliance contract iterates through
+modules in the order they were configured. Each module's `canTransfer` function
+receives the token address (allowing the module to load token-specific
+configuration), sender and recipient addresses, transfer amount, and encoded
+parameters. Modules return a boolean result—false immediately reverts the entire
+transaction with a descriptive reason string, while true continues to the next
+module. This fail-fast approach minimizes gas consumption for non-compliant
+transfers.
 
-    Transfer --> TL(Token Supply Limit)
-    Transfer --> IC(Investor Count)
-    Transfer --> TA(Transfer Approval)
+**Claim validation**: Identity verification modules query the sender's and
+recipient's OnchainID contracts for required claims. The module validates that
+claims exist for required topics, that trusted issuers issued those claims (by
+checking the trusted issuer registry), that claims have not expired (by
+comparing block.timestamp to claim expiration), and that claim data matches
+expected values (for claims containing specific flags or codes). Complex
+expressions (using AND, OR, NOT operators) evaluate recursively, with
+short-circuit evaluation stopping as soon as the result is determined.
 
-    Time --> TLock(Time Lock)
+**State update hooks**: After the token contract successfully executes the
+balance transfer, it calls the compliance contract's
+[`transferred`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/interface/ERC-3643/IERC3643Compliance.sol#L25)
+function. The compliance contract forwards this notification to all configured
+modules. Modules use this hook to update tracking state such as incrementing
+investor counts when a new holder receives tokens for the first time, adding to
+supply accumulation for period-based limits, recording token acquisition
+timestamps for time lock tracking, and consuming single-use transfer approvals.
+These state updates never revert—they must succeed or the entire transfer
+reverts.
 
+Use the transaction trace viewer in the observability stack to debug failed
+transfers. The viewer displays the complete call graph showing which module
+rejected the transfer, the specific claim check that failed, the identity
+contract addresses queried, and the gas consumption per contract call. This
+visibility accelerates troubleshooting compared to decoding raw transaction
+revert reasons.
+
+## Compliance module categories
+
+ATK provides eleven compliance module implementations covering the most common
+regulatory requirements. Each module focuses on a single concern, allowing
+issuers to compose combinations that match their specific jurisdiction and asset
+class requirements.
+
+<Mermaid
+  chart={`
+flowchart TB
+    Base(AbstractComplianceModule<br/>Base Implementation)
+    
+    Base --> Country(Country-Based Restrictions)
+    Base --> Identity(Identity Verification)
+    Base --> Transfer(Transfer & Supply Controls)
+    Base --> Time(Time-Based Restrictions)
+    
+    Country --> AllowCountry(CountryAllowListComplianceModule<br/>Whitelist jurisdictions)
+    Country --> BlockCountry(CountryBlockListComplianceModule<br/>Sanctions compliance)
+    
+    Identity --> AllowIdentity(IdentityAllowListComplianceModule<br/>Private placements)
+    Identity --> BlockIdentity(IdentityBlockListComplianceModule<br/>Compliance violations)
+    Identity --> VerifyIdentity(SMARTIdentityVerificationComplianceModule<br/>Logical claim expressions)
+    Identity --> BlockAddress(AddressBlockListComplianceModule<br/>Wallet-level restrictions)
+    
+    Transfer --> SupplyLimit(TokenSupplyLimitComplianceModule<br/>Issuance caps MiCA/RegCF)
+    Transfer --> InvestorCount(InvestorCountComplianceModule<br/>Investor number limits)
+    Transfer --> Approval(TransferApprovalComplianceModule<br/>Pre-authorization required)
+    
+    Time --> Lock(TimeLockComplianceModule<br/>Holding period enforcement)
+    
     style Base fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style AllowCountry fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style BlockCountry fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style AllowIdentity fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style BlockIdentity fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style VerifyIdentity fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style BlockAddress fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style SupplyLimit fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style InvestorCount fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Approval fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Lock fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+`}
+/>
 
-`} />
+All modules inherit from
+[`AbstractComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/AbstractComplianceModule.sol),
+which implements the
+[`ISMARTComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/interface/ISMARTComplianceModule.sol)
+interface and provides common functionality for access control, event emission,
+and parameter decoding. Individual modules override the `canTransfer` and
+optionally the `transferred`, `created`, and `destroyed` functions to implement
+their specific logic.
 
-## Country-based restrictions
+### Country-based restrictions
 
-### Country allow list compliance module
+Country modules control which jurisdictions can hold tokens based on ISO 3166-1
+numeric country codes stored in identity claims. The identity registry storage
+maintains a mapping from identity addresses to country codes, which KYC
+providers set during identity verification.
 
-**Purpose**: Only allow investors from specific approved countries
-
-**Use cases:**
-
-- Restricted offerings for specific jurisdictions
-- Regional compliance requirements
-- Export control compliance
-
-**Configuration:**
-
-```solidity
-struct CountryAllowListConfig {
-    uint16[] allowedCountries; // ISO 3166-1 country codes
-}
-```
-
-### Country block list compliance module
-
-**Purpose**: Block investors from specific prohibited countries
-
-**Use cases:**
-
-- Sanctions compliance (OFAC, EU sanctions)
-- Regulatory restrictions
-- Risk management
-
-**Configuration:**
-
-```solidity
-struct CountryBlockListConfig {
-    uint16[] blockedCountries; // ISO 3166-1 country codes
-}
-```
-
-## Identity-based restrictions
-
-### Identity allow list compliance module
-
-**Purpose**: Whitelist specific identity contracts for token access
-
-**Use cases:**
-
-- Private placements to specific investors
-- Institutional-only offerings
-- Closed investor groups
-
-### Identity block list compliance module
-
-**Purpose**: Block specific identity contracts from token access
-
-**Use cases:**
-
-- Compliance violations
-- Legal disputes
-- Risk management
-
-### Address block list compliance module
-
-**Purpose**: Block specific wallet addresses from token transfers
-
-**Use cases:**
-
-- Sanctions compliance
-- Fraud prevention
-- Temporary restrictions
-
-### SMART identity verification compliance module
-
-**Purpose**: Advanced identity verification with logical expressions
-
-**Key innovation**: Uses postfix (Reverse Polish Notation) expressions. Examples
-(infix → postfix tokens):
-
-- "KYC AND AML" → `[KYC, AML, AND]`
-- "CONTRACT OR (KYC AND AML)" → `[CONTRACT, KYC, AML, AND, OR]`
-- "ACCREDITED OR (KYC AND AML AND JURISDICTION)" →
-  `[ACCREDITED, KYC, AML, AND, JURISDICTION, AND, OR]`
-- "(INSTITUTION AND REGULATORY_APPROVAL) OR (INDIVIDUAL AND KYC AND AML)" →
-  `[INSTITUTION, REGULATORY_APPROVAL, AND, INDIVIDUAL, KYC, AML, AND, OR]`
-- "KYC AND NOT SANCTIONED" → `[KYC, SANCTIONED, NOT, AND]`
-
-**Benefits:**
-
-- Flexible entity types (contracts, institutions, individuals)
-- Regulatory efficiency for accredited investors
-- DeFi compatibility (smart contracts without individual KYC)
-- Multi-jurisdiction support
-
-## Transfer and supply modules
-
-### Token supply limit compliance module
-
-**Purpose**: Enforce maximum token supply limits based on jurisdictional caps
-
-**Key features:**
-
-- **Multiple limit types** - Lifetime, fixed period, or rolling period caps
-- **Currency conversion** - Support for base currency limits using on-chain
-  price claims
-- **Regulatory compliance** - Essential for jurisdictions like MiCA (EUR 8M
-  limit)
-- **Flexible configuration** - Token-amount or currency-equivalent limits
-
-**Use cases:**
-
-- MiCA compliance (EUR 8M issuance limit)
-- SEC Regulation CF (USD 5M limit)
-- Private placement caps
-- Crowdfunding limits
-
-**Configuration:**
+**[`CountryAllowListComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/CountryAllowListComplianceModule.sol)**:
+Only investors from explicitly listed countries can receive tokens. The module's
+[`canTransfer`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/CountryAllowListComplianceModule.sol#L35)
+function loads the recipient's country code from the identity registry storage
+and checks whether it appears in the configured allow list. Transfers to
+unlisted countries revert with "Country not allowed". Use cases include
+restricted offerings for specific jurisdictions (US and UK only), regional
+compliance requirements (EU member states only), and export control compliance
+(technology transfer restrictions).
 
 ```solidity
-struct SupplyLimitConfig {
-    uint256 maxSupply;           // Maximum supply (logical whole numbers)
-    LimitType limitType;         // LIFETIME, FIXED_PERIOD, ROLLING_PERIOD
-    uint256 periodLength;        // Period length in days (for period-based limits)
-    bool useBaseCurrency;        // Whether to use base currency limits
-    uint256 maxBaseCurrencyValue; // Maximum value in base currency (if enabled)
-    uint8 baseCurrencyDecimals;  // Decimals for base currency calculations
+// Configuration structure
+struct Config {
+    uint16[] allowedCountries;  // ISO 3166-1 numeric codes
 }
 
-enum LimitType {
-    LIFETIME,      // Total supply cap across token lifetime
-    FIXED_PERIOD,  // Cap within specific fixed periods
-    ROLLING_PERIOD // Cap within rolling time windows
-}
+// Example: Only allow US (840) and UK (826)
+Config memory config = Config({
+    allowedCountries: [840, 826]
+});
 ```
 
-### Investor count compliance module
-
-**Purpose**: Restrict the number of unique investors who can hold tokens
-
-**Key features:**
-
-- **Global and per-country limits** - Track investors both globally and by
-  jurisdiction
-- **Expression filtering** - Only count investors meeting specific compliance
-  requirements
-- **Flexible counting** - Global across all tokens or per-token limits
-- **Real-time tracking** - Updates investor counts on transfers
-
-**Use cases:**
-
-- Private placements (typically &lt;100 investors)
-- Regulation D offerings (500+ accredited investors)
-- European prospectus exemptions (150 qualified investors)
-- Crowdfunding investor limits
-
-**Configuration:**
+**[`CountryBlockListComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/CountryBlockListComplianceModule.sol)**:
+Investors from explicitly listed countries cannot receive tokens. The module
+checks the recipient's country code against the block list and reverts with
+"Country blocked" for matches. Use cases include sanctions compliance (OFAC
+sanctioned countries, EU sanctions lists), regulatory restrictions
+(jurisdictions where the security is not registered), and risk management
+(high-risk jurisdictions for AML purposes).
 
 ```solidity
-struct InvestorCountConfig {
-    uint256 maxInvestors;        // Maximum total investors (0 = no global limit)
-    bool global;                 // Track globally across all issuer tokens
-    uint16[] countryCodes;       // Country codes for per-country limits
-    uint256[] countryLimits;     // Corresponding limits per country
-    ExpressionNode[] topicFilter; // Filter which investors to count
-}
+// Example: Block sanctioned countries
+Config memory config = Config({
+    blockedCountries: [
+        408,  // North Korea
+        364,  // Iran
+        760   // Syria
+    ]
+});
 ```
 
-<Callout type="warning">
-The `topicFilter` determines **which investors are COUNTED** towards limits, not which investors are **BLOCKED**. Investors who don't match the filter can still receive tokens but won't count towards the investor limits.
+Country modules require that the identity registry storage properly maps
+identities to country codes. The KYC provider sets these codes during identity
+verification by calling
+[`setCountry`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/interface/ISMARTIdentityRegistryStorage.sol#L25)
+on the identity registry storage contract. Monitor country distribution through
+the compliance metrics dashboard showing token holders per country code, blocked
+transfer attempts per country, and country code update frequency. These metrics
+help identify geographic concentration risks and sanctions compliance
+effectiveness.
 
-To block non-qualifying investors, use
+### Identity-based restrictions
+
+Identity modules control access at the identity contract level, implementing
+allowlists, blocklists, and sophisticated claim-based verification logic.
+
+**[`IdentityAllowListComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/IdentityAllowListComplianceModule.sol)**:
+Only specific identity contracts can hold tokens. The module maintains a
+per-token mapping of allowed identity addresses and blocks transfers to
+identities not explicitly added to the list. Use cases include private
+placements to specific investors (Series A funding rounds), institutional-only
+offerings (qualified institutional buyers), and closed investor groups (family
+offices, strategic investors).
+
+**[`IdentityBlockListComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/IdentityBlockListComplianceModule.sol)**:
+Specific identity contracts are permanently blocked from holding tokens. Use
+cases include compliance violations (investors who failed ongoing KYC renewal),
+legal disputes (contested ownership, bankruptcy), and risk management
+(suspicious activity detected).
+
+**[`AddressBlockListComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/AddressBlockListComplianceModule.sol)**:
+Specific wallet addresses are blocked regardless of their identity mapping. This
+module operates at the address level rather than identity level, useful for
+sanctions compliance (OFAC SDN wallet addresses), fraud prevention (addresses
+linked to hacks or scams), and temporary restrictions (administrative holds
+pending investigation). Unlike identity blocklists, address blocklists persist
+even if the user remaps their identity to a different address.
+
+**[`SMARTIdentityVerificationComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol)**:
+Advanced claim-based verification using logical expressions in postfix notation
+(Reverse Polish Notation). This module evaluates complex requirements combining
+multiple claims with AND, OR, and NOT operators.
+
+**Logical expression evaluation**: The module processes expression arrays
+containing TOPIC nodes (representing required claims), AND nodes (both operands
+must be true), OR nodes (at least one operand must be true), and NOT nodes
+(invert the following operand). Expression arrays follow postfix notation where
+operators appear after their operands, enabling stack-based evaluation without
+parentheses.
+
+Postfix expression examples:
+
+| Requirement                                                | Postfix Notation                                                   |
+| ---------------------------------------------------------- | ------------------------------------------------------------------ |
+| KYC AND AML                                                | `[KYC, AML, AND]`                                                  |
+| CONTRACT OR (KYC AND AML)                                  | `[CONTRACT, KYC, AML, AND, OR]`                                    |
+| ACCREDITED OR (KYC AND AML AND JURISDICTION)               | `[ACCREDITED, KYC, AML, AND, JURISDICTION, AND, OR]`               |
+| (INSTITUTION AND APPROVAL) OR (INDIVIDUAL AND KYC AND AML) | `[INSTITUTION, APPROVAL, AND, INDIVIDUAL, KYC, AML, AND, AND, OR]` |
+| KYC AND NOT SANCTIONED                                     | `[KYC, SANCTIONED, NOT, AND]`                                      |
+
+```solidity
+// Configuration structure
+struct Config {
+    ExpressionNode[] requiredExpression;  // Postfix expression
+}
+
+// Solidity construction for: CONTRACT OR (KYC AND AML)
+// Postfix: [CONTRACT, KYC, AML, AND, OR]
+ExpressionNode[] memory expression = new ExpressionNode[](5);
+expression[0] = ExpressionNode(ExpressionType.TOPIC, CONTRACT_TOPIC_ID);
+expression[1] = ExpressionNode(ExpressionType.TOPIC, KYC_TOPIC_ID);
+expression[2] = ExpressionNode(ExpressionType.TOPIC, AML_TOPIC_ID);
+expression[3] = ExpressionNode(ExpressionType.AND, 0);
+expression[4] = ExpressionNode(ExpressionType.OR, 0);
+```
+
+**Evaluation algorithm**: The module uses a boolean stack to evaluate postfix
+expressions. For TOPIC nodes, it checks whether the identity holds a valid claim
+for that topic (issued by a trusted issuer and not expired) and pushes true or
+false onto the stack. For AND nodes, it pops two values, computes the logical
+AND, and pushes the result. For OR nodes, it pops two values, computes the
+logical OR, and pushes the result. For NOT nodes, it pops one value, inverts it,
+and pushes the result. After processing all nodes, the stack contains a single
+boolean—true if the identity meets requirements, false otherwise.
+
+This expression system enables flexible entity types (contracts, institutions,
+individuals with different verification levels), regulatory efficiency
+(accredited investors may bypass full KYC in some jurisdictions), DeFi
+compatibility (smart contracts can hold tokens without individual KYC when
+expressions include CONTRACT claims), multi-jurisdiction support (different
+claim combinations per jurisdiction), and dynamic requirements (add new claim
+types without modifying module code).
+
+Use the claim verification dashboard to monitor expression evaluation statistics
+including evaluation time per expression complexity, common failure patterns by
+claim topic, and claim expiration frequency. High evaluation times for complex
+expressions may indicate opportunities to simplify requirements or cache
+intermediate results.
+
+### Transfer and supply modules
+
+Transfer and supply modules enforce quantitative limits on token issuance and
+holder distribution, implementing regulatory caps and investor protection rules.
+
+**[`TokenSupplyLimitComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/TokenSupplyLimitComplianceModule.sol)**:
+Enforces maximum token supply limits based on jurisdictional caps. This module
+implements three limit types, each serving different regulatory frameworks.
+
+**Limit types**:
+
+- **LIFETIME**: Total supply cap across the token's entire lifetime. Once the
+  cumulative issued supply reaches the limit, no additional tokens can be
+  minted. Used for absolute regulatory caps (MiCA EUR 8M limit for
+  asset-referenced tokens).
+- **FIXED_PERIOD**: Cap within specific fixed periods (calendar months,
+  quarters, years). The module resets the accumulated supply at the start of
+  each new period. Used for periodic issuance limits (quarterly fundraising
+  caps, annual offering limits).
+- **ROLLING_PERIOD**: Cap within rolling time windows that move continuously.
+  The module tracks supply issued within the last N days from the current
+  timestamp. Used for continuous monitoring requirements (rolling 12-month
+  issuance limits, sliding window compliance).
+
+**Currency conversion**: The module supports base currency limits using on-chain
+price claims. When `useBaseCurrency` is true, the module loads the token's
+current price claim from the trusted issuer registry (topic
+`keccak256("PRICE")`), converts the token amount to base currency value, and
+checks whether the base currency equivalent exceeds the configured limit. This
+enables compliance with EUR or USD denominated limits for tokens with
+fluctuating prices.
+
+```solidity
+// Configuration structure
+struct Config {
+    uint256 maxSupply;              // Maximum token supply (logical units)
+    LimitType limitType;            // LIFETIME | FIXED_PERIOD | ROLLING_PERIOD
+    uint256 periodLength;           // Period length in days (for period-based limits)
+    bool useBaseCurrency;           // Whether to enforce base currency limits
+    uint256 maxBaseCurrencyValue;   // Maximum value in base currency
+    uint8 baseCurrencyDecimals;     // Decimals for base currency calculations
+}
+
+// Example: MiCA EUR 8M lifetime limit
+Config memory config = Config({
+    maxSupply: type(uint256).max,    // No token amount limit
+    limitType: LimitType.LIFETIME,
+    periodLength: 0,
+    useBaseCurrency: true,
+    maxBaseCurrencyValue: 8_000_000, // EUR 8M
+    baseCurrencyDecimals: 2          // Cents precision
+});
+```
+
+**State tracking**: The module maintains per-token supply tracking state
+including `totalIssued` (cumulative tokens issued across all time),
+`periodStart` (timestamp when current period started, for period-based limits),
+`periodIssued` (tokens issued in current period), and `rollingWindow` (mapping
+from day index to tokens issued that day, for rolling period calculations).
+
+The
+[`created`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/TokenSupplyLimitComplianceModule.sol#L85)
+hook updates these counters when tokens are minted. The
+[`canTransfer`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/TokenSupplyLimitComplianceModule.sol#L55)
+function blocks minting operations (transfers from the zero address) when limits
+would be exceeded.
+
+Monitor supply utilization through the issuance metrics dashboard showing supply
+consumed versus limit by token, remaining capacity before hitting limits,
+issuance velocity (tokens per day trend), and limit reset timestamps for
+period-based configurations. These metrics help issuers plan additional
+offerings and avoid hitting limits unexpectedly.
+
+**[`InvestorCountComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/InvestorCountComplianceModule.sol)**:
+Restricts the number of unique investors who can hold tokens, implementing
+regulatory requirements for private placements and crowdfunding offerings.
+
+**Global and per-country limits**: The module tracks investors both globally
+(total unique holders) and per-country (unique holders from each jurisdiction).
+Configuration specifies `maxInvestors` for the global limit (0 means no global
+limit), whether to track globally across all issuer tokens or per-token, and
+arrays of country codes and corresponding per-country limits.
+
+**Expression filtering**: The `topicFilter` expression determines which
+investors count towards limits. Only holders whose identities satisfy the filter
+expression increment the investor count. This enables sophisticated counting
+rules like "count only non-accredited investors towards the 100 investor limit"
+or "count institutional investors separately from retail investors".
+
+```solidity
+// Configuration structure
+struct Config {
+    uint256 maxInvestors;             // Maximum total investors (0 = no global limit)
+    bool global;                      // Track globally across all issuer tokens
+    uint16[] countryCodes;            // Country codes for per-country limits
+    uint256[] countryLimits;          // Corresponding limits per country
+    ExpressionNode[] topicFilter;     // Filter which investors to count
+}
+
+// Example: Max 100 non-accredited US investors
+ExpressionNode[] memory filter = new ExpressionNode[](3);
+filter[0] = ExpressionNode(ExpressionType.TOPIC, US_INVESTOR_TOPIC);
+filter[1] = ExpressionNode(ExpressionType.TOPIC, ACCREDITED_TOPIC);
+filter[2] = ExpressionNode(ExpressionType.NOT, 0);
+filter[3] = ExpressionNode(ExpressionType.AND, 0);
+
+Config memory config = Config({
+    maxInvestors: 100,
+    global: false,
+    countryCodes: [840],  // US
+    countryLimits: [100],
+    topicFilter: filter
+});
+```
+
+**Critical distinction**: The `topicFilter` determines which investors are
+COUNTED towards limits, not which investors are BLOCKED. Investors who do not
+match the filter can still receive tokens but will not count towards investor
+limits. To block non-qualifying investors, use
 `SMARTIdentityVerificationComplianceModule` alongside this module with the same
 expression criteria.
 
-</Callout>
+| Investor Type               | Identity Module | Count Module            | Final Result        |
+| --------------------------- | --------------- | ----------------------- | ------------------- |
+| No KYC+AML                  | ❌ Blocked      | N/A (never counted)     | ❌ Transfer blocked |
+| Has KYC+AML, count &lt; 100 | ✅ Allowed      | ✅ Counted              | ✅ Transfer allowed |
+| Has KYC+AML, count = 100    | ✅ Allowed      | ❌ Blocked (over limit) | ❌ Transfer blocked |
 
-### Transfer approval compliance module
+**State tracking**: The module maintains `investorCount` (total unique investors
+holding nonzero balance), `countryInvestorCount` (mapping from country code to
+investor count for that country), and `investorCountryRegistered` (mapping
+tracking whether an investor already counted for a country). The
+[`transferred`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/InvestorCountComplianceModule.sol#L95)
+hook increments counts when a new investor receives their first tokens and
+decrements counts when an investor's balance reaches zero.
 
-**Purpose**: Enforce pre-approved, identity-bound transfers by requiring
-explicit on-chain authorization before transfers execute
+Monitor investor capacity through the holder distribution dashboard showing
+current investor count versus limits by token, per-country investor counts with
+utilization percentages, and investor onboarding rate (new investors per day).
+These metrics help issuers plan marketing campaigns and avoid hitting investor
+limits during active sales periods.
 
-**Key features:**
+**[`TransferApprovalComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/TransferApprovalComplianceModule.sol)**:
+Enforces pre-approved, identity-bound transfers by requiring explicit on-chain
+authorization before transfers execute. This module implements Japanese FSA
+compliance requirements and other jurisdictions requiring issuer or intermediary
+involvement in secondary sales.
 
-- **Identity-bound approvals** - Approvals are bound to identity contracts, not
-  wallet addresses
-- **One-time use** - Each approval can be configured for single-use (regulatory
-  compliance)
-- **Approval expiry** - Time-limited approvals prevent indefinite authorizations
-- **Exemption support** - Specific identities (e.g., QII investors) can bypass
-  approval requirements
-- **Authority model** - Configurable list of identity addresses that can grant
-  approvals
+**Identity-bound approvals**: Approvals bind to identity contracts, not wallet
+addresses. When an approval authority authorizes a transfer from identity A to
+identity B, the approval remains valid even if either party changes their wallet
+address mapping. This prevents bypassing approvals through address changes.
 
-**Use cases:**
+**One-time use**: Each approval can be configured for single-use execution. When
+`oneTimeUse` is true, the
+[`transferred`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/TransferApprovalComplianceModule.sol#L125)
+hook marks the approval as consumed after successful transfer. Subsequent
+attempts with the same parameters fail with "Approval already used". This
+prevents approval reuse for regulatory compliance.
 
-- Japanese FSA compliance (issuer/intermediary involvement in secondary sales)
-- Regulated securities requiring compliance officer approval
-- Private placements with transfer restrictions
-- Manual review processes for high-risk transactions
-- Institutional controls requiring pre-authorization
+**Approval expiry**: Time-limited approvals prevent indefinite authorizations.
+Each approval includes an expiration timestamp. The
+[`canTransfer`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/TransferApprovalComplianceModule.sol#L75)
+function checks `block.timestamp` against the expiration and rejects expired
+approvals with "Approval expired". Default expiry is configurable per token.
 
-**Configuration:**
+**Exemption support**: Specific identities (e.g., qualified institutional
+investors) can bypass approval requirements. The module evaluates the
+`exemptionExpression` against both sender and recipient identities. If either
+identity satisfies the expression, the transfer proceeds without checking for
+approvals.
+
+**Authority model**: Configuration specifies identity addresses that can grant
+approvals. Only these authorities can call
+[`approveTransfer`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/TransferApprovalComplianceModule.sol#L50)
+successfully. Typical authorities include the issuer's identity contract,
+registered transfer agents' identity contracts, and licensed intermediaries'
+identity contracts.
 
 ```solidity
+// Configuration structure
 struct Config {
-    /// @notice Identity addresses allowed to grant approvals for this token
-    address[] approvalAuthorities;
-
-    /// @notice Whether exemptions based on identity claims are allowed
-    bool allowExemptions;
-
-    /// @notice Expression defining exemption logic (e.g., [TOPIC_QII])
-    ExpressionNode[] exemptionExpression;
-
-    /// @notice Default expiry for approvals in seconds
-    uint256 approvalExpiry;
-
-    /// @notice Whether approvals are single-use (one-time execution)
-    bool oneTimeUse;  // set to true for regulatory compliance
+    address[] approvalAuthorities;        // Identity addresses allowed to grant approvals
+    bool allowExemptions;                 // Whether exemptions are enabled
+    ExpressionNode[] exemptionExpression; // Expression defining exemption logic
+    uint256 approvalExpiry;               // Default expiry in seconds
+    bool oneTimeUse;                      // Whether approvals are single-use
 }
+
+// Workflow example
+// 1. Configure approval authorities (issuer identity address)
+// 2. User attempts transfer → ❌ FAILS (no approval exists)
+// 3. Authority calls approveTransfer(token, fromIdentity, toIdentity, amount, expiry)
+// 4. User retries same transfer → ✅ SUCCEEDS (approval now exists)
+// 5. If oneTimeUse=true, approval marked consumed
+// 6. Subsequent attempts → ❌ FAIL (approval consumed)
 ```
 
-**Workflow:**
+Monitor approval workflows through the transfer authorization dashboard showing
+pending approval requests (transfers that failed with "Approval required"),
+approval latency (time from request to approval grant), expired approval
+frequency, and authority activity patterns (which authorities process most
+approvals). These metrics help identify bottlenecks in the approval process and
+measure compliance with processing time SLAs.
 
-1. **Configuration** - Set up approval authorities (identity addresses) and
-   exemption rules
-2. **Transfer attempt** - User initiates a transfer requiring approval → **❌
-   FAILS** (no approval exists)
-3. **Pre-approval** - Authority identity calls `approveTransfer()` with exact
-   transfer parameters
-4. **Transfer retry** - User retries the same transfer → **✅ SUCCEEDS**
-   (approval now exists)
-5. **One-time consumption** - If configured, approval is marked as used after
-   successful transfer
-6. **Subsequent attempts** - Same transfer parameters → **❌ FAIL** (approval
-   consumed, if one-time use)
+### Time-based modules
 
-## Time-based modules
+**[`TimeLockComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/TimeLockComplianceModule.sol)**:
+Enforces minimum holding periods before tokens can be transferred, implementing
+Regulation D lock-up periods, insider trading restrictions, and vesting
+schedules.
 
-### Time lock compliance module
+**FIFO token tracking**: The module tracks multiple token batches per holder
+with acquisition timestamps using a first-in-first-out accounting system. When a
+holder acquires tokens, the module records the amount and `block.timestamp` as a
+new batch. When the holder transfers tokens, the module consumes batches in
+chronological order—oldest batches first—until the transfer amount is satisfied.
 
-**Purpose**: Enforce minimum holding periods before tokens can be transferred
+**Configurable hold periods**: The `holdPeriod` parameter specifies the minimum
+time in seconds that tokens must be held before transfer. Typical configurations
+include 180 days for Regulation D Rule 506(b) securities, 365 days for
+Regulation S restricted securities, and custom periods for insider lock-ups or
+vesting schedules.
 
-**Key features:**
-
-- **FIFO token tracking** - First-in-first-out logic for multiple token batches
-- **Configurable hold periods** - Flexible time-based restrictions
-- **Exemption support** - Identity-based exemptions via logical expressions
-- **Batch management** - Efficient tracking of acquisition timestamps
-
-**Use cases:**
-
-- Regulation D lock-up periods (6-12 months)
-- Insider trading restrictions
-- Vesting schedules
-- Market manipulation prevention
-- Regulatory compliance periods
-
-**Configuration:**
+**Exemption support**: Identity-based exemptions allow specific holders to
+bypass holding period requirements. The `exemptionExpression` uses the same
+postfix notation as identity verification modules. Typical exemptions include
+qualified institutional buyers (QIBs) under Rule 144A, registered broker-dealers
+for market-making activities, and the issuer itself for corporate actions.
 
 ```solidity
-struct TimeLockParams {
+// Configuration structure
+struct Config {
     uint256 holdPeriod;                  // Minimum holding period in seconds
     bool allowExemptions;                // Whether to allow exemptions
     ExpressionNode[] exemptionExpression; // Logical expression for exemptions
 }
-```
 
-**FIFO logic:**
-
-- Tracks multiple token batches per user with acquisition timestamps
-- Transfers always use oldest unlocked tokens first
-- Preserves chronological order during batch removal
-- Supports partial transfers from batches
-
-## Advanced features
-
-### Logical expressions for identity verification
-
-SMART Protocol supports complex logical expressions for identity verification,
-going beyond simple AND-only requirements:
-
-**Expression components:**
-
-- **TOPIC nodes** - Represent required claims (KYC, AML, ACCREDITED, etc.)
-- **AND nodes** - All child requirements must be met (binary operator)
-- **OR nodes** - At least one child requirement must be met (binary operator)
-- **NOT nodes** - Invert the next operand (unary operator)
-
-**Postfix examples:**
-
-```typescript
-// Infix: "CONTRACT OR (KYC AND AML)"
-// Postfix tokens: [CONTRACT, KYC, AML, AND, OR]
-
-// Infix: "ACCREDITED OR (RETAIL AND KYC AND AML AND SUITABILITY)"
-// Postfix tokens: [ACCREDITED, RETAIL, KYC, AML, AND, SUITABILITY, AND, AND, OR]
-
-// Infix: "KYC AND (US_ACCREDITED OR EU_QUALIFIED OR UK_SOPHISTICATED)"
-// Postfix tokens: [KYC, US_ACCREDITED, EU_QUALIFIED, OR, UK_SOPHISTICATED, OR, AND]
-
-// Infix: "KYC AND NOT SANCTIONED"
-// Postfix tokens: [KYC, SANCTIONED, NOT, AND]
-```
-
-```solidity
-// Solidity construction for: KYC AND AML → [KYC, AML, AND]
-ExpressionNode[] memory kycAml = new ExpressionNode[](3);
-kycAml[0] = ExpressionNode(ExpressionType.TOPIC, KYC_TOPIC_ID);
-kycAml[1] = ExpressionNode(ExpressionType.TOPIC, AML_TOPIC_ID);
-kycAml[2] = ExpressionNode(ExpressionType.AND, 0);
-```
-
-### Exemption support
-
-Many modules support exemption mechanisms through logical expressions:
-
-- Identity-based exemptions for privileged users
-- Temporary exemptions for specific situations
-- Role-based exemptions for system operations
-
-## Creating custom modules
-
-To create a custom compliance module:
-
-**1. Inherit from AbstractComplianceModule:**
-
-```solidity
-contract CustomComplianceModule is AbstractComplianceModule {
-    // Implementation
-}
-```
-
-**2. Implement required functions:**
-
-```solidity
-function name() external pure override returns (string memory);
-function typeId() external pure override returns (bytes32);
-function validateParameters(bytes calldata params) external pure override;
-function canTransfer(address token, address from, address to, uint256 value, bytes calldata params) external view override;
-```
-
-**3. Optional lifecycle hooks:**
-
-```solidity
-function transferred(address token, address from, address to, uint256 value, bytes calldata params) external override;
-function created(address token, address to, uint256 value, bytes calldata params) external override;
-```
-
-**4. Register with compliance contract** - Configure the module in your token's
-compliance settings.
-
-## Integration examples
-
-### Basic country restriction
-
-```solidity
-// Only allow US and UK investors
-CountryAllowListConfig memory config = CountryAllowListConfig({
-    allowedCountries: [840, 826] // US=840, UK=826 (ISO 3166-1)
-});
-```
-
-### Complex identity verification
-
-```solidity
-// Allow smart contracts OR individuals with KYC+AML
-// Postfix: [CONTRACT, KYC, AML, AND, OR]
-ExpressionNode[] memory expression = [
-    ExpressionNode(ExpressionType.TOPIC, CONTRACT_TOPIC_ID),
-    ExpressionNode(ExpressionType.TOPIC, KYC_TOPIC_ID),
-    ExpressionNode(ExpressionType.TOPIC, AML_TOPIC_ID),
-    ExpressionNode(ExpressionType.AND, 0), // KYC AND AML
-    ExpressionNode(ExpressionType.OR, 0)   // CONTRACT OR (KYC AND AML)
-];
-```
-
-### Time lock with exemptions
-
-```solidity
-// 6-month lock-up with exemptions for accredited investors
-TimeLockParams memory config = TimeLockParams({
+// Example: 6-month lock-up with exemptions for accredited investors
+Config memory config = Config({
     holdPeriod: 180 days,
     allowExemptions: true,
     exemptionExpression: [
@@ -717,58 +1053,305 @@ TimeLockParams memory config = TimeLockParams({
 });
 ```
 
-### Complete investor control (identity + count)
+**FIFO algorithm**: The
+[`transferred`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/TimeLockComplianceModule.sol#L95)
+hook manages batch addition and removal. When a recipient receives tokens, the
+module appends a new batch `(amount, block.timestamp)` to their batch array.
+When a sender transfers tokens, the module iterates through their batches from
+oldest to newest, subtracting the transfer amount from each batch until fully
+satisfied. If a batch is partially consumed, the module updates the batch
+amount. If fully consumed, the module removes the batch and continues to the
+next.
+
+The
+[`canTransfer`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/TimeLockComplianceModule.sol#L55)
+function calculates the sender's unlocked balance by iterating through batches
+and summing amounts where
+`block.timestamp >= acquisitionTimestamp + holdPeriod`. The transfer fails if
+the amount exceeds the unlocked balance with "Insufficient unlocked balance".
+
+Monitor time lock status through the holding period dashboard showing
+distribution of locked token amounts by time remaining, upcoming unlock events
+(tokens becoming transferable in next 7/30/90 days), and average holding period
+by investor cohort. These metrics help issuers plan liquidity events and
+communicate unlock schedules to investors.
+
+## Creating custom compliance modules
+
+The modular architecture enables developers to implement domain-specific
+compliance rules by inheriting from
+[`AbstractComplianceModule`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/smart/modules/AbstractComplianceModule.sol)
+and overriding specific functions.
+
+**Required implementations**:
 
 ```solidity
-// Common postfix expression for both modules - only KYC+AML verified investors
-ExpressionNode[] memory kycAmlExpression = [
-    ExpressionNode(ExpressionType.TOPIC, KYC_TOPIC_ID),
-    ExpressionNode(ExpressionType.TOPIC, AML_TOPIC_ID),
-    ExpressionNode(ExpressionType.AND, 0) // KYC AND AML
-];
+contract CustomComplianceModule is AbstractComplianceModule {
+    /// Return human-readable module name
+    function name() external pure override returns (string memory) {
+        return "Custom Compliance Module";
+    }
 
-// Module 1: Block non-KYC+AML investors (gate keeper)
-IdentityVerificationConfig memory identityConfig = IdentityVerificationConfig({
-    requiredExpression: kycAmlExpression
+    /// Return unique module type identifier (keccak256 of module name)
+    function typeId() external pure override returns (bytes32) {
+        return keccak256("CustomComplianceModule");
+    }
+
+    /// Validate parameter structure before configuration acceptance
+    function validateParameters(bytes calldata params) external pure override {
+        // Decode parameters and validate constraints
+        // Revert with descriptive message if invalid
+    }
+
+    /// Evaluate whether transfer complies with module rules
+    function canTransfer(
+        address token,
+        address from,
+        address to,
+        uint256 value,
+        bytes calldata params
+    ) external view override returns (bool) {
+        // Load module configuration from params
+        // Query identity registry for identities
+        // Evaluate module-specific rules
+        // Return true if compliant, false otherwise
+    }
+}
+```
+
+**Optional lifecycle hooks**:
+
+```solidity
+/// Called after successful transfer (state updates)
+function transferred(
+    address token,
+    address from,
+    address to,
+    uint256 value,
+    bytes calldata params
+) external override {
+    // Update module state tracking
+    // Increment counters, record timestamps, etc.
+}
+
+/// Called after token minting (creation)
+function created(
+    address token,
+    address to,
+    uint256 value,
+    bytes calldata params
+) external override {
+    // Update state for newly created tokens
+}
+
+/// Called after token burning (destruction)
+function destroyed(
+    address token,
+    address from,
+    uint256 value,
+    bytes calldata params
+) external override {
+    // Update state for burned tokens
+}
+```
+
+**Development workflow**:
+
+1. Define the compliance requirement and parameter structure
+2. Implement the module contract inheriting from `AbstractComplianceModule`
+3. Write comprehensive unit tests covering edge cases
+4. Deploy the module contract (single global instance serves all tokens)
+5. Register the module type in the compliance contract
+6. Configure tokens to use the module with token-specific parameters
+
+**Best practices**:
+
+- Keep `canTransfer` gas-efficient—this function executes for every transfer
+- Validate all parameters in `validateParameters` to prevent misconfigurations
+- Emit events from lifecycle hooks to enable off-chain monitoring
+- Document parameter structures and provide example configurations
+- Consider exemption patterns for system operations (minting, burning)
+- Test interaction with existing modules in common configurations
+
+## Integration patterns
+
+Common compliance configurations combine multiple modules to implement complete
+regulatory frameworks for specific jurisdictions and asset types.
+
+**US Regulation D private placement**:
+
+```solidity
+// Module 1: US investors only
+CountryAllowListConfig memory countryConfig = CountryAllowListConfig({
+    allowedCountries: [840]  // US only
 });
 
-// Module 2: Count only KYC+AML investors towards 100 limit (counter)
+// Module 2: Accredited investors OR (retail AND KYC AND AML)
+ExpressionNode[] memory expression = new ExpressionNode[](5);
+expression[0] = ExpressionNode(ExpressionType.TOPIC, ACCREDITED_TOPIC_ID);
+expression[1] = ExpressionNode(ExpressionType.TOPIC, KYC_TOPIC_ID);
+expression[2] = ExpressionNode(ExpressionType.TOPIC, AML_TOPIC_ID);
+expression[3] = ExpressionNode(ExpressionType.AND, 0);
+expression[4] = ExpressionNode(ExpressionType.OR, 0);
+
+// Module 3: Max 99 non-accredited investors
+ExpressionNode[] memory filter = new ExpressionNode[](2);
+filter[0] = ExpressionNode(ExpressionType.TOPIC, ACCREDITED_TOPIC_ID);
+filter[1] = ExpressionNode(ExpressionType.NOT, 0);
+
 InvestorCountConfig memory countConfig = InvestorCountConfig({
-    maxInvestors: 100,
+    maxInvestors: 99,
     global: false,
     countryCodes: [],
     countryLimits: [],
-    topicFilter: kycAmlExpression // Same expression for consistency
+    topicFilter: filter
+});
+
+// Module 4: 1-year holding period for unregistered securities
+TimeLockConfig memory lockConfig = TimeLockConfig({
+    holdPeriod: 365 days,
+    allowExemptions: false,
+    exemptionExpression: []
 });
 ```
 
-**Result**: Only KYC+AML verified investors can hold tokens, and max 100 such
-investors allowed.
+**EU MiCA asset-referenced token**:
 
-**Behavior comparison:**
+```solidity
+// Module 1: EU member states only
+CountryAllowListConfig memory countryConfig = CountryAllowListConfig({
+    allowedCountries: [
+        // EU member state codes (abbreviated for example)
+        276,  // Germany
+        250,  // France
+        380,  // Italy
+        // ... all 27 member states
+    ]
+});
 
-| Investor Type                   | Identity Module | Count Module                 | Final Result            |
-| ------------------------------- | --------------- | ---------------------------- | ----------------------- |
-| **No KYC+AML**                  | ❌ **BLOCKED**  | N/A (never reaches counting) | **❌ TRANSFER BLOCKED** |
-| **Has KYC+AML, Count &lt; 100** | ✅ **ALLOWED**  | ✅ **COUNTED**               | **✅ TRANSFER ALLOWED** |
-| **Has KYC+AML, Count = 100**    | ✅ **ALLOWED**  | ❌ **BLOCKED** (over limit)  | **❌ TRANSFER BLOCKED** |
+// Module 2: KYC AND AML required for all investors
+ExpressionNode[] memory expression = new ExpressionNode[](3);
+expression[0] = ExpressionNode(ExpressionType.TOPIC, KYC_TOPIC_ID);
+expression[1] = ExpressionNode(ExpressionType.TOPIC, AML_TOPIC_ID);
+expression[2] = ExpressionNode(ExpressionType.AND, 0);
+
+// Module 3: EUR 8M lifetime issuance limit
+TokenSupplyLimitConfig memory supplyConfig = TokenSupplyLimitConfig({
+    maxSupply: type(uint256).max,
+    limitType: LimitType.LIFETIME,
+    periodLength: 0,
+    useBaseCurrency: true,
+    maxBaseCurrencyValue: 8_000_000,  // EUR 8M
+    baseCurrencyDecimals: 2
+});
+```
+
+**Japanese FSA compliant security token**:
+
+```solidity
+// Module 1: Identity verification with exemptions for QII
+ExpressionNode[] memory expression = new ExpressionNode[](5);
+expression[0] = ExpressionNode(ExpressionType.TOPIC, QII_TOPIC_ID);
+expression[1] = ExpressionNode(ExpressionType.TOPIC, KYC_TOPIC_ID);
+expression[2] = ExpressionNode(ExpressionType.TOPIC, AML_TOPIC_ID);
+expression[3] = ExpressionNode(ExpressionType.AND, 0);
+expression[4] = ExpressionNode(ExpressionType.OR, 0);
+
+// Module 2: Transfer approval required (FSA compliance)
+ExpressionNode[] memory exemption = new ExpressionNode[](1);
+exemption[0] = ExpressionNode(ExpressionType.TOPIC, QII_TOPIC_ID);
+
+TransferApprovalConfig memory approvalConfig = TransferApprovalConfig({
+    approvalAuthorities: [issuerIdentity, transferAgentIdentity],
+    allowExemptions: true,
+    exemptionExpression: exemption,
+    approvalExpiry: 30 days,
+    oneTimeUse: true
+});
+```
 
 ## Security considerations
 
-- **Access control** - Only authorized addresses can modify module
-  configurations
-- **Parameter validation** - All module parameters are validated before use
-- **Reentrancy protection** - Modules include appropriate guards against
-  reentrancy attacks
-- **Gas optimization** - Efficient algorithms to minimize transaction costs
-- **Upgrade safety** - Modules designed to be upgradeable without breaking
-  existing tokens
+**Access control**: Module configuration functions require
+`COMPLIANCE_MANAGER_ROLE` in the compliance contract. This role should be
+assigned to a multi-signature wallet or governance contract, not individual
+EOAs. Module state modification functions (adding to blocklists, granting
+approvals) enforce their own role-based access control inherited from
+`AbstractComplianceModule`.
 
-## Conclusion
+**Parameter validation**: All modules validate parameters in the
+`validateParameters` function before the compliance contract accepts
+configuration changes. This validation prevents misconfigurations that could
+inadvertently block all transfers or allow non-compliant ones. For example,
+supply limit modules verify that period lengths are nonzero for period-based
+limits, and investor count modules verify that country code and limit arrays
+have matching lengths.
 
-The identity and compliance system provides a flexible, extensible framework for
-regulatory compliance across different jurisdictions and use cases. By
-separating concerns between identity management, token configuration, compliance
-orchestration, and rule enforcement, it enables efficient reuse of
-infrastructure while maintaining the flexibility to meet diverse regulatory
-requirements.
+**Reentrancy protection**: Modules use the `nonReentrant` modifier on
+state-changing functions to prevent reentrancy attacks. The compliance contract
+enforces strict call ordering—`canTransfer` completes before the token contract
+executes the transfer, and `transferred` executes after the transfer completes
+but before returning to the caller.
+
+**Gas optimization**: Modules optimize gas consumption by short-circuit
+evaluation (returning false immediately on first violation), efficient storage
+patterns (using mappings instead of arrays for lookups), and batch operations
+where possible (updating multiple tracking variables in a single transaction).
+
+**Upgrade safety**: Modules store all per-token state indexed by token address,
+enabling module upgrades without migrating state. When upgrading a module
+implementation, deploy the new contract, configure tokens to use the new module
+address, and optionally migrate historical state using admin functions that copy
+data from the old module to the new one.
+
+**Monitoring and alerting**: Configure observability dashboards to alert on
+suspicious patterns including sudden increases in compliance rejection rates,
+module configuration changes (especially to allowlists and limits), abnormal gas
+consumption by specific modules, and failed transactions from previously
+successful address pairs. These alerts help detect attacks or misconfigurations
+before they cause operational issues.
+
+## Operational monitoring
+
+The observability stack provides comprehensive dashboards for monitoring
+compliance system health and performance. Access these dashboards through the
+Grafana interface deployed as part of the Helm chart installation.
+
+**Identity registry metrics**:
+
+- Identity registration rate (new identities per day/hour)
+- Claim issuance latency (time from off-chain verification to on-chain claim)
+- Claim update frequency per topic
+- Identity-to-address remapping events
+- Failed registration attempts with reasons
+
+**Compliance validation metrics**:
+
+- Transfer validation success rate by token
+- Rejection reasons by module type
+- Average validation time per transfer
+- Module evaluation gas consumption percentiles
+- Most frequently triggered modules
+
+**Module-specific metrics**:
+
+- Supply utilization percentages vs configured limits
+- Investor count utilization by token and country
+- Time lock unlock schedules (tokens becoming transferable)
+- Approval request latency (time to grant or deny)
+- Country distribution of token holders
+
+**Alert configurations**: Configure alerts through the Prometheus alert rules
+included in the Helm chart:
+
+- Compliance rejection rate exceeds 10% for any token (indicates
+  misconfiguration or attack)
+- Supply utilization exceeds 90% of limit (warns before hitting cap)
+- Investor count within 5 of limit (warns before hitting cap)
+- Claim expiration for &gt;10% of holders (indicates KYC renewal campaign
+  needed)
+- Module configuration changes (audit trail for compliance officers)
+
+Reference the
+[observability documentation](/docs/developer-guides/deployment-ops/observability-monitoring)
+for dashboard access instructions and custom query examples.

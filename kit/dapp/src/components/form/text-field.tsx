@@ -19,6 +19,7 @@ export function TextField({
   required = false,
   type = "text",
   autoComplete,
+  placeholder,
 }: {
   label: string;
   startAddon?: string;
@@ -27,6 +28,7 @@ export function TextField({
   required?: boolean;
   type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
   autoComplete?: string;
+  placeholder?: string;
 }) {
   // The `Field` infers that it should have a `value` type of `string`
   const field = useFieldContext<string>();
@@ -59,6 +61,7 @@ export function TextField({
           onChange={handleChange}
           onBlur={handleBlur}
           autoComplete={autoComplete}
+          placeholder={placeholder}
           className={cn(className, errorClass)}
         />
       );
@@ -66,6 +69,7 @@ export function TextField({
     [
       type,
       autoComplete,
+      placeholder,
       field.name,
       field.state.value,
       handleChange,

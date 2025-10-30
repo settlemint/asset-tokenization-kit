@@ -17,7 +17,7 @@ import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import * as z from "zod";
+import { z } from "zod";
 
 // Form-level schema to make verificationType required for the form input
 const AddTopicFormSchema = TopicCreateInputSchema.extend({
@@ -148,6 +148,9 @@ export function AddTopicDialog({
                 <field.TextField
                   label={t("claimTopics.add.fields.signature.label")}
                   required={true}
+                  placeholder={t(
+                    "claimTopics.add.fields.signature.placeholder"
+                  )}
                   description={t(
                     "claimTopics.add.fields.signature.description"
                   )}

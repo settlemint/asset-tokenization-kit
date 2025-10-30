@@ -28,7 +28,7 @@ import type { SystemAccessControlRoles } from "@atk/zod/access-control-roles";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
-import * as z from "zod";
+import { z } from "zod";
 
 const logger = createLogger();
 

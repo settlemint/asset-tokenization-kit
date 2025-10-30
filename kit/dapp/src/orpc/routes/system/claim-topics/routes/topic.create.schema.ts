@@ -1,6 +1,7 @@
 import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
-import * as z from "zod";
+import { normalizeAbiSignature } from "@/lib/utils/abi-signature";
+import { z } from "zod";
 
 /**
  * Topic Create Input Schema
@@ -15,7 +16,11 @@ export const TopicCreateInputSchema = MutationInputSchema.extend({
   signature: z
     .string()
     .min(1, "Signature is required")
-    .describe("Function signature for claim verification"),
+    .describe("Claim data ABI types for claim verification")
+    .refine((val) => !val.includes("(") && !val.includes(")"), {
+      message: "Remove parentheses; use a comma-separated type list.",
+    })
+    .transform(normalizeAbiSignature),
 });
 
 export type TopicCreateInput = z.infer<typeof TopicCreateInputSchema>;

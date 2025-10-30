@@ -6,7 +6,7 @@
  * authentication workflows requiring secure, human-readable codes.
  * @module VerificationCodeValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Creates a Zod schema that validates 8-character alphanumeric verification codes.

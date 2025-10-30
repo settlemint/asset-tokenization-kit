@@ -9,14 +9,13 @@ import pluginReact from "eslint-plugin-react";
 import reactCompiler from "eslint-plugin-react-compiler";
 // import reactHooks from "eslint-plugin-react-hooks";
 import unicorn from "eslint-plugin-unicorn";
-import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
-export default defineConfig([
+export default [
   // ==========================================================================
   // 1. IGNORE PATTERNS - EXPANDED FOR PERFORMANCE
   // ==========================================================================
@@ -221,6 +220,7 @@ export default defineConfig([
       "unicorn/switch-case-braces": ["error", "avoid"], // Cleaner switch statements
       "unicorn/no-useless-undefined": "off",
       "unicorn/number-literal-case": "off",
+      "unicorn/prefer-string-raw": "off", // arkregex requires direct string literals
     },
   },
 
@@ -300,4 +300,4 @@ export default defineConfig([
       "@typescript-eslint/no-require-imports": "off",
     },
   },
-]);
+];

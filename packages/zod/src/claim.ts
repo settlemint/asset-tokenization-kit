@@ -6,7 +6,7 @@
  * and providing type-safe interfaces for claim handling.
  * @module ClaimValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 import { ethereumAddress } from "./ethereum-address";
 
 /**

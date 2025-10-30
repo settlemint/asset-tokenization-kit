@@ -1,7 +1,7 @@
 import { PaginatedListSchema } from "@/orpc/routes/common/schemas/paginated-list.schema";
 import { EntityTypeSchema } from "@atk/zod/entity-types";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 export const EntityListFiltersSchema = z
   .object({

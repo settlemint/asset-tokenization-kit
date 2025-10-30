@@ -74,7 +74,10 @@
     "rejected": "拒否されました",
     "expired": "期限切れ",
     "registered": "登録済み",
-    "notRegistered": "未登録",
+    "pendingRegistration": "登録待ち",
+    "notRegistered": "無効",
+    "active": "有効",
+    "inactive": "無効",
     "verifiedAriaLabel": "請求付きのアイデンティティが確認されました",
     "registeredAriaLabel": "請求なしでアイデンティティが登録されました",
     "notRegisteredAriaLabel": "登録されたアイデンティティはありません"

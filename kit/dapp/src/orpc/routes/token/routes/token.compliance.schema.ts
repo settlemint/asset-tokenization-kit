@@ -2,7 +2,7 @@ import { apiBigInt } from "@atk/zod/bigint";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { expressionTypeKey } from "@atk/zod/expression-type";
 import { isoCountryCodeNumeric } from "@atk/zod/iso-country-code";
-import * as z from "zod";
+import { z } from "zod";
 
 export const TokenComplianceInputSchema = z.object({
   tokenAddress: ethereumAddress.describe("The token contract address"),

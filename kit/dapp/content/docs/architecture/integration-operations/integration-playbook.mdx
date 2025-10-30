@@ -9,12 +9,12 @@ pageTitle: How to integrate external systems with ATK
 tags: [how-to, integration, payment-rails, kyc, webhooks, api]
 ---
 
+## Integration architecture
+
 **Primary role:** Technical architects, integration engineers
 
 **Secondary readers:** Product managers planning integrations, developers
 implementing adapters
-
-## Integration architecture
 
 ### Integration layers
 
@@ -1084,8 +1084,7 @@ Use observability dashboard to monitor:
     severity: warning
   annotations:
     summary: "High failure rate for {{ $labels.integration }}"
-    description:
-      "Integration {{ $labels.integration }} failure rate >10% for 10 minutes"
+    description: "Integration {{ $labels.integration }} failure rate >10% for 10 minutes"
 ```
 
 ## Testing integrations

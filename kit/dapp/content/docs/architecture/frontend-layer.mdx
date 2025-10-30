@@ -57,9 +57,11 @@ with timestamp and operator ID.
 
 **Admin Control Panel** centralizes system-wide settings, user management, and
 operational monitoring. Role assignment interface supports granular RBAC
-permissions. System health dashboard shows API latency, blockchain sync status,
-and database query performance. Configuration editor validates settings before
-applying changes.
+permissions. User edit screens enforce admin or systemManager roles via
+`beforeLoad` route guards and hide edit controls for unauthorized sessions to
+avoid confusing failures. System health dashboard shows API latency, blockchain
+sync status, and database query performance. Configuration editor validates
+settings before applying changes.
 
 ### TanStack ecosystem integration
 

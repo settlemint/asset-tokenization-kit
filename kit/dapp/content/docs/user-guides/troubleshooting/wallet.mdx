@@ -1,320 +1,647 @@
 ---
 title: Wallet & accounts
-description:
-  Solutions for wallet connection, account access, and balance display problems
+description: Solutions for wallet connection, account access, and balance display problems
 pageTitle: Wallet and account troubleshooting
 tags: [troubleshooting, wallet, account, connection, recovery]
 ---
 
-## Overview
-
-This guide covers troubleshooting for wallet connections, account access, and
-balance-related issues. Follow the step-by-step solutions to resolve common
-wallet and account problems.
-
-**Primary audience:** All platform users **Related guides:**
-[Onboarding Guide](/docs/user-guides/getting-started),
-
 ## How to use this guide
 
-1. **Identify your issue** - Find the section matching your problem
-2. **Try solutions in order** - Work through each solution sequentially
-3. **Check error messages** - Reference the Error Messages section for specific
-   errors
-4. **Escalate if unresolved** - Contact support with diagnostic information
-
-**Tip:** Keep your transaction hash and wallet address ready when seeking
-support.
-
-## Wallet connection issues
-
-### Wallet not connecting or disconnecting frequently
-
-**Symptoms:** Wallet connection fails, disconnects randomly, or shows wrong
-network.
-
-**Solutions:**
-
-1. **Check wallet installation:**
-   - Ensure MetaMask or compatible wallet installed
-   - Update wallet to latest version
-   - Enable wallet browser extension
-
-2. **Network mismatch:**
-   - Verify wallet connected to correct network
-   - Platform shows expected network (e.g., "Ethereum Mainnet")
-   - Switch network in wallet to match platform
-
-3. **Connection permissions:**
-   - Check site permissions in wallet
-   - Re-connect wallet via **Connect Wallet** button
-   - Clear wallet cache (Settings &gt; Advanced &gt; Reset)
-
-4. **Multiple wallets:**
-   - Disable other wallet extensions
-   - Select correct wallet in connection modal
-   - Ensure only one wallet active at a time
-
-**Verification:** Check that the wallet address displayed on the platform
-matches your wallet extension.
-
-### Wallet creation fails during onboarding
-
-**Symptoms:** "Wallet creation failed" or wallet deployment transaction reverts.
-
-**Solutions:**
-
-1. **Check network status:**
-   - Verify blockchain network operational (check network status page)
-   - Wait for network congestion to subside
-   - Retry after 5-10 minutes
-
-2. **Browser issues:**
-   - Clear site data: Settings &gt; Privacy &gt; Site Settings &gt; Clear Data
-   - Disable browser extensions temporarily
-   - Try incognito/private browsing mode
-
-3. **Platform gas balance:**
-   - Ensure platform has sufficient native tokens for deployment
-   - Contact administrator if persistent
-
-**Workaround:** Use existing wallet by selecting "Import Wallet" instead of
-"Create New".
-
-### Cannot access platform or login fails
-
-**Symptoms:** Login page doesn't load, credentials rejected, or unable to
-authenticate.
-
-**Solutions:**
-
-1. **Check browser compatibility:**
-   - Use Chrome, Firefox, Edge, or Safari (latest versions)
-   - Enable JavaScript
-   - Disable ad blockers that may interfere
-   - Clear browser cache and cookies
-
-2. **Verify network connection:**
-   - Check internet connectivity
-   - Ensure firewall not blocking platform domain
-   - Try different network (mobile hotspot) to isolate issue
-
-3. **Password issues:**
-   - Use **Forgot Password** to reset
-   - Check caps lock is off
-   - Ensure password meets requirements (if creating new account)
-
-4. **2FA problems:**
-   - Verify authenticator app time synchronized
-   - Use backup codes if 2FA lost
-   - Contact administrator to reset 2FA
-
-**Still not working?** Contact platform support with browser console error
-messages (F12 &gt; Console tab).
-
-## Account recovery
-
-### Lost access to wallet or forgot recovery codes
-
-**Symptoms:** Cannot access wallet, recovery codes lost or invalid.
-
-**Solutions:**
-
-1. **Wallet recovery:**
-   - Use wallet's seed phrase recovery if available
-   - Check password manager for saved recovery codes
-   - Look for recovery codes email sent during wallet creation
-
-2. **Request new wallet:**
-   - If primary wallet lost, contact platform administrator
-   - Administrator can link new wallet to your OnchainID
-   - Requires identity verification
-
-3. **Recovery service:**
-   - Navigate to **Account** &gt; **Wallet Recovery**
-   - Submit recovery request with proof of identity
-   - Administrator initiates recovery process
-
-**Prevention:** Always store recovery codes securely offline (not in email or
-cloud storage).
-
-**CRITICAL:** Never share your seed phrase or private keys with anyone,
-including support staff.
-
-## Balance and transaction display
-
-### Cannot see wallet balance or transactions not showing
-
-**Symptoms:** Token balance shows zero despite owning tokens, or recent
-transactions missing.
-
-**Solutions:**
-
-1. **Refresh balance:**
-   - Click **Refresh** button on account page
-   - Wait 30 seconds for blockchain sync
-   - Check blockchain explorer to verify balance on-chain
-
-2. **Network sync issues:**
-   - Platform may be syncing with blockchain
-   - Check network status indicator (top right)
-   - Wait a few minutes and refresh page
-
-3. **Wrong wallet connected:**
-   - Verify correct wallet address connected
-   - Check if you have multiple wallets
-   - Switch to wallet that holds tokens
-
-4. **Custom token not added:**
-   - Platform should automatically display tokens
-   - If missing, add token custom contract address in wallet
-
-**Verification:** Always verify your balance on a blockchain explorer for the
-source of truth.
-
-## OnchainID issues
-
-### OnchainID deployment stuck or fails
-
-**Symptoms:** OnchainID deployment pending forever or transaction fails.
-
-**Solutions:**
-
-1. **Verify wallet has gas:**
-   - Although platform pays for deployment, check wallet connection
-   - Retry deployment after ensuring wallet connected
-
-2. **Network issues:**
-   - Check blockchain explorer for transaction status
-   - Transaction may be pending due to low gas price
-   - Wait for transaction confirmation or retry
-
-3. **Duplicate OnchainID:**
-   - Each address can only have one OnchainID
-   - If you already have OnchainID, deployment fails
-   - Check if OnchainID already exists on profile page
-
-**Resolution:** Navigate to **Account** &gt; **OnchainID** and click **Retry
-Deployment** if status shows failed.
-
-### Cannot complete onboarding - stuck on system deployment step
-
-**Symptoms:** System deployment screen shows indefinite loading or some
-contracts fail to deploy.
-
-**Solutions:**
-
-1. **Wait for all deployments:**
-   - System deployment takes 3-5 minutes
-   - Don't close browser or navigate away
-   - Progress bar shows deployment status
-
-2. **Check for failed contracts:**
-   - If specific contract fails, note which one
-   - Click **Retry Failed Deployments**
-   - Contact administrator if repeated failures
-
-3. **Network timeouts:**
-   - Slow network may timeout deployments
-   - Retry deployment from **Account** &gt; **System Setup**
-   - Deployments resume from last successful step
-
-**Critical:** Do not create new account; use **Resume Onboarding** to continue
-from checkpoint.
-
-## Error messages reference
-
-### "Wallet not detected"
-
-**Meaning:** No wallet extension found in browser.
-
-**Solution:** Install MetaMask or compatible wallet extension and refresh page.
-
-### "Network mismatch"
-
-**Meaning:** Wallet connected to different network than platform requires.
-
-**Solution:** Switch wallet network to match platform (check platform header for
-required network).
-
-### "Insufficient gas"
-
-**Meaning:** Wallet lacks native tokens to pay transaction gas fees.
-
-**Solution:** Add native tokens (ETH, MATIC, etc.) to wallet and retry.
-
-### "User rejected request"
-
-**Meaning:** Transaction or connection cancelled in wallet.
-
-**Solution:** Retry operation and approve in wallet when prompted.
-
-### "OnchainID already exists"
-
-**Meaning:** Wallet address already has an OnchainID deployed.
-
-**Solution:** No action needed; existing OnchainID will be used. Check
-**Account** &gt; **OnchainID** to verify.
-
-## Getting help
-
-If solutions don't resolve your issue:
-
-**Gather diagnostic information:**
-
-- Wallet address
-- Network name
-- Transaction hash (if applicable)
-- Browser console errors (F12 &gt; Console)
-- Screenshots of error messages
-
-**Contact support:**
-
-- Email: support@platform.example (check your platform's support email)
-- Include all diagnostic information gathered above
-- Specify which solutions you've already tried
-
-**Emergency scenarios:**
-
-- **Lost access during transaction:** Contact support immediately with
-  transaction hash
-- **Security concerns:** Report to security team immediately
-- **Suspected unauthorized access:** Freeze account and contact administrator
-
-**Response times:**
+The platform integrates browser-based wallet extensions to manage your digital
+identity and sign transactions. When wallet issues arise, they typically stem
+from connection state mismatches, network configuration, or permission conflicts
+between your browser extension and the platform's Web3 interface.
+
+This guide walks you through the wallet architecture, common failure modes, and
+systematic troubleshooting steps. Use the wallet connection dashboard in your
+account settings to monitor real-time connection status and diagnose issues
+before they escalate.
+
+**Primary audience:** All platform users **Related guides:**
+[Onboarding Guide](/docs/user-guides/getting-started)
+
+Start by identifying your issue in the relevant section below, then follow the
+solutions sequentially. Each section includes verification steps to confirm
+resolution before proceeding.
+
+## Understanding wallet architecture
+
+The platform uses a multi-layer wallet architecture that separates identity
+(your browser wallet), custody (smart contract wallets), and compliance
+(OnchainID). Understanding how these layers interact helps diagnose where
+failures occur.
+
+<Mermaid chart={`flowchart TB
+    Browser(Browser Wallet Extension<br/>MetaMask, Coinbase Wallet)
+    Platform(Platform Web Interface)
+    Provider(Web3 Provider Layer)
+    SmartWallet(Smart Contract Wallet)
+    OnchainID(OnchainID Contract)
+    Blockchain(Blockchain Network)
+
+    Browser -->|1. Connection request| Platform
+    Platform -->|2. Provider injection| Provider
+    Provider -->|3. Account access| Browser
+    Browser -->|4. Network verification| Blockchain
+    Platform -->|5. Wallet detection| SmartWallet
+    SmartWallet -->|6. Identity lookup| OnchainID
+
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+
+    class Browser,Platform primary
+    class Provider,SmartWallet secondary
+    class OnchainID,Blockchain tertiary
+
+`} />
+
+Your browser wallet (like MetaMask) serves as the signing authority. The
+platform detects your wallet address, then queries the blockchain to find your
+associated smart contract wallet and OnchainID. Connection failures often occur
+at step 2 (provider injection) when multiple wallets compete, or at step 6 when
+OnchainID isn't fully deployed.
+
+Check your wallet connection status in the account dashboard. The status
+indicator shows green when all layers connect successfully, yellow during
+synchronization, and red when disconnected. Hover over the indicator for
+detailed connection diagnostics.
+
+## Wallet connection flows
+
+### Standard connection process
+
+When you click "Connect Wallet," the platform initiates a six-step handshake
+with your browser extension. Each step must complete before proceeding to the
+next.
+
+<Mermaid chart={`flowchart TB
+    Start(User clicks Connect Wallet)
+    Detect(Platform detects available wallets)
+    Request(Platform requests account access)
+    UserApprove(User approves in wallet popup)
+    NetworkCheck(Platform verifies network match)
+    FetchWallet(Platform queries smart wallet address)
+    FetchID(Platform loads OnchainID data)
+    Success(Connection complete)
+
+    Start --> Detect
+    Detect --> Request
+    Request --> UserApprove
+    UserApprove --> NetworkCheck
+    NetworkCheck --> FetchWallet
+    FetchWallet --> FetchID
+    FetchID --> Success
+
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+
+    class Start,Success tertiary
+    class Detect,Request,UserApprove primary
+    class NetworkCheck,FetchWallet,FetchID secondary
+
+`} />
+
+The platform caches your connection state locally. If you've connected before,
+steps 1-4 may complete automatically unless your wallet's site permissions have
+been revoked. Monitor the connection progress indicator at the top of the
+platform during initial connection—it displays the current step and any blocking
+issues.
+
+**Network mismatch** is the most common failure point. If your wallet shows
+Ethereum Mainnet but the platform requires Polygon, the connection halts at the
+network verification step. The platform displays the expected network in the
+connection modal and offers a one-click network switch button that triggers your
+wallet's network change prompt.
+
+### Transaction signing workflow
+
+After successful connection, every blockchain operation requires your explicit
+signature approval. Understanding this flow helps distinguish between connection
+issues and transaction failures.
+
+<Mermaid chart={`flowchart TB
+    Action(User initiates action<br/>transfer, approval, etc.)
+    Build(Platform builds transaction)
+    Gas(Platform estimates gas)
+    Prompt(Wallet popup appears)
+    Review(User reviews transaction details)
+    Sign(User signs transaction)
+    Broadcast(Platform broadcasts to network)
+    Confirm(Wait for block confirmation)
+    Update(Platform updates UI)
+
+    Action --> Build
+    Build --> Gas
+    Gas --> Prompt
+    Prompt --> Review
+    Review --> Sign
+    Sign --> Broadcast
+    Broadcast --> Confirm
+    Confirm --> Update
+
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+
+    class Action,Sign,Update primary
+    class Build,Gas,Prompt,Review secondary
+    class Broadcast,Confirm tertiary
+
+`} />
+
+If you don't see the wallet popup at step 4, check your browser's popup blocker
+settings and ensure the wallet extension is unlocked. The platform displays a
+"Waiting for signature" indicator until you approve or reject. Transaction
+history in the account dashboard shows pending, confirmed, and failed
+transactions with direct links to the blockchain explorer.
+
+## Supported wallet comparison
+
+Different wallet types offer varying features and security models. Choose based
+on your usage pattern and security requirements.
+
+| Wallet Type         | Security Level | Multi-Network | Mobile Support    | Hardware Integration | Best For                      |
+| ------------------- | -------------- | ------------- | ----------------- | -------------------- | ----------------------------- |
+| **MetaMask**        | High           | Yes           | iOS, Android      | Ledger, Trezor       | General use, developers       |
+| **Coinbase Wallet** | High           | Yes           | iOS, Android      | No                   | Beginners, mobile-first users |
+| **WalletConnect**   | Medium         | Yes           | Any mobile wallet | Varies by wallet     | Mobile-only users             |
+| **Ledger Live**     | Very High      | Yes           | No                | Native               | High-value holdings           |
+| **Trezor Suite**    | Very High      | Limited       | No                | Native               | Security-focused users        |
+
+The platform supports any wallet implementing the EIP-1193 provider standard.
+For production use with significant asset values, we recommend hardware wallets
+(Ledger, Trezor) connected through MetaMask for the optimal security-usability
+balance.
+
+**Multi-wallet scenarios:** If you have multiple wallet extensions installed,
+the platform displays a selection modal during connection. Temporarily disable
+unused extensions for this session to prevent provider conflicts. Only one
+wallet should be active per browser session—having MetaMask and Coinbase Wallet
+both enabled can cause race conditions where the wrong wallet responds to
+connection requests.
+
+## Troubleshooting connection issues
+
+### Wallet not connecting
+
+The platform failed to establish a Web3 provider connection with your browser
+wallet. This typically indicates missing extensions, permission blocks, or
+provider injection failures.
+
+**Check wallet installation.** Open your browser's extensions manager
+(chrome://extensions or about:addons) and verify your wallet extension appears
+in the list, shows as enabled, and displays a recent version number. Click the
+extension icon in your browser toolbar—it should open the wallet interface
+without errors. If the extension is missing or disabled, reinstall from the
+official provider website, never from third-party sources.
+
+**Verify site permissions.** Open your wallet extension, navigate to Settings >
+Connected Sites, and check if the platform domain appears. If listed but showing
+as blocked, click to re-enable permissions. If not listed, return to the
+platform and click Connect Wallet to trigger a fresh permission request. Some
+wallets cache permission denials—clearing the wallet's site data (Settings >
+Advanced > Reset) forces a clean permission flow.
+
+**Resolve provider conflicts.** Having multiple Web3 wallet extensions active
+creates race conditions where the wrong provider responds first. Disable all
+wallet extensions except your primary one, then refresh the platform. Enable
+additional wallets only after successful connection to establish provider
+priority. Check the browser console (F12 > Console) for "Multiple injected
+providers detected" warnings.
+
+**Connection verification:** After completing these steps, the account dashboard
+should display your wallet address with a green connection indicator. The
+address format should match what you see in your wallet extension (typically 0x
+followed by 40 hexadecimal characters). If addresses mismatch, disconnect and
+reconnect to re-sync the provider state.
+
+Monitor connection health in the observability dashboard under Account >
+Connection Status. The dashboard displays connection uptime, reconnection
+events, and provider change history.
+
+### Network configuration mismatch
+
+Your wallet is connected to a different blockchain network than the platform
+requires. The platform operates on a specific network configuration—attempting
+to use incompatible networks causes all transaction requests to fail.
+
+**Identify required network.** The platform displays the expected network name
+in the header navigation (e.g., "Polygon Mainnet" or "Ethereum Sepolia
+Testnet"). Compare this to your wallet's current network shown in the wallet
+extension dropdown. If they differ, click the network switch button in the
+platform header—this triggers your wallet to display a network change prompt.
+
+**Add custom networks.** For private or testnet deployments, the platform may
+operate on a network not pre-configured in your wallet. Click the "Add Network"
+button in the connection modal to automatically populate your wallet with the
+correct network configuration (RPC URL, chain ID, currency symbol). Review the
+network details before approving—verify the chain ID matches the deployment
+documentation.
+
+**Network persistence.** Your wallet remembers network settings per-site. If you
+switch networks manually after connecting, the platform detects the mismatch and
+displays a reconnection prompt. Always use the platform's network switch
+interface rather than changing networks directly in your wallet—this ensures
+proper cleanup of cached provider state.
+
+Check the network synchronization status in Account > System Health. The
+dashboard shows your current network, required network, block height, and sync
+latency. Latency above 5 seconds indicates network connectivity issues
+independent of wallet configuration.
+
+### Disconnection and session stability
+
+Frequent disconnections indicate unstable provider state, browser extension
+crashes, or background tab throttling. The platform maintains a WebSocket
+connection to your wallet's provider—if this connection drops, you'll see
+repeated "Wallet disconnected" notifications.
+
+**Browser session management.** Modern browsers aggressively throttle background
+tabs to conserve resources. If the platform tab is backgrounded for more than 5
+minutes, the wallet provider may suspend. Bring the platform tab to the
+foreground and wait 10 seconds for automatic reconnection. The connection
+indicator animates during reconnection attempts.
+
+**Extension stability.** Wallet extensions occasionally crash or freeze,
+especially under heavy load. Open your wallet extension in a separate window
+(right-click extension icon > Open in new window) and verify it's responsive. If
+frozen, restart the extension from your browser's extension manager. After
+restart, return to the platform and click Reconnect Wallet.
+
+**Clear provider state.** Persistent disconnections may result from corrupted
+provider cache. In your wallet extension, navigate to Settings > Advanced >
+Reset Account. This clears transaction history and cached state but preserves
+your seed phrase and accounts. After reset, reconnect to the platform—the fresh
+provider state usually resolves instability.
+
+The platform logs all connection and disconnection events. View the connection
+timeline in Account > Activity Log to identify patterns (e.g., disconnections
+every hour at :00 might indicate scheduled browser extension updates).
+
+## Account access and recovery
+
+### Lost wallet access
+
+Losing access to your browser wallet doesn't mean losing access to your
+assets—your seed phrase is the ultimate recovery mechanism. The platform stores
+no secrets; all cryptographic keys live in your wallet.
+
+**Seed phrase recovery.** Every wallet generates a 12-24 word seed phrase during
+initial setup. This phrase reconstructs your private keys on any device. Open
+your wallet's recovery interface, select "Import Wallet," and enter your seed
+phrase word-by-word. After import, the wallet regenerates your addresses and the
+platform automatically detects your smart contract wallet on next connection.
+
+**Recovery code lookup.** If you saved your recovery codes during platform
+onboarding, you can use them to initiate wallet recovery without administrator
+intervention. Navigate to Account > Wallet Recovery, enter your recovery code,
+and follow the identity verification flow. This process links a new browser
+wallet to your existing OnchainID and smart contract wallet.
+
+**Administrator-assisted recovery.** For cases where seed phrases and recovery
+codes are both lost, contact your platform administrator with identity
+verification documents. Administrators can initiate a recovery transaction that
+links a new wallet address to your OnchainID. This requires multi-signature
+approval from compliance officers and typically takes 1-2 business days for
+security verification.
+
+**Prevention:** Store your seed phrase offline in a secure location (safe
+deposit box, fireproof safe). Never store seed phrases in email, cloud storage,
+or password managers—these are frequent breach targets. Consider metal seed
+phrase storage solutions for long-term durability.
+
+**CRITICAL:** Platform support staff will never ask for your seed phrase or
+private keys. Anyone requesting these is attempting theft. Only enter your seed
+phrase directly into your wallet application, never into websites or support
+tickets.
+
+### Password and authentication issues
+
+Platform login uses traditional email/password authentication with optional
+two-factor authentication (2FA). Wallet connection is separate from platform
+login—you must complete both to access all features.
+
+**Password reset.** Click "Forgot Password" on the login page, enter your email
+address, and check for a reset link. Password reset emails arrive within 5
+minutes—check spam folders if not in inbox. The reset link expires after 1 hour
+for security. After resetting, your new password must meet complexity
+requirements (minimum 12 characters, mixed case, numbers, symbols).
+
+**Two-factor authentication recovery.** If you've lost access to your 2FA device
+(authenticator app or hardware token), use a backup code from your initial 2FA
+setup. Each backup code is single-use—you receive 10 codes at setup. If all
+backup codes are exhausted or lost, contact your administrator to disable 2FA on
+your account. This requires identity verification and approval from a compliance
+officer.
+
+**Browser compatibility.** The platform requires JavaScript enabled and modern
+browser features (WebAssembly, localStorage, WebSockets). Use the latest version
+of Chrome, Firefox, Edge, or Safari. Disable browser extensions that block
+JavaScript or interfere with local storage—these prevent proper session
+management. Try incognito/private browsing mode to isolate extension conflicts.
+
+Verify your browser environment in Account > System Diagnostics. This page runs
+automated checks for JavaScript support, localStorage availability, WebSocket
+connectivity, and wallet provider detection, showing pass/fail status for each
+requirement.
+
+## Balance and transaction visibility
+
+### Balance display issues
+
+Token balances shown in the platform UI are queried from the blockchain in
+real-time via the subgraph indexing layer. Mismatches between platform display
+and actual on-chain balances indicate indexing lag or cache staleness.
+
+The platform maintains two balance sources: the subgraph (for fast UI queries)
+and direct blockchain RPC calls (for authoritative verification). The subgraph
+typically syncs within 30 seconds of on-chain events, but high network
+congestion can delay indexing up to 5 minutes.
+
+**Refresh balance data.** Click the Refresh icon next to your balance display.
+This triggers a direct blockchain query that bypasses the subgraph cache. The UI
+shows a loading spinner during the refresh—wait for completion before concluding
+the balance is incorrect. If the refreshed balance matches your expectation, the
+issue was stale cache. If mismatch persists, proceed to blockchain verification.
+
+**Verify on blockchain explorer.** Your token balance is the source of truth on
+the blockchain, independent of any platform UI. Copy your smart contract wallet
+address from the account page, navigate to the blockchain explorer (e.g.,
+Etherscan, PolygonScan), paste your address, and view the token holdings tab.
+Compare the explorer balance to the platform display. If explorer shows correct
+balance but platform doesn't, report a subgraph indexing issue to support.
+
+**Network synchronization status.** The platform header displays a network
+status indicator showing blockchain sync health. Green indicates full
+synchronization (block lag &lt;10 blocks), yellow indicates catching up (lag
+10-100 blocks), red indicates sync failure (lag &gt;100 blocks or RPC
+disconnect). If status is yellow or red, wait for sync completion before
+trusting balance displays.
+
+Check indexing health in the observability dashboard under System > Subgraph
+Status. The dashboard shows current indexed block height, indexing rate
+(blocks/second), and historical lag metrics. Persistent lag above 50 blocks
+indicates subgraph performance issues requiring infrastructure investigation.
+
+### Missing transaction history
+
+Transaction records appear in your account history after blockchain confirmation
+and subgraph indexing. Newly submitted transactions show as "pending"
+immediately, transition to "confirmed" after block inclusion (typically 15-60
+seconds), and display full details after indexing completes.
+
+**Check pending transactions.** Your wallet extension maintains a separate
+transaction queue showing unconfirmed transactions. Open your wallet, view the
+activity tab, and look for pending transactions. If a transaction appears in
+your wallet but not the platform, it's awaiting confirmation—network congestion
+can delay block inclusion. Wait for confirmation, then refresh the platform.
+
+**Verify transaction hash.** Every blockchain transaction has a unique hash
+(transaction ID). If you submitted a transaction but it's not appearing, copy
+the transaction hash from your wallet activity and paste it into the blockchain
+explorer search. The explorer shows transaction status independent of platform
+indexing: "Success" means included in a block, "Pending" means waiting for
+miners, "Failed" means execution error.
+
+**Indexing delays.** After on-chain confirmation, transactions must be indexed
+by the subgraph before appearing in platform history. Indexing typically
+completes within 1 minute but can lag during high event volume. Check the
+subgraph status dashboard (System > Subgraph Status) for indexing lag metrics.
+If lag exceeds 5 minutes, indexing infrastructure may require scaling.
+
+**Historical data limits.** The platform UI displays the most recent 100
+transactions by default. Older transactions remain on-chain and in the subgraph
+database but require pagination or filtering to view. Use the transaction
+history filters (date range, transaction type, counterparty) to search beyond
+recent activity.
+
+Monitor transaction processing metrics in Account > Transaction Analytics. The
+dashboard shows transaction submission rate, average confirmation time, gas
+usage patterns, and failure rates—useful for identifying systematic issues
+versus isolated incidents.
+
+## OnchainID deployment and management
+
+### Deployment failures
+
+OnchainID contracts deploy automatically during platform onboarding. Deployment
+is a blockchain transaction paid for by the platform's operational wallet—you
+don't need gas tokens for this step. However, network conditions and smart
+contract state can cause deployment failures.
+
+**Verify deployment status.** Navigate to Account > OnchainID to view your
+identity contract status. The page displays deployment state: "Not Started,"
+"Pending," "Confirmed," or "Failed." If status is "Pending" for more than 10
+minutes, check the blockchain explorer using the transaction hash shown on the
+status page—the transaction may be stuck in the mempool due to insufficient gas
+price.
+
+**Retry failed deployments.** If deployment status shows "Failed," click the
+"Retry Deployment" button. This submits a new transaction with adjusted gas
+settings. Common failure causes include network congestion (retry during
+off-peak hours), nonce conflicts (retry automatically resolves), and contract
+deployment size limits (report to support—may require contract optimization).
+
+**Duplicate OnchainID detection.** Each wallet address can have only one
+associated OnchainID contract. If you've previously deployed an OnchainID
+(perhaps in a test environment or different platform instance), attempting a
+second deployment fails with "OnchainID already exists." The platform
+automatically detects existing OnchainIDs and uses them instead of deploying
+duplicates—no action needed.
+
+**Recovery from partial deployment.** OnchainID deployment is a multi-step
+process: deploy identity implementation, deploy proxy, initialize proxy, set
+claims. If deployment fails mid-process, the platform's resume mechanism detects
+completed steps and retries only failed portions. Never create a new account to
+retry—use Account > System Setup > Resume Onboarding to continue from the last
+successful checkpoint.
+
+Track OnchainID deployment metrics in the observability dashboard under
+Identity > Deployment Analytics. The dashboard shows deployment success rates,
+average deployment time, and common failure modes across all platform users.
+
+### System deployment during onboarding
+
+First-time users complete a system deployment phase that initializes all
+required smart contracts: OnchainID, smart contract wallet, token registries,
+and compliance modules. This process takes 3-5 minutes and involves multiple
+blockchain transactions.
+
+**Monitor deployment progress.** The onboarding screen displays a progress bar
+showing contract deployment status. Each contract transitions through states:
+Queued > Deploying > Confirming > Complete. The platform deploys contracts in
+dependency order—later contracts require earlier ones to complete. Don't close
+your browser or navigate away during deployment—doing so interrupts the
+deployment sequence.
+
+**Handle deployment timeouts.** Network congestion can cause individual contract
+deployments to timeout (pending more than 10 minutes). If this occurs, the
+platform displays which contract timed out and offers a "Retry" button for that
+specific contract. Click Retry to resubmit only the failed
+deployment—successfully deployed contracts are not re-deployed.
+
+**Resume interrupted onboarding.** If you close your browser during system
+deployment, returning to the platform shows a "Resume Onboarding" button instead
+of "Create Account." Click this to continue from the last completed deployment
+step. The platform tracks deployment state server-side—your progress is never
+lost. Attempting to create a new account results in duplicate identity errors.
+
+**Deployment verification.** After all contracts show "Complete" status, the
+platform runs verification checks: contract bytecode validation, ownership
+verification, registry linking. These checks ensure contracts deployed correctly
+and can interact properly. If verification fails, the platform identifies the
+misconfigured contract and offers remediation steps.
+
+View detailed deployment logs in Account > Onboarding History. The logs show
+each contract deployment with transaction hash, gas used, deployment time, and
+any errors encountered—useful for support troubleshooting.
+
+## Error message reference
+
+### Common wallet errors
+
+**"Wallet not detected"** No Web3 provider found in browser. Install MetaMask or
+compatible wallet extension, refresh page, and click Connect Wallet.
+
+**"Network mismatch"** Wallet connected to different network than platform
+requires. Click the network switch button in platform header, approve network
+change in wallet popup, and wait for reconnection.
+
+**"Insufficient gas"** Wallet lacks native tokens to pay transaction fees. Add
+the network's native token (ETH, MATIC, etc.) to your wallet, then retry the
+transaction. Minimum recommended balance: 0.1 native tokens.
+
+**"User rejected request"** Transaction or connection cancelled in wallet popup.
+Retry the operation and click "Approve" when your wallet prompts. If rejecting
+intentionally, no action needed.
+
+**"OnchainID already exists"** Wallet address already has an OnchainID contract
+deployed. No action required—platform uses existing OnchainID. Verify in
+Account > OnchainID.
+
+**"Transaction underpriced"** Gas price too low for current network conditions.
+Your wallet automatically adjusts gas prices, but during extreme congestion,
+increase the priority fee manually in wallet settings before retrying.
+
+**"Nonce too low"** Transaction nonce conflict—usually caused by parallel
+transaction submission. Wait 30 seconds and retry. If persistent, reset your
+wallet's transaction nonce in Settings > Advanced > Reset Account.
+
+## Getting support
+
+When self-service troubleshooting doesn't resolve your issue, contact platform
+support with comprehensive diagnostic information for faster resolution.
+
+**Gather diagnostics before contacting support:**
+
+- Wallet address (visible in account dashboard)
+- Network name and chain ID (shown in platform header)
+- Transaction hash if applicable (from wallet activity or platform history)
+- Browser console errors: Press F12, click Console tab, screenshot any red error
+  messages
+- Screenshot of error state showing full error message and context
+
+**Contact channels:**
+
+- **Email:** support@platform.example (check your deployment documentation for
+  actual support email)
+- **Subject line format:** "[Wallet Issue] Brief description"
+- **Include:** All diagnostic information from above, steps already attempted,
+  time when issue first occurred
+
+**Support response SLA:**
 
 - Wallet connection issues: 4-8 business hours
-- Account recovery: 1-2 business days (requires identity verification)
-- Critical security issues: 1-2 hours
+- Account recovery requests: 1-2 business days (requires identity verification)
+- Critical security concerns: 1-2 hours (suspected unauthorized access, stolen
+  funds)
+
+**Emergency scenarios requiring immediate contact:**
+
+- Lost access during active transaction: Report immediately with transaction
+  hash to prevent fund loss
+- Security breach suspected: Contact security team directly
+  (security@platform.example), freeze account if possible
+- Unauthorized wallet activity: Disconnect wallet, report to administrator,
+  change all passwords
+
+**Escalation path:** If support response exceeds SLA or issue requires urgent
+resolution, request escalation to senior support engineer. For compliance or
+regulatory concerns, request direct contact with compliance officer.
 
 ## Preventive best practices
 
-**Wallet security:**
+### Wallet security fundamentals
 
-- Store seed phrase offline in secure location
-- Never share private keys or seed phrase
-- Use hardware wallet for large holdings
-- Enable wallet password/biometric protection
+**Seed phrase protection.** Your 12-24 word seed phrase is the master key to all
+assets. Store it offline in a secure physical location—safe deposit box,
+fireproof home safe, or specialized metal seed phrase storage device. Never
+store seed phrases digitally (email, cloud storage, screenshots, password
+managers). Never share your seed phrase with anyone—legitimate support staff
+will never request it.
 
-**Account management:**
+**Hardware wallet integration.** For accounts holding significant asset value
+(above $10,000), use a hardware wallet (Ledger, Trezor) connected through
+MetaMask. Hardware wallets keep private keys isolated in tamper-resistant
+chips—even if your computer is compromised, attackers can't extract keys.
+Connect hardware wallet to MetaMask, then use MetaMask to connect to the
+platform for the security benefits of hardware plus the compatibility of browser
+wallets.
 
-- Bookmark official platform URL
-- Enable 2FA on platform account
-- Keep wallet extension updated
-- Regularly backup recovery codes
+**Multi-signature considerations.** The platform supports multi-signature smart
+contract wallets requiring multiple approvals for transactions. For
+organizational accounts or high-value individual holdings, configure multi-sig
+with 2-of-3 or 3-of-5 signature requirements. This prevents single points of
+failure and protects against compromised individual wallets.
 
-**Connection hygiene:**
+### Connection hygiene
 
-- Only connect to trusted sites
-- Verify site URL before connecting wallet
-- Disconnect wallet when not using platform
-- Review connected sites in wallet settings
+**Verify platform URL.** Bookmark the official platform URL and always access
+via bookmark—never via search engine results or email links. Phishing sites
+mimic the platform interface to steal wallet credentials. Check the URL bar
+shows the correct domain and HTTPS lock icon before connecting your wallet.
 
-**Monitoring:**
+**Site permission audits.** Regularly review connected sites in your wallet
+settings (Settings > Connected Sites). Revoke permissions for sites you no
+longer use or don't recognize. Each connected site can request transaction
+signatures—minimize attack surface by limiting connections to trusted platforms
+only.
 
-- Regularly check wallet balance on blockchain explorer
-- Review transaction history for unauthorized activity
-- Set up wallet alerts for large transactions
-- Monitor gas prices before transactions
+**Disconnect when inactive.** Click "Disconnect Wallet" in the platform account
+menu when finished with your session. This revokes the platform's access to your
+wallet until you explicitly reconnect. Particularly important on shared
+computers or when accessing from public networks.
 
-By following these practices, you'll minimize wallet and account issues.
+**Network verification.** Before signing any transaction, verify the network
+shown in your wallet matches your expectation. Attackers sometimes trick users
+into switching to malicious networks. The platform header always displays the
+required network—if wallet shows different network, investigate before
+proceeding.
+
+### Monitoring and alerting
+
+**Blockchain explorer checks.** Weekly, check your smart contract wallet address
+on the blockchain explorer to verify all transactions are authorized. Review the
+full transaction list for unexpected transfers or approvals. Set up blockchain
+explorer email alerts (if available) for transaction notifications.
+
+**Gas price awareness.** Before submitting transactions, check current network
+gas prices using tools like ETH Gas Station or PolygonScan gas tracker. During
+extreme congestion, gas fees can exceed transaction value—consider delaying
+non-urgent transactions until network conditions improve.
+
+**Wallet balance monitoring.** The platform displays balance, but verify
+independently via blockchain explorer monthly. Discrepancies may indicate
+platform indexing issues or, in extreme cases, security problems. Report any
+unexplained balance changes to support immediately.
+
+**Activity log review.** Check Account > Activity Log weekly for connection
+events, transaction submissions, and setting changes. Unauthorized activity
+(logins from unknown locations, unexpected transactions) requires immediate
+action—change passwords, revoke wallet connections, contact support.
+
+By following these practices systematically, you'll prevent most wallet issues
+before they occur and catch security concerns early when remediation is
+simplest.

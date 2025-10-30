@@ -125,6 +125,12 @@
     "lastNameInfo": "Amtlicher Nachname"
   },
   "details": {
+    "basicInfo": {
+      "title": "Basisinformationen",
+      "success": "Benutzerdaten aktualisiert",
+      "editTitle": "Basisinformationen bearbeiten",
+      "editDescription": "Aktualisieren Sie den Namen und die E-Mail-Adresse des Benutzers."
+    },
     "kycInformation": "Informationen"
   },
   "profile": {

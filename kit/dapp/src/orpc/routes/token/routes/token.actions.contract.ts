@@ -4,7 +4,7 @@ import {
   ActionsListResponseSchema,
 } from "@/orpc/routes/actions/routes/actions.list.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Input schema for token actions endpoint.

@@ -7,7 +7,7 @@
  * @module EthereumGraphIdValidation
  */
 import { type Hex, isHex } from "viem";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Zod schema for validating and normalizing Ethereum TheGraph composite IDs (82 characters)

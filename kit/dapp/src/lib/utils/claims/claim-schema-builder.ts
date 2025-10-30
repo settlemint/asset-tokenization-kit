@@ -7,7 +7,7 @@
  * 1. **Predefined Schemas**: For well-known claim topics that have pre-built Zod schemas
  *    in the ClaimDataSchema union (e.g., "assetClassification", "knowYourCustomer")
  *
- * 2. **Custom Signatures**: For dynamic claim topics with Solidity function signatures
+ * 2. **Custom Signatures**: For dynamic claim topics with claim data ABI types
  *    that are parsed at runtime to generate appropriate form fields
  *
  * ## Architecture Overview
@@ -35,7 +35,7 @@
 
 import type { ClaimData } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
 import { ClaimDataSchema } from "@/orpc/routes/system/identity/claims/routes/claims.issue.schema";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Configuration for a single form field, generated from a Zod schema property
@@ -174,13 +174,13 @@ function solidityTypeToZodSchema(
 }
 
 /**
- * Parses a Solidity function signature and generates a Zod schema
+ * Parses claim data ABI types and generates a Zod schema
  *
- * This function takes a Solidity function signature string and converts it into
+ * This function takes claim data ABI types string and converts it into
  * a Zod object schema that can be used for form validation. Each parameter in
  * the signature becomes a field in the schema.
  *
- * @param signature - The Solidity function signature (e.g., "claim(string value, uint256 amount)")
+ * @param signature - The claim data ABI types (e.g., "claim(string value, uint256 amount)")
  * @returns A Zod object schema, or null if parsing fails
  *
  * @example
@@ -236,11 +236,11 @@ export function generateSchemaFromSignature(
  * Gets the appropriate Zod schema for a claim topic
  *
  * This is the main entry point for schema resolution. It implements a fallback
- * strategy: first attempting to find a predefined schema, then parsing a custom
- * signature if provided.
+ * strategy: first attempting to find a predefined schema, then parsing custom
+ * claim data ABI types if provided.
  *
  * @param topic - The claim topic name
- * @param signature - Optional Solidity function signature for custom claims
+ * @param signature - Optional claim data ABI types for custom claims
  * @returns A Zod schema for validation, or null if neither approach succeeds
  *
  * @example

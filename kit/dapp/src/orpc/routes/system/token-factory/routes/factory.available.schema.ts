@@ -5,7 +5,7 @@
 
 import { PredictAddressInputSchema } from "@/orpc/routes/system/token-factory/routes/factory.predict-address.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Input schema for availability check.

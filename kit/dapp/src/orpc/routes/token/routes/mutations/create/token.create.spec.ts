@@ -38,6 +38,7 @@ describe("Token create", () => {
     expect(result.type).toBe(tokenData.type);
     expect(result.name).toBe(tokenData.name);
     expect(result.symbol).toBe(tokenData.symbol);
+    expect(result.userPermissions?.roles?.governance).toBe(true);
 
     const createdToken = await client.token.read({ tokenAddress: result.id });
     expect(createdToken).toMatchObject({
@@ -52,6 +53,7 @@ describe("Token create", () => {
       },
       totalSupply: dnumFrom("0"),
     });
+    expect(createdToken.userPermissions?.roles?.governance).toBe(true);
     const basePriceClaim = createdToken.identity?.claims?.find(
       (c) => c.name === "basePrice"
     );

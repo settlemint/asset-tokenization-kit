@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import * as z from "zod";
+import { z } from "zod";
 import {
   isRequiredFieldForZodDiscriminatedUnion,
   isRequiredFieldForZodIntersection,

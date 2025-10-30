@@ -1,6 +1,6 @@
 import { StatsResolvedRangeSchema } from "@atk/zod/stats-range";
 import { timestamp } from "@atk/zod/timestamp";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Output schema for portfolio endpoint

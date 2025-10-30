@@ -8,8 +8,13 @@
     "description": "ليس لديك إذن لإدارة الكيانات. تواصل مع المسؤول للحصول على صلاحيات إضافية."
   },
   "status": {
-    "registered": "مسجل",
-    "pending": "قيد التسجيل"
+    "registered": "نشط",
+    "pending": "غير نشط"
+  },
+  "details": {
+    "basicInfo": {
+      "title": "معلومات أساسية"
+    }
   },
   "entityTable": {
     "columns": {

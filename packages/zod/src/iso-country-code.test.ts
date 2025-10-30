@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it } from "bun:test";
-import * as z from "zod";
+import { z } from "zod";
 import {
   getCountriesSorted,
   getCountryName,

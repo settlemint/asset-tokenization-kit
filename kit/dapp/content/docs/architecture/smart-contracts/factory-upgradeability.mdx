@@ -1,648 +1,774 @@
 ---
 title: Factory patterns & upgradeability
 description:
-  The ATK Protocol uses factory patterns and upgradeable proxy architecture to
-  enable standardized deployment, consistent configuration, and safe upgrades of
-  tokenized assets. This infrastructure provides the foundation for scalable,
-  maintainable asset tokenization at enterprise scale.
+  Factory contracts and upgradeable proxy architecture enable standardized
+  deployment and safe contract evolution in production environments. This
+  infrastructure provides deterministic addressing, consistent initialization,
+  and controlled upgrade paths for tokenized assets at enterprise scale.
 pageTitle: Factory pattern and upgradeable architecture
 tags: [architecture, factory, upgradeability, proxy, deployment]
 ---
 
-## Factory pattern overview
+## Factory contract architecture
 
-Factory contracts provide standardized deployment mechanisms for creating new
-token instances with consistent configuration and security guarantees.
+Factory contracts establish standardized deployment infrastructure for tokenized
+assets. Rather than deploying token contracts manually with varying
+initialization patterns, factories ensure every token instance follows identical
+deployment procedures, inherits verified implementations, and integrates
+correctly with the broader system.
 
-### Benefits of factories
+The factory pattern separates deployment logic from business logic. Token
+contracts define what a bond or equity does; factory contracts define how those
+tokens are created, initialized, and registered within the ATK ecosystem.
 
-**Standardized deployment** - Ensures all tokens follow the same initialization
-pattern
+### Deployment consistency guarantees
 
-**Security guarantees** - Factory-deployed tokens inherit verified
-implementations
+Manual contract deployment introduces variation. Different operators might use
+different constructor parameters, skip initialization steps, or misconfigure
+access control. Factory deployment eliminates this variability through enforced
+deployment scripts.
 
-**Discovery mechanism** - Deployed tokens can be tracked and enumerated
+When a factory deploys a token, it executes a deterministic sequence: deploy the
+proxy contract at a CREATE2 address, link it to the verified implementation,
+initialize the token with validated parameters, register the token's OnchainID
+identity, assign required system roles, and emit standardized events for
+indexing. This sequence executes atomically—either all steps succeed, or the
+deployment reverts.
 
-**Access control integration** - Automatic role assignment during deployment
+The
+[AbstractATKTokenFactoryImplementation](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/system/tokens/factory/AbstractATKTokenFactoryImplementation.sol)
+contract defines this common deployment sequence for all asset types.
+Asset-specific factories (bonds, equities, funds) extend this base
+implementation with type-specific initialization logic while inheriting the core
+deployment guarantees.
 
-**Cost efficiency** - Shared implementation contracts reduce deployment costs
+### Deployment discovery and tracking
 
-## ATK system architecture
+Factories maintain deployment registries. Each deployed token is recorded in the
+factory's state with its address, type identifier, and deployment timestamp. The
+ATK System queries these registries to enumerate all tokens of a given type,
+verify deployment authenticity, and track system growth.
 
-The ATK system follows a layered architecture where each level builds upon the
-previous one:
+The
+[IATKTokenFactory](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/system/tokens/factory/IATKTokenFactory.sol)
+interface defines the deployment tracking methods. Factories emit
+`TokenDeployed` events containing the token address, implementation version, and
+deployer identity. The subgraph indexes these events, making deployment history
+queryable through GraphQL.
 
-<Mermaid chart={`
-graph TB
-    Addons(ADDONS<br/>Operational Tools)
-    Assets(ASSETS<br/>Financial Instruments)
-    System(SYSTEM<br/>Infrastructure)
-    Smart(SMART<br/>Protocol Foundation)
-
-    Addons --> Assets
-    Assets --> System
-    System --> Smart
-
-    style Addons fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    style Assets fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style System fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
-    style Smart fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
-
-`} />
-
-### Architecture layers
-
-**1. SMART - Protocol foundation**
-
-The foundational layer implementing the SMART Protocol (SettleMint Adaptable
-Regulated Token). Provides the core tokenization framework based on ERC-3643
-standards with modular extensions.
-
-**Why first**: Everything else builds on this foundation. It provides the basic
-token functionality, compliance framework, and extension system that all other
-layers depend on.
-
-**2. System - ATK infrastructure implementation**
-
-The infrastructure layer that manages the entire ATK ecosystem. This represents
-ATK's specific implementation choices for how to manage the SMART Protocol in
-production.
-
-**Why second**: The system layer manages the infrastructure that assets need to
-operate. It provides the identity management, compliance orchestration, and
-factory systems that assets use.
-
-**3. Assets - ATK asset implementations**
-
-Tokenized financial instruments built on the SMART Protocol using ATK's
-implementation patterns.
-
-**Why third**: Assets are built on top of the SMART Protocol foundation and use
-the system infrastructure. They represent the actual tokenized financial
-instruments that users interact with.
-
-**4. Addons - ATK operational tools**
-
-Additional functionality that extends the ATK platform with operational
-capabilities.
-
-**Why fourth**: Addons are operational tools that work with the existing assets
-and infrastructure. They provide additional functionality for managing and
-operating tokenized assets.
-
-**5. Vendor - Third-party dependencies**
-
-External contracts and libraries that the ATK Protocol depends on, including
-OpenZeppelin upgradeable contracts, ERC standards implementations, and other
-audited dependencies.
-
-### Role-based access control
-
-The ATK system uses a dual-category role system that separates human operator
-permissions from automated contract permissions. This structure ensures clear
-separation between administrative actions and system automation.
-
-#### People roles
-
-These roles are assigned to human operators (EOAs) who manage and operate the
-system:
-
-**SYSTEM_MANAGER_ROLE** - Bootstrap system, manage upgrades, register factories
-and modules
-
-**IDENTITY_MANAGER_ROLE** - Register and recover identities, manage user
-onboarding
-
-**TOKEN_MANAGER_ROLE** - Deploy and configure tokens
-
-**COMPLIANCE_MANAGER_ROLE** - Register compliance modules, configure bypass
-lists
-
-**ADDON_MANAGER_ROLE** - Manage system addons and extensions
-
-**CLAIM_POLICY_MANAGER_ROLE** - Manage trusted issuers and claim topics
-
-**AUDITOR_ROLE** - View-only access for compliance and monitoring
-
-#### System roles
-
-These roles are assigned to smart contracts for automated operations:
-
-**SYSTEM_MODULE_ROLE** - Core system modules that manage infrastructure
-
-**IDENTITY_REGISTRY_MODULE_ROLE** - Identity registry contract permissions
-
-**TOKEN_FACTORY_REGISTRY_MODULE_ROLE** - Token factory registry permissions
-
-**TOKEN_FACTORY_MODULE_ROLE** - Individual token factory permissions
-
-**ADDON_FACTORY_REGISTRY_MODULE_ROLE** - Addon registry permissions
-
-**ADDON_FACTORY_MODULE_ROLE** - Individual addon factory permissions
-
-See
-[Asset Contracts - Role definitions](/docs/architecture/smart-contracts/asset-contracts#role-definitions)
-for detailed role capabilities on individual tokens.
+Observability dashboards track factory usage metrics: deployment frequency, gas
+costs per deployment, implementation version distribution, and factory
+utilization rates. These metrics inform capacity planning and identify
+deployment bottlenecks as the platform scales.
 
 ## Token factory registry
 
-The Token Factory Registry serves as a centralized discovery mechanism for all
-token factories in the ATK system.
+The Token Factory Registry serves as the central directory for all factory
+contracts in the ATK system. Rather than hardcoding factory addresses throughout
+the platform, contracts query the registry to discover the appropriate factory
+for each asset type.
 
-### Registry capabilities
+### Registry-based factory discovery
 
-**Factory registration** - Register new factories for different asset types
+The
+[ATKTokenFactoryRegistry](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/system/tokens/factory/registry/ATKTokenFactoryRegistryImplementation.sol)
+maps asset type identifiers to factory addresses. When the frontend needs to
+deploy a bond, it queries the registry for the "BOND" type and receives the
+current bond factory address. This indirection enables factory upgrades without
+modifying client code.
 
-**Factory discovery** - Look up factory addresses by asset type
+Type identifiers use consistent string constants: `BOND`, `EQUITY`, `FUND`,
+`DEPOSIT`, `STABLECOIN`. The registry validates type identifiers during
+registration to prevent typos or duplicate registrations.
 
-**Type-based routing** - Route deployment requests to appropriate factories
+<Mermaid
+  chart={`
+flowchart TB
+    Client(Client Application)
+    Registry(Token Factory Registry)
+    BondFactory(Bond Factory)
+    EquityFactory(Equity Factory)
+    FundFactory(Fund Factory)
+    
+    Client -->|getFactory("BOND")| Registry
+    Registry -->|returns address| Client
+    Client -->|createBond(params)| BondFactory
+    
+    Registry -.->|stores mapping| BondFactory
+    Registry -.->|stores mapping| EquityFactory
+    Registry -.->|stores mapping| FundFactory
+    
+    style Registry fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Client fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style BondFactory fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style EquityFactory fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style FundFactory fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+`}
+/>
 
-**Access control** - Only authorized addresses can register factories
+### Registry access control
 
-### Registry usage
+Only addresses with `SYSTEM_MANAGER_ROLE` can register or update factory
+addresses in the registry. This prevents unauthorized parties from redirecting
+deployment requests to malicious factory contracts.
 
-```solidity
-// Register a new bond token factory
-IATKTokenFactoryRegistry registry = IATKTokenFactoryRegistry(registryAddress);
-registry.registerFactory(
-    "BOND",
-    bondFactoryAddress,
-    bondImplementationAddress
-);
+Factory registration requires both the factory address and its implementation
+address. The registry verifies that the factory contract exists at the provided
+address before recording the registration. This validation prevents registration
+of invalid or non-existent contracts.
 
-// Discover factory for equity tokens
-address equityFactory = registry.getFactory("EQUITY");
+### Factory versioning and updates
 
-// Deploy new equity token through discovered factory
-IATKEquityFactory(equityFactory).createEquity(params);
-```
+The registry supports factory replacement. When a factory implementation is
+upgraded, the `SYSTEM_MANAGER_ROLE` registers the new factory address for the
+same type identifier. Existing tokens deployed by the old factory remain
+unchanged; new deployments use the updated factory.
 
-## Proxy architecture
+The registry emits `FactoryRegistered` and `FactoryUpdated` events when
+factories are added or replaced. These events include the type identifier, old
+factory address (if applicable), and new factory address. The subgraph tracks
+factory version history, enabling auditors to determine which factory deployed
+each token.
 
-ATK uses upgradeable proxies to enable contract upgrades while preserving state
-and addresses.
+## Upgradeable proxy architecture
 
-### Proxy pattern
+The ATK system uses the Universal Upgradeable Proxy Standard (UUPS) pattern to
+enable contract logic upgrades while preserving deployed addresses and contract
+state. This architecture separates storage (maintained in the proxy) from logic
+(implemented in upgradeable contracts).
 
-**ATKTypedImplementationProxy** - Base proxy for all ATK contracts
+### Proxy delegation mechanism
 
-**Features:**
+The
+[ATKTypedImplementationProxy](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/system/ATKTypedImplementationProxy.sol)
+contract implements the proxy pattern. When a user calls a function on a proxy
+address, the proxy uses `delegatecall` to execute the function in the
+implementation contract's code while operating on the proxy's storage.
 
-- Delegatecall-based execution
-- Immutable proxy addresses
-- Upgradeable implementation logic
-- Type identifiers for implementation discovery
+This delegation preserves the proxy's address and state across upgrades. Users
+interact with the same contract address before and after an upgrade. The upgrade
+changes which implementation contract receives delegated calls, but the proxy
+address and stored data remain constant.
 
-### Upgradeable vs non-upgradeable
+<Mermaid
+  chart={`
+flowchart TB
+    User(User Transaction)
+    Proxy(Proxy Contract<br/>Storage + Address)
+    ImplV1(Implementation V1<br/>Logic)
+    ImplV2(Implementation V2<br/>Logic)
+    
+    User -->|call function()| Proxy
+    Proxy -->|delegatecall| ImplV1
+    
+    Proxy -.->|after upgrade| ImplV2
+    
+    Storage[(Proxy Storage<br/>Balances<br/>State Variables<br/>Access Control)]
+    
+    Proxy --- Storage
+    
+    style User fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Proxy fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style ImplV1 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ImplV2 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Storage fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+`}
+/>
 
-**Upgradeable tokens (UUPS pattern)**
+### Storage layout compatibility
 
-- Implementation can be upgraded
-- Proxy maintains state and address
-- Admin-controlled upgrade mechanism
-- Suitable for evolving requirements
+Upgrades must maintain storage layout compatibility. Since the proxy stores all
+state variables, the new implementation must interpret those storage slots
+identically to the old implementation. Adding new variables is safe (they occupy
+new slots); reordering existing variables corrupts state.
 
-**Non-upgradeable tokens**
+Solidity's storage layout rules assign slots sequentially based on variable
+declaration order. Implementation contracts use inheritance to preserve this
+order across upgrades. New versions extend the base contract and add new
+variables at the end, ensuring existing slots retain their meaning.
 
-- Fixed implementation
-- No upgrade capability
-- Lower complexity
-- Suitable for immutable requirements
+The ATK system uses OpenZeppelin's upgradeable contract library, which provides
+storage-safe base contracts and initialization patterns. These contracts prevent
+constructor usage (constructors don't affect proxy storage) and require explicit
+`initialize` functions called once after deployment.
 
-### Upgrade flow
+### Initialization protection
 
-<Mermaid chart={`
+Initialization functions must execute exactly once per proxy deployment.
+Multiple initializations could reset state, reassign roles, or create
+inconsistencies. The `Initializable` base contract enforces single
+initialization through a storage flag.
+
+When a proxy is deployed, the factory calls the implementation's `initialize`
+function through the proxy. The `Initializable` modifier checks the
+initialization flag, executes the initialization logic if uninitialized, sets
+the flag, and reverts if already initialized.
+
+Upgrades may introduce new initialization logic for added features. These
+functions use versioned modifiers (`initializerV2`, `initializerV3`) that track
+which initialization versions have executed, allowing partial re-initialization
+while preventing duplicate execution of earlier initialization code.
+
+## Upgrade authorization and governance
+
+The ATK system centralizes upgrade authority in the ATK System contract.
+Individual token proxies do not control their own upgrades; instead, the ATK
+System manages implementation addresses for all proxies it deploys.
+
+### Centralized upgrade management
+
+The
+[ATKSystemImplementation](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/system/ATKSystemImplementation.sol)
+contract stores implementation addresses for every system component: identity
+registries, compliance modules, token implementations, and addon contracts. When
+the system needs to upgrade a component, it updates the corresponding
+implementation address in its registry.
+
+This centralization provides consistent upgrade procedures across all
+components. Rather than each token proxy implementing its own upgrade
+authorization, proxies delegate upgrade decisions to the ATK System. The system
+verifies that only authorized roles (typically `SYSTEM_MANAGER_ROLE`) can
+trigger upgrades.
+
+### Upgrade execution flow
+
+Upgrades follow a structured sequence to minimize risk and ensure atomicity. The
+process begins with implementation deployment, followed by upgrade proposal,
+authorization verification, proxy update, and post-upgrade validation.
+
+The following sequence diagram illustrates the complete upgrade flow from the
+factory owner's initiation through the proxy's implementation pointer update:
+
+<Mermaid
+  chart={`
 sequenceDiagram
-    participant Admin
-    participant Proxy
-    participant OldImpl
-    participant NewImpl
+    participant FactoryOwner as Factory Owner
+    participant UpgradeContract as Upgrade Contract
+    participant Proxy as Proxy
+    participant OldImpl as Old Implementation
+    participant NewImpl as New Implementation
+    
+    FactoryOwner->>UpgradeContract: initiate upgrade(newImplAddress)
+    UpgradeContract->>UpgradeContract: validate new implementation
+    UpgradeContract->>UpgradeContract: verify authorization
+    UpgradeContract->>Proxy: upgradeToAndCall(newImpl)
+    
+    Proxy->>OldImpl: delegatecall _authorizeUpgrade
+    OldImpl->>UpgradeContract: check permissions
+    UpgradeContract-->>OldImpl: authorized
+    OldImpl-->>Proxy: upgrade authorized
+    
+    Proxy->>Proxy: update implementation pointer
+    Note over Proxy: Storage remains unchanged<br/>Address stays constant
+    
+    Proxy->>NewImpl: delegatecall initialize (if needed)
+    NewImpl-->>Proxy: initialization complete
+    
+    Note over OldImpl: Old implementation remains<br/>deployed for existing state
+    Note over NewImpl: New implementation receives<br/>all future calls
+    
+    Proxy-->>UpgradeContract: upgrade complete
+    UpgradeContract-->>FactoryOwner: success
+`}
+/>
 
-    Admin->>Proxy: upgradeToAndCall(newImpl)
-    Proxy->>OldImpl: Check upgrade authorization
-    OldImpl-->>Proxy: Authorized
-    Proxy->>Proxy: Update implementation pointer
-    Proxy->>NewImpl: Initialize new features (if needed)
-    Proxy-->>Admin: Upgrade complete
+This upgrade pattern ensures existing state remains intact while seamlessly
+transitioning to new logic. The old implementation contract remains deployed and
+accessible for historical reference, but the proxy redirects all future calls to
+the new implementation.
 
-`} />
-
-### Access control for upgrades
-
-**System-level control** - ATK System manages all implementation upgrades
-
-**Role-based authorization** - Only authorized roles can upgrade
-
-**Centralized management** - Single point of upgrade control
-
-**Audit trail** - All upgrades logged and traceable
-
-## ATK system lifecycle
-
-The ATK System follows a structured lifecycle from creation through operational
-use.
-
-### System creation phase
-
-The ATK System starts with the SystemFactory that creates new system instances:
-
-<Mermaid chart={`
+<Mermaid
+  chart={`
 sequenceDiagram
-    participant Admin
-    participant SystemFactory
-    participant AccessManager
-    participant ATKSystem
+    participant Manager as System Manager
+    participant System as ATK System
+    participant Proxy as Token Proxy
+    participant OldImpl as Old Implementation
+    participant NewImpl as New Implementation
+    participant Observer as Observability Stack
+    
+    Manager->>System: proposeUpgrade(newImplAddress)
+    System->>System: verify SYSTEM_MANAGER_ROLE
+    System->>NewImpl: verify implementation contract
+    System->>System: record upgrade proposal
+    
+    Manager->>System: executeUpgrade(proxyAddress)
+    System->>Proxy: upgradeToAndCall(newImpl, data)
+    Proxy->>OldImpl: check _authorizeUpgrade
+    OldImpl->>System: verify authorization
+    System-->>OldImpl: authorized
+    OldImpl-->>Proxy: upgrade authorized
+    
+    Proxy->>Proxy: update implementation pointer
+    Proxy->>NewImpl: call initialization (if provided)
+    NewImpl-->>Proxy: initialization complete
+    
+    Proxy-->>System: upgrade complete
+    System->>Observer: emit UpgradeExecuted event
+    System-->>Manager: upgrade successful
+    
+    Observer->>Observer: index upgrade event
+    Observer->>Observer: update contract version metrics
+`}
+/>
 
-    Admin->>SystemFactory: createSystem(params)
-    SystemFactory->>AccessManager: Deploy Access Manager
-    SystemFactory->>ATKSystem: Deploy System Instance
-    SystemFactory->>ATKSystem: Initialize with Access Manager
-    SystemFactory->>AccessManager: Grant Admin Role
-    SystemFactory->>Admin: System + Access Manager Created
+The upgrade proposal phase allows separation between deployment and execution.
+The system manager deploys the new implementation, registers it with the system,
+and validates its correctness. The actual upgrade execution occurs separately,
+after testing and review.
 
-    Note over Admin,ATKSystem: System exists with centralized access control<br/>but infrastructure not yet bootstrapped
+### Multi-signature governance
 
-`} />
+Production deployments should protect upgrade authority with multi-signature
+wallets. Rather than assigning `SYSTEM_MANAGER_ROLE` to a single externally
+owned account, the role is granted to a multi-sig contract requiring multiple
+authorized signers to approve upgrades.
 
-### Bootstrap phase
+This governance structure prevents single points of compromise. An attacker who
+gains control of one signer's private key cannot unilaterally upgrade contracts.
+The multi-sig threshold (e.g., 3-of-5 signers) balances security with
+operational flexibility.
 
-Each created ATK System must be bootstrapped to set up the core infrastructure:
+Time-locked upgrades provide additional security. The system manager proposes an
+upgrade, which enters a time-lock period (e.g., 48 hours) before execution.
+During this period, other signers review the proposal, the community is
+notified, and emergency procedures can halt the upgrade if issues are
+discovered.
 
-<Mermaid chart={`
-sequenceDiagram
-    participant Admin
-    participant ATKSystem
-    participant Infrastructure
-    participant Registries
+### Upgrade observability and auditing
 
-    Admin->>ATKSystem: bootstrap()
-    ATKSystem->>Infrastructure: Deploy All Core Proxies
-    Note over Infrastructure: Identity Registry, Compliance,<br/>Trusted Issuers, Topic Scheme,<br/>Identity Factory, Access Manager
+Every upgrade emits detailed events captured by the observability stack. The
+`ImplementationUpgraded` event records the proxy address, old implementation
+address, new implementation address, upgrade timestamp, and executing manager
+address.
 
-    ATKSystem->>Registries: Deploy Registry Proxies
-    Note over Registries: Token Factory Registry,<br/>Compliance Module Registry,<br/>System Addon Registry
+The [subgraph](/docs/architecture/data-indexing/blockchain-indexing) indexes
+these events, building a complete upgrade history for every contract in the
+system. Auditors query this history to verify upgrade frequency, review upgrade
+authorization, and ensure upgrade procedures followed governance rules.
 
-    ATKSystem->>Infrastructure: Configure Core Components
-    ATKSystem->>Registries: Register Identity Verification Module
-    Note over Registries: Essential module pre-registered
+Observability dashboards display implementation version distributions across
+deployed contracts. These metrics identify contracts running outdated
+implementations, track upgrade adoption rates, and highlight potential security
+vulnerabilities in older versions requiring urgent upgrades.
 
-    ATKSystem->>Admin: System Ready for Configuration
+## Upgrade vs. immutability: pattern selection
 
-`} />
+Not all contracts should be upgradeable. Upgradeability introduces complexity,
+governance requirements, and potential security risks. The decision between
+upgradeable and immutable deployments depends on the contract's role, expected
+evolution, and risk tolerance.
 
-### Post-bootstrap configuration
+### When to use upgradeable contracts
 
-After bootstrap, the system is ready for use but requires configuration:
+Upgradeable contracts suit system infrastructure where requirements evolve over
+time. Core system components like the identity registry, compliance engine, and
+token factories benefit from upgradeability because regulatory requirements
+change, new features emerge, and bugs may require fixes.
 
-<Mermaid chart={`
-sequenceDiagram
-    participant Admin
-    participant TFRegistry
-    participant CMRegistry
-    participant SAR
+Consider a scenario where a new regulatory requirement mandates additional
+investor disclosures. If token contracts are upgradeable, the system manager
+deploys an updated implementation with the new disclosure logic, upgrades all
+tokens, and achieves compliance without migrating state or changing token
+addresses.
 
-    Note over Admin: After Bootstrap
+System-level infrastructure should prioritize upgradeability. The ATK System,
+factory contracts, and registries use UUPS proxies because these components
+orchestrate the entire platform. Bugs in these contracts affect all deployed
+tokens; upgradeability provides a path to fix critical issues without
+redeploying the entire system.
 
-    Admin->>TFRegistry: registerTokenFactory(BondFactory)
-    Admin->>TFRegistry: registerTokenFactory(EquityFactory)
-    Admin->>TFRegistry: registerTokenFactory(FundFactory)
-    Note over TFRegistry: Register all needed token types
+### When to use immutable contracts
 
-    Admin->>CMRegistry: registerComplianceModule(CountryAllow)
-    Admin->>CMRegistry: registerComplianceModule(AddressBlock)
-    Admin->>CMRegistry: registerComplianceModule(CustomModule)
-    Note over CMRegistry: Register compliance modules
+Immutable contracts suit final, well-understood logic where changes would
+undermine trust. Individual compliance modules, mathematical libraries, and
+cryptographic functions often work better as immutable contracts because their
+correctness is provable and any modification raises security concerns.
 
-    Admin->>SAR: registerAddon(VaultSystem)
-    Admin->>SAR: registerAddon(XVPBridge)
-    Admin->>SAR: registerAddon(CustomInfrastructure)
-    Note over SAR: Register system addons
+Consider an immutable compliance module that checks whether an investor's
+country is permitted. This logic is simple, well-tested, and regulatory
+authorities may have reviewed and approved the exact bytecode deployed on-chain.
+Making it upgradeable introduces risk: an upgrade could silently weaken
+compliance rules without external visibility.
 
-    SAR-->>Admin: System Fully Configured
+Individual token deployments may prefer immutability after a stabilization
+period. During initial issuance, upgradeability allows fixing bugs and adding
+features. Once the token has been live for months, operated correctly, and
+passed audits, the issuer might intentionally revoke upgrade privileges, making
+the contract permanently immutable. This commitment strengthens investor
+confidence by removing the risk of malicious upgrades.
 
-`} />
+### Hybrid approach: factory-managed immutability
 
-### Token creation flow
+The ATK factory pattern enables a hybrid approach. Factories are upgradeable,
+but the tokens they deploy can be immutable. When requirements change, the
+factory is upgraded to deploy tokens with new logic. Existing tokens remain
+unchanged; new tokens incorporate the improvements.
 
-Once the system is configured, tokens can be deployed through registered
-factories:
+This strategy suits scenarios where backward compatibility isn't required. New
+bond issuances use the latest compliance rules and yield calculation logic,
+while older bonds continue operating under their original rules. Investors in
+legacy bonds have certainty about unchanging behavior; new investors benefit
+from improved implementations.
 
-<Mermaid chart={`
-sequenceDiagram
-    participant User
-    participant TFRegistry
-    participant Factory
-    participant Token
-    participant Identity
-
-    User->>TFRegistry: getTokenFactory(tokenType)
-    TFRegistry-->>User: Factory Address
-
-    User->>Factory: createToken(params)
-    Factory->>Factory: Deploy Token via CREATE2
-    Factory->>Identity: Create Contract Identity
-    Note over Identity: Token gets its own OnchainID
-    Factory->>Token: Initialize with Identity
-    Factory->>User: Token Created
-
-`} />
-
-### Transfer compliance flow
-
-During token transfers, the compliance system validates transactions:
-
-<Mermaid chart={`
-sequenceDiagram
-    participant User
-    participant Token
-    participant Compliance
-    participant Module
-    participant Identity
-
-    User->>Token: transfer(to, amount)
-    Token->>Compliance: canTransfer(from, to, amount)
-
-    Note over Token,Compliance: Token has pre-configured modules
-
-    loop For each configured module
-        Compliance->>Module: checkCompliance(from, to, amount)
-        Module->>Identity: verifyIdentity(to)
-        Identity-->>Module: verified
-        Module-->>Compliance: compliant
+<Mermaid
+  chart={`
+flowchart TB
+    Registry(Token Factory Registry)
+    
+    subgraph OldDeployments[Immutable Legacy Tokens]
+        BondV1A(Bond V1 Token A)
+        BondV1B(Bond V1 Token B)
+        BondV1C(Bond V1 Token C)
     end
+    
+    subgraph NewFactory[Upgraded Factory]
+        FactoryV2(Factory V2<br/>Upgraded Implementation)
+    end
+    
+    subgraph NewDeployments[Immutable New Tokens]
+        BondV2A(Bond V2 Token D)
+        BondV2B(Bond V2 Token E)
+    end
+    
+    Registry -->|historical deployments| OldDeployments
+    Registry -->|current factory| NewFactory
+    NewFactory -->|deploys new tokens| NewDeployments
+    
+    style Registry fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style FactoryV2 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style BondV1A fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style BondV1B fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style BondV1C fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style BondV2A fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style BondV2B fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+`}
+/>
 
-    Compliance-->>Token: allowed
-    Token->>Token: _transfer(from, to, amount)
+## Real-world upgrade scenarios
 
-`} />
+Understanding upgrade patterns requires examining specific scenarios where
+implementations must change. These scenarios illustrate when upgrades are
+necessary, how they are executed, and what risks they mitigate.
 
-## Token sale module
+### Scenario: regulatory compliance update
 
-The Token Sale module provides a comprehensive solution for conducting compliant
-token sales with advanced features.
+A jurisdiction introduces a new regulation requiring token transfers to include
+a reference identifier linking to a disclosure document. Existing token
+contracts do not support this field; adding it requires an implementation
+upgrade.
 
-### Module architecture
+The system manager deploys a new token implementation extending the `transfer`
+function to accept an optional reference parameter. The implementation maintains
+backward compatibility by making the reference optional and defaulting to an
+empty value if not provided.
 
-The token sale module consists of four main components:
+The upgrade proposal is submitted to the multi-signature governance wallet.
+During the review period, the new implementation is deployed to testnet, tested
+with representative transactions, and audited for storage layout compatibility.
+After 48 hours, the multi-sig signers approve the upgrade.
 
-**1. IATKTokenSale.sol** - Interface defining all functions, events, and errors
+The system manager executes the upgrade across all tokens deployed through the
+factory. The subgraph indexes the upgrade events, and the observability
+dashboard confirms all tokens now run the updated implementation. Transfer
+transactions include the new reference field, and the system achieves regulatory
+compliance without disrupting existing token holders.
 
-**2. ATKTokenSale.sol** - Main implementation contract handling:
+### Scenario: security vulnerability patch
 
-- Compliance integration with ATK identity registry
-- Vesting with configurable cliff periods
-- Multiple payment methods (native + ERC20)
-- Flexible pricing with configurable ratios
-- Admin controls with role-based access
-- Upgradeable contract pattern
+A security researcher discovers a reentrancy vulnerability in the yield
+distribution logic. The vulnerability allows an attacker to recursively call the
+distribution function, potentially draining contract funds.
 
-**3. ATKTokenSaleProxy.sol** - Transparent upgradeable proxy for contract
-upgrades while preserving state
+The vulnerability is disclosed privately to the development team. An emergency
+patch is prepared, fixing the reentrancy vector by adding a reentrancy guard to
+affected functions. The patch is reviewed, tested against exploit scenarios, and
+verified to prevent the attack.
 
-**4. ATKTokenSaleFactory.sol** - Factory contract for deploying new token sale
-instances with deterministic addresses using CREATE2
+Because the contracts are upgradeable, the patch can be deployed immediately. If
+the contracts were immutable, the only remediation would be migrating all state
+to new contract addresses—a complex, expensive, and risky operation. The upgrade
+executes within hours of vulnerability disclosure, securing user funds without
+requiring manual migration.
 
-### Key features
+### Scenario: feature enhancement
 
-**Compliance and security**
+A new feature enables automatic yield reinvestment. Token holders can opt into a
+program where distributed yields are automatically used to purchase additional
+tokens rather than being paid out as currency.
 
-- Identity verification through ATK identity registry
-- Role-based access with separate roles for administration and funds management
-- Reentrancy protection against attacks
-- Pausable operations for emergencies
+This feature requires new state variables to track opt-in status and new
+functions to process reinvestment transactions. The implementation is deployed,
+tested, and proposed for upgrade. Because the feature is additive, it does not
+affect existing functionality; token holders who do not opt in experience no
+behavior change.
 
-**Flexible payment options**
+The upgrade demonstrates the value of upgradeability for non-critical
+enhancements. The feature can be deployed to existing tokens without requiring
+users to migrate to new contracts. Adoption is gradual; as users opt in, they
+benefit from the new functionality while maintaining their existing token
+balances and addresses.
 
-- Native currency direct payments
-- Multiple ERC20 token support
-- Dynamic pricing with configurable ratios
-- Real-time price calculation
+### Scenario: gas optimization
 
-**Vesting and time controls**
+After several months in production, gas profiling reveals that certain
+compliance check functions consume excessive gas. An optimized implementation
+reduces gas usage by 30% through algorithmic improvements and storage pattern
+changes.
 
-- Linear vesting with cliff periods
-- Immediate distribution option
-- Time-based sale enforcement
-- Secure withdrawal management
+The optimization maintains identical external behavior but changes internal
+implementation details. Because the contracts are upgradeable, this optimization
+can be deployed to all tokens, immediately reducing transaction costs for all
+users without requiring code changes in client applications or modifications to
+user workflows.
 
-**Factory deployment**
+## Upgrade safety mechanisms
 
-- CREATE2 deployment for predictable addresses
-- Automated setup with role assignment
-- Batch deployment efficiency
+Upgrades introduce risk. Incorrect implementations can corrupt state, break
+functionality, or introduce vulnerabilities. The ATK system includes multiple
+safety mechanisms to mitigate upgrade risks and ensure upgrade procedures follow
+best practices.
 
-### Sale lifecycle
+### Storage gap patterns
 
-**1. Setup phase (SaleStatus.SETUP)**
-
-- Configure sale parameters (timing, pricing, limits)
-- Add accepted payment currencies
-- Configure vesting (if applicable)
-- Set purchase limits
-
-**2. Active phase (SaleStatus.ACTIVE)**
-
-- Accept token purchases from eligible buyers
-- Enforce purchase limits and hard cap
-- Process payments and token distributions
-
-**3. Paused phase (SaleStatus.PAUSED)**
-
-- Temporarily halt purchases while maintaining configuration
-- Can be resumed to active state
-
-**4. Ended phase (SaleStatus.ENDED)**
-
-- Permanently concluded sale
-- Allow withdrawal of remaining tokens (if vesting enabled)
-- Enable funds withdrawal by administrators
-
-### Usage examples
-
-**Deploying a token sale:**
-
-```solidity
-// Using the factory
-address saleAddress = factory.deployTokenSale(
-    tokenAddress,     // ATK token address
-    adminAddress,     // Sale administrator
-    startTime,        // Unix timestamp
-    86400,           // 24 hours duration
-    1000000e18,      // 1M tokens hard cap
-    1e15,            // 0.001 ETH per token
-    nonce            // Deployment nonce
-);
-```
-
-**Configuring vesting:**
-
-```solidity
-// 1 year vesting with 3 month cliff
-sale.configureVesting(
-    block.timestamp + 86400,  // Start vesting tomorrow
-    365 days,                 // 1 year vesting duration
-    90 days                   // 3 month cliff
-);
-```
-
-**Adding payment currencies:**
+Upgradeable contracts reserve storage slots for future variables using the
+storage gap pattern. Rather than tightly packing storage variables,
+implementations include a `__gap` array sized to leave room for future
+additions.
 
 ```solidity
-// Add USDC with 1:1000 ratio (1 USDC = 1000 tokens)
-sale.addPaymentCurrency(
-    usdcAddress,
-    1000 * 1e18  // Price ratio scaled by 1e18
-);
+contract TokenImplementationV1 {
+    address public admin;
+    uint256 public totalSupply;
+    mapping(address => uint256) public balances;
+
+    // Reserve 50 slots for future variables
+    uint256[47] private __gap;
+}
 ```
 
-**Purchasing tokens:**
+When V2 adds a new variable, it reduces the gap size by the number of new slots:
 
 ```solidity
-// With native currency
-uint256 tokenAmount = sale.buyTokens{value: 1 ether}();
+contract TokenImplementationV2 is TokenImplementationV1 {
+    uint256 public feeBasisPoints; // New variable
 
-// With ERC20 token
-IERC20(usdcToken).approve(saleAddress, 1000e6);
-uint256 tokenAmount = sale.buyTokensWithERC20(usdcToken, 1000e6);
+    // Gap reduced to maintain total slot count
+    uint256[46] private __gap;
+}
 ```
 
-### Security considerations
+This pattern ensures new variables occupy slots beyond the original
+implementation's variables, preventing storage collisions and maintaining
+compatibility.
 
-**Access control**
+### Upgrade authorization functions
 
-- `DEFAULT_ADMIN_ROLE` - Full administrative access
-- `SALE_ADMIN_ROLE` - Sale configuration and management
-- `FUNDS_MANAGER_ROLE` - Withdrawal of sale proceeds
+UUPS proxies require implementation contracts to include an `_authorizeUpgrade`
+function. This function is called before upgrade execution and can implement
+custom authorization logic.
 
-**Input validation**
+In the ATK system, `_authorizeUpgrade` verifies that the caller has
+`SYSTEM_MANAGER_ROLE` in the ATK System contract. This prevents unauthorized
+parties from upgrading contracts even if they somehow gain control of the
+proxy's upgrade function.
 
-- All timestamps and amounts validated
-- Address zero checks for all parameters
-- Arithmetic overflow protection (Solidity 0.8+)
+```solidity
+function _authorizeUpgrade(address newImplementation) internal override {
+    require(
+        atkSystem.hasRole(SYSTEM_MANAGER_ROLE, msg.sender),
+        "Unauthorized upgrade"
+    );
+    emit UpgradeAuthorized(newImplementation, msg.sender);
+}
+```
 
-**Compliance integration**
+### Initialization version tracking
 
-- Automatic buyer eligibility verification
-- Integration with ATK identity registry
-- Respect for token compliance rules
+Upgrades may require re-initialization to set up new features. The
+`Initializable` contract tracks initialization versions through bit flags,
+allowing implementations to define which initialization functions have executed.
 
-### Deployment checklist
+When V2 adds a feature requiring initialization, it defines an `initializeV2`
+function with the `reinitializer(2)` modifier. This modifier ensures V2
+initialization executes exactly once, regardless of how many times the contract
+is upgraded or downgraded.
 
-1. ✅ Deploy implementation contract
-2. ✅ Deploy factory with implementation address
-3. ✅ Set up proper access controls
-4. ✅ Configure trusted forwarder (if using meta-transactions)
-5. ✅ Verify all contracts on block explorer
-6. ✅ Test with small amounts before production use
+```solidity
+function initializeV2(uint256 newFeatureParam) public reinitializer(2) {
+    _newFeatureParam = newFeatureParam;
+    _setupNewFeature();
+}
+```
 
-## Upgradeability patterns
+### Implementation validation
 
-The ATK system uses centralized implementation management for consistent and
-secure upgrades.
+The ATK System validates implementation contracts before recording them in
+registries. Validation checks that the implementation address contains contract
+code, implements required interfaces, and matches expected type identifiers.
 
-### Centralized upgrade mechanism
+This validation prevents misconfigurations where the wrong implementation
+address is registered for a token type. For example, registering the bond
+implementation address as the equity factory implementation would cause equity
+deployments to fail. The validation step catches these errors before they affect
+production.
 
-**System-managed upgrades** - ATK System manages all implementation addresses
+## Observability integration
 
-**Consistent updates** - All components upgrade through the same mechanism
+The observability stack tracks contract versions, upgrade events, and
+implementation distribution across deployed tokens. This visibility enables
+operators to monitor upgrade adoption, identify outdated contracts, and verify
+upgrade execution.
 
-**Version control** - Track implementation versions across the system
+### Version tracking metrics
 
-**Rollback capability** - System can revert to previous implementations if
-needed
+The subgraph indexes every deployment and upgrade event, building a database of
+which implementation version each proxy is running. The
+[observability dashboard](/docs/developer-guides/deployment-ops/observability-monitoring)
+displays implementation version distributions for each token type.
 
-### Upgrade safety features
+Operators query these metrics to answer questions like: "What percentage of
+bonds are running the latest implementation?" or "Which tokens still use the
+vulnerable V1.2 implementation?" This information informs upgrade planning and
+identifies contracts requiring urgent attention.
 
-**Access control** - Only authorized roles can upgrade implementations
+### Upgrade event monitoring
 
-**Initialization protection** - Prevent re-initialization attacks
+Upgrade events flow through the observability pipeline. When an upgrade
+executes, the `ImplementationUpgraded` event is emitted, indexed by the
+subgraph, stored in PostgreSQL, and displayed on real-time dashboards.
 
-**Storage layout preservation** - Upgrades maintain state compatibility
+Alerts trigger if upgrades occur outside maintenance windows, if unauthorized
+addresses attempt upgrades, or if upgrade execution fails. These alerts enable
+rapid response to unexpected upgrade activity or potential security incidents.
 
-**Event logging** - All upgrades logged for audit trail
+### Gas cost analysis
 
-### Upgrade vs registration
+Observability dashboards track gas costs for factory deployments and upgrade
+transactions. These metrics inform capacity planning: as gas prices fluctuate,
+operators monitor whether deployment costs remain within acceptable ranges.
 
-**Implementation upgrades** - Updating existing contract logic
+Gas cost trends also reveal optimization opportunities. If deployment costs
+increase over time, profiling identifies which initialization steps consume
+excessive gas and guides implementation improvements to reduce costs.
 
-- Managed by ATK System
-- Affects all existing instances
-- Requires careful migration planning
+## Production deployment strategy
 
-**Factory/module registration** - Adding new capabilities
+Production environments require careful planning for factory deployment,
+implementation management, and upgrade procedures. The following strategy
+minimizes risk while enabling ongoing system evolution.
 
-- Add new token types through factory registry
-- Add new compliance modules through module registry
-- Add new system addons through addon registry
-- Immediately available system-wide
+### Initial system deployment
 
-## Production considerations
+Begin by deploying the ATK System Factory and creating a new system instance.
+The factory deploys the ATK System proxy and initializes it with the founding
+admin address. This admin should be a multi-signature wallet, not an individual
+externally owned account.
 
-### Deployment strategy
+Once the system exists, execute the bootstrap process. Bootstrap deploys core
+infrastructure contracts: identity registry, compliance module registry, trusted
+issuer registry, claim topics registry, token factory registry, and addon
+registry. Bootstrap is a one-time operation per system instance; subsequent
+configuration uses registry functions.
 
-**1. Create system** - Use SystemFactory to create new system instances
+After bootstrap, register factory contracts for each asset type. Deploy bond
+factory implementation, deploy bond factory proxy, initialize factory with ATK
+System address, register factory in token factory registry. Repeat for equity,
+fund, deposit, and stablecoin factories.
 
-**2. Bootstrap once** - Single bootstrap call sets up entire infrastructure per
-system
+<Mermaid
+  chart={`
+flowchart TB
+    Deploy(Deploy System Factory)
+    Create(Create System Instance)
+    Bootstrap(Execute Bootstrap)
+    RegInfra(Deploy Infrastructure<br/>Identity Registry<br/>Compliance Registry<br/>Factory Registry)
+    RegFactories(Register Asset Factories<br/>Bond Factory<br/>Equity Factory<br/>Fund Factory)
+    RegModules(Register Compliance Modules<br/>Country Restrictions<br/>Transfer Limits<br/>Accreditation Checks)
+    Ready(System Ready for Token Deployment)
+    
+    Deploy --> Create
+    Create --> Bootstrap
+    Bootstrap --> RegInfra
+    RegInfra --> RegFactories
+    RegFactories --> RegModules
+    RegModules --> Ready
+    
+    style Deploy fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Create fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Bootstrap fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style RegInfra fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style RegFactories fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style RegModules fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Ready fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+`}
+/>
 
-**3. Register components** - Add token factories, compliance modules, and system
-addons through registries
+### Upgrade testing procedures
 
-**4. Permission management** - Assign roles based on operational needs
+Never upgrade production implementations without comprehensive testing. Begin by
+deploying the new implementation to testnet. Execute representative
+transactions: token transfers, compliance checks, yield distributions, and
+administrative functions. Compare gas costs, verify state changes, and ensure no
+regressions.
 
-**5. Monitoring** - Track all system events for operational visibility
+Deploy the new implementation to a staging environment that mirrors production
+configuration. Perform upgrade dry runs on staging proxies, validate
+post-upgrade state, and test rollback procedures. Only after staging validation
+should production upgrades be considered.
 
-### Operational security
+### Phased upgrade rollout
 
-**Multi-sig admin** - Use multi-signature wallets for admin roles
+For large-scale upgrades affecting many tokens, phase the rollout. Begin by
+upgrading a small subset of tokens (e.g., internal test tokens or low-value
+assets). Monitor these tokens for issues over 24-48 hours. If no problems
+emerge, upgrade additional tokens in larger batches.
 
-**Time-locked upgrades** - Implement time delays for critical changes
+Phased rollout limits blast radius. If the upgrade introduces a subtle bug, only
+early-phase tokens are affected. The remaining tokens stay on the old
+implementation until the bug is fixed. This strategy prevents system-wide
+failures from untested implementation changes.
 
-**Emergency procedures** - Define emergency pause and recovery procedures
+### Rollback procedures
 
-**Audit trail** - Maintain comprehensive logs of all operations
+Despite careful testing, upgrades may need reverting. The UUPS pattern supports
+rollback: the proxy can be re-pointed to the previous implementation address.
+Rollback procedures should be documented, tested, and ready to execute on short
+notice.
 
-### Best practices
-
-**Factory usage**
-
-- Always deploy through registered factories
-- Verify factory addresses before deployment
-- Monitor factory events for tracking
-
-**Upgrade planning**
-
-- Test upgrades thoroughly on testnets
-- Plan migration strategy for state changes
-- Communicate upgrades to stakeholders
-- Have rollback plan ready
-
-**Access management**
-
-- Use principle of least privilege
-- Regular access review and rotation
-- Separate duties across roles
-- Monitor privileged operations
+Rollback decisions depend on the nature of the issue. If the upgrade corrupts
+state or introduces a critical vulnerability, immediate rollback is appropriate.
+If the upgrade merely degrades performance or introduces non-critical bugs, a
+scheduled rollback after user notification may be preferable.
 
 ## Conclusion
 
-The factory and proxy architecture provides the foundation for asset
-tokenization:
+Factory patterns and upgradeable proxies form the foundation of the ATK system's
+deployment and evolution infrastructure. Factories ensure consistent, auditable
+token deployment with deterministic addressing and standardized initialization.
+Upgradeable proxies enable the system to evolve—fixing bugs, adding features,
+and adapting to regulatory changes—without disrupting deployed tokens or
+requiring state migration.
 
-**Key benefits:**
+This architecture balances flexibility with security. Centralized upgrade
+management through the ATK System prevents unauthorized modifications while
+enabling coordinated upgrades across all system components. Multi-signature
+governance and time-locked upgrades provide additional safety, ensuring upgrades
+cannot be executed unilaterally.
 
-- **Standardization** - Consistent deployment patterns across all assets
-- **Upgradeability** - Safe upgrades while preserving state and addresses
-- **Scalability** - Efficient deployment with shared implementations
-- **Security** - Centralized access control and upgrade management
-- **Flexibility** - Support for both upgradeable and immutable deployments
+The choice between upgradeable and immutable contracts depends on context.
+System infrastructure benefits from upgradeability for ongoing evolution;
+individual tokens may transition to immutability after stabilization to maximize
+trust. The factory pattern enables both approaches, allowing new tokens to use
+improved implementations while legacy tokens remain unchanged.
 
-The centralized implementation management approach differentiates ATK from
-traditional per-contract upgrade patterns, providing a single point of control
-for system-wide upgrades while maintaining the flexibility to add new
-capabilities through registry-based discovery.
+Observability integration ensures visibility into deployment patterns,
+implementation versions, and upgrade history. Operators monitor upgrade
+adoption, track contract versions, and verify upgrade procedures follow
+governance rules. This visibility supports audit requirements and informs
+operational decisions.
 
-This architecture enables organizations to deploy, manage, and evolve compliant
-tokenization solutions while maintaining the security and auditability required
-for regulated financial instruments.
+Together, these patterns enable the ATK system to operate as production
+infrastructure for regulated financial instruments—secure enough for
+institutional adoption, flexible enough to evolve with regulatory requirements,
+and observable enough to meet enterprise operational standards.

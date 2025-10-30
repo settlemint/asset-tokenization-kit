@@ -2,7 +2,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { baseRouter } from "@/orpc/procedures/base.router";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { getAddress } from "viem";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * GraphQL query to fetch trusted issuer topics for the authenticated user.

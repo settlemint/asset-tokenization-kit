@@ -4,7 +4,7 @@ import { basisPoints } from "@atk/zod/basis-points";
 import { bigDecimal } from "@atk/zod/bigdecimal";
 import { fundCategory } from "@atk/zod/fund-categories";
 import { fundClass } from "@atk/zod/fund-classes";
-import * as z from "zod";
+import { z } from "zod";
 
 export const FundSchema = z.object({
   managementFeeBps: basisPoints().describe(

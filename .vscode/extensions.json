@@ -13,6 +13,8 @@
     "usernamehw.errorlens",
     "dbaeumer.vscode-eslint",
     "github.vscode-pull-request-github",
-    "typescriptteam.native-preview"
+    "typescriptteam.native-preview",
+    "tim-koehler.helm-intellisense",
+    "vitest.explorer"
   ]
 }
