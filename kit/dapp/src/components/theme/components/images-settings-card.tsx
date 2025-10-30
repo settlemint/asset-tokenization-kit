@@ -64,7 +64,7 @@ export function ImagesSettingsCard({
       case "favicon":
         return "faviconUrl";
       default:
-        return "faviconUrl";
+        throw new Error(`Unknown ThemeLogoMode: ${mode}`);
     }
   };
 

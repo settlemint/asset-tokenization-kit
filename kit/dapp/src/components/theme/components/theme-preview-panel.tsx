@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import type { ThemeConfig, ThemeToken } from "../lib/schema";
 import { cn } from "@/lib/utils";
+import { safeCssBackgroundImage } from "@/lib/utils/css-url";
 import { Paintbrush } from "lucide-react";
 import type { CSSProperties } from "react";
 import { FONT_PREVIEW_TEXT } from "../lib/constants";
@@ -363,8 +364,8 @@ function resolveBackgroundImage(theme: ThemeConfig, mode: ThemeMode): string {
   const trimmedValue = typeof rawValue === "string" ? rawValue.trim() : "";
 
   if (trimmedValue.length > 0) {
-    return `url(${trimmedValue})`;
+    return safeCssBackgroundImage(trimmedValue);
   }
 
-  return `url(${fallback})`;
+  return safeCssBackgroundImage(fallback);
 }

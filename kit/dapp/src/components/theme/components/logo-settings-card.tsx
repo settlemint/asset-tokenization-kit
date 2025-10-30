@@ -63,7 +63,7 @@ export function LogoSettingsCard({
       case "darkIcon":
         return "darkIconUrl";
       default:
-        return "lightUrl";
+        throw new Error(`Unknown ThemeLogoMode: ${mode}`);
     }
   };
 

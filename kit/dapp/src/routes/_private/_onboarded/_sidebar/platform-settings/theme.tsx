@@ -716,6 +716,12 @@ function ThemeSettingsPage() {
           return backgroundDarkInputRef.current;
         case "favicon":
           return faviconInputRef.current;
+        case "appleTouchIcon":
+          return appleTouchIconInputRef.current;
+        case "favicon96":
+          return favicon96InputRef.current;
+        case "faviconSvg":
+          return faviconSvgInputRef.current;
       }
     })();
     target?.click();
