@@ -13,6 +13,7 @@ import {
 import { StatsPortfolioOutputSchema } from "@/orpc/routes/system/stats/routes/portfolio.schema";
 import { StatsTopicSchemesStatsOutputSchema } from "@/orpc/routes/system/stats/routes/topic-schemes-stats.schema";
 import { StatsTopicSchemesStatsStateOutputSchema } from "@/orpc/routes/system/stats/routes/topic-schemes-stats-state.schema";
+import { StatsTopicSchemeClaimsCoverageOutputSchema } from "@/orpc/routes/system/stats/routes/topic-scheme-claims-coverage.schema";
 import {
   StatsTransactionCountInputSchema,
   StatsTransactionCountOutputSchema,
@@ -206,6 +207,18 @@ const statsTopicSchemesStatsState = baseContract
   })
   .output(StatsTopicSchemesStatsStateOutputSchema);
 
+const statsTopicSchemeClaimsCoverage = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/topic-scheme-claims-coverage",
+    description:
+      "Retrieve topic schemes that have no active claims, identifying coverage gaps in the claim system",
+    successDescription:
+      "Topic scheme claims coverage statistics retrieved successfully",
+    tags: ["stats", "system", "topic-schemes", "claims"],
+  })
+  .output(StatsTopicSchemeClaimsCoverageOutputSchema);
+
 export const statsContract = {
   assets: statsAssets,
   assetLifecycle: statsAssetLifecycle,
@@ -218,6 +231,7 @@ export const statsContract = {
   transactionHistory: statsTransactionHistory,
   topicSchemesStats: statsTopicSchemesStats,
   topicSchemesStatsState: statsTopicSchemesStatsState,
+  topicSchemeClaimsCoverage: statsTopicSchemeClaimsCoverage,
   trustedIssuerStats: statsTrustedIssuerStats,
   trustedIssuerStatsState: statsTrustedIssuerStatsState,
   value: statsValue,

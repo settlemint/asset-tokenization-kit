@@ -476,7 +476,7 @@ The following table lists the configurable parameters of this chart and their de
 | Repository | Name | Version |
 |------------|------|---------|
 | https://grafana.github.io/helm-charts | alloy | 1.4.0 |
-| https://grafana.github.io/helm-charts | grafana | 10.1.2 |
+| https://grafana.github.io/helm-charts | grafana | 10.1.4 |
 | https://grafana.github.io/helm-charts | loki | 6.44.0 |
 | https://grafana.github.io/helm-charts | tempo | 1.24.0 |
 | https://kubernetes-sigs.github.io/metrics-server/ | metrics-server | 3.13.0 |

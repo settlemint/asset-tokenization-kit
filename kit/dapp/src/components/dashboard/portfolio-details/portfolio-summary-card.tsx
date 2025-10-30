@@ -27,6 +27,12 @@ export function PortfolioSummaryCard({
     orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
   );
 
+  const last7DaysPortfolioStats = useSuspenseQuery(
+    orpc.system.stats.portfolio.queryOptions({
+      input: "trailing7Days" as const,
+    })
+  );
+
   if (!hasAssets) {
     return (
       <EmptyState
@@ -45,17 +51,29 @@ export function PortfolioSummaryCard({
           type: "currency",
           currency: baseCurrency as FiatCurrency,
         })}
+        previousValue={
+          last7DaysPortfolioStats.data.data.at(0)?.totalValueInBaseCurrency ?? 0
+        }
+        currentValue={
+          last7DaysPortfolioStats.data.data.at(-1)?.totalValueInBaseCurrency ??
+          0
+        }
+        period="fromLastWeek"
+        formatOptions={{
+          type: "currency",
+          currency: baseCurrency as FiatCurrency,
+        }}
         icon={TrendingUp}
-      />
-      <StatCard
-        title={t("charts.portfolio.summary.assetFactories")}
-        value={totalTokenFactories}
-        icon={Building2}
       />
       <StatCard
         title={t("charts.portfolio.summary.totalAssets")}
         value={totalAssetsHeld}
         icon={Briefcase}
+      />
+      <StatCard
+        title={t("charts.portfolio.summary.assetFactories")}
+        value={totalTokenFactories}
+        icon={Building2}
       />
     </div>
   );
