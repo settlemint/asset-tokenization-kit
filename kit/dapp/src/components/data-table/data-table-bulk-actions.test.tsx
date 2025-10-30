@@ -19,7 +19,7 @@ import type { BulkActionContext } from "./types/bulk-actions";
 import type { Table } from "@tanstack/react-table";
 
 // Mock document for download testing
-let createElementSpy: ReturnType<typeof vi.spyOn>;
+let createElementSpy: ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   // Mock URL.createObjectURL and URL.revokeObjectURL
@@ -34,12 +34,10 @@ beforeEach(() => {
     remove: vi.fn(),
   };
 
-  createElementSpy = vi.spyOn(
-    document,
-    "createElement"
-  ) as unknown as ReturnType<typeof vi.spyOn>;
-  createElementSpy.mockReturnValue(mockLink as unknown as HTMLElement);
-  vi.spyOn(document.body, "append").mockImplementation(() => {});
+  createElementSpy = vi
+    .spyOn(document, "createElement")
+    .mockReturnValue(mockLink as unknown as HTMLElement);
+  vi.spyOn(document.body, "append").mockImplementation(() => undefined);
 });
 
 describe("data-table-bulk-actions", () => {
