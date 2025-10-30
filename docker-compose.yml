@@ -362,18 +362,12 @@ services:
       PORT: "4983"
       STORE_PATH: "/app"
       MASTERPASS: ${DRIZZLE_GATEWAY_MASTERPASS:-drizzle}
+      DATABASE_URL_HASURA: ${DATABASE_URL_HASURA:-postgres://hasura:hasura@postgres:5432/hasura}
+      DATABASE_URL_TXSIGNER: ${DATABASE_URL_TXSIGNER:-postgres://txsigner:txsigner@postgres:5432/txsigner}
+      DATABASE_URL_PORTAL: ${DATABASE_URL_PORTAL:-postgres://portal:portal@postgres:5432/portal}
+      DATABASE_URL_BLOCKSCOUT: ${DATABASE_URL_BLOCKSCOUT:-postgres://blockscout:blockscout@postgres:5432/blockscout}
+      DATABASE_URL_THEGRAPH: ${DATABASE_URL_THEGRAPH:-postgres://thegraph:thegraph@postgres:5432/thegraph}
     ports:
       - "${DRIZZLE_GATEWAY_PORT:-4983}:4983"
     volumes:
       - atk-drizzle-gateway:/app
-    healthcheck:
-      test: [
-          "CMD-SHELL",
-          "if timeout 1 bash -c '</dev/tcp/localhost/4983'; then echo 'Drizzle
-          Gateway health check: SUCCESS'; else echo 'Drizzle Gateway health
-          check: FAILED'; exit 1; fi",
-        ]
-      interval: 2s
-      timeout: 2s
-      retries: 5
-      start_period: 1s
