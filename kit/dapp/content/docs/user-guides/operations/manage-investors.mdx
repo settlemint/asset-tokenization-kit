@@ -139,7 +139,7 @@ for qualified purchaser determination.
 that parse to a valid calendar date, so malformed inputs are ignored until
 corrected.
 
-# **Institutional investors:**
+**Institutional investors:**
 
 If you have integrated a KYC provider (Onfido, Jumio, Trulioo), the platform
 automatically submits collected data and receives verification results. The
@@ -186,52 +186,8 @@ compliance rules configuration.
   Basic --> Approved(Approved Status)
   Enhanced --> Approved
   EDD --> Approved
-
-If you have integrated a KYC provider (Onfido, Jumio, Trulioo), the platform
-automatically submits collected data and receives verification results. The
-service performs document authenticity verification, facial recognition
-matching, address verification, and database checks against PEP lists, sanctions
-lists, and adverse media. Results return to the platform automatically and
-update the investor's status.
-
-For manual verification, navigate to **Participants** &gt; **Entities** &gt;
-**Pending KYC** and select an investor from the queue. Review uploaded documents
-and information, then perform verification checks: validate document
-authenticity, verify address via utility bill or bank statement, screen against
-OFAC/EU/UN sanctions lists, perform PEP screening, and conduct adverse media
-searches. Mark the verification as **Approved** or **Rejected** based on your
-findings.
-
-The platform enforces three verification levels matched to asset risk profiles.
-Level 1 (Basic KYC) verifies name, address, and date of birth. Level 2 (Enhanced
-KYC) adds document verification and sanctions screening. Level 3 (Enhanced Due
-Diligence) includes source of funds verification and enhanced monitoring
-requirements. Set verification level requirements per asset type in the
-compliance rules configuration.
-
-<Mermaid
-  chart={`flowchart TB
-  Submit(Investor Submits KYC) --> Route{Verification<br/>Method}
-  Route -->|Automated| Provider(KYC Provider API)
-  Route -->|Manual| Queue(Review Queue)
-  Provider --> DocCheck(Document Verification)
-  Provider --> FaceMatch(Facial Recognition)
-  Provider --> AddrCheck(Address Verification)
-  Provider --> Screen(Database Screening)
-  Queue --> Manual(Compliance Officer Review)
-  Manual --> ManualCheck(Manual Verification)
-  DocCheck --> Results(Return Results)
-  FaceMatch --> Results
-  AddrCheck --> Results
-  Screen --> Results
-  ManualCheck --> Results
-  Results --> Level{Verification<br/>Level}
-  Level -->|Level 1| Basic(Basic KYC)
-  Level -->|Level 2| Enhanced(Enhanced KYC)
-  Level -->|Level 3| EDD(Enhanced Due Diligence)
-  Basic --> Approved(Approved Status)
-  Enhanced --> Approved
-  EDD --> Approved
+`}
+/>
 
 ## Step 3: OnchainID deployment
 
@@ -281,13 +237,15 @@ for eligibility.
 | Stablecoins        | KYC_VERIFIED, JURISDICTION                             | No expiration      |
 | Real estate tokens | KYC_VERIFIED, ACCREDITED_INVESTOR, QUALIFIED_PURCHASER | 1 year             |
 
-The most common claim types include **KYC_VERIFIED** (basic identity
-verification completed), **ACCREDITED_INVESTOR** (accredited investor status
-under Reg D), **QUALIFIED_PURCHASER** (qualified purchaser status for 3(c)(7)
-funds), **JURISDICTION** (country of residence), **INVESTOR_TYPE** (individual,
-institutional, professional), **SOPHISTICATED_INVESTOR** (EU sophisticated
-investor status), and **PEP_STATUS** (politically exposed person
-classification).
+**Common claim types:**
+
+- **KYC_VERIFIED** - Basic identity verification completed
+- **ACCREDITED_INVESTOR** - Accredited investor status (Reg D)
+- **QUALIFIED_PURCHASER** - Qualified purchaser status (3(c)(7) funds)
+- **JURISDICTION** - Country of residence
+- **INVESTOR_TYPE** - Individual, institutional, professional
+- **SOPHISTICATED_INVESTOR** - EU sophisticated investor status
+- **PEP_STATUS** - Politically exposed person classification
 
 ### Claim issuance process
 
@@ -307,30 +265,6 @@ compliance modules.
 
 **Use case:** Investor may have hot wallet for trading and cold wallet for
 long-term holding, both linked to same OnchainID.
-
-## Step 4: Issue claims
-
-Assign verifiable credentials to investor OnchainID.
-
-### Required claims for asset access
-
-Determine which claims investor needs based on target assets:
-
-**Common claim types:**
-
-- **KYC_VERIFIED** - Basic identity verification completed
-- **ACCREDITED_INVESTOR** - Accredited investor status (Reg D)
-- **QUALIFIED_PURCHASER** - Qualified purchaser status (3(c)(7) funds)
-- **JURISDICTION** - Country of residence
-- **INVESTOR_TYPE** - Individual, institutional, professional
-- **SOPHISTICATED_INVESTOR** - EU sophisticated investor status
-- **PEP_STATUS** - Politically exposed person classification
-
-Review asset compliance requirements to determine necessary claims:
-
-1. Navigate to **Asset Management** &gt; [Asset Type] &gt; [Specific Token]
-2. Review **Compliance** tab showing required claims
-3. Note which claims investor needs for eligibility
 
 ### Issue individual claims
 
@@ -374,168 +308,7 @@ For common claims needed by many investors:
 7. Platform processes batch issuance
 8. Review results showing successful/failed claim issuances
 
-# **Use case:** After quarterly accreditation verification, batch-issue renewed
-
-For batch issuance to multiple investors, navigate to **Participants** &gt;
-**Entities**, select multiple investors via checkboxes, and click **Batch
-Actions** &gt; **Issue Claim**. Select the claim type, configure expiration
-(applies to all selected), and click **Issue to All Selected**. The platform
-processes the batch issuance and displays results showing successful and failed
-claim issuances. This workflow is particularly useful after quarterly
-accreditation verification, allowing you to batch-issue renewed ACCREDITED_INVESTOR claims to all qualifying investors.
-
-### Verification requirements by jurisdiction
-
-Different regulatory frameworks impose varying verification standards before
-claims can be issued. Understanding these requirements prevents compliance
-violations and ensures your claims withstand regulatory scrutiny.
-
-| Jurisdiction   | Required verification documents                                                           | Processing time   | Renewal frequency |
-| -------------- | ----------------------------------------------------------------------------------------- | ----------------- | ----------------- |
-| United States  | Income verification (W-2, tax returns) or net worth statement (bank/brokerage statements) | 3-5 business days | Annual            |
-| European Union | Professional certification or portfolio size &gt; €500k or institution confirmation       | 2-4 business days | Annual            |
-| United Kingdom | FCA-registered advisor certification or self-certification with income &gt; £100k         | 1-3 business days | Annual            |
-| Singapore      | Accredited investor certificate from MAS or net assets &gt; S$2M                          | 5-7 business days | Biennial          |
-| Hong Kong      | Professional investor certificate from SFC or portfolio &gt; HK$8M                        | 3-5 business days | Biennial          |
-
-## Step 5: manage investor eligibility
-
-The compliance engine continuously validates investor eligibility by comparing
-active claims against asset requirements. When claims expire or get revoked, the
-engine immediately blocks transfers involving that investor. Use the compliance
-monitoring dashboard to track eligibility status across your investor base and
-identify investors approaching claim expiration.
-
-Check individual investor eligibility by navigating to **Asset Management** &gt;
-[Asset Type] &gt; [Token] and reviewing the **Compliance** tab for required
-claims. Compare these requirements against the investor's active claims shown in
-**Participants** &gt; **Entities** &gt; [Investor]. Any mismatch indicates an
-eligibility gap that must be resolved before the investor can hold or transfer
-the asset.
-
-When you identify missing claims, first determine whether the investor qualifies
-for the claim. If yes, issue the claim following the process in Step 4. If no,
-notify the investor of additional requirements they must satisfy. For expired
-claims, contact investors 30 days before expiration (the compliance dashboard
-shows expiration warnings), request updated documentation for renewal, review
-the documentation, and re-issue claims with new expiration dates. If an investor
-doesn't renew before expiration, their claim expires and tokens become
-non-transferable until renewal.
-
-If an investor fails ongoing monitoring—for example, they appear on a sanctions
-list—navigate to their profile, click **Actions** &gt; **Revoke Claim**, select
-the claim to revoke (for example, KYC_VERIFIED), enter the revocation reason,
-and confirm revocation. The platform removes the claim from the OnchainID, and
-the investor immediately loses token transfer capability. Consider freezing the
-investor's holdings via **Actions** &gt; **Freeze Account** for serious
-compliance violations.
-
-<Mermaid
-  chart={`flowchart TB
-  Monitor(Continuous Monitoring) --> Check{Claim Status}
-  Check -->|Active| Valid(Eligible for Transfers)
-  Check -->|Expiring Soon| Warn(Send Renewal Reminder)
-  Check -->|Expired| Block(Block Transfers)
-  Check -->|Revoked| Freeze(Consider Freezing)
-  Warn --> InvestorAction{Investor<br/>Responds?}
-  InvestorAction -->|Yes| Review(Review Documentation)
-  InvestorAction -->|No| Block
-  Review --> Approve{Approve<br/>Renewal?}
-  Approve -->|Yes| Renew(Re-issue Claim)
-  Approve -->|No| Block
-  Renew --> Valid
-  Block --> Notify(Notify Investor)
-  Freeze --> SAR(File SAR if Required)
-
-style Check fill:#b661d9,stroke:#8a3fb3,stroke-width:2px
-style Valid fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px
-style Warn fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px
-style Block fill:#8571d9,stroke:#654bad,stroke-width:2px
-style Freeze fill:#b661d9,stroke:#8a3fb3,stroke-width:2px`} />
-
-## Step 6: ongoing compliance monitoring
-
-Continuous surveillance maintains compliance throughout the investor
-relationship. The platform performs automated re-screening against sanctions
-lists, monitors transaction patterns for suspicious activity, and tracks claim
-expiration. The observability stack surfaces all monitoring events through
-dedicated dashboards that show real-time compliance status.
-
-Configure automatic re-screening by navigating to **Platform Settings** &gt;
-**Compliance** and setting up a periodic re-screening schedule with your KYC
-provider. The compliance monitoring dashboard displays alerts for any matches
-against sanctions lists. When screening identifies a match, review the match
-details from your KYC provider and investigate to determine whether it's a true
-positive or false positive. For false positives, document your decision with
-notes. For true positives, revoke claims, freeze the account, and file a
-Suspicious Activity Report (SAR). For uncertain cases, escalate for enhanced due
-diligence.
-
-The transaction monitoring system tracks investor activity patterns using
-blockchain data. Review investor transaction history on token details pages and
-monitor for unusual transaction sizes, high-frequency trading patterns, and
-transactions exceeding configured velocity limits. Investigate suspicious
-activity and file SARs per BSA/AML requirements. The compliance metrics panel
-shows transaction volume by investor, flagged transactions, and rule violation
-patterns.
-
-Configure transaction monitoring thresholds in compliance modules to flag
-transactions over $10,000 (Currency Transaction Report requirement), detect when
-investors exceed volume limits within defined periods, and identify structuring
-or smurfing patterns. The monitoring dashboard displays flagged transactions in
-real time, allowing you to investigate and take action immediately.
-
-<Mermaid
-  chart={`flowchart TB
-  Screening(Automated Screening) --> Sanctions(Sanctions List Check)
-  Screening --> PEP(PEP Screening)
-  Screening --> Media(Adverse Media Search)
-  Sanctions --> Match{Match<br/>Found?}
-  PEP --> Match
-  Media --> Match
-  Match -->|No| Continue(Continue Monitoring)
-  Match -->|Yes| Investigate(Investigate Match)
-  Investigate --> Classify{True or<br/>False Positive?}
-  Classify -->|False| Document(Document Decision)
-  Classify -->|True| Enforce(Revoke Claims)
-  Classify -->|Uncertain| EDD(Enhanced Due Diligence)
-  Enforce --> Freeze(Freeze Account)
-  Freeze --> SAR(File SAR)
-  EDD --> Classify
-  Document --> Continue
-  Continue --> Txn(Transaction Monitoring)
-  Txn --> Patterns(Pattern Detection)
-  Patterns --> Alert{Alert<br/>Triggered?}
-  Alert -->|No| Continue
-  Alert -->|Yes| Review(Compliance Review)
-  Review --> SAR
-
-style Match fill:#b661d9,stroke:#8a3fb3,stroke-width:2px
-style Classify fill:#b661d9,stroke:#8a3fb3,stroke-width:2px
-style Enforce fill:#8571d9,stroke:#654bad,stroke-width:2px
-style Alert fill:#b661d9,stroke:#8a3fb3,stroke-width:2px
-style SAR fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px
-`} />
-
-## Step 7: investor communications
-
-Maintain investor relationships through timely communications about claim
-expiration, compliance updates, and document requests. Navigate to
-**Participants** &gt; **Entities** &gt; [Investor Name] and use your
-organization's standard communication channels to send notifications. Common
-message types include claim expiration reminders (send 30 days before
-expiration), compliance updates (notify of new requirements), and document
-requests (request updated documents).
-
-=======
-For batch issuance to multiple investors, navigate to **Participants** &gt;
-**Entities**, select multiple investors via checkboxes, and click **Batch
-Actions** &gt; **Issue Claim**. Select the claim type, configure expiration
-(applies to all selected), and click **Issue to All Selected**. The platform
-processes the batch issuance and displays results showing successful and failed
-claim issuances. This workflow is particularly useful after quarterly
-accreditation verification, allowing you to batch-issue renewed
-ACCREDITED_INVESTOR claims to all qualifying investors.
+**Use case:** After quarterly accreditation verification, batch-issue renewed ACCREDITED_INVESTOR claims to all qualifying investors.
 
 ### Verification requirements by jurisdiction
 
