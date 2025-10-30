@@ -13,10 +13,17 @@ import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { regex } from "arkregex";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import * as z from "zod";
+import { z } from "zod";
+
+/**
+ * Type-safe regex patterns for ABI signature validation
+ */
+const WHITESPACE_PATTERN = regex("\\s+", "g");
+const FUNCTION_STYLE_PATTERN = regex("^\\w+\\(");
 
 /**
  * Normalizes ABI type signature by trimming spaces around commas and collapsing multiple spaces
@@ -24,7 +31,7 @@ import * as z from "zod";
 function normalizeAbiSignature(value: string): string {
   return value
     .split(",")
-    .map((part) => part.trim().replaceAll(/\s+/g, " "))
+    .map((part) => part.trim().replaceAll(WHITESPACE_PATTERN, " "))
     .join(", ");
 }
 
@@ -37,7 +44,7 @@ const EditTopicFormSchema = z.object({
     .refine((val) => !val.includes("(") && !val.includes(")"), {
       message: "Remove parentheses; use a comma-separated type list.",
     })
-    .refine((val) => !/^\w+\(/.test(val), {
+    .refine((val) => !FUNCTION_STYLE_PATTERN.test(val), {
       message: "Remove function name; use type, type, ...",
     })
     .transform(normalizeAbiSignature),
