@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Input schema for system transaction count endpoint

@@ -6,7 +6,7 @@ import { approve } from "@/orpc/routes/token/routes/mutations/approve/token.appr
 import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call } from "@orpc/server";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Minimal GraphQL query to get only the denomination asset from a fixed yield schedule.

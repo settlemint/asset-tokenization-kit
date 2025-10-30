@@ -14,7 +14,7 @@ import {
 } from "@test/fixtures/user";
 import { waitUntil } from "@test/helpers/test-helpers";
 import { beforeAll, describe, expect, it } from "vitest";
-import * as z from "zod";
+import { z } from "zod";
 
 describe("Identity list (integration)", () => {
   let adminClient: ReturnType<typeof getOrpcClient>;

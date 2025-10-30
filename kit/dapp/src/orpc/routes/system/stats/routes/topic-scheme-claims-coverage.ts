@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { TopicSchemeSchema } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
-import * as z from "zod";
+import { z } from "zod";
 
 const TOPIC_SCHEME_CLAIMS_COVERAGE_QUERY = theGraphGraphql(`
   query TopicSchemeClaimsCoverage($topicSchemeRegistryId: ID!, $topicSchemeRegistryIdString: String!) {

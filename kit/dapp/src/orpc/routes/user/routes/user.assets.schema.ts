@@ -3,7 +3,7 @@ import { bigDecimal } from "@atk/zod/bigdecimal";
 import { decimals } from "@atk/zod/decimals";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumHex } from "@atk/zod/ethereum-hex";
-import * as z from "zod";
+import { z } from "zod";
 
 export const UserAssetsInputSchema = z
   .object({

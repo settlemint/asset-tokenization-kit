@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { systemRouter } from "@/orpc/procedures/system.router";
-import * as z from "zod";
+import { z } from "zod";
 
 const CLAIMS_STATS_STATE_QUERY = theGraphGraphql(`
   query ClaimsStatsState($topicSchemeRegistryId: ID!) {

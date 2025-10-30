@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Output schema for system identities created count endpoint

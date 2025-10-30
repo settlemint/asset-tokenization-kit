@@ -6,7 +6,7 @@
  * asset tokenization platform's various asset categories.
  * @module AssetTypeValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Tuple of valid asset types for type-safe iteration.

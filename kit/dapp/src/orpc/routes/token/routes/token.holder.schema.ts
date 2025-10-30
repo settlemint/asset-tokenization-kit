@@ -1,6 +1,6 @@
 import { assetBalance } from "@atk/zod/asset-balance";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Input schema for querying a specific token holder's balance.

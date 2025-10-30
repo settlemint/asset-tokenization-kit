@@ -7,7 +7,7 @@
  * 10000 basis points = 100%
  * @module BasisPointsValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Creates a Zod schema that validates basis points values.

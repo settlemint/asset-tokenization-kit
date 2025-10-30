@@ -7,7 +7,7 @@
  * @module FiatCurrencyValidation
  */
 import * as cc from "currency-codes";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Get all valid ISO 4217 currency codes.

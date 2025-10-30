@@ -4,7 +4,7 @@ import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read
 import type { IdentityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call, ORPCError } from "@orpc/server";
-import * as z from "zod";
+import { z } from "zod";
 
 export interface FetchUserIdentityOptions {
   wallet: `0x${string}`;

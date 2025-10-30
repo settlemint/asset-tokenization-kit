@@ -4,7 +4,7 @@ import type { KeysOfUnion } from "@/lib/utils/union";
 import { TokenCreateSchema } from "@/orpc/routes/token/routes/mutations/create/token.create.schema";
 import { assetClass } from "@atk/zod/asset-types";
 import { formOptions } from "@tanstack/react-form";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Composite Zod schema for asset designer form that combines multiple validation concerns.

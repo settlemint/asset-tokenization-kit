@@ -8,7 +8,7 @@ import { AddonFactoryTypeIdEnum } from "@atk/zod/addon-types";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { timeIntervalToSeconds } from "@atk/zod/time-interval";
 import { call } from "@orpc/server";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Portal GraphQL mutation for creating a fixed yield schedule contract.

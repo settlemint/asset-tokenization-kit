@@ -12,7 +12,7 @@ import localeAr from "i18n-iso-countries/langs/ar.json";
 import localeDe from "i18n-iso-countries/langs/de.json";
 import localeEn from "i18n-iso-countries/langs/en.json";
 import localeJa from "i18n-iso-countries/langs/ja.json";
-import * as z from "zod";
+import { z } from "zod";
 
 const { registerLocale, getAlpha2Codes, getName } = countries;
 

@@ -45,8 +45,9 @@
           "description": "Ein eindeutiger, menschenlesbarer Name für dieses Anspruchsthema. Z.B. Berufslizenz"
         },
         "signature": {
-          "label": "Funktionssignatur",
-          "description": "Funktionssignatur für die Anspruchsüberprüfung. Muss dem Format folgen: functionName(parameterTypes). Z.B. hasLicense(address,bytes32)"
+          "label": "Anspruchsdaten-ABI-Typen",
+          "description": "Geben Sie Solidity-ABI-Typen (optional mit Parameternamen) kommagetrennt ein. Kein Funktionsname, keine Klammern. Beispiele: string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
+          "placeholder": "string claim"
         }
       },
       "verification": {
@@ -68,8 +69,9 @@
           "description": "Themen-ID: {{topicId}} • Themenname kann nicht geändert werden"
         },
         "signature": {
-          "label": "Funktionssignatur",
-          "description": "Funktionssignatur für die Anspruchsüberprüfung. Muss dem Format folgen: functionName(parameterTypes). Z.B. hasLicense(address,bytes32)",
+          "label": "Anspruchsdaten-ABI-Typen",
+          "description": "Geben Sie Solidity-ABI-Typen (optional mit Parameternamen) kommagetrennt ein. Kein Funktionsname, keine Klammern. Beispiele: string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
+          "placeholder": "string claim",
           "current": "Aktuell: {{signature}}"
         }
       },
@@ -79,7 +81,9 @@
         "updating": "Aktualisieren..."
       },
       "validation": {
-        "signatureChanged": "Neue Signatur muss sich von der aktuellen Signatur unterscheiden"
+        "signatureChanged": "Neue Signatur muss sich von der aktuellen Signatur unterscheiden",
+        "noParentheses": "Entfernen Sie Klammern; verwenden Sie eine kommagetrennte Typliste.",
+        "noFunctionStyle": "Entfernen Sie den Funktionsnamen; verwenden Sie Typ, Typ, ..."
       }
     },
     "toast": {

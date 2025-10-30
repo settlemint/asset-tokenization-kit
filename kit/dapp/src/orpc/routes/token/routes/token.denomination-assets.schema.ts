@@ -1,6 +1,6 @@
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 export const DenominationAssetListSchema = z.array(
   TokenSchema.omit({

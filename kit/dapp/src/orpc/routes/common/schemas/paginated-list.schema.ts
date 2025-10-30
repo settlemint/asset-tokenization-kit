@@ -1,5 +1,5 @@
 import { SortableListSchema } from "@/orpc/routes/common/schemas/sortable-list.schema";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for paginating a list of items.

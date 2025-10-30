@@ -1,7 +1,7 @@
 import { SortableListSchema } from "@/orpc/routes/common/schemas/sortable-list.schema";
 import { TokenSchema } from "@/orpc/routes/token/routes/token.read.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for validating an array of tokens from GraphQL responses.

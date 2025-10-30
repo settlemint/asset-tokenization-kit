@@ -5,7 +5,7 @@
  * ensuring they match the canonical enumerations used across the platform.
  * @module FundCategoryValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Canonical fund categories supported by the platform.

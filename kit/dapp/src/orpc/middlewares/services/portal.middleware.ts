@@ -48,7 +48,7 @@ import type { TadaDocumentNode } from "gql.tada";
 import { getOperationAST, print } from "graphql";
 import type { Variables } from "graphql-request";
 import { randomUUID } from "node:crypto";
-import * as z from "zod";
+import { z } from "zod";
 
 const GET_TRANSACTION_QUERY = portalGraphql(`
   query GetTransaction($transactionHash: String!) {

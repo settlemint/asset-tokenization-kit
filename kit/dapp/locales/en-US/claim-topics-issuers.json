@@ -45,8 +45,9 @@
           "description": "A unique, human-readable name for this claim topic. E.g., Professional License"
         },
         "signature": {
-          "label": "Function signature",
-          "description": "Function signature for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)"
+          "label": "Claim data ABI types",
+          "description": "Enter Solidity ABI types (optionally with param names), comma-separated. No function name, no parentheses. Examples: string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
+          "placeholder": "string claim"
         }
       },
       "verification": {
@@ -68,8 +69,9 @@
           "description": "Topic ID: {{topicId}} • Topic name cannot be changed"
         },
         "signature": {
-          "label": "Function signature",
-          "description": "Function signature for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)",
+          "label": "Claim data ABI types",
+          "description": "Enter Solidity ABI types (optionally with param names), comma-separated. No function name, no parentheses. Examples: string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
+          "placeholder": "string claim",
           "current": "Current: {{signature}}"
         }
       },
@@ -79,7 +81,9 @@
         "updating": "Updating..."
       },
       "validation": {
-        "signatureChanged": "New signature must be different from current signature"
+        "signatureChanged": "New signature must be different from current signature",
+        "noParentheses": "Remove parentheses; use a comma-separated type list.",
+        "noFunctionStyle": "Remove function name; use type, type, ..."
       }
     },
     "toast": {

@@ -10,7 +10,7 @@ import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import * as z from "zod";
+import { z } from "zod";
 
 const routeParamsSchema = z.object({
   userId: z.string().min(1),

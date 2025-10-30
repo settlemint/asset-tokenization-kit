@@ -9,7 +9,7 @@ import { useRouter } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import * as z from "zod";
+import { z } from "zod";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
 import type { ManagedIdentity } from "../manage-identity-dropdown";

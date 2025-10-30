@@ -3,8 +3,8 @@
  *
  * This handler registers new topic schemes through the ATKTopicSchemeRegistry contract.
  * Topic schemes define the structure and validation logic for claims that can be issued
- * about identities. Each topic has a unique ID generated from its name hash and a
- * function signature that defines how claims for that topic should be verified.
+ * about identities. Each topic has a unique ID generated from its name hash and
+ * claim data ABI types that define how claims for that topic should be verified.
  *
  * The handler performs the following operations:
  * 1. Validates user authentication and authorization (CLAIM_POLICY_MANAGER_ROLE)
@@ -62,7 +62,7 @@ const REGISTER_TOPIC_SCHEME_MUTATION = portalGraphql(`
  *
  * @param input - The topic creation parameters
  * @param input.name - Human-readable name for the topic (must be unique)
- * @param input.signature - Function signature for claim verification
+ * @param input.signature - Claim data ABI types for claim verification
  * @returns Transaction hash and generated topic ID
  */
 export const topicCreate = systemRouter.system.claimTopics.topicCreate

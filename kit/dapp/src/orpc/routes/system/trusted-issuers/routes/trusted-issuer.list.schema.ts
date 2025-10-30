@@ -1,5 +1,5 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for a topic scheme reference in the trusted issuer context
@@ -8,7 +8,7 @@ export const TrustedIssuerTopicSchema = z.object({
   id: z.string().describe("Topic scheme identifier"),
   topicId: z.string().describe("Numeric ID of the topic"),
   name: z.string().describe("Human-readable name of the topic"),
-  signature: z.string().describe("Function signature for verification"),
+  signature: z.string().describe("Claim data ABI types for verification"),
 });
 
 /**

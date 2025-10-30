@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 export const SETTING_KEYS = [
   "BASE_CURRENCY",
