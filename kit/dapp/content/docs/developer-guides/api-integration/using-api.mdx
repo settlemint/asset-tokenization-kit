@@ -162,7 +162,7 @@ function VaultReserveRatio({ vaultId }: { vaultId: string }) {
 }
 ```
 
-## Queries: Fetching DALP state
+## Queries: fetching DALP state
 
 Queries read data from smart contracts (via TheGraph indexing), database tables,
 or computed aggregations. TanStack Query handles caching, background refetching,
@@ -1274,12 +1274,12 @@ function ComprehensiveDashboard() {
 }
 ```
 
-## End-to-end workflow: Bond issuance with yield distribution
+## End-to-end workflow: bond issuance with yield distribution
 
 This scenario demonstrates a complete DALP lifecycle: issuing a bond, tracking
 coupon payments, and claiming yield.
 
-### Step 1: Issue bond with coupon schedule
+### Step 1: issue bond with coupon schedule
 
 ```typescript
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -1323,7 +1323,7 @@ function IssueBond() {
 }
 ```
 
-### Step 2: Monitor yield accumulation
+### Step 2: monitor yield accumulation
 
 ```typescript
 import { useQuery } from "@tanstack/react-query";
@@ -1358,7 +1358,7 @@ function BondYieldTracker({ bondId }: { bondId: string }) {
 }
 ```
 
-### Step 3: Claim accumulated yield
+### Step 3: claim accumulated yield
 
 ```typescript
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -1424,7 +1424,7 @@ function ClaimBondYield({
 }
 ```
 
-### Step 4: View complete yield history
+### Step 4: view complete yield history
 
 ```typescript
 import { useSuspenseQuery } from "@tanstack/react-query";

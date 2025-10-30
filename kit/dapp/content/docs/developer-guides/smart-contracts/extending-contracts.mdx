@@ -541,7 +541,7 @@ Addons provide pre-built functionality for airdrops, vaults, settlements, and
 yield schedules. See the comprehensive addon documentation in
 [`kit/contracts/contracts/addons/README.md`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/README.md).
 
-### Example: Deploy a time-bound airdrop
+### Example: deploy a time-bound airdrop
 
 ```solidity
 // In a deployment script or test
@@ -731,7 +731,7 @@ test/
 
 ## Common patterns and pitfalls
 
-### Pattern: Lifecycle hooks
+### Pattern: lifecycle hooks
 
 Override SMART hooks to add custom logic at key lifecycle events:
 
@@ -749,7 +749,7 @@ function _beforeMint(address to, uint256 amount)
 }
 ```
 
-### Pattern: Role-based access
+### Pattern: role-based access
 
 Use `onlyAccessManagerRole` modifier for all privileged functions:
 
@@ -762,7 +762,7 @@ function criticalOperation()
 }
 ```
 
-### Pitfall: Storage layout violations
+### Pitfall: storage layout violations
 
 **NEVER** do this in an upgrade:
 
@@ -791,7 +791,7 @@ contract V2 {
 }
 ```
 
-### Pitfall: Missing interface registration
+### Pitfall: missing interface registration
 
 Always register custom interfaces:
 
@@ -805,7 +805,7 @@ function initialize(...) external initializer {
 }
 ```
 
-### Pitfall: Incorrect hook chaining
+### Pitfall: incorrect hook chaining
 
 When overriding hooks from multiple extensions, always call `super`:
 

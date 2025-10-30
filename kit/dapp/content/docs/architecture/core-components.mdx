@@ -124,7 +124,7 @@ layer's observability stack monitors these cross-layer operations, providing
 dashboards that surface settlement times, vault operation counts, and yield
 distribution success rates.
 
-### Request flow: Cross-layer interactions
+### Request flow: cross-layer interactions
 
 Understanding how a typical user request travels through the layers reveals the
 architecture's integration patterns. Consider a token balance query—a common
@@ -193,7 +193,7 @@ observability layer captures these degradation events, alerting operators when
 fallback rates indicate infrastructure problems—perhaps Redis memory pressure or
 indexer lag.
 
-## Frontend layer: User interfaces and presentation logic
+## Frontend layer: user interfaces and presentation logic
 
 The frontend layer delivers user-facing interfaces built with TanStack Start,
 React, and responsive design principles. It consists of four primary
@@ -231,7 +231,7 @@ monitoring tools.
 See [Frontend layer](./frontend-layer) for component architecture, routing
 patterns, and state management details.
 
-## API layer: Business logic and orchestration services
+## API layer: business logic and orchestration services
 
 The API layer provides type-safe ORPC procedures and business services
 orchestrating asset management, investor operations, compliance actions, and
@@ -280,7 +280,7 @@ manually if needed.
 See [API layer](./api-layer) for procedure definitions, service patterns, and
 authentication flows.
 
-## Blockchain layer: Smart contracts and event indexing
+## Blockchain layer: smart contracts and event indexing
 
 The blockchain layer implements Solidity smart contracts following the SMART
 Protocol specification with ERC-3643 compliance extensions. This layer divides
@@ -372,7 +372,7 @@ blockchain operations into observable system behavior.
 See [Blockchain layer](./blockchain-layer) for contract architecture, addon
 integration patterns, and indexing strategies.
 
-## Data layer: Storage, caching, and object persistence
+## Data layer: storage, caching, and object persistence
 
 The data layer combines PostgreSQL for application state, Redis for in-memory
 caching, and MinIO for S3-compatible object storage with optional IPFS pinning.
@@ -466,7 +466,7 @@ infrastructure before connection exhaustion causes outages.
 See [Data layer](./data-layer) for schema design, caching patterns, and backup
 strategies.
 
-## Deployment layer: Infrastructure and observability
+## Deployment layer: infrastructure and observability
 
 The deployment layer encompasses Playwright E2E tests that validate complete
 workflows, Helm charts that deploy to Kubernetes with horizontal pod
@@ -572,7 +572,7 @@ capabilities observable rather than opaque.
 See [Deployment layer](./deployment-layer) for Kubernetes architecture, testing
 patterns, and monitoring configuration.
 
-## Complete workflow: Bond issuance with DvP settlement
+## Complete workflow: bond issuance with DvP settlement
 
 Understanding how layers collaborate for a complete DALP operation demonstrates
 the architecture's practical value. Consider a corporate bond issuance with
@@ -891,7 +891,8 @@ waiting for 95% utilization and user complaints.
   Prometheus/Loki/OpenTelemetry, and pre-built Grafana dashboards
 - [System architecture](./system-architecture) — High-level layered architecture
   overview, cross-layer integration patterns, and design principles
-- [DALP lifecycle overview](../features/dalp-lifecycle) — Detailed DvP
+- [DALP lifecycle overview](../executive-overview/dalp-solution) — Detailed DvP
   settlement mechanics, vault custody workflows, and yield automation scheduling
-- [Observability and monitoring](../operations/observability) — Dashboard
-  reference, alerting rules, metric definitions, and troubleshooting workflows
+- [Observability and monitoring](../developer-guides/deployment-ops/observability-monitoring)
+  — Dashboard reference, alerting rules, metric definitions, and troubleshooting
+  workflows

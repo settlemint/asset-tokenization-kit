@@ -91,7 +91,7 @@ The compliance dashboard captures every module evaluation, giving you real-time
 visibility into rule effectiveness and violation patterns. You'll use these
 metrics to tune your configuration and provide audit evidence.
 
-## Step 1: Understand available modules
+## Step 1: understand available modules
 
 ATK provides over 10 pre-built compliance modules covering common regulatory
 scenarios. Each module addresses specific regulatory requirements and integrates
@@ -222,13 +222,13 @@ the minimal set of modules that satisfy your requirements. Resist the temptation
 to add unnecessary modules—each module adds gas cost and complexity to every
 transfer. Focus on what regulations actually require.
 
-## Step 2: Configure modules for common scenarios
+## Step 2: configure modules for common scenarios
 
 Let's walk through configuration for several real-world regulatory scenarios.
 Each scenario demonstrates how to combine modules to create a complete
 compliance framework.
 
-### Scenario 1: Accredited investor offering (Reg D 506c)
+### Scenario 1: accredited investor offering (Reg D 506c)
 
 US Regulation D Rule 506(c) allows unlimited capital raises from accredited
 investors only, with mandatory verification and a 12-month holding period. This
@@ -332,7 +332,7 @@ framework. Every transfer triggers all four modules in sequence—country check,
 accreditation verification, investor count validation, and time lock
 enforcement. Only transfers that pass all checks proceed to settlement.
 
-### Scenario 2: MiCA-compliant stablecoin
+### Scenario 2: miCA-compliant stablecoin
 
 The EU Markets in Crypto-Assets Regulation (MiCA) requires e-money tokens under
 EUR 8M to implement KYC/AML verification and sanctions screening. This scenario
@@ -406,7 +406,7 @@ transactions from sanctioned countries, requires KYC+AML verification, and
 enforces the EUR 8M issuance cap. Once you approach the supply limit, the
 observability dashboard will show minting operations being rejected.
 
-### Scenario 3: Geographic restrictions with per-country limits
+### Scenario 3: geographic restrictions with per-country limits
 
 Some offerings implement investor caps per jurisdiction to manage regulatory
 complexity or market exposure. This scenario demonstrates per-country investor
@@ -454,7 +454,7 @@ German investors. Once any country reaches its cap, transfers to new investors
 from that country are rejected. The compliance dashboard shows per-country
 investor counts in real time, helping you monitor market distribution.
 
-### Scenario 4: Complex identity requirements
+### Scenario 4: complex identity requirements
 
 Some offerings require complex combinations of identity claims to accommodate
 different investor types while maintaining compliance. This scenario
@@ -537,7 +537,7 @@ Testing complex expressions is critical. Use the compliance simulator (covered
 in Step 3) to validate that your logic behaves as intended across different
 claim combinations.
 
-## Step 3: Test compliance rules
+## Step 3: test compliance rules
 
 Configuration mistakes can have serious consequences—blocking legitimate
 investors, allowing non-compliant transfers, or creating audit failures. Always
@@ -773,7 +773,7 @@ stack traces and module execution logs. The transaction details panel shows the
 complete evaluation sequence for each transfer, helping you pinpoint exactly
 where validation fails.
 
-## Step 4: Integration with identity registry
+## Step 4: integration with identity registry
 
 Compliance modules depend on the identity registry to look up investor claims.
 Before deploying modules to production, verify that your identity registry is
@@ -840,7 +840,7 @@ Set up alerts in the observability dashboard to notify you when claim expiration
 affects more than 10% of your investor base, giving you time to coordinate
 re-verification before compliance issues arise.
 
-## Step 5: Deploy to production
+## Step 5: deploy to production
 
 After successful testing, you're ready to deploy your compliance configuration
 to the production token. This is a critical operation that immediately affects

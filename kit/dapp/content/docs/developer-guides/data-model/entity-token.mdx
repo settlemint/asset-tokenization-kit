@@ -522,7 +522,7 @@ by hour to detect unusual trading patterns (potential market manipulation). The
 `blockTimestamp` of resulting transfer. Prometheus alerts fire when transfer
 count spikes &gt; 3 standard deviations (investigate for bot activity).
 
-## Mint and Burn events
+## Mint and burn events
 
 `Mint` and `Burn` entities track supply changes—when tokens are created or
 destroyed. While these events also appear as `Transfer` records (with zero
@@ -662,7 +662,7 @@ When a `Transfer` event is detected:
 large datasets. Pre-computed statistics enable instant dashboards and real-time
 alerts.
 
-## End-to-end workflow: Bond issuance → transfer → redemption
+## End-to-end workflow: bond issuance → transfer → redemption
 
 This workflow shows how token entities track a complete bond lifecycle,
 connecting smart contract events to DALP features.
@@ -892,21 +892,21 @@ timeout.
 
 - [ERC-3643 token contracts](/docs/developer-guides/smart-contracts/contract-reference)
   — On-chain token implementation that emits events indexed here
-- [Compliance module reference](/docs/developer-guides/smart-contracts/compliance-modules)
+- [Compliance module reference](/docs/architecture/smart-contracts/identity-compliance)
   — Smart contract rules that `Token.compliance` enforces
 
 **DALP feature guides**:
 
-- [DvP settlement architecture](/docs/architecture/dvp-settlement) — How atomic
-  swaps use `frozenBalance` for escrow
-- [Yield distribution system](/docs/architecture/yield-management) — How yield
-  schedules scan `TokenBalance` entities
-- [Vault custody workflows](/docs/architecture/vault-custody) — Receipt token
-  minting and redemption flows
+- [DvP settlement architecture](/docs/architecture/smart-contracts/addon-modules)
+  — How atomic swaps use `frozenBalance` for escrow
+- [Yield distribution system](/docs/architecture/smart-contracts/addon-modules)
+  — How yield schedules scan `TokenBalance` entities
+- [Vault custody workflows](/docs/architecture/smart-contracts/addon-modules) —
+  Receipt token minting and redemption flows
 
 **Operational guides**:
 
-- [Monitoring token metrics](/docs/operations/observability/token-dashboards) —
-  Using Grafana dashboards to track supply and transfers
-- [Troubleshooting frozen balances](/docs/operations/troubleshooting/frozen-balance-issues)
-  — Diagnosing stuck DvP settlements
+- [Monitoring token metrics](/docs/developer-guides/deployment-ops/observability-monitoring)
+  — Using Grafana dashboards to track supply and transfers
+- [Troubleshooting frozen balances](/docs/user-guides/troubleshooting/assets) —
+  Diagnosing stuck DvP settlements

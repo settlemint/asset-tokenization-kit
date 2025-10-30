@@ -486,7 +486,7 @@ This query verifies whether an investor possesses all required claim topics
 before initiating a transfer. The dApp uses this to show eligibility status and
 prevent users from attempting transactions that will fail compliance validation.
 
-### Observability: Claim verification metrics
+### Observability: claim verification metrics
 
 Monitor claim verification performance and coverage using the observability
 stack:
@@ -762,7 +762,7 @@ query GetAccountRoles($accessControlAddress: Bytes!, $account: Bytes!) {
 This query checks which roles a specific account holds. The dApp uses this to
 show/hide administrative UI features based on user permissions.
 
-### Observability: Role activity monitoring
+### Observability: role activity monitoring
 
 Track role usage and detect anomalies using the observability stack:
 
@@ -882,7 +882,7 @@ the function returns false and the transfer transaction reverts with an error
 message indicating the failure reason (missing claim topic, exceeded limit,
 restricted country).
 
-### Observability: Compliance monitoring
+### Observability: compliance monitoring
 
 Track compliance system health and effectiveness using platform dashboards:
 
@@ -976,11 +976,11 @@ Only claims passing all four checks satisfy compliance requirements.
   contracts subject to compliance enforcement
 - **[Investor entities](/docs/developer-guides/data-model/entity-investor)** -
   Identity contracts that hold claims
-- **[System entities](/docs/developer-guides/data-model/entity-system)** -
+- **[System entities](/docs/developer-guides/data-model/data-model-reference)** -
   System-level configuration including AccessControl
 - **[Data model overview](/docs/developer-guides/data-model/data-model-reference)** -
   Complete entity relationship architecture
 - **[Smart contract reference](/docs/developer-guides/smart-contracts/contract-reference)** -
   Compliance contract method documentation
-- **[Identity architecture](/docs/architecture/identity-compliance)** - Identity
-  and compliance system design
+- **[Identity architecture](/docs/architecture/smart-contracts/identity-compliance)** -
+  Identity and compliance system design

@@ -342,17 +342,17 @@ Every upgrade emits detailed events captured by the observability stack. The
 address, new implementation address, upgrade timestamp, and executing manager
 address.
 
-The [subgraph](/docs/architecture/backend-indexing/subgraph-architecture)
-indexes these events, building a complete upgrade history for every contract in
-the system. Auditors query this history to verify upgrade frequency, review
-upgrade authorization, and ensure upgrade procedures followed governance rules.
+The [subgraph](/docs/architecture/data-indexing/blockchain-indexing) indexes
+these events, building a complete upgrade history for every contract in the
+system. Auditors query this history to verify upgrade frequency, review upgrade
+authorization, and ensure upgrade procedures followed governance rules.
 
 Observability dashboards display implementation version distributions across
 deployed contracts. These metrics identify contracts running outdated
 implementations, track upgrade adoption rates, and highlight potential security
 vulnerabilities in older versions requiring urgent upgrades.
 
-## Upgrade vs. immutability: Pattern selection
+## Upgrade vs. immutability: pattern selection
 
 Not all contracts should be upgradeable. Upgradeability introduces complexity,
 governance requirements, and potential security risks. The decision between
@@ -398,7 +398,7 @@ passed audits, the issuer might intentionally revoke upgrade privileges, making
 the contract permanently immutable. This commitment strengthens investor
 confidence by removing the risk of malicious upgrades.
 
-### Hybrid approach: Factory-managed immutability
+### Hybrid approach: factory-managed immutability
 
 The ATK factory pattern enables a hybrid approach. Factories are upgradeable,
 but the tokens they deploy can be immutable. When requirements change, the
@@ -451,7 +451,7 @@ Understanding upgrade patterns requires examining specific scenarios where
 implementations must change. These scenarios illustrate when upgrades are
 necessary, how they are executed, and what risks they mitigate.
 
-### Scenario: Regulatory compliance update
+### Scenario: regulatory compliance update
 
 A jurisdiction introduces a new regulation requiring token transfers to include
 a reference identifier linking to a disclosure document. Existing token
@@ -474,7 +474,7 @@ dashboard confirms all tokens now run the updated implementation. Transfer
 transactions include the new reference field, and the system achieves regulatory
 compliance without disrupting existing token holders.
 
-### Scenario: Security vulnerability patch
+### Scenario: security vulnerability patch
 
 A security researcher discovers a reentrancy vulnerability in the yield
 distribution logic. The vulnerability allows an attacker to recursively call the
@@ -491,7 +491,7 @@ to new contract addresses—a complex, expensive, and risky operation. The upgra
 executes within hours of vulnerability disclosure, securing user funds without
 requiring manual migration.
 
-### Scenario: Feature enhancement
+### Scenario: feature enhancement
 
 A new feature enables automatic yield reinvestment. Token holders can opt into a
 program where distributed yields are automatically used to purchase additional
@@ -509,7 +509,7 @@ users to migrate to new contracts. Adoption is gradual; as users opt in, they
 benefit from the new functionality while maintaining their existing token
 balances and addresses.
 
-### Scenario: Gas optimization
+### Scenario: gas optimization
 
 After several months in production, gas profiling reveals that certain
 compliance check functions consume excessive gas. An optimized implementation
@@ -624,7 +624,7 @@ upgrade execution.
 
 The subgraph indexes every deployment and upgrade event, building a database of
 which implementation version each proxy is running. The
-[observability dashboard](/docs/architecture/backend-indexing/observability-monitoring)
+[observability dashboard](/docs/developer-guides/deployment-ops/observability-monitoring)
 displays implementation version distributions for each token type.
 
 Operators query these metrics to answer questions like: "What percentage of

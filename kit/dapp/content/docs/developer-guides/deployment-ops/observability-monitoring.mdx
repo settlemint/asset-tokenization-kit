@@ -44,7 +44,7 @@ Make sure you have:
 
 **Time required:** 30 minutes to understand dashboards; ongoing for monitoring
 
-## Step 1: Access the observability stack
+## Step 1: access the observability stack
 
 The observability infrastructure consists of five integrated components that
 work together to capture, store, and visualize telemetry data from every layer
@@ -204,7 +204,7 @@ centralizes access control, enables audit logging of user actions, and removes
 the burden of managing separate Grafana passwords. The Helm chart supports all
 major authentication providers through standard Grafana configuration values.
 
-## Step 2: Navigate pre-built dashboards
+## Step 2: navigate pre-built dashboards
 
 ATK ships with 15+ production-ready dashboards covering every architectural
 layer. These dashboards aren't generic infrastructure monitors—they're
@@ -472,7 +472,7 @@ indicate their focus area, making discovery straightforward. Starred dashboards
 appear in your personal "Starred" folder for quick access to frequently used
 views.
 
-## Step 3: Monitor key metrics
+## Step 3: monitor key metrics
 
 While the dashboards provide comprehensive visibility, certain metrics deserve
 continuous monitoring as they directly impact business operations and regulatory
@@ -670,7 +670,7 @@ Filters stack—selecting multiple dimensions narrows the displayed data
 progressively. Use the "All" option to reset filters and view aggregated data
 across all instances.
 
-## Step 4: Use observability for verification
+## Step 4: use observability for verification
 
 The observability stack serves two distinct purposes: ongoing monitoring of
 production operations and verification of successful deployments or
@@ -854,7 +854,7 @@ pass even with lurking problems if traffic remains low—consider executing
 synthetic transactions (token transfers, compliance checks) as additional
 verification for critical deployments.
 
-## Step 5: Troubleshoot using dashboards
+## Step 5: troubleshoot using dashboards
 
 The observability stack transforms troubleshooting from art to science. Rather
 than guessing at root causes or adding logging statements and redeploying, you
@@ -901,7 +901,7 @@ single component (suggesting a component-specific problem) or multiple
 components (suggesting infrastructure or dependency problems). This distinction
 fundamentally changes investigation strategy and likely resolution paths.
 
-### Scenario 1: Slow transaction confirmations
+### Scenario 1: slow transaction confirmations
 
 **Symptom:** Users report transactions taking &gt;30s to confirm
 
@@ -965,7 +965,7 @@ types, or transaction methods? Common timeout causes include:
 - **Compliance check failures**: Transfers failing compliance validation might
   appear slow if frontend code doesn't properly handle rejection
 
-### Scenario 2: Subgraph queries returning stale data
+### Scenario 2: subgraph queries returning stale data
 
 **Symptom:** DApp displays outdated token balances or missing recent transfers
 
@@ -1033,7 +1033,7 @@ Common indexing errors include:
 - **RPC errors**: Check ERPC dashboard to verify RPC gateway health, ensure
   graph-node can reach ERPC service, verify Besu nodes operate correctly
 
-### Scenario 3: High API latency
+### Scenario 3: high API latency
 
 **Symptom:** DApp pages load slowly, taking &gt;3s for API responses
 
@@ -1111,7 +1111,7 @@ enough to avoid blocking user requests for extended periods. Consider whether
 the operation truly needs synchronous external API calls or whether asynchronous
 processing with eventual consistency would better serve user experience.
 
-### Scenario 4: Database connection exhaustion
+### Scenario 4: database connection exhaustion
 
 **Symptom:** DApp returns intermittent 500 errors with "connection pool
 exhausted" messages
@@ -1187,7 +1187,7 @@ errors or whether the errors stem from different root causes.
   through Helm values and perform rolling restart to apply configuration
   changes.
 
-## Step 6: Configure alerting
+## Step 6: configure alerting
 
 Proactive alerting transforms the observability stack from a diagnostic tool
 into an operational safety net. Rather than discovering problems when users
@@ -1475,7 +1475,7 @@ through high-urgency channels (PagerDuty pages), warnings reach the team through
 asynchronous channels (Slack, email), and informational alerts batch into daily
 digests avoiding interruption fatigue.
 
-## Step 7: Configure external observability platforms
+## Step 7: configure external observability platforms
 
 The built-in observability stack provides excellent operational visibility for
 individual ATK deployments, but many organizations require additional
@@ -1561,7 +1561,7 @@ rather than vendor-specific APIs, maximizing flexibility to change vendors
 without reconfiguring collection agents. Most modern platforms support these
 standard protocols.
 
-### Example: Forward to Grafana Cloud
+### Example: forward to Grafana Cloud
 
 Grafana Cloud provides a fully managed observability platform with generous free
 tiers suitable for development and small production deployments. The

@@ -641,7 +641,7 @@ Real production operations combine dashboard monitoring with log analysis and
 remediation commands. These scenarios walk through common issues using
 observability-first workflows.
 
-### Scenario: Settlement transaction delays
+### Scenario: settlement transaction delays
 
 **Symptom:** Users report vault withdrawals taking longer than expected. DApp
 shows "pending" status beyond normal 2-minute SLA.
@@ -693,7 +693,7 @@ compliance rule caching with 5-minute TTL.
 operations dashboard. p95 should drop below 120s within 30 minutes as cache
 warms up.
 
-### Scenario: Subgraph indexing lag
+### Scenario: subgraph indexing lag
 
 **Symptom:** TheGraph Indexing Status dashboard shows sync lag increasing beyond
 10 blocks. Queries return stale data; recent transactions don't appear in DApp.
@@ -760,7 +760,7 @@ graph-node:
 &lt;5 blocks within 15 minutes after scaling or optimization. Query performance
 improves as cache effectiveness increases.
 
-### Scenario: High API error rate
+### Scenario: high API error rate
 
 **Symptom:** NGINX Ingress dashboard shows 5xx error rate spike above 1%. Users
 report intermittent "server error" messages in DApp.
@@ -841,7 +841,7 @@ hasura:
 drop below 0.5% within 5 minutes after remediation. Check pod metrics in
 Kubernetes dashboard to verify memory usage stays below 85%.
 
-### Scenario: Validator node connectivity loss
+### Scenario: validator node connectivity loss
 
 **Symptom:** Besu dashboard shows peer count drop on one validator. Block
 production continues but may become unstable if additional validators fail.

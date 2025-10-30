@@ -136,7 +136,7 @@ and settlement addons (DvP for institutional trades). Each addon integrates
 through well-defined interfaces, enabling complex workflows without tight
 coupling.
 
-### DvP settlement: Eliminating counterparty risk
+### DvP settlement: eliminating counterparty risk
 
 Consider a real-world scenario: a pension fund purchases tokenized corporate
 bonds from an asset manager. In traditional systems, the fund transfers cash
@@ -157,7 +157,7 @@ equity tokens—the XvP system ensures every leg completes atomically. One party
 cannot receive their assets while another party's transfer fails. This atomic
 guarantee makes complex financial transactions viable on-chain.
 
-### Vault custody: Multi-signature treasury control
+### Vault custody: multi-signature treasury control
 
 A DAO treasury holds millions of dollars in tokenized assets. A single private
 key controlling these assets represents an unacceptable security risk—key
@@ -178,7 +178,7 @@ pause/unpause), and governance (GOVERNANCE_ROLE for parameter changes). This
 separation ensures that even if one role is compromised, the vault remains
 secure.
 
-### Yield management: Automated entitlement calculations
+### Yield management: automated entitlement calculations
 
 An investment fund issues tokenized bonds with quarterly coupon payments.
 Calculating entitlements manually requires spreadsheets tracking every token
@@ -199,7 +199,7 @@ capturing holder balances at precise record dates. Even if tokens change hands
 between record date and payment date, entitlements remain correctly allocated to
 the holder of record.
 
-### Token distribution: Merkle-proof airdrops
+### Token distribution: merkle-proof airdrops
 
 A company launches a governance token and needs to distribute allocations to
 early adopters, team members with vesting schedules, and community participants.
@@ -313,7 +313,7 @@ graph TB
 
 `} />
 
-## Airdrop system: Merkle-proof distribution
+## Airdrop system: merkle-proof distribution
 
 Token distribution represents a common operational challenge in digital asset
 programs. Early-stage token launches need efficient allocation mechanisms.
@@ -430,7 +430,7 @@ sequenceDiagram
 
 `} />
 
-## Vault system: Multi-signature custody
+## Vault system: multi-signature custody
 
 Treasury management represents a critical security challenge. Hot wallets
 controlled by single private keys create single points of failure. Cold storage
@@ -554,7 +554,7 @@ sequenceDiagram
 
 `} />
 
-## XvP settlement: Atomic cross-chain delivery
+## XvP settlement: atomic cross-chain delivery
 
 Settlement risk represents one of the fundamental problems in financial markets.
 When two parties exchange assets, there's always a window where one party has
@@ -699,7 +699,7 @@ sequenceDiagram
 
 `} />
 
-## Yield management: Automated distributions
+## Yield management: automated distributions
 
 Yield-bearing assets generate recurring payments to token holders: bond coupons,
 equity dividends, fund distributions, deposit interest. Calculating and

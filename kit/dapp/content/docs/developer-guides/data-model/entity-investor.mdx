@@ -128,7 +128,7 @@ actions—suspicious accounts can be suspended pending investigation.
 - `apikeys` (1:N) — Programmatic access for integrations
 - `passkeys` (1:N) — WebAuthn credentials for passwordless login
 
-#### Usage example: Investor wallet lookup
+#### Usage example: investor wallet lookup
 
 ```typescript
 import { db } from "@/lib/db";
@@ -163,7 +163,7 @@ if (investor.role !== "admin") {
 See the user activity dashboard (Helm chart: `atk-observability`) for
 pre-configured panels tracking these metrics.
 
-### KYC Profile
+### KYC profile
 
 Identity verification data linked 1:1 to users. The platform uses a simplified
 KYC model suitable for development and testing; production deployments typically
@@ -208,7 +208,7 @@ registry.
 - `userId` → `user.id` with `onDelete: cascade` (deleting a user removes their
   KYC data)
 
-#### Usage example: Country-based compliance queries
+#### Usage example: country-based compliance queries
 
 ```typescript
 import { db } from "@/lib/db";
@@ -302,7 +302,7 @@ reporting.
 - **1:N** — `registeredIdentities` (registry entries for this account)
 - **1:1** — `stats` (aggregated account metrics)
 
-#### Usage example: Portfolio query
+#### Usage example: portfolio query
 
 ```graphql
 query GetInvestorPortfolio($address: Bytes!) {
@@ -369,7 +369,7 @@ without transferring funds.
 - **1:N** — `claims` (see
   [Compliance entities](/docs/developer-guides/data-model/entity-compliance))
 
-#### Usage example: Identity verification check
+#### Usage example: identity verification check
 
 ```graphql
 query CheckIdentityStatus($address: Bytes!) {
@@ -446,7 +446,7 @@ identity contract.
   registries)
 - **N:1** — `identity` (one identity can appear in multiple registries)
 
-#### Usage example: Registry-filtered investor query
+#### Usage example: registry-filtered investor query
 
 ```graphql
 query GetVerifiedInvestors($registryAddress: Bytes!) {
@@ -532,7 +532,7 @@ enabling fine-grained access control.
 **Note:** A single key can have multiple purposes (e.g., `[1, 2]` for combined
 management and action permissions).
 
-#### Usage example: Key audit query
+#### Usage example: key audit query
 
 ```graphql
 query GetIdentityKeys($identityAddress: Bytes!) {
@@ -579,7 +579,7 @@ Real-world operations require joining off-chain and on-chain data. These
 examples demonstrate common patterns for linking PostgreSQL user records to
 subgraph blockchain state.
 
-### Workflow: User portfolio with regulatory context
+### Workflow: user portfolio with regulatory context
 
 Scenario: Display an investor's token holdings with their KYC verification
 status.
@@ -660,7 +660,7 @@ const portfolio = {
 initiating a trade, the UI verifies the user has a verified identity and
 sufficient token balance.
 
-### Workflow: Country-based compliance reporting
+### Workflow: country-based compliance reporting
 
 Scenario: Generate a report of all US investors and their token holdings for
 regulatory filing.
@@ -733,7 +733,7 @@ const report = usInvestors.map((inv) => {
 (Grafana panel: `investor-holdings-by-country`), which refreshes hourly to
 provide up-to-date regulatory filing data.
 
-### Workflow: Identity verification lifecycle
+### Workflow: identity verification lifecycle
 
 End-to-end flow from user registration to on-chain identity deployment:
 
@@ -800,9 +800,9 @@ flowchart TB
   investor token holdings and balances
 - **[Compliance entities](/docs/developer-guides/data-model/entity-compliance)**
   — Identity claims and access control rules
-- **[DvP settlement](/docs/developer-guides/settlement/dvp-settlement)** — How
+- **[DvP settlement](/docs/architecture/smart-contracts/addon-modules)** — How
   identity verification enables atomic trades
-- **[Vault operations](/docs/developer-guides/custody/vault-operations)** —
+- **[Vault operations](/docs/architecture/smart-contracts/addon-modules)** —
   Identity-based access control for custody
 - **[Data model overview](/docs/developer-guides/data-model/data-model-reference)**
   — Complete data architecture reference

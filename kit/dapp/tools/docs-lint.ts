@@ -34,6 +34,12 @@ interface CheckFileResult {
   hasTextBeforeHeading: boolean;
 }
 
+interface HeadingCapitalizationIssue {
+  line: number;
+  heading: string;
+  suggestion: string;
+}
+
 function extractFrontmatter(content: string): {
   frontmatter: string;
   body: string;
@@ -70,6 +76,171 @@ function calculateSimilarity(str1: string, str2: string): number {
   const overlap = words1.filter((w) => words2.includes(w)).length;
 
   return Math.round((overlap / Math.max(words1.length, words2.length)) * 100);
+}
+
+function checkHeadingCapitalization(
+  filePath: string
+): HeadingCapitalizationIssue[] {
+  const issues: HeadingCapitalizationIssue[] = [];
+
+  try {
+    const content = readFileSync(filePath, "utf-8");
+    const lines = content.split("\n");
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line) continue;
+
+      const headingMatch = line.match(/^(#{2,})\s+(.+)$/);
+
+      if (!headingMatch?.[2]) continue;
+
+      const heading = headingMatch[2].trim();
+
+      const properNouns = [
+        "ATK",
+        "Actions",
+        "API",
+        "APIs",
+        "ArgoCD",
+        "Auth",
+        "AWS",
+        "Besu",
+        "Better",
+        "CI",
+        "CD",
+        "Circle",
+        "CLI",
+        "Cloud",
+        "Compiler",
+        "Connect",
+        "CSS",
+        "CSV",
+        "D",
+        "DALP",
+        "DApp",
+        "Debit",
+        "Direct",
+        "Docker",
+        "Drizzle",
+        "DvP",
+        "ERC",
+        "Foundry",
+        "GitHub",
+        "GitOps",
+        "Grafana",
+        "GraphQL",
+        "Hardhat",
+        "Helm",
+        "HTML",
+        "HTTP",
+        "HTTPS",
+        "ID",
+        "IDs",
+        "JSON",
+        "JWT",
+        "KYC",
+        "AML",
+        "Kubernetes",
+        "LPs",
+        "Marketplace",
+        "MiCA",
+        "NAV",
+        "NFT",
+        "OAuth",
+        "OpenID",
+        "ORM",
+        "OnchainID",
+        "ORPC",
+        "Playwright",
+        "PostgreSQL",
+        "Prometheus",
+        "Radix",
+        "RBAC",
+        "React",
+        "Reg",
+        "REST",
+        "SEPA",
+        "SettleMint",
+        "SLA",
+        "SMART",
+        "SOC",
+        "SQL",
+        "Stripe",
+        "TheGraph",
+        "TanStack",
+        "Type",
+        "TypeScript",
+        "UI",
+        "URL",
+        "URLs",
+        "UX",
+        "Vite",
+        "WalletConnect",
+        "WebSocket",
+        "Ws",
+        "WSL",
+        "Wyre",
+        "YAML",
+        "Zod",
+      ];
+
+      const words = heading.split(/\s+/);
+      let hasTitleCase = false;
+      let firstWordIdx = -1;
+
+      for (let j = 0; j < words.length; j++) {
+        const word = words[j];
+        if (!word) continue;
+
+        const baseWord = word.replace(/[^a-zA-Z]/g, "");
+        if (baseWord && firstWordIdx === -1) {
+          firstWordIdx = j;
+        }
+
+        if (j === firstWordIdx) continue;
+
+        const isProperNoun = properNouns.includes(baseWord);
+        if (isProperNoun) continue;
+
+        const startsWithCap = /^[A-Z]/.test(word);
+        const isAllCaps =
+          baseWord === baseWord.toUpperCase() && baseWord.length > 1;
+        const isAcronym = /^[A-Z]{2,}s?$/.test(baseWord);
+
+        if (startsWithCap && !isAllCaps && !isAcronym) {
+          hasTitleCase = true;
+          break;
+        }
+      }
+
+      if (hasTitleCase) {
+        const suggestion = words
+          .map((word, idx) => {
+            const baseWord = word.replace(/[^a-zA-Z]/g, "");
+
+            if (idx === firstWordIdx) return word;
+
+            const isProperNoun = properNouns.includes(baseWord);
+            const isAcronym = /^[A-Z]{2,}s?$/.test(baseWord);
+            if (isProperNoun || isAcronym) return word;
+
+            return word.charAt(0).toLowerCase() + word.slice(1);
+          })
+          .join(" ");
+
+        issues.push({
+          line: i + 1,
+          heading,
+          suggestion,
+        });
+      }
+    }
+  } catch {
+    return [];
+  }
+
+  return issues;
 }
 
 function checkDescriptionDuplication(filePath: string): CheckFileResult | null {
@@ -256,16 +427,25 @@ function checkContentStructure(): boolean {
   const duplications: Array<{ file: string; result: CheckFileResult }> = [];
   const textBeforeHeading: Array<{ file: string; result: CheckFileResult }> =
     [];
+  const headingCapitalizationIssues: Array<{
+    file: string;
+    issues: HeadingCapitalizationIssue[];
+  }> = [];
 
   for (const file of files) {
     const result = checkDescriptionDuplication(file);
-    if (!result) continue;
-
-    if (result.hasDuplication) {
-      duplications.push({ file, result });
+    if (result) {
+      if (result.hasDuplication) {
+        duplications.push({ file, result });
+      }
+      if (result.hasTextBeforeHeading) {
+        textBeforeHeading.push({ file, result });
+      }
     }
-    if (result.hasTextBeforeHeading) {
-      textBeforeHeading.push({ file, result });
+
+    const capitalizationIssues = checkHeadingCapitalization(file);
+    if (capitalizationIssues.length > 0) {
+      headingCapitalizationIssues.push({ file, issues: capitalizationIssues });
     }
   }
 
@@ -312,12 +492,35 @@ function checkContentStructure(): boolean {
     }
   }
 
+  if (headingCapitalizationIssues.length === 0) {
+    console.log("✅ All headings use sentence case");
+  } else {
+    hasErrors = true;
+    console.log(
+      `❌ Found ${headingCapitalizationIssues.length} files with Title Case headings:\n`
+    );
+
+    for (const { file, issues } of headingCapitalizationIssues) {
+      const relativePath = file.replace(/^.*\/kit\/dapp\/content\/docs\//, "");
+      console.log(`  ${relativePath}`);
+
+      for (const issue of issues) {
+        console.log(`    Line ${issue.line}: "${issue.heading}"`);
+        console.log(`    Suggested: "${issue.suggestion}"`);
+      }
+      console.log("");
+    }
+  }
+
   console.log("\n=== SUMMARY ===");
   console.log(`Total files: ${files.length}`);
   console.log(`Files with duplication: ${duplications.length}`);
   console.log(`Files with text before H2: ${textBeforeHeading.length}`);
   console.log(
-    `Files with correct structure: ${files.length - Math.max(duplications.length, textBeforeHeading.length)}\n`
+    `Files with Title Case headings: ${headingCapitalizationIssues.length}`
+  );
+  console.log(
+    `Files with correct structure: ${files.length - Math.max(duplications.length, textBeforeHeading.length, headingCapitalizationIssues.length)}\n`
   );
 
   return !hasErrors;

@@ -324,7 +324,7 @@ See
 [Smart Contracts Reference](/docs/developer-guides/smart-contracts/contract-reference)
 for detailed contract interfaces and event schemas.
 
-## Token namespace: Complete lifecycle management
+## Token namespace: complete lifecycle management
 
 The token namespace provides comprehensive operations for token lifecycle
 management—from deployment through daily operations to maturity and redemption.
@@ -895,7 +895,7 @@ if (yieldStats.coverageRatio < 1.0) {
 All statistics procedures integrate with the **Analytics** dashboard for visual
 exploration of token metrics and trend analysis.
 
-## User namespace: Identity and asset management
+## User namespace: identity and asset management
 
 The user namespace manages user profiles, KYC workflows, and asset queries.
 These operations support the identity verification pipeline and provide holders
@@ -1064,7 +1064,7 @@ and identify bottlenecks in the onboarding process.
 - **user.createWallet** — Custodial wallet creation for users without external
   wallets
 
-## Actions namespace: Time-bound operations
+## Actions namespace: time-bound operations
 
 The actions namespace manages time-bound executable tasks that users can perform
 on assets. Actions support role-based access control and lifecycle state
@@ -1132,7 +1132,7 @@ Actions integrate with notification systems to alert users of expiring
 opportunities. Monitor action execution rates in the **Governance Activity**
 dashboard.
 
-## Exchange rates namespace: Currency conversion
+## Exchange rates namespace: currency conversion
 
 The exchange rates namespace manages currency conversion rates with external
 provider synchronization. Essential for multi-currency operations and
@@ -1230,7 +1230,7 @@ Integrations** dashboard to ensure pricing accuracy.
 - **`exchangeRates.delete`** — Remove a manual override (admin)
 - **`exchangeRates.history`** — Get historical rate data for charting
 
-## Fixed yield schedule namespace: Automated distributions
+## Fixed yield schedule namespace: automated distributions
 
 The fixed yield schedule namespace manages yield distribution contracts that
 automate coupon payments, dividends, and interest. These operations integrate
@@ -1317,7 +1317,7 @@ Withdraw excess funds from the vault after final distribution.
 **Path**: `/fixed-yield-schedule/:id/withdraw`  
 **Auth**: Onboarded
 
-## Settings namespace: Platform configuration
+## Settings namespace: platform configuration
 
 The settings namespace manages platform-wide configuration including theming,
 branding, and feature flags.
@@ -1346,7 +1346,7 @@ Upload platform logo for branding customization.
 **Path**: `/settings/theme/logo`  
 **Auth**: Authenticated (admin)
 
-## Account namespace: Wallet operations
+## Account namespace: wallet operations
 
 ### `account.search`
 
@@ -1445,8 +1445,8 @@ comprehensive operational visibility:
 - Authentication failure rate &gt; 10%
 
 Access dashboards via the observability stack's Grafana instance. See
-[Deployment Guide](/docs/deployment-guides/kubernetes-helm/deployment-guide) for
-observability configuration details.
+[Deployment Guide](/docs/developer-guides/deployment-ops/installation-configuration)
+for observability configuration details.
 
 ## Next steps
 
@@ -1463,4 +1463,4 @@ observability configuration details.
   implementations and validation schemas
 
 For GraphQL queries against indexed blockchain data, continue to
-[Subgraph Reference](/docs/developer-guides/subgraph-integration/subgraph-reference).
+[Subgraph Reference](/docs/architecture/data-indexing/blockchain-indexing).
