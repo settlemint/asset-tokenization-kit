@@ -15,7 +15,7 @@
  * @see {@link https://zod.dev} - Zod validation library
  */
 
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for individual column filter state

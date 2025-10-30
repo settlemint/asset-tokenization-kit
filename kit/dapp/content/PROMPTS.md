@@ -25,35 +25,6 @@ Guidelines:
   creating and setting one placeholder image (put it in the repo) and describing
   the content in the image caption
 
-# Reviewing
-
-Review the folowing section:
-
-- @kit/dapp/content/docs
-
-Verify that:
-
-- does it adhere to the writing style described in @kit/dapp/content/AGENTS.md
-- based on the smart contracts (.sol) are there any factual errors or
-  hallucinated content?
-- based on the subgraph and dapp code, are there any factual errors or
-  hallucinated content?
-- suggest a series of improvements to these pages
-- do these pages follow the optimal template from The Good Docs (use context7
-  mcp to get the docs, key gitlab_tgdp/templates)
-- are there any content gaps or pages that are missing and can be beneficial for
-  the target reader profile?
-- is all content present targetting the right audience? If not, adjust the
-  content to the right audience and move information you would be deleting to
-  the right section.
-- A higher level background story can be found in
-  <https://github.com/settlemint/book-of-dalp> (investigate via octocode mcp)
-- Did we liberally use mermaid charts to improve understanding and break up
-  code, but did not go overboard with useless charts?
-
-Do not actually execute the changes, just review the content and suggest a clear
-and detailed plan for improvements.
-
 # TODO's
 
 - When we are referencing code, make sure we have direct links to Github in

@@ -92,7 +92,7 @@ Define validation schemas for inputs and outputs:
 
 ```typescript
 // identity/routes/identity.read.schema.ts
-import * as z from "zod";
+import { z } from "zod";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 
 export const IdentityReadSchema = z.object({

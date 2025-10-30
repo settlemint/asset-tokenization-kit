@@ -5,7 +5,7 @@
  * @module ExchangeRatesDeleteSchema
  */
 import { fiatCurrency } from "@atk/zod/fiat-currency";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for deleting a manual exchange rate.

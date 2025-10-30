@@ -1,6 +1,6 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { fixedYieldSchedule } from "@atk/zod/fixed-yield-schedule";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Input schema for reading a fixed yield schedule by ID.

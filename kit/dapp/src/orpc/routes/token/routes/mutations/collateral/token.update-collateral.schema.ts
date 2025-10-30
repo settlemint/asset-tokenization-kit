@@ -1,7 +1,7 @@
 import { MutationInputSchemaWithContract } from "@/orpc/routes/common/schemas/mutation.schema";
 import { apiBigInt } from "@atk/zod/bigint";
 import { timestamp } from "@atk/zod/timestamp";
-import * as z from "zod";
+import { z } from "zod";
 
 export const TokenUpdateCollateralInputSchema =
   MutationInputSchemaWithContract.extend({

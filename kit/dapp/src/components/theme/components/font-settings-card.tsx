@@ -80,30 +80,27 @@ export function FontSettingsCard({
   ];
 
   return (
-    <Card id={sectionId} className="scroll-mt-28">
-      <CardHeader>
-        <CardTitle>{t("fontsTitle")}</CardTitle>
-        <CardDescription>{t("fontsDescription")}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {fontEntries.map(({ key, title, description }) => {
-          const currentFont = fontsState?.[key] ?? draft.fonts[key];
-          const currentSource = currentFont.source;
-          const isDefaultSource = currentSource === "fontsource";
-          const isGoogleSource = currentSource === "google";
-          const isCustomSource = currentSource === "custom";
-          const previewMonoFamily =
-            fontsState?.mono?.family ?? draft.fonts.mono.family;
+    <div id={sectionId} className="space-y-6 scroll-mt-28">
+      {fontEntries.map(({ key, title, description }) => {
+        const currentFont = fontsState?.[key] ?? draft.fonts[key];
+        const currentSource = currentFont.source;
+        const isDefaultSource = currentSource === "fontsource";
+        const isGoogleSource = currentSource === "google";
+        const isCustomSource = currentSource === "custom";
+        const previewMonoFamily =
+          fontsState?.mono?.family ?? draft.fonts.mono.family;
 
-          return (
-            <div key={key} className="space-y-4 rounded-lg border p-4">
-              <div className="flex items-center gap-2 text-sm font-medium">
+        return (
+          <Card key={key}>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
                 <Type className="size-4" />
                 <span>{title}</span>
-              </div>
-              <p className="text-xs text-muted-foreground">{description}</p>
-
-              <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,240px)]">
+              </CardTitle>
+              <CardDescription>{description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
                 <div className="space-y-4">
                   <form.Field name={`fonts.${key}.source` as const}>
                     {(field) => {
@@ -323,33 +320,33 @@ export function FontSettingsCard({
                   )}
                 </div>
 
-                <div className="rounded-lg border bg-muted/30 p-4">
+                <div className="rounded-lg border bg-muted/30 p-6 space-y-4">
                   <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                     {t("fontPreviewLabel")}
                   </p>
                   <p
-                    className="text-base leading-relaxed"
+                    className="text-lg leading-relaxed"
                     style={{ fontFamily: currentFont.family }}
                   >
                     {FONT_PREVIEW_TEXT}
                   </p>
                   <code
-                    className="block rounded bg-background/80 px-2 py-1 text-xs"
+                    className="block rounded bg-background/80 px-3 py-2 text-sm"
                     style={{ fontFamily: previewMonoFamily }}
                   >
                     {`font-family: ${currentFont.family};`}
                   </code>
                   {isGoogleSource ? (
-                    <p className="text-[11px] text-muted-foreground mt-2">
+                    <p className="text-xs text-muted-foreground">
                       {t("fontGoogleHint")}
                     </p>
                   ) : null}
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </CardContent>
-    </Card>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
   );
 }

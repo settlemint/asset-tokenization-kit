@@ -4,6 +4,11 @@ import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { orpc } from "@/orpc/orpc-client";
 import { UserWithIdentity } from "@/orpc/routes/user/routes/user.list.schema";
 import type { User } from "@/orpc/routes/user/routes/user.me.schema";
@@ -167,6 +172,27 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
           displayName: t("management.table.columns.name"),
           type: "text",
           emptyValue: t("management.table.fallback.unknown"),
+          renderCell: (context) => {
+            const value = context.getValue();
+            const fallback = context.column.columnDef.meta?.emptyValue ?? "";
+
+            if (!value) {
+              return fallback;
+            }
+
+            const text = typeof value === "string" ? value : String(value);
+
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="block min-w-0 max-w-[240px] truncate text-left">
+                    {text}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>{text}</TooltipContent>
+              </Tooltip>
+            );
+          },
         },
       }),
       columnHelper.accessor("email", {
@@ -176,6 +202,27 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
           displayName: t("management.table.columns.email"),
           type: "text",
           emptyValue: t("management.table.fallback.unknown"),
+          renderCell: (context) => {
+            const value = context.getValue();
+            const fallback = context.column.columnDef.meta?.emptyValue ?? "";
+
+            if (!value) {
+              return fallback;
+            }
+
+            const text = typeof value === "string" ? value : String(value);
+
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="block min-w-0 max-w-[260px] truncate text-left">
+                    {text}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>{text}</TooltipContent>
+              </Tooltip>
+            );
+          },
         },
       }),
       columnHelper.accessor("wallet", {

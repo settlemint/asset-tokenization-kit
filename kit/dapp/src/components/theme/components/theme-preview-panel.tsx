@@ -16,6 +16,7 @@ import { Paintbrush } from "lucide-react";
 import type { CSSProperties } from "react";
 import { FONT_PREVIEW_TEXT } from "../lib/constants";
 import type { ThemeTranslateFn } from "../lib/types";
+import { AuthPreview } from "./auth-preview";
 
 // Map derived shadcn variables so previews ignore the page-level theme class.
 const PREVIEW_DERIVED_VARIABLES = {
@@ -82,14 +83,14 @@ export function ThemePreviewPanel({ draft, t }: ThemePreviewPanelProps) {
   ];
 
   return (
-    <aside className="mt-6 space-y-4 lg:mt-0 lg:space-y-6">
-      <Card className="lg:sticky lg:top-6">
+    <aside className="mt-6 space-y-4 xl:mt-0 xl:space-y-6 order-2">
+      <Card className="xl:sticky xl:top-6">
         <CardHeader>
           <CardTitle>{t("previewTitle")}</CardTitle>
           <CardDescription>{t("previewDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="light" className="space-y-4">
+          <Tabs defaultValue="light" className="space-y-6">
             <TabsList>
               {tabs.map(({ mode, title }) => (
                 <TabsTrigger key={mode} value={mode}>
@@ -203,6 +204,20 @@ export function ThemePreviewPanel({ draft, t }: ThemePreviewPanelProps) {
                       />
                     </div>
                   </div>
+
+                  {/* Authentication Page Preview */}
+                  <AuthPreview
+                    draft={draft}
+                    mode={mode}
+                    controlStyle={controlStyle as CSSProperties}
+                    containerStyle={containerStyle as CSSProperties}
+                    primaryButtonStyle={primaryButtonStyle as CSSProperties}
+                    welcomeText={t("authPreviewWelcome")}
+                    signInText={t("authPreviewSignIn")}
+                    emailLabel={t("authPreviewEmailLabel")}
+                    passwordLabel={t("authPreviewPasswordLabel")}
+                    signInButtonText={t("authPreviewSignInButton")}
+                  />
                 </TabsContent>
               );
             })}

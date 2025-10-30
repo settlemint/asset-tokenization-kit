@@ -25,7 +25,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import * as z from "zod";
+import { z } from "zod";
 
 const routeParamsSchema = z.object({
   factoryAddress: ethereumAddress,

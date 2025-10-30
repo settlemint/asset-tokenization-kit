@@ -31,7 +31,7 @@ import type { TadaDocumentNode } from "gql.tada";
 import { parse, print } from "graphql";
 import { ClientError } from "graphql-request";
 import { beforeEach, describe, expect, test, vi, type Mock } from "vitest";
-import * as z from "zod";
+import { z } from "zod";
 
 // Import from the mocked module - vitest config alias handles this
 import { theGraphClient } from "@/lib/settlemint/the-graph";

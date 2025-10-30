@@ -11,7 +11,7 @@ import { statsContract } from "@/orpc/routes/system/stats/stats.contract";
 import { factoryContract } from "@/orpc/routes/system/token-factory/factory.contract";
 import { trustedIssuersContract } from "@/orpc/routes/system/trusted-issuers/trusted-issuers.contract";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 import { baseContract } from "../../procedures/base.contract";
 import { SystemListItemSchema } from "./routes/system.list.schema";
 

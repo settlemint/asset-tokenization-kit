@@ -6,7 +6,7 @@
  * asset tokenization platform's various token capabilities and features.
  * @module AssetExtensionValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 import { AssetTypeEnum, type AssetType } from "./asset-types";
 
 /**

@@ -1,13 +1,12 @@
 ---
 title: Monitoring & disaster recovery
 description:
-  ATK includes a production-grade observability stack out of the box—a
-  competitive differentiator that eliminates months of integration work. While
-  most blockchain platforms require you to assemble monitoring from multiple
-  vendors, ATK ships with everything pre-configured—metrics, logs, traces,
-  dashboards, and alerting. Production ATK deployments leverage this integrated
-  observability to detect issues proactively and disaster recovery capabilities
-  to restore service after failures.
+  Production ATK deployments require integrated observability to detect failures
+  proactively and disaster recovery capabilities to restore service after
+  infrastructure loss. The platform ships with a complete monitoring
+  stack—metrics, logs, traces, dashboards, and alerting—pre-configured for every
+  layer from smart contracts through databases to Kubernetes infrastructure,
+  eliminating months of integration work that competing platforms require.
 pageTitle: Observability & disaster recovery - Production resilience patterns
 tags:
   [
@@ -21,117 +20,111 @@ tags:
   ]
 ---
 
-### Problem
+## Problem statement
 
-Distributed blockchain applications introduce unique observability challenges:
+Distributed blockchain applications introduce observability challenges distinct
+from traditional web services. Multi-layer failures can originate in smart
+contracts, indexers, databases, or API layers with cascading effects across
+components. Blockchain immutability means transaction failures leave permanent
+traces that cannot be rolled back like database operations. Indexers and caches
+maintain eventual consistency with blockchain state, making real-time debugging
+difficult when on-chain state diverges from cached views.
 
-- **Multi-layer failures**: Issues can originate in smart contracts, indexers,
-  databases, or API layers with cascading effects
-- **Blockchain immutability**: Transaction failures leave permanent traces;
-  cannot be "rolled back" like database operations
-- **Synchronization lag**: Indexers and caches eventually consistent with
-  blockchain state, making real-time debugging difficult
-- **Complex recovery**: Restoring a tokenization platform requires coordinating
-  blockchain state, database backups, and document storage
-- **Vendor fragmentation**: Assembling observability from multiple tools
-  requires complex integrations and increased operational overhead
+Recovery procedures must coordinate blockchain state, database backups, and
+document storage simultaneously. Most tokenization platforms require teams to
+assemble observability from multiple vendors—Datadog for metrics, Splunk for
+logs, custom dashboards for blockchain nodes—resulting in fragmented tooling,
+complex integrations, and increased operational overhead. When incidents occur,
+operators waste critical minutes correlating data across disconnected systems.
 
-### Solution (Integrated Observability Stack)
+## Integrated observability stack
 
-**ATK's included observability stack provides everything you need for production
-operations:**
+ATK includes a production-grade observability stack deployed automatically with
+the platform. VictoriaMetrics provides high-performance time-series metric
+collection with Prometheus compatibility, handling millions of data points per
+second. Loki centralizes log aggregation with structured metadata support and
+automatic pattern detection, allowing operators to trace requests across
+services using correlation IDs. Tempo implements distributed tracing with
+OpenTelemetry compatibility, visualizing end-to-end request flows from frontend
+through middleware to blockchain submission.
 
-- **VictoriaMetrics**: High-performance time-series database for metrics
-  collection with Prometheus compatibility
-- **Loki**: Centralized log aggregation with structured metadata support and
-  automatic log pattern detection
-- **Tempo**: Distributed tracing with OpenTelemetry compatibility for end-to-end
-  request flow visualization
-- **Grafana**: Pre-configured dashboards for every layer of the stack with
-  auto-loading from Helm charts
-- **Alloy**: Telemetry collection agent that auto-discovers instrumented
-  services
-- **Pre-built dashboards**: Production-ready dashboards for Besu, TheGraph,
-  ERPC, IPFS, PostgreSQL, Redis, Kubernetes, and infrastructure metrics
-- **Proactive alerting**: Alert rule templates for common failure scenarios with
-  notification channel integration
-- **Multi-tier backup**: Automated backups of databases, smart contract state,
-  and off-chain documents
-- **Tested recovery procedures**: Documented runbooks with recovery time
-  objectives (RTO) for each failure scenario
+Grafana ties these pillars together through pre-configured dashboards
+auto-loaded from Helm charts. Production deployments include dashboards for Besu
+nodes, TheGraph indexers, ERPC RPC multiplexers, IPFS storage, PostgreSQL
+databases, Redis caches, and Kubernetes infrastructure metrics. Alloy telemetry
+agents auto-discover instrumented services and forward metrics, logs, and traces
+to the central stack without manual configuration.
 
-**This integrated approach means:**
+Alert rule templates cover common failure scenarios: elevated API error rates,
+database connection pool exhaustion, subgraph sync lag, high gas prices, and pod
+crashes. Notifications integrate with PagerDuty for on-call escalation and Slack
+for team awareness. Multi-tier automated backups protect databases, smart
+contract state, and off-chain documents, while tested recovery procedures
+document Recovery Time Objectives (RTO) for each failure scenario.
 
-- Zero observability integration work required
-- Consistent metrics and logging across all components
-- Correlated logs, metrics, and traces in one interface
-- Faster mean time to resolution (MTTR) for incidents
-- Lower total cost of ownership compared to SaaS observability platforms
-
-### Key concepts
-
-- **Observability pillars**: Metrics (numeric measurements), logs (event
-  records), traces (request flows)
-- **Service-level indicators (SLIs)**: Measurable aspects of service quality
-  (latency, error rate, availability)
-- **Recovery time objective (RTO)**: Maximum acceptable downtime for a service
-- **Recovery point objective (RPO)**: Maximum acceptable data loss measured in
-  time
+This integration means zero observability setup work, consistent instrumentation
+across components, correlated logs-metrics-traces in one interface, faster mean
+time to resolution (MTTR), and lower total cost of ownership compared to
+assembling commercial SaaS platforms.
 
 ## Observability architecture
 
+The monitoring infrastructure collects telemetry from application, data, and
+blockchain layers into a unified observability stack that drives incident
+response workflows.
+
 <Mermaid
   chart={`flowchart TB
-    subgraph "Application Layer"
+    subgraph Application["Application Layer"]
         DApp(dApp Frontend<br/>Browser metrics)
         API(ORPC API<br/>Request metrics)
         Portal(Portal Service<br/>Transaction metrics)
     end
     
-    subgraph "Data Layer"
+    subgraph Data["Data Layer"]
         Postgres(PostgreSQL<br/>Query metrics)
         Redis(Redis<br/>Cache hit rate)
         GraphNode(TheGraph Node<br/>Sync status)
     end
     
-    subgraph "Blockchain Layer"
+    subgraph Blockchain["Blockchain Layer"]
         Network(Blockchain Network<br/>Block height, peers)
         Contracts(Smart Contracts<br/>Gas usage, events)
     end
     
-    subgraph "Observability Stack"
-        Prometheus(Prometheus<br/>Metrics Collection)
-        Loki(Loki/ELK<br/>Log Aggregation)
+    subgraph Observability["Observability Stack"]
+        VictoriaMetrics(VictoriaMetrics<br/>Metrics Collection)
+        Loki(Loki<br/>Log Aggregation)
         Tempo(Tempo<br/>Distributed Tracing)
         Grafana(Grafana<br/>Visualization Dashboards)
         Alertmanager(Alertmanager<br/>Alert Routing)
     end
     
-    subgraph "Incident Response"
+    subgraph Incident["Incident Response"]
         PagerDuty(PagerDuty/Slack<br/>On-call Notifications)
         Runbooks(Runbooks<br/>Recovery Procedures)
     end
     
-    DApp -->|Metrics| Prometheus
-    API -->|Metrics & Traces| Prometheus
+    DApp -->|Metrics| VictoriaMetrics
+    API -->|Metrics & Traces| VictoriaMetrics
     API -->|Traces| Tempo
-    Portal -->|Metrics| Prometheus
+    Portal -->|Metrics| VictoriaMetrics
     
-    Postgres -->|Metrics| Prometheus
-    Redis -->|Metrics| Prometheus
-    GraphNode -->|Metrics| Prometheus
+    Postgres -->|Metrics| VictoriaMetrics
+    Redis -->|Metrics| VictoriaMetrics
+    GraphNode -->|Metrics| VictoriaMetrics
     
-    Network -->|Metrics| Prometheus
+    Network -->|Metrics| VictoriaMetrics
     Contracts -->|Event logs| Loki
     
     DApp -->|Logs| Loki
     API -->|Logs| Loki
     
-    Prometheus --> Grafana
+    VictoriaMetrics --> Grafana
     Loki --> Grafana
     Tempo --> Grafana
     
-    Prometheus --> Alertmanager
+    VictoriaMetrics --> Alertmanager
     Alertmanager --> PagerDuty
     PagerDuty --> Runbooks
     
@@ -143,7 +136,7 @@ operations:**
     style GraphNode fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
     style Network fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
     style Contracts fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style Prometheus fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style VictoriaMetrics fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
     style Loki fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
     style Tempo fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
     style Grafana fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
@@ -153,31 +146,41 @@ operations:**
 `}
 />
 
-### Metrics collection
+### Metrics collection patterns
 
-**Application metrics** (collected via Prometheus exporters):
+Application metrics flow from instrumented components through
+Prometheus-compatible exporters. The dApp frontend captures page load times,
+route transitions, and API call latency using the browser performance API and
+custom instrumentation. ORPC API middleware instruments request rates, response
+time percentiles (P50/P95/P99), and error rates automatically. PostgreSQL
+exports query latency, connection pool usage, and table sizes via
+`postgres_exporter`. Redis exposes hit rates, memory usage, and eviction rates
+through `redis_exporter`. TheGraph nodes provide built-in metrics endpoints
+tracking sync lag, query latency, and failed event handlers. Blockchain nodes
+expose block height, transaction pool size, and peer counts.
 
-| Component      | Metrics                                               | Collection Method                               |
-| -------------- | ----------------------------------------------------- | ----------------------------------------------- |
-| **dApp**       | Page load time, route transitions, API call latency   | Browser performance API, custom instrumentation |
-| **ORPC API**   | Request rate, response time (P50/P95/P99), error rate | Middleware instrumentation                      |
-| **PostgreSQL** | Query latency, connection pool usage, table sizes     | `postgres_exporter`                             |
-| **Redis**      | Hit rate, memory usage, eviction rate                 | `redis_exporter`                                |
-| **TheGraph**   | Sync lag, query latency, failed handlers              | Built-in metrics endpoint                       |
-| **Blockchain** | Block height, transaction pool size, peer count       | Node metrics endpoint                           |
+Beyond infrastructure metrics, the platform collects business-specific
+measurements: token transfers per hour segmented by token type, KYC application
+approval rates, average compliance check duration, and failed transaction rates
+grouped by error code. These business metrics appear alongside technical metrics
+in dashboards, connecting operational health to business outcomes.
 
-**Custom business metrics**:
+| Component  | Key metrics                                           | Collection method                               |
+| ---------- | ----------------------------------------------------- | ----------------------------------------------- |
+| dApp       | Page load time, route transitions, API call latency   | Browser performance API, custom instrumentation |
+| ORPC API   | Request rate, response time (P50/P95/P99), error rate | Middleware instrumentation                      |
+| PostgreSQL | Query latency, connection pool usage, table sizes     | `postgres_exporter`                             |
+| Redis      | Hit rate, memory usage, eviction rate                 | `redis_exporter`                                |
+| TheGraph   | Sync lag, query latency, failed handlers              | Built-in metrics endpoint                       |
+| Blockchain | Block height, transaction pool size, peer count       | Node metrics endpoint                           |
 
-- Token transfers per hour (by token type)
-- KYC application approval rate
-- Average compliance check duration
-- Failed transaction rate by error code
+### Log aggregation strategy
 
-### Log aggregation
-
-Logs flow from all components into centralized storage (Loki or Elasticsearch):
-
-**Log structure** (JSON format):
+Logs from all components flow into centralized Loki storage in structured JSON
+format. Each log entry includes timestamp, severity level, originating service,
+trace ID for request correlation, user ID for support investigations, action
+identifier, error code when applicable, and contextual details as nested JSON
+objects.
 
 ```json
 {
@@ -197,89 +200,112 @@ Logs flow from all components into centralized storage (Loki or Elasticsearch):
 }
 ```
 
-**Structured logging benefits**:
+Structured logging enables powerful queries: trace requests across services by
+trace ID, filter logs by user ID during support escalations, group errors by
+code to identify systemic issues, and extract metrics by parsing JSON fields.
+Loki's label-based indexing makes these queries performant even across terabytes
+of log data.
 
-- Query logs by trace ID to follow request across services
-- Filter by user ID for support investigations
-- Group by error code to identify systemic issues
-- Parse JSON fields for metrics extraction
+### Distributed tracing flows
 
-### Distributed tracing
+OpenTelemetry traces follow requests from browser through backend services to
+blockchain confirmation. A typical token transfer generates spans at each
+processing stage: `frontend.transfer_initiated` when the user clicks the
+transfer button, `orpc.token.transfer` when the API procedure receives the
+request, `middleware.auth` during authentication validation,
+`middleware.compliance_check` for pre-flight compliance verification,
+`thegraph.query.token_balance` when querying current balance,
+`portal.submit_transaction` when submitting to the blockchain,
+`blockchain.transaction_confirmed` when the transaction mines, and
+`thegraph.event.transfer_completed` when the indexer processes the transfer
+event.
 
-OpenTelemetry traces follow requests from browser through multiple backend
-services:
+Each span records duration, status (success or error), and contextual attributes
+like token address and transfer amount. Operators use traces to diagnose latency
+bottlenecks, identify which service caused a failure, and understand end-to-end
+request timing.
 
-**Typical trace spans**:
+## Dashboard architecture
 
-1. `frontend.transfer_initiated` - User clicks transfer button
-2. `orpc.token.transfer` - API procedure receives request
-3. `middleware.auth` - Authentication validation
-4. `middleware.compliance_check` - Pre-flight compliance validation
-5. `thegraph.query.token_balance` - Query current balance
-6. `portal.submit_transaction` - Submit to blockchain
-7. `blockchain.transaction_confirmed` - Transaction mined
-8. `thegraph.event.transfer_completed` - Indexer processes transfer event
-
-Each span includes duration, status (success/error), and contextual attributes
-(token address, amount).
-
-## Monitoring dashboards
+Pre-configured Grafana dashboards provide real-time visibility into system
+health, business metrics, and blockchain operations. These dashboards validate
+that recovery procedures meet RTO targets and detect degradation before failures
+occur.
 
 ### System health dashboard
 
-**Purpose**: Real-time overview of platform health for operations teams
+The system health dashboard gives operations teams immediate visibility into
+platform status. Service uptime indicators show green or red status for each
+component. Request rate panels display requests per second with rolling averages
+to spot traffic spikes. Error rate visualizations present errors as a percentage
+of total requests, triggering alerts when thresholds breach. API response time
+graphs track P95 latency in milliseconds, with historical trend lines. Database
+connection pool utilization gauges warn when pools approach capacity. Redis
+memory usage charts show current consumption against limits. TheGraph sync lag
+panels display seconds behind chain head, critical for detecting indexing
+failures.
 
-**Key panels**:
-
-- Service uptime indicators (green/red status per component)
-- Request rate (requests/second) with rolling average
-- Error rate (errors/total requests) as percentage
-- API response time (P95 latency in milliseconds)
-- Database connection pool utilization
-- Redis memory usage
-- TheGraph sync lag (seconds behind chain head)
+During disaster recovery, operators use this dashboard to verify that restored
+services return to healthy state. Green uptime indicators confirm successful
+recovery, while error rate drops validate that the root cause was resolved.
 
 ### Business metrics dashboard
 
-**Purpose**: Track platform usage and business KPIs
+The business metrics dashboard connects technical operations to business
+outcomes. Active token counters show total deployed tokens segmented by type
+(bonds, deposits, funds, stablecoins). Daily transfer volume charts break down
+transaction volumes by token and asset class, revealing usage patterns. Investor
+onboarding rate graphs track new user registrations over time. KYC application
+funnels visualize conversion from submission to approval. Time-to-approval
+metrics measure average KYC processing duration. Transaction success rates by
+token identify problematic assets requiring investigation.
 
-**Key panels**:
-
-- Active tokens (total deployed, by type)
-- Daily transfer volume (by token and asset class)
-- New investor onboarding rate
-- KYC application funnel (submitted → approved conversion)
-- Average time to KYC approval
-- Transaction success rate by token
+These metrics help product teams assess feature adoption and compliance teams
+monitor regulatory workflow efficiency. During DvP settlements, the dashboard
+shows settlement completion rates. During yield distribution periods, it tracks
+payment success percentages across asset classes.
 
 ### Blockchain monitoring dashboard
 
-**Purpose**: Monitor blockchain network and smart contract health
+The blockchain dashboard monitors network health and smart contract performance.
+Block height and block time graphs confirm the chain is progressing. Pending
+transaction pool size indicates network congestion. Gas price charts show
+current and historical costs, informing transaction submission strategies. Smart
+contract transaction volume breaks down calls by contract address. Gas
+consumption panels group usage by function, identifying expensive operations.
+Failed transaction rates segmented by revert reason highlight contract bugs or
+user errors. Subgraph indexing progress compares current indexed block against
+chain head, detecting sync lag.
 
-**Key panels**:
+When recovering from blockchain node failures, operators watch these panels to
+confirm the replacement node syncs correctly and processes transactions at
+expected rates.
 
-- Network block height and block time
-- Pending transaction pool size
-- Gas prices (current and historical)
-- Smart contract transaction volume
-- Smart contract gas consumption by function
-- Failed transaction rate by revert reason
-- Subgraph indexing progress (current block vs chain head)
+## Alerting hierarchy
 
-## Alerting strategy
+Alert severity levels determine response time requirements and escalation
+procedures. Critical alerts demand immediate response within 15 minutes for
+complete service outages or active data loss, paging the on-call engineer and
+escalating after 30 minutes without acknowledgment. High severity alerts require
+response under 1 hour for elevated error rates or performance degradation,
+sending Slack notifications and paging if not acknowledged within the hour.
+Medium alerts expect response within 4 hours for non-critical service
+degradation or capacity warnings, generating Slack notifications and support
+tickets. Low severity informational alerts can wait until the next business day,
+creating tickets without immediate notifications.
 
-### Alert severity levels
+Alert routing flows through Alertmanager based on severity and affected service.
+Critical alerts page via PagerDuty and post to the #incidents Slack channel.
+High and medium alerts notify the #alerts channel and create Jira tickets. Low
+alerts email the operations team and generate tickets for triage.
 
-| Severity     | Response Time      | Examples                                        | Escalation                                             |
-| ------------ | ------------------ | ----------------------------------------------- | ------------------------------------------------------ |
-| **Critical** | Immediate (15 min) | Service completely down, data loss occurring    | Page on-call engineer, escalate after 30 min           |
-| **High**     | &lt;1 hour         | Elevated error rate, performance degradation    | Slack notification, page if not acknowledged in 1 hour |
-| **Medium**   | &lt;4 hours        | Non-critical service degraded, capacity warning | Slack notification, ticket created                     |
-| **Low**      | Next business day  | Informational alerts, approaching thresholds    | Ticket created                                         |
+### Standard alert definitions
 
-### Standard alert rules
-
-**API layer**:
+API layer alerts detect service degradation early. The HighErrorRate alert
+triggers when HTTP 5xx responses exceed 5% over a 5-minute window, indicating
+backend failures requiring immediate investigation. The SlowAPIResponses alert
+fires when P95 latency exceeds 1 second, signaling performance issues that
+degrade user experience.
 
 ```yaml
 - alert: HighErrorRate
@@ -293,7 +319,11 @@ Each span includes duration, status (success/error), and contextual attributes
   description: "API P95 latency exceeds 1 second"
 ```
 
-**Database layer**:
+Database alerts prevent capacity exhaustion. The DatabaseConnectionPoolExhausted
+alert triggers critically when PostgreSQL connection usage exceeds 90% of
+maximum connections, often preceding complete service failure. The
+LongRunningQueries alert warns when queries run longer than 5 minutes,
+indicating inefficient queries or lock contention.
 
 ```yaml
 - alert: DatabaseConnectionPoolExhausted
@@ -307,7 +337,10 @@ Each span includes duration, status (success/error), and contextual attributes
   description: "Query running longer than 5 minutes detected"
 ```
 
-**Blockchain layer**:
+Blockchain alerts monitor chain synchronization and cost. The SubgraphSyncLag
+alert fires when the indexer falls more than 100 blocks behind chain head,
+preventing the API from serving current data. The HighGasPrices alert warns when
+gas costs exceed 200 gwei, prompting operators to defer non-urgent transactions.
 
 ```yaml
 - alert: SubgraphSyncLag
@@ -321,32 +354,26 @@ Each span includes duration, status (success/error), and contextual attributes
   description: "Gas prices exceed 200 gwei"
 ```
 
-### Alert routing
+## Disaster recovery strategy
 
-Alertmanager routes alerts based on severity and service:
-
-- **Critical alerts**: Page on-call engineer via PagerDuty, send to #incidents
-  Slack channel
-- **High/Medium alerts**: Send to #alerts Slack channel, create Jira ticket
-- **Low alerts**: Email to operations team, create Jira ticket
-
-## Disaster recovery architecture
+The disaster recovery architecture defines backup procedures, storage locations,
+and recovery workflows with specific RTO and RPO targets for each component.
 
 <Mermaid
   chart={`flowchart TB
-    subgraph "Production Environment"
+    subgraph Production["Production Environment"]
         ProdData(Production Data<br/>Live state)
         ProdBC(Blockchain<br/>Immutable ledger)
     end
     
-    subgraph "Backup Storage"
+    subgraph Backup["Backup Storage"]
         DBBackup(Database Backups<br/>Daily + WAL)
         FileBackup(File Storage Backups<br/>MinIO snapshots)
         ConfigBackup(Configuration Backups<br/>Git + Secrets)
         BCSnapshot(Blockchain Snapshots<br/>Validator data)
     end
     
-    subgraph "Recovery Procedures"
+    subgraph Recovery["Recovery Procedures"]
         Runbook1(Database Restore<br/>RTO: 1 hour)
         Runbook2(File Restore<br/>RTO: 30 minutes)
         Runbook3(Blockchain Resync<br/>RTO: 4-24 hours)
@@ -375,145 +402,259 @@ Alertmanager routes alerts based on severity and service:
 `}
 />
 
-### Backup strategy
+### Multi-tier backup procedures
 
-**PostgreSQL database**:
+PostgreSQL database backups combine full daily dumps with continuous write-ahead
+log (WAL) archiving. The automated backup job runs at 02:00 UTC daily using
+`pg_dump` to capture complete database state. Continuous WAL shipping to S3 or
+MinIO object storage captures every committed transaction between full backups.
+The retention policy maintains 30 daily backups and 12 monthly backups for
+regulatory compliance. This strategy achieves RPO of 5 minutes (the interval
+between WAL archives) and RTO of 1 hour for typical database sizes.
 
-- **Full backup**: Daily at 02:00 UTC via `pg_dump`
-- **WAL archiving**: Continuous write-ahead log shipping to S3/MinIO
-- **Retention**: 30 daily backups, 12 monthly backups
-- **RPO**: 5 minutes (time between WAL archives)
-- **RTO**: 1 hour (restore time for typical database size)
+MinIO object storage uses incremental snapshots every 6 hours to protect
+uploaded documents and files. Asynchronous replication to a secondary region
+provides geographic redundancy. The system retains 7 days of incremental
+snapshots, balancing storage costs against recovery flexibility. RPO targets 6
+hours while RTO remains under 30 minutes for snapshot restoration.
 
-**MinIO object storage**:
+Smart contract state backup differs between public and private networks. Genesis
+files and deployment configurations live in version-controlled Git repositories.
+Deployment logs record transaction hashes and contract addresses for all
+production deployments. Private networks capture weekly full snapshots of
+validator node data directories, enabling faster recovery than resyncing from
+genesis. Public network deployments rely on blockchain immutability—state always
+remains accessible from network peers. Private network RTO ranges from 4 to 24
+hours depending on sync method (snapshot versus genesis resync).
 
-- **Snapshot**: Incremental snapshots every 6 hours
-- **Replication**: Asynchronous replication to secondary region
-- **Retention**: 7 days of incremental snapshots
-- **RPO**: 6 hours
-- **RTO**: 30 minutes (restore from snapshot)
+Configuration and secrets backup protects infrastructure definitions and
+credentials. Helm charts and Kubernetes manifests version in Git, providing
+instant recovery of infrastructure-as-code. Encrypted secrets backup to AWS
+Secrets Manager or HashiCorp Vault. Environment variable documentation lives in
+deployment runbooks. This approach achieves real-time RPO through Git commits
+and 2-hour RTO for full infrastructure redeployment.
 
-**Smart contract state**:
+### Recovery scenarios and procedures
 
-- **Genesis file**: Version-controlled in Git
-- **Contract deployments**: Transaction hashes and addresses recorded in
-  deployment log
-- **Blockchain snapshots**: Weekly full node data directory backup (private
-  networks only)
-- **RPO**: N/A (public blockchain immutable)
-- **RTO**: 4-24 hours (full blockchain resync from genesis or snapshot)
+Database corruption recovery addresses PostgreSQL crashes, data consistency
+errors, or accidental data deletion. Operators first stop all services writing
+to the database—API servers, indexers, background jobs—to prevent further
+corruption. They identify the latest valid full backup, typically from the
+previous day's 02:00 UTC run. The `pg_restore` command loads the full backup
+into a fresh database instance. WAL replay applies all committed transactions
+from the backup timestamp until the corruption event, minimizing data loss.
+Schema validation queries verify data integrity across critical tables. Once
+verified, operators restart dependent services and monitor error logs for
+anomalies. Total RTO typically runs 1-2 hours with up to 5 minutes of data loss
+(the last WAL archive interval).
 
-**Configuration and secrets**:
+During this procedure, the system health dashboard shows database metrics
+returning to normal ranges—connection pool utilization dropping as services
+reconnect, query latency stabilizing at baseline levels, and replication lag (if
+applicable) decreasing to zero as replicas catch up.
 
-- **Infrastructure as code**: Helm charts and Kubernetes manifests in Git
-- **Secrets**: Encrypted backups in AWS Secrets Manager / HashiCorp Vault
-- **Environment variables**: Documented in deployment runbooks
-- **RPO**: Real-time (Git commits)
-- **RTO**: 2 hours (redeploy from configuration)
+### Infrastructure failure recovery
 
-### Recovery procedures
+Complete infrastructure failures—unrecoverable Kubernetes cluster outages, data
+center losses, or cloud region failures—trigger the full system restore
+procedure. Recovery teams provision a new Kubernetes cluster in the same cloud
+provider or an alternate provider if the primary is unavailable. They restore
+secrets from Vault or AWS Secrets Manager using credential recovery procedures.
+Helm charts deploy with production values files, recreating all services in the
+new cluster.
 
-#### Scenario 1: Database corruption
+PostgreSQL restoration follows the database recovery procedure above, loading
+the latest full backup and replaying WAL logs. MinIO restoration applies the
+most recent incremental snapshot, recovering all uploaded documents with up to 6
+hours of potential loss. Blockchain node recovery depends on network type:
+public networks sync from peer nodes using fast-sync or snapshot mechanisms,
+while private networks restore validator data directories from weekly snapshots
+or resync from genesis if snapshots are unavailable. TheGraph subgraph
+redeployment triggers automatic synchronization from the blockchain once the
+node becomes available.
 
-**Symptoms**: PostgreSQL crashes on startup, data consistency errors
+Verification steps confirm all services report healthy status in Kubernetes.
+Smoke tests exercise critical user flows: API health checks, authentication,
+token transfers, and vault operations. DNS updates point production domains to
+the new cluster once verification completes. Total RTO ranges from 8 to 12
+hours, with PostgreSQL data loss up to 5 minutes and MinIO file loss up to 6
+hours.
 
-**Recovery steps**:
+The business metrics dashboard confirms recovery success when transaction
+volumes return to pre-incident levels and error rates drop to baseline
+percentages.
 
-1. Stop all services writing to database (API, indexers)
-2. Identify latest valid backup (usually previous day)
-3. Restore from full backup: `pg_restore -d atk backup_file.dump`
-4. Apply WAL logs from backup time to incident time
-5. Verify data integrity: run schema validation queries
-6. Restart services, monitor for errors
-7. **RTO**: 1-2 hours
+### Blockchain node recovery flows
 
-**Data loss**: Up to 5 minutes (last WAL archive interval)
+Blockchain node failures prevent transaction submission and break indexer
+synchronization. For public networks like Ethereum Mainnet or Polygon,
+blockchain state remains available from thousands of network peers. Recovery
+teams deploy a replacement node, configure it to connect to the public network,
+and initiate sync from genesis or using fast-sync snapshots provided by
+infrastructure providers. After updating TheGraph and Portal service
+configurations to point to the new node URL, services resume normal operation.
+RTO ranges from 2 to 8 hours depending on sync method and network size.
 
-#### Scenario 2: Complete infrastructure failure
+Private network recovery requires coordinator across validator nodes to maintain
+consensus quorum. Teams restore the validator node data directory from the most
+recent weekly snapshot, allowing the blockchain to resume from the last
+finalized block. If snapshots are unavailable or corrupted, nodes must resync
+from genesis, a significantly slower process potentially taking 24 hours for
+large chains. Validator quorum requirements mean multiple simultaneous node
+failures may prevent recovery until sufficient validators return online.
 
-**Symptoms**: Kubernetes cluster unrecoverable, all services down
+The blockchain monitoring dashboard validates recovery by showing block height
+advancing, transaction pool clearing, and subgraph indexing progress catching up
+to chain head. Gas usage patterns returning to normal confirm smart contract
+operations resumed successfully.
 
-**Recovery steps**:
+## DALP lifecycle recovery impacts
 
-1. Provision new Kubernetes cluster (same cloud provider or alternate)
-2. Restore secrets from Vault / Secrets Manager
-3. Deploy Helm charts with production values
-4. Restore PostgreSQL from latest backup + WAL logs
-5. Restore MinIO from latest snapshot
-6. Resync blockchain (if private network: restore from snapshot; if public: sync
-   from peers)
-7. Redeploy subgraph (will auto-sync from blockchain)
-8. Verify all services healthy, run smoke tests
-9. Update DNS to point to new cluster
-10. **RTO**: 8-12 hours
+Disaster recovery scenarios affect DALP lifecycle operations differently
+depending on component failures and recovery durations. Understanding these
+impacts ensures operators prioritize recovery actions appropriately.
 
-**Data loss**: Up to 5 minutes (PostgreSQL), up to 6 hours (MinIO files)
+### Vault operation continuity
 
-#### Scenario 3: Blockchain node failure
+Vault custody operations depend on blockchain node availability and database
+state. During database restoration, the API layer cannot query vault balances or
+ownership records, blocking deposit and withdrawal operations. The vault smart
+contracts remain operational on-chain, but users cannot interact with them
+through the dApp interface. RTO of 1 hour for database recovery means vault
+operations resume quickly, but any vault transfers submitted during the outage
+window may be lost if not yet persisted to the database. The observability
+dashboard shows vault operation metrics—deposit transaction rates, withdrawal
+success percentages, custody balance totals—returning to baseline levels as the
+database recovers.
 
-**Symptoms**: TheGraph sync stops, transactions not confirming
+Blockchain node failures completely halt vault interactions. Users cannot submit
+deposit transactions, and withdrawal requests cannot reach validators. Recovery
+procedures prioritize blockchain node restoration when vault operations
+represent critical business functions. The 2-8 hour RTO for public network node
+recovery defines the maximum vault downtime users experience.
 
-**Recovery for public networks**:
+### DvP settlement interruptions
 
-1. Blockchain state recoverable from other network nodes
-2. Deploy new blockchain node, connect to public network
-3. Sync from genesis or fast-sync snapshot
-4. Update TheGraph and Portal to use new node URL
-5. **RTO**: 2-8 hours (depends on sync method)
+Delivery versus Payment atomic settlements require synchronized blockchain and
+database states. During recovery from infrastructure failures, in-flight DvP
+settlements may complete on-chain while database records remain unupdated,
+creating temporary inconsistencies. Background reconciliation jobs detect these
+divergences by comparing blockchain events against database settlement records,
+automatically resyncing data once services restore.
 
-**Recovery for private networks**:
+The business metrics dashboard tracks settlement completion rates and flag
+inconsistencies. Operators monitor the "DvP settlement success rate" panel
+during recovery, expecting it to dip during outages and return to 100% as
+reconciliation completes. Settlements submitted immediately before failures may
+require manual verification—comparing on-chain Transfer events against database
+settlement tables to confirm both asset and payment transfers succeeded
+atomically.
 
-1. Restore validator node data directory from weekly snapshot
-2. Resume blockchain from last finalized block
-3. If snapshot unavailable, resync from genesis (slower)
-4. Requires validator quorum to resume consensus
-5. **RTO**: 1 hour (from snapshot) or 24 hours (from genesis)
+Recovery procedures include a verification step specifically for DvP operations:
+querying TheGraph for recent DvPSettlement events and cross-referencing database
+settlement_transactions table entries to ensure consistency.
+
+### Yield distribution recovery
+
+Yield payment cycles—coupon distributions for bonds, dividend payments for
+equities, interest accrual for deposits—depend on scheduled jobs that query
+balances and submit payment transactions. During database outages, scheduled
+jobs cannot determine payment recipients or amounts, causing distribution
+delays. The 1-hour database recovery RTO means most scheduled jobs retry
+successfully on their next execution cycle.
+
+Longer infrastructure failures spanning multiple hours may cause yield payment
+jobs to miss their scheduled execution windows. Recovery procedures include
+running catch-up scripts that identify skipped payment periods and initiate
+distributions manually. The observability stack provides audit trails showing
+when scheduled jobs last succeeded, helping operators determine which payment
+cycles require manual intervention.
+
+The business metrics dashboard includes a "Yield distribution status" panel
+showing successful payment percentages across asset classes. During recovery,
+operators monitor this panel to confirm automated distributions resume and
+manually trigger any missed cycles. Failed payment transactions appear in the
+blockchain monitoring dashboard's "Failed transaction rate" panel, with revert
+reasons indicating whether failures resulted from infrastructure issues or smart
+contract validation errors (insufficient balances, transfer restrictions, etc.).
+
+## Observability validation of recovery targets
+
+Observability dashboards provide objective evidence that recovery procedures
+meet RTO and RPO targets. During quarterly disaster recovery drills, teams
+measure actual recovery times against targets using dashboard timestamps.
+
+Database recovery RTO validation uses the PostgreSQL metrics dashboard.
+Operators record the timestamp when the database becomes unavailable (last
+successful health check), initiate recovery procedures, and record when the
+database health check succeeds again. The elapsed time must remain under the
+1-hour RTO target. WAL replay completion time appears in the "PostgreSQL
+recovery" dashboard panel, showing the gap between backup timestamp and replay
+completion—this gap defines the RPO.
+
+API service RTO appears in the system health dashboard's uptime indicators. The
+time between service status changing from green to red and back to green during
+recovery represents actual downtime. The request rate panel shows traffic
+resuming, validating that load balancers successfully redirected traffic to
+recovered instances.
+
+Blockchain sync RTO measurement uses the blockchain monitoring dashboard's sync
+lag panel. The time from node failure (sync lag jumping to hundreds or thousands
+of blocks) to sync completion (lag returning to &lt;10 blocks) must meet the 2-8
+hour target for public networks or 4-24 hour target for private network genesis
+resyncs.
+
+Business metrics dashboards validate that recovery did not cause data loss or
+inconsistency. Transaction success rates returning to baseline percentages
+confirm the system operates correctly. Comparing transaction volumes before and
+after recovery reveals whether any submitted operations were lost—spikes after
+recovery often indicate users retrying failed operations, while sustained drops
+suggest lost transactions requiring investigation.
 
 ## Testing recovery procedures
 
-### Regular drills
+Regular testing validates that recovery procedures work under pressure and that
+documented RTOs remain achievable as the system evolves. Quarterly disaster
+recovery drills simulate complete infrastructure failures in staging
+environments. Teams delete Kubernetes clusters, drop databases, and wipe storage
+volumes, then follow recovery runbooks with timers running. After restoration,
+automated verification scripts check data integrity across all components. Teams
+document issues encountered, update runbooks with corrections, and measure
+actual RTO against targets.
 
-**Quarterly disaster recovery drill**: Simulate complete infrastructure failure
-in staging environment
+Monthly database restore tests exercise backup systems without full
+infrastructure teardown. Automated jobs restore the latest production backup to
+an isolated test database and run schema validation queries to confirm backup
+integrity. These tests catch backup corruption early, before disasters occur.
 
-1. Delete Kubernetes cluster, databases, storage
-2. Follow recovery runbook with timer
-3. Verify data integrity after restore
-4. Document issues, update runbook
-5. Measure actual RTO vs target
+Weekly backup verification runs automatically, attempting to restore the most
+recent backup to a test instance. Success metrics flow into the observability
+stack—the "Backup health" dashboard panel shows green when weekly verifications
+succeed and red when they fail, alerting operations teams to broken backup
+procedures before they impact recovery capability.
 
-**Monthly database restore test**: Restore backup to isolated database, verify
-data
-
-**Weekly backup verification**: Automated job attempts to restore latest backup
-to test database
-
-### Chaos engineering
-
-Intentionally inject failures into production (during low-traffic periods) to
-validate resilience:
-
-- Kill random pods (validate auto-restart)
-- Simulate network partitions between services
-- Inject API latency
-- Fail database queries randomly
-- Disconnect blockchain node
-
-Monitor metrics and alerts during chaos tests to ensure detection and recovery
+Chaos engineering experiments inject failures into production during low-traffic
+periods to validate resilience. Teams kill random pods to verify Kubernetes
+auto-restart behavior, simulate network partitions between services to test
+circuit breaker patterns, inject API latency to confirm timeout handling, fail
+database queries randomly to validate error recovery, and disconnect blockchain
+nodes to test failover mechanisms. The observability stack monitors metrics and
+alert behavior during chaos tests, confirming detection and automated recovery
 work as designed.
 
-## Operational runbooks
+## Incident response workflows
 
-### Incident response workflow
+When alerts trigger, operators follow standardized incident response procedures
+tracked through the observability platform.
 
 <Mermaid
-  chart={`flowchart LR
-    Alert(Alert Triggered)
-    Ack(Acknowledge Alert)
-    Investigate(Investigate Root Cause)
-    Mitigate(Apply Mitigation)
-    Verify(Verify Resolution)
-    Postmortem(Write Postmortem)
+  chart={`flowchart TB
+    Alert(Alert Triggered<br/>Dashboard shows anomaly)
+    Ack(Acknowledge Alert<br/>Log in incident channel)
+    Investigate(Investigate Root Cause<br/>Query logs, metrics, traces)
+    Mitigate(Apply Mitigation<br/>Execute runbook procedure)
+    Verify(Verify Resolution<br/>Dashboard confirms recovery)
+    Postmortem(Write Postmortem<br/>Document lessons learned)
     
     Alert --> Ack
     Ack --> Investigate
@@ -533,69 +674,125 @@ work as designed.
 `}
 />
 
-**Postmortem template** (completed within 48 hours of incident):
+Alert acknowledgment creates an incident record in the #incidents Slack channel
+and assigns the on-call engineer. The investigation phase uses dashboards to
+identify affected components—correlating error spikes in the API dashboard with
+database latency increases, for example. Distributed traces pinpoint which
+service in the request chain caused failures. Log queries filtered by error
+codes and time ranges surface stack traces and contextual details.
 
-- **Incident summary**: What happened, when, impact duration
-- **Timeline**: Key events from detection to resolution
-- **Root cause**: Technical reason for failure
-- **Mitigation**: Steps taken to restore service
-- **Action items**: Prevent recurrence (new alerts, code fixes, process changes)
-- **Lessons learned**: What went well, what could improve
+Mitigation follows documented runbooks for common scenarios: scaling pod
+replicas for capacity issues, restarting stuck services, failing over to
+database replicas, or initiating full disaster recovery procedures for
+infrastructure losses. During mitigation, operators update the incident channel
+with actions taken and current status.
+
+Verification uses the same dashboards that detected the problem to confirm
+resolution. Error rates dropping to baseline levels, response times returning to
+normal percentiles, and service uptime indicators turning green provide
+objective evidence that mitigation succeeded.
+
+Postmortem documents complete within 48 hours of incident closure, including
+summary of impact and duration, timeline of key events from detection through
+resolution, root cause technical analysis, mitigation steps executed, action
+items to prevent recurrence (new alerts, code fixes, process improvements), and
+lessons learned highlighting what worked well and what needs improvement. The
+observability platform provides exact timestamps and metric values for the
+timeline, eliminating guesswork about when failures started and ended.
 
 ### Common troubleshooting commands
 
+Operators use kubectl commands to investigate Kubernetes issues directly:
+
 ```bash
-# Check pod health
+# Check pod health across all services
 kubectl get pods -n atk-production
+
+# Describe pod to see events and container status
 kubectl describe pod <pod-name> -n atk-production
+
+# View recent logs for debugging
 kubectl logs <pod-name> -n atk-production --tail=100
 
-# Database status
+# Check database connection status
 kubectl exec -it postgresql-0 -n atk-production -- psql -U postgres -c "SELECT * FROM pg_stat_activity;"
 
-# Blockchain sync status
+# Query subgraph sync status
 curl http://graph-node:8030/graphql -d '{"query": "{ indexingStatusForCurrentVersion(subgraphName: \"atk\") { chains { latestBlock { number } chainHeadBlock { number } } } }"}'
 
-# API health check
+# Verify API health endpoint
 curl https://api.yourcompany.com/health
 
-# Check persistent volume status
+# Inspect persistent volume status
 kubectl get pv,pvc -n atk-production
 ```
 
-## Limitations
+These commands supplement dashboard data with direct system state inspection,
+useful when dashboards themselves experience issues or when detailed forensics
+require raw output.
 
-### Blockchain immutability
+## Limitations and constraints
 
-Failed transactions cannot be "undone." Recovery procedures cannot reverse
-on-chain mistakes (sending tokens to wrong address, executing bad governance
-proposals).
+Blockchain immutability creates recovery constraints absent from traditional
+systems. Failed transactions cannot be undone—sending tokens to an incorrect
+address, executing erroneous governance proposals, or misconfiguring compliance
+rules leaves permanent on-chain records. Recovery procedures cannot reverse
+on-chain mistakes. Mitigation strategies include multi-signature requirements
+for high-value operations, timelocks for governance changes allowing
+cancellation before execution, and extensive testing in staging environments
+before production deployments.
 
-**Mitigation**: Multi-signature requirements for high-value operations,
-timelocks for governance changes.
+Cross-service consistency challenges arise during partial failures. A
+transaction may succeed on-chain while the API fails to record it in the
+database due to network partitions or service crashes. During recovery,
+temporary divergence between blockchain state and database state creates
+confusion for users and operators. Background reconciliation jobs detect and
+repair these inconsistencies by comparing blockchain events against database
+records, but the reconciliation window means recently completed operations may
+not appear in the UI immediately after recovery. The observability dashboard
+includes a "State consistency" panel showing discrepancy counts between
+blockchain and database, alerting operators when manual intervention is
+required.
 
-### Cross-service consistency
+Recovery time dependencies create operational tradeoffs. Full system RTO depends
+on the slowest component—typically blockchain synchronization. Private networks
+can restore from snapshots in 1-4 hours, but public network sync from genesis
+may take 24+ hours for large chains. This creates pressure to maintain
+comprehensive blockchain snapshots at the cost of significant storage
+consumption. The disaster recovery architecture balances storage costs against
+RTO requirements based on business criticality—production environments maintain
+weekly snapshots, while development environments accept longer recovery times by
+syncing from genesis.
 
-During partial failures, database state and blockchain state may diverge
-temporarily. Example: Transaction succeeds on-chain but API fails to record it
-in database.
+## Key concepts
 
-**Mitigation**: Background reconciliation jobs detect and fix divergence, alert
-on inconsistencies.
+**Service-level indicators (SLIs)** represent measurable aspects of service
+quality: latency (request processing time), error rate (percentage of failed
+requests), and availability (uptime percentage). ATK dashboards track SLIs
+continuously, comparing against service-level objectives (SLOs) that define
+target quality levels.
 
-### Recovery time dependencies
+**Recovery time objective (RTO)** specifies maximum acceptable downtime for a
+service component. Database RTO of 1 hour means the business tolerates up to 60
+minutes without database access before revenue impact or SLA violations occur.
 
-Full system recovery time depends on slowest component (usually blockchain
-sync). This creates pressure to maintain comprehensive blockchain snapshots at
-cost of storage.
+**Recovery point objective (RPO)** defines maximum acceptable data loss measured
+in time. PostgreSQL RPO of 5 minutes means the business accepts losing up to 5
+minutes of transactions in worst-case disaster scenarios.
+
+**Observability pillars**—metrics (numeric measurements over time), logs
+(discrete event records), and traces (request flow visualization)—provide
+complementary views into system behavior. Metrics reveal trends and anomalies,
+logs capture detailed context, and traces show causal relationships across
+services.
 
 ## See also
 
 - [Scalability patterns](../performance/scalability-architecture) - Capacity
-  planning and optimization techniques
+  planning techniques that observability dashboards validate
 - [Deployment operations](../integration-operations/deployment-operations) -
-  Production deployment patterns and infrastructure
-- [Database model](../data-indexing/database-model) - Database backup and
-  migration procedures
+  Infrastructure deployment patterns and Helm chart configuration
+- [Database model](../data-indexing/database-model) - Database schema and
+  migration procedures affecting backup strategies
 - [Blockchain indexing](../data-indexing/blockchain-indexing) - Subgraph
-  deployment and monitoring
+  deployment patterns and sync monitoring

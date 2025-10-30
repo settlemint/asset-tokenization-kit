@@ -74,7 +74,10 @@
     "rejected": "Rejected",
     "expired": "Expired",
     "registered": "Registered",
-    "notRegistered": "Not Registered",
+    "pendingRegistration": "Pending registration",
+    "notRegistered": "Inactive",
+    "active": "Active",
+    "inactive": "Inactive",
     "verifiedAriaLabel": "Identity verified with claims",
     "registeredAriaLabel": "Identity registered without claims",
     "notRegisteredAriaLabel": "No identity registered"

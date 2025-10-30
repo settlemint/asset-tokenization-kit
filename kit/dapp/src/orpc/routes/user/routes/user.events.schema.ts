@@ -1,7 +1,7 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumHash } from "@atk/zod/ethereum-hash";
 import { timestamp } from "@atk/zod/timestamp";
-import * as z from "zod";
+import { z } from "zod";
 
 export const UserEventsInputSchema = z.object({
   limit: z.number().min(1).max(50).optional().default(5),

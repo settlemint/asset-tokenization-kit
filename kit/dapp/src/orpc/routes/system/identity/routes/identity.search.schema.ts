@@ -1,7 +1,7 @@
 import { IdentitySchema } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { ethereumHex } from "@atk/zod/ethereum-hex";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Input schema for identity search

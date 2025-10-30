@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 export const entityTypes = ["token", "vault", "contract", "wallet"] as const;
 

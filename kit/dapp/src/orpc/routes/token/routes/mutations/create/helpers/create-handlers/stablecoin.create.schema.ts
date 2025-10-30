@@ -1,7 +1,7 @@
 import { TokenBaseSchema } from "@/orpc/routes/token/routes/mutations/create/helpers/token.base-create.schema";
 import { AssetTypeEnum } from "@atk/zod/asset-types";
 import { bigDecimal } from "@atk/zod/bigdecimal";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Stablecoin token specific schema

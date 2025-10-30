@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Makes a string-based validator optional, accepting empty strings, null, and undefined.

@@ -24,7 +24,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Reference table for currency metadata.

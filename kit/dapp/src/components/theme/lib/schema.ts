@@ -3,14 +3,27 @@ import { httpURL } from "@atk/zod/http-url";
 import { isoDateTime } from "@atk/zod/iso-datetime";
 import { z } from "zod";
 
-// Allows theme assets to reference remote URLs or app-hosted paths
+// Theme asset URLs - supports presigned MinIO URLs (http/https) and app-hosted paths (/)
 const themeAssetURL = z
   .string()
   .max(2048, "URL must be at most 2048 characters")
   .refine(
-    (value) => value.startsWith("/") || httpURL.safeParse(value).success,
+    (value) => {
+      // Allow app-hosted paths starting with /
+      if (value.startsWith("/")) {
+        return true;
+      }
+      // Otherwise require valid HTTP/HTTPS URL
+      try {
+        const url = new URL(value);
+        return url.protocol === "http:" || url.protocol === "https:";
+      } catch {
+        return false;
+      }
+    },
     {
-      message: "Must be an HTTP(S) URL or absolute path",
+      message:
+        "Must be an absolute path starting with / or a valid HTTP/HTTPS URL",
     }
   );
 
@@ -100,6 +113,22 @@ const logoSchema = z.object({
 });
 
 /**
+ * Images configuration for various platform surfaces
+ */
+const imagesSchema = z.object({
+  authLightUrl: themeAssetURL.optional(),
+  authDarkUrl: themeAssetURL.optional(),
+  backgroundLightUrl: themeAssetURL.optional(),
+  backgroundDarkUrl: themeAssetURL.optional(),
+  faviconUrl: themeAssetURL.optional(),
+  appleTouchIconUrl: themeAssetURL.optional(),
+  favicon96Url: themeAssetURL.optional(),
+  faviconSvgUrl: themeAssetURL.optional(),
+  etag: z.string().optional(),
+  updatedAt: isoDateTime.optional(),
+});
+
+/**
  * Theme metadata
  */
 const metadataSchema = z.object({
@@ -114,6 +143,7 @@ const metadataSchema = z.object({
  */
 export const themeConfigSchema = z.object({
   logo: logoSchema,
+  images: imagesSchema,
   fonts: z.object({
     sans: fontSchema,
     mono: fontSchema,
@@ -127,6 +157,7 @@ export const themeConfigSchema = z.object({
 
 export const themeConfigPartialSchema = z.object({
   logo: logoSchema.partial().optional(),
+  images: imagesSchema.partial().optional(),
   fonts: z
     .object({
       sans: fontSchema.partial().optional(),
@@ -149,6 +180,7 @@ export type ThemeConfig = z.infer<typeof themeConfigSchema>;
 export type ThemeVars = z.infer<typeof themeVarsSchema>;
 export type FontConfig = z.infer<typeof fontSchema>;
 export type LogoConfig = z.infer<typeof logoSchema>;
+export type ImagesConfig = z.infer<typeof imagesSchema>;
 export type ThemeMetadata = z.infer<typeof metadataSchema>;
 
 /**
@@ -194,6 +226,7 @@ export function cloneThemeConfig(theme: ThemeConfig): ThemeConfig {
   }
   return {
     logo: { ...theme.logo },
+    images: { ...theme.images },
     fonts: {
       sans: { ...theme.fonts.sans },
       mono: { ...theme.fonts.mono },
@@ -216,6 +249,16 @@ export const DEFAULT_THEME: ThemeConfig = {
     darkUrl: "/logos/settlemint-logo-h-dm.svg",
     lightIconUrl: "/logos/settlemint-logo-i-lm.svg",
     darkIconUrl: "/logos/settlemint-logo-i-dm.svg",
+  },
+  images: {
+    authLightUrl: undefined,
+    authDarkUrl: undefined,
+    backgroundLightUrl: "/backgrounds/background-lm.svg",
+    backgroundDarkUrl: "/backgrounds/background-dm.svg",
+    faviconUrl: "/favicon.ico",
+    appleTouchIconUrl: "/apple-touch-icon.png",
+    favicon96Url: "/favicon-96x96.png",
+    faviconSvgUrl: "/favicon.svg",
   },
   fonts: {
     sans: {

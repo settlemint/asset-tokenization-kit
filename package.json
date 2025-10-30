@@ -44,9 +44,10 @@
     "ci": "turbo run ci ",
     "ci:publish": "turbo run ci:publish ",
     "version": "bun run tools/version.ts",
-    "clean": "bash tools/clean.sh",
+    "clean": "bash tools/clean-fast.sh",
+    "clean:full": "bash tools/clean-full.sh",
     "predev": "bunx settlemint connect --instance local",
-    "dev": "turbo dev watch db:studio ",
+    "dev": "turbo dev watch ",
     "start": "turbo start",
     "lint": "turbo lint ",
     "format": "turbo format ",
@@ -63,21 +64,20 @@
     "postdev:reset": "bun run dev:up",
     "artifacts": "turbo run artifacts ",
     "extract-env": "bun run tools/extract-env.ts",
-    "db:studio": "turbo run db:studio",
     "verify-translations": "turbo run verify-translations"
   },
   "dependencies": {
     "@noble/hashes": "2.0.1",
     "@types/js-yaml": "4.0.9",
     "js-yaml": "4.1.0",
-    "lefthook": "2.0.1"
+    "lefthook": "2.0.2"
   },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
     "@settlemint/sdk-cli": "2.6.2",
     "@settlemint/sdk-utils": "2.6.2",
     "@types/lodash": "4.17.20",
-    "@typescript/native-preview": "7.0.0-dev.20251027.1",
+    "@typescript/native-preview": "7.0.0-dev.20251030.1",
     "graphql": "16.11.0",
     "prettier": "3.6.2",
     "turbo": "2.5.8",

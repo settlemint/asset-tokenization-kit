@@ -10,20 +10,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppForm } from "@/hooks/use-app-form";
+import { normalizeAbiSignature } from "@/lib/utils/abi-signature";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import * as z from "zod";
+import { z } from "zod";
 
 // Form schema with only editable fields
 const EditTopicFormSchema = z.object({
   signature: z
     .string()
     .min(1, "Signature is required")
-    .describe("New function signature for claim verification"),
+    .describe("New claim data ABI types for claim verification")
+    .refine((val) => !val.includes("(") && !val.includes(")"), {
+      message: "Remove parentheses; use a comma-separated type list.",
+    })
+    .transform(normalizeAbiSignature),
   walletVerification: z.object({
     secretVerificationCode: z.string(),
     verificationType: z.enum(["PINCODE", "OTP", "SECRET_CODES"]),
@@ -143,6 +148,9 @@ export function EditTopicDialog({
                 <field.TextField
                   label={t("claimTopics.edit.fields.signature.label")}
                   required={true}
+                  placeholder={t(
+                    "claimTopics.edit.fields.signature.placeholder"
+                  )}
                   description={t(
                     "claimTopics.edit.fields.signature.description"
                   )}

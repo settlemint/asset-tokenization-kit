@@ -2,7 +2,10 @@
   "actions": {
     "add": "追加",
     "cancel": "キャンセル",
-    "skip": "スキップ"
+    "skip": "スキップ",
+    "edit": "編集",
+    "save": "変更を保存",
+    "saving": "保存中..."
   },
   "appDescription": "数分でデプロイし、簡単にカスタマイズ",
   "appName": "資産トークン化キット",

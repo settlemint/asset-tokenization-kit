@@ -2,7 +2,10 @@
   "actions": {
     "add": "Add",
     "cancel": "Cancel",
-    "skip": "Skip"
+    "skip": "Skip",
+    "edit": "Edit",
+    "save": "Save changes",
+    "saving": "Saving..."
   },
   "appDescription": "Deploy in minutes, customize easily",
   "appName": "Asset Tokenization Kit",

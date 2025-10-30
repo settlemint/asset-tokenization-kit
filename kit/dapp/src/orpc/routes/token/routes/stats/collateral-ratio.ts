@@ -2,7 +2,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { bigDecimal } from "@atk/zod/bigdecimal";
 import { divide, greaterThan, multiply, toNumber } from "dnum";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * GraphQL query to fetch token collateral statistics from subgraph

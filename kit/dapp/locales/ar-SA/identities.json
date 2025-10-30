@@ -73,8 +73,11 @@
     "verified": "تم التحقق",
     "rejected": "مرفوض",
     "expired": "منتهي",
-    "registered": "مسجل",
-    "notRegistered": "غير مسجل",
+    "registered": "مسجلة",
+    "pendingRegistration": "قيد التسجيل",
+    "notRegistered": "غير نشط",
+    "active": "نشط",
+    "inactive": "غير نشط",
     "verifiedAriaLabel": "تم التحقق من الهوية مع المطالبات",
     "registeredAriaLabel": "تم تسجيل الهوية بدون مطالبات",
     "notRegisteredAriaLabel": "لا توجد هوية مسجلة"

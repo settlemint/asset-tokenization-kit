@@ -7,7 +7,7 @@
  * @module ComplianceValidation
  */
 
-import * as z from "zod";
+import { z } from "zod";
 import { apiBigInt } from "./bigint";
 import { ethereumAddress } from "./ethereum-address";
 import { expressionNodeWithGroups } from "./expression-node";

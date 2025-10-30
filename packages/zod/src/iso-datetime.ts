@@ -5,7 +5,7 @@
  * ensuring they conform to the standard format (YYYY-MM-DDTHH:mm:ss.sssZ).
  * @module ISODateTimeValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Validates that a string is a valid ISO 8601 datetime

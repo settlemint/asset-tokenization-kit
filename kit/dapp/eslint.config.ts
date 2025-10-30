@@ -10,6 +10,12 @@ const config = [
       },
     },
   },
+  {
+    files: ["src/lib/utils/abi-signature.ts"],
+    rules: {
+      "unicorn/prefer-string-raw": "off",
+    },
+  },
 ];
 
 export default config;

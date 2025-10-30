@@ -1,6 +1,6 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { timestamp } from "@atk/zod/timestamp";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Action status enumeration matching the subgraph schema.

@@ -102,7 +102,7 @@ deployments:
 | dApp          | API, Hasura, Subgraph, Portal | User interface                   | Yes (HTTP)      |
 | Blockscout    | PostgreSQL, Network           | Blockchain explorer (optional)   | Yes (HTTP)      |
 
-## Deployment option 1: SettleMint Platform
+## Deployment option 1: SettleMint platform
 
 The **SettleMint Platform** provides fully managed ATK hosting with built-in
 compliance controls, enterprise SLAs, and automated operations.
@@ -202,7 +202,7 @@ The platform handles:
 Full platform deployment guides available at:  
 [https://console.settlemint.com/documentation](https://console.settlemint.com/documentation)
 
-## Deployment option 2: Self-managed infrastructure (Helm)
+## Deployment option 2: self-managed infrastructure (Helm)
 
 For organizations with existing Kubernetes infrastructure or specific compliance
 requirements, deploy ATK using the **open-source Helm charts** directly.
@@ -235,7 +235,7 @@ Before deploying, ensure you have:
 
 ### Installation steps
 
-#### 1. Add the Helm repository
+#### 1. add the Helm repository
 
 ATK charts are published to the SettleMint Helm repository:
 
@@ -247,7 +247,7 @@ helm repo add settlemint https://charts.settlemint.com
 helm repo update
 ```
 
-#### 2. Create a namespace
+#### 2. create a namespace
 
 Isolate ATK components in a dedicated Kubernetes namespace:
 
@@ -255,7 +255,7 @@ Isolate ATK components in a dedicated Kubernetes namespace:
 kubectl create namespace atk-production
 ```
 
-#### 3. Configure values
+#### 3. configure values
 
 Create a `values-production.yaml` file with your environment-specific settings.
 Start from the
@@ -318,7 +318,7 @@ resources:
 - **Blockchain network** - Set `network.enabled: false` if connecting to
   external chain (Ethereum mainnet, Polygon, etc.)
 
-#### 4. Install the chart
+#### 4. install the chart
 
 Deploy ATK with your custom configuration:
 
@@ -333,7 +333,7 @@ helm install atk settlemint/atk \
 The `--wait` flag ensures Helm monitors deployment until all components are
 healthy.
 
-#### 5. Verify deployment
+#### 5. verify deployment
 
 Check that all pods are running:
 
@@ -359,7 +359,7 @@ kubectl get svc -n atk-production
 # Look for LoadBalancer EXTERNAL-IP or Ingress hostname
 ```
 
-#### 6. Access the application
+#### 6. access the application
 
 Once DNS is configured and TLS certificates are provisioned:
 

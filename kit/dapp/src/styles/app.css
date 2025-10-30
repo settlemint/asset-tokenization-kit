@@ -79,7 +79,7 @@
 }
 
 :root {
-  /* Onboarding Background */
+  /* Onboarding Background - DEPRECATED: Now configured via theme.images.backgroundLightUrl */
   --onboarding-background: url("/backgrounds/background-lm.svg");
   /* SettleMint Brand Colors */
   /* ThemeToken: sm-text */
@@ -219,7 +219,7 @@
 }
 
 .dark {
-  /* Onboarding Background */
+  /* Onboarding Background - DEPRECATED: Now configured via theme.images.backgroundDarkUrl */
   --onboarding-background: url("/backgrounds/background-dm.svg");
   /* SettleMint Brand Colors */
   /* ThemeToken: sm-text */
@@ -445,6 +445,20 @@
   }
 
   [data-slot="card"] {
+    @apply border-0;
+    background: linear-gradient(
+        45deg,
+        var(--sm-background-gradient-start) 0%,
+        var(--sm-background-gradient-end) 100%
+      )
+      0% 0% no-repeat padding-box;
+    box-shadow:
+      0 0 var(--sm-text),
+      0 0 var(--sm-text),
+      0 5px 15px var(--sm-colored-shadow);
+  }
+
+  [data-slot="tile"] {
     @apply border-0;
     background: linear-gradient(
         45deg,

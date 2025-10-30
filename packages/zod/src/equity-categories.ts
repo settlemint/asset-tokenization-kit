@@ -6,7 +6,7 @@
  * and restrictions in corporate structures.
  * @module EquityCategoryValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Available equity categories in corporate share structures.

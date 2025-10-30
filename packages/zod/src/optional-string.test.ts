@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "bun:test";
-import * as z from "zod";
+import { z } from "zod";
 import { isin } from "./isin";
 import { optionalString } from "./optional-string";
 

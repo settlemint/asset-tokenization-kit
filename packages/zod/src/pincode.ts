@@ -6,7 +6,7 @@
  * and format requirements for reliable user verification.
  * @module PincodeValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Zod schema for validating 6-digit PIN codes

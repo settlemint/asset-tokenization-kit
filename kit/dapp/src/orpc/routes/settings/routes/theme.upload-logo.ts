@@ -1,4 +1,3 @@
-import { DEFAULT_BUCKET } from "@/components/theme/lib/reset";
 import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-permissions.middleware";
 import { minioMiddleware } from "@/orpc/middlewares/services/minio.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
@@ -11,11 +10,24 @@ import {
 } from "./theme.upload-logo.schema";
 
 const LOGO_BASE_PATH = "logos";
+const AUTH_BASE_PATH = "auth";
+const BACKGROUND_BASE_PATH = "backgrounds";
+const FAVICON_BASE_PATH = "favicons";
+const ICONS_BASE_PATH = "icons";
+
 const MODE_PATHS: Record<ThemeLogoMode, string> = {
   light: `${LOGO_BASE_PATH}/light`,
   dark: `${LOGO_BASE_PATH}/dark`,
   lightIcon: `${LOGO_BASE_PATH}/light-icon`,
   darkIcon: `${LOGO_BASE_PATH}/dark-icon`,
+  authLight: `${AUTH_BASE_PATH}/light`,
+  authDark: `${AUTH_BASE_PATH}/dark`,
+  backgroundLight: `${BACKGROUND_BASE_PATH}/light`,
+  backgroundDark: `${BACKGROUND_BASE_PATH}/dark`,
+  favicon: FAVICON_BASE_PATH,
+  appleTouchIcon: `${ICONS_BASE_PATH}/apple-touch`,
+  favicon96: `${ICONS_BASE_PATH}/favicon-96`,
+  faviconSvg: `${ICONS_BASE_PATH}/favicon-svg`,
 };
 
 const sanitizeFileName = (fileName: string): string => {
@@ -53,7 +65,7 @@ export const uploadLogo = authRouter.settings.theme.uploadLogo
   .handler(async ({ input, context }) => {
     const payload = ThemeLogoUploadSchema.parse(input);
     const { mode, fileName, contentType } = payload;
-    const bucket = DEFAULT_BUCKET;
+    const bucket = env.SETTLEMINT_MINIO_BUCKET;
     const { objectKey, pathPrefix, sanitizedFileName } = resolveObjectKey(
       mode,
       fileName
@@ -84,16 +96,9 @@ export const uploadLogo = authRouter.settings.theme.uploadLogo
       }
     })();
 
-    const publicUrl = (() => {
-      try {
-        const url = new URL(normalizedUploadUrl);
-        url.search = "";
-        url.hash = "";
-        return url.toString();
-      } catch {
-        return `/${bucket}/${objectKey}`;
-      }
-    })();
+    // Generate a stable, non-expiring public URL for the asset
+    // Use the standard /{bucket}/{objectKey} path format
+    const publicUrl = `/${bucket}/${objectKey}`;
 
     const expiresAt = new Date(Date.now() + expirySeconds * 1000).toISOString();
 

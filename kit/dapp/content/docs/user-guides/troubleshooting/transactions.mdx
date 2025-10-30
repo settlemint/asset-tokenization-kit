@@ -1,384 +1,348 @@
 ---
 title: Transactions & transfers
 description:
-  Solutions for failed transfers, transaction errors, and token movement issues
+  When token transfers fail, the issue typically occurs at one of three stages -
+  submission, validation, or execution. This guide helps you diagnose where your
+  transaction failed and resolve the root cause quickly. Use the blockchain
+  operations dashboard to monitor transaction status in real-time, track gas
+  usage, and review compliance validation results.
 pageTitle: Token transaction troubleshooting
 tags: [troubleshooting, transactions, transfers, tokens, gas]
 ---
 
-## Overview
-
-This guide covers troubleshooting for token transfers, transaction failures, and
-related issues. Learn how to diagnose and resolve problems with moving tokens
-between addresses.
-
-**Primary audience:** Token holders, investors **Related guides:**
-[Compliance Troubleshooting](/docs/user-guides/troubleshooting/compliance),
-
-## How to use this guide
-
-1. **Identify the failure point** - Note when the transaction failed
-   (submission, confirmation, etc.)
-2. **Check error messages** - Review wallet and platform error messages
-3. **Try diagnostic steps** - Follow solutions for your specific scenario
-4. **Verify on blockchain** - Always check blockchain explorer for transaction
-   status
-
-**Tip:** Keep transaction hashes for all failed transactions when seeking
-support.
-
-## Transfer failures
-
-### Token transfer fails or reverts
-
-**Symptoms:** "Transfer failed" message, transaction reverts, or tokens not
-arriving at destination.
-
-**Solutions:**
-
-1. **Compliance failures:**
-   - **Recipient not verified:** Recipient must have verified OnchainID with
-     required claims
-   - **Transfer restrictions:** Token may have transfer limits or lock-up
-     periods
-   - **Blocked address:** Recipient may be on blocklist or sanctions list
-   - **Country restrictions:** Recipient country may not be allowed
-
-2. **Insufficient balance:**
-   - Verify you hold sufficient token balance
-   - Check you're transferring correct token
-   - Account for gas costs in native token
-
-3. **Gas issues:**
-   - Transaction out of gas
-   - Increase gas limit in wallet
-   - Retry during lower network congestion
-
-4. **Paused token:**
-   - Token transfers may be paused by issuer
-   - Check token status on token details page
-   - Wait for unpause or contact issuer
-
-**Diagnosis:** Check transaction on blockchain explorer for specific revert
-reason.
-
-**Next steps:** If error mentions "compliance" or "module check failed", see
-[Compliance Troubleshooting](/docs/user-guides/troubleshooting/compliance).
-
-### Cannot find recipient address or transfer form disabled
-
-**Symptoms:** Transfer button greyed out or recipient address validation fails.
-
-**Solutions:**
-
-1. **Address format:**
-   - Ensure recipient address is valid Ethereum address (0x... format)
-   - Check address is complete (42 characters including 0x)
-   - Verify checksum capitalization correct
-
-2. **Transfer restrictions:**
-   - Some tokens prohibit transfers (locked during lock-up period)
-   - Check token settings for transferability
-   - Contact issuer if transfers should be allowed
-
-3. **Minimum transfer:**
-   - Token may have minimum transfer amount
-   - Increase transfer amount above minimum
-
-**Workaround:** Use blockchain explorer to verify recipient address exists and
-can receive tokens.
-
-### Transfer succeeds but recipient balance not updated
-
-**Symptoms:** Transaction confirmed but recipient doesn't see tokens.
-
-**Solutions:**
-
-1. **Wait for confirmations:**
-   - Wait for 3-5 block confirmations
-   - Refresh recipient's page
-   - Check blockchain explorer for transaction
-
-2. **Wrong network:**
-   - Verify sender and recipient on same network
-   - Cannot transfer between different chains
-   - Use bridge if cross-chain transfer needed
-
-3. **Platform sync delay:**
-   - Platform may take few minutes to index transaction
-   - Token balance correct on-chain (check explorer)
-   - Platform UI updates shortly
-
-**Verification:** Always verify transaction on blockchain explorer for ground
-truth.
-
-## Transaction submission issues
-
-### Transaction pending forever
-
-**Symptoms:** Transaction shows "Pending" status indefinitely.
-
-**Solutions:**
-
-1. **Low gas price:**
-   - Transaction may be under-priced for current network
-   - Use wallet's "Speed Up" feature to increase gas price
-   - Wait for network congestion to decrease
-
-2. **Nonce issues:**
-   - Earlier transaction blocking this one
-   - Check wallet for pending transactions with lower nonces
-   - Cancel or speed up blocking transaction
-
-3. **Network congestion:**
-   - Network may be experiencing high load
-   - Wait 15-30 minutes for processing
-   - Check network status page for issues
-
-**Escalation:** If pending &gt; 1 hour, contact support with transaction hash.
-
-### Transaction fails immediately without being submitted
-
-**Symptoms:** Error before wallet confirmation dialog appears.
-
-**Solutions:**
-
-1. **Simulation failure:**
-   - Platform simulates transaction before submission
-   - Check error message for specific issue
-   - Common: insufficient balance, compliance failure
-
-2. **Network connection:**
-   - Check wallet and platform connected to network
-   - Refresh page and retry
-   - Verify internet connection stable
-
-3. **Smart contract state:**
-   - Contract may be paused or in maintenance
-   - Check platform announcements
-   - Wait and retry later
-
-**Diagnosis:** Copy full error message for support if issue persists.
-
-## Gas and fee issues
-
-### "Insufficient gas" or "Out of gas"
-
-**Symptoms:** Transaction fails with gas-related error.
-
-**Solutions:**
-
-1. **Insufficient native token:**
-   - Ensure wallet has native tokens (ETH, MATIC, etc.) for gas
-   - Check balance includes amount for gas fees
-   - Add native tokens to wallet
-
-2. **Gas limit too low:**
-   - Increase gas limit in wallet
-   - Platform typically sets appropriate limit, but manual increase may help
-   - Try 10-20% higher than suggested
-
-3. **Complex transaction:**
-   - Some operations require more gas
-   - Use "Fast" or "Aggressive" gas settings
-   - Retry during lower network activity
-
-**Prevention:** Keep small amount of native tokens in wallet for gas.
-
-### Gas fees too high
-
-**Symptoms:** Transaction requires unexpectedly high gas fees.
-
-**Solutions:**
-
-1. **Network congestion:**
-   - Wait for off-peak hours
-   - Check gas trackers (etherscan.io/gastracker)
-   - Retry when base fee lower
-
-2. **Complex compliance checks:**
-   - First-time transfers may cost more due to storage
-   - Subsequent transfers typically cheaper
-   - Consider if transaction urgent or can wait
-
-3. **Wrong gas settings:**
-   - Wallet may be over-estimating
-   - Manually adjust gas price in wallet
-   - Use "Standard" instead of "Fast" if not urgent
-
-**Note:** High gas is often network-wide, not platform-specific.
-
-## Token approval issues
-
-### "Insufficient allowance" error
-
-**Symptoms:** Transaction fails with allowance-related error.
-
-**Solutions:**
-
-1. **Approve token spending:**
-   - Navigate to token settings
-   - Click **Approve** for platform contract
-   - Set allowance amount (or use "unlimited")
-   - Wait for approval transaction confirmation
-   - Retry original transaction
-
-2. **Approval expired or revoked:**
-   - Previous approval may have been used up
-   - Re-approve with higher allowance
-   - Some tokens require zero approval before setting new allowance
-
-3. **Wrong spender contract:**
-   - Ensure approving correct contract address
-   - Platform shows contract requiring approval
-   - Verify contract address matches
-
-**Security:** Only approve tokens for contracts you trust; consider limited
-allowances for security.
-
-### Approval transaction pending or failed
-
-**Symptoms:** Cannot complete approval transaction.
-
-**Solutions:**
-
-1. **Gas issues:**
-   - Approval requires gas like any transaction
-   - Follow gas troubleshooting steps above
-   - Retry with higher gas
-
-2. **Token restrictions:**
-   - Some tokens have approval restrictions
-   - Check token supports ERC-20 approve function
-   - Contact issuer if persistent
-
-3. **Multiple approvals:**
-   - Don't submit multiple approval transactions
-   - Wait for first to confirm
-   - Cancel pending approval before new attempt
-
-## Error messages reference
-
-### "Transaction would revert"
-
-**Meaning:** Transaction simulation failed; execution would fail on-chain.
-
-**Common causes:**
-
-- Compliance checks failing
-- Insufficient balance or allowance
-- Invalid parameters
-- Contract paused
-
-**Solution:** Check specific error message in wallet for details; review
-compliance requirements.
-
-### "Transfer amount exceeds limit"
-
-**Meaning:** Transaction violates configured transfer limits.
-
-**Solution:**
-
-- Reduce transfer amount below limit
-- Wait for limit period to reset
-- Contact issuer to increase limit
-
-### "Nonce too low"
-
-**Meaning:** Transaction nonce already used or incorrect.
-
-**Solution:** Reset wallet account or wait for pending transactions to complete.
-
-### "Insufficient balance"
-
-**Meaning:** Wallet lacks sufficient tokens for transfer.
-
-**Solution:** Verify token balance and ensure you're not trying to transfer more
-than available.
-
-### "Module check failed"
-
-**Meaning:** Compliance module preventing transaction.
-
-**Common causes:**
-
-- Country restrictions
-- Investor count limit reached
-- Time lock enforced
-- Supply limit exceeded
-
-**Solution:** Review token compliance settings and resolve specific module
-requirement. See
-[Compliance Troubleshooting](/docs/user-guides/troubleshooting/compliance).
-
-### "Token is paused"
-
-**Meaning:** Token contract paused by administrator.
-
-**Solution:** Wait for unpause announcement or contact token issuer.
-
-## Getting help
-
-If you cannot resolve transaction issues:
-
-**Gather information:**
-
-- Transaction hash (even if failed)
+## Compliance-related failures
+
+The most common reason for transfer failures is compliance validation. Security
+tokens enforce regulatory requirements at the smart contract level, meaning
+every transfer must pass compliance checks before execution.
+
+<Mermaid chart={`flowchart TB
+    Transfer(Transfer request)
+    CheckPaused(Check token paused status)
+    Paused{Token paused?}
+    CheckSender(Verify sender identity)
+    SenderValid{Sender has OnchainID?}
+    CheckRecipient(Verify recipient identity)
+    RecipientValid{Recipient has OnchainID?}
+    CheckClaims(Validate required claims)
+    ClaimsValid{Claims present?}
+    CheckModules(Run compliance modules)
+    ModulesPass{All modules pass?}
+    Allow(Transfer allowed)
+    RejectPaused(Reject: Token paused)
+    RejectSender(Reject: Sender not verified)
+    RejectRecipient(Reject: Recipient not verified)
+    RejectClaims(Reject: Missing claims)
+    RejectModules(Reject: Module check failed)
+
+    Transfer --> CheckPaused
+    CheckPaused --> Paused
+    Paused -->|Yes| RejectPaused
+    Paused -->|No| CheckSender
+    CheckSender --> SenderValid
+    SenderValid -->|No| RejectSender
+    SenderValid -->|Yes| CheckRecipient
+    CheckRecipient --> RecipientValid
+    RecipientValid -->|No| RejectRecipient
+    RecipientValid -->|Yes| CheckClaims
+    CheckClaims --> ClaimsValid
+    ClaimsValid -->|No| RejectClaims
+    ClaimsValid -->|Yes| CheckModules
+    CheckModules --> ModulesPass
+    ModulesPass -->|No| RejectModules
+    ModulesPass -->|Yes| Allow
+
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef error fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+
+    class Transfer,Allow primary
+    class CheckPaused,CheckSender,CheckRecipient secondary
+    class CheckClaims,CheckModules tertiary
+    class RejectPaused,RejectSender,RejectRecipient,RejectClaims,RejectModules error
+
+`} />
+
+### Recipient not verified
+
+Transfers fail when the recipient lacks a verified OnchainID or is missing
+required claims. This is by design—security tokens can only move to eligible,
+verified addresses. Check the compliance metrics dashboard to see which specific
+claims are required for this token.
+
+To resolve this, the recipient must complete identity verification and obtain
+the necessary claims from approved claim issuers. For institutional transfers,
+coordinate with your compliance officer to ensure both parties meet eligibility
+requirements before initiating the transfer.
+
+### Transfer restrictions and limits
+
+Tokens may enforce time-based restrictions (lock-up periods), amount limits
+(maximum transfer size), or holder count limits (to comply with securities
+regulations). These rules are configured by the token issuer and enforced
+automatically by compliance modules.
+
+If you encounter a "transfer amount exceeds limit" error, reduce the transfer
+size or wait for the limit period to reset. The token details page shows current
+restrictions, and the compliance dashboard displays your available transfer
+capacity.
+
+### Blocklist and country restrictions
+
+Some tokens restrict transfers to or from specific jurisdictions or maintain
+blocklists for regulatory compliance. When a transfer fails with "country
+restrictions" or "blocked address," the recipient's jurisdiction or address
+status prevents the transaction.
+
+Contact the token issuer to understand the restriction policy. In many cases,
+these restrictions are mandated by securities regulations and cannot be bypassed
+without legal modifications to the token's compliance rules.
+
+## Gas and fee estimation
+
+Gas estimation failures often indicate deeper issues with the transaction
+itself. When the platform cannot estimate gas, it usually means the transaction
+would revert if submitted. However, sometimes network conditions or complex
+compliance checks cause legitimate transactions to require more gas than
+initially estimated.
+
+<Mermaid chart={`flowchart TB
+    Request(Gas estimation request)
+    Simulate(Simulate transaction)
+    SimResult{Simulation result}
+    BaseGas(Calculate base gas)
+    ComplianceGas(Add compliance overhead)
+    StorageGas(Add storage costs)
+    BufferGas(Add safety buffer)
+    CheckBalance{User has gas balance?}
+    Estimate(Return gas estimate)
+    FailSim(Simulation reverted)
+    FailBalance(Insufficient gas balance)
+
+    Request --> Simulate
+    Simulate --> SimResult
+    SimResult -->|Revert| FailSim
+    SimResult -->|Success| BaseGas
+    BaseGas --> ComplianceGas
+    ComplianceGas --> StorageGas
+    StorageGas --> BufferGas
+    BufferGas --> CheckBalance
+    CheckBalance -->|No| FailBalance
+    CheckBalance -->|Yes| Estimate
+
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef error fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+
+    class Request,Estimate primary
+    class Simulate,BaseGas,ComplianceGas secondary
+    class StorageGas,BufferGas tertiary
+    class FailSim,FailBalance error
+
+`} />
+
+### Insufficient native token for gas
+
+Every blockchain transaction requires native tokens (ETH, MATIC, etc.) to pay
+for execution. Security token transfers need gas even though you're moving a
+different token. Keep a small reserve of native tokens in your wallet
+specifically for transaction fees.
+
+First-time transfers typically cost more gas because they initialize storage for
+the new token holder relationship. Subsequent transfers to the same recipient
+are cheaper. You can view historical gas costs in the blockchain operations
+dashboard to predict future transaction expenses.
+
+### Gas price and network congestion
+
+During periods of high network activity, gas prices can spike dramatically. The
+platform automatically adjusts gas estimates based on current network
+conditions, but you can manually control gas settings in your wallet if
+transactions are time-sensitive.
+
+For non-urgent transfers, wait for off-peak hours when base fees are lower.
+Monitor network gas prices using blockchain explorers before submitting large or
+complex transactions. The observability dashboard shows average gas costs for
+recent transactions to help you gauge appropriate timing.
+
+### Complex compliance operations
+
+Some compliance checks require more computational resources than others,
+particularly when evaluating multiple modules or processing first-time holder
+registrations. The platform accounts for this in gas estimates, but edge cases
+may require manual gas limit increases.
+
+If your transaction fails with "out of gas" despite using estimated values, try
+increasing the gas limit by 20-30% in your wallet settings. This provides
+additional headroom for complex compliance validation without significantly
+affecting transaction costs if the extra gas isn't consumed.
+
+## Transaction state issues
+
+### Pending transactions
+
+Transactions remain pending when they're submitted to the blockchain but not yet
+included in a block. This is normal for a few minutes, but transactions stuck
+pending for over an hour typically indicate under-pricing or nonce conflicts.
+
+Modern wallets support transaction replacement, letting you "speed up" a pending
+transaction by resubmitting with a higher gas price. This uses the same nonce,
+replacing the original transaction. Alternatively, you can wait for network
+congestion to clear, though this may take several hours during peak periods.
+
+Check the blockchain operations dashboard for your pending transaction status
+and current network conditions. If multiple transactions are pending, they must
+complete in order due to nonce sequencing.
+
+### Nonce conflicts
+
+Each transaction from your wallet has a sequential nonce (number used once). If
+an earlier transaction is pending or failed, subsequent transactions with higher
+nonces won't execute until the earlier one completes. This creates a queue where
+one stuck transaction blocks all following ones.
+
+To resolve nonce conflicts, either speed up or cancel the blocking transaction.
+Most wallets show pending transactions in order and offer built-in tools for
+replacement. Avoid manually setting nonces unless you understand the
+implications, as incorrect nonce values can create persistent issues.
+
+### Transaction simulation vs execution differences
+
+The platform simulates transactions before submission to catch errors early, but
+blockchain state can change between simulation and execution. If someone else
+transfers tokens, pauses the contract, or modifies compliance rules after your
+simulation but before your transaction executes, you may see execution failures
+despite successful simulation.
+
+When this happens, the transaction reverts on-chain and you'll see the actual
+error in the blockchain explorer. Simply retry the transaction—the platform will
+simulate against current state and either succeed or show you the updated error
+immediately.
+
+## Common error messages
+
+Understanding error messages helps you diagnose issues quickly. The table below
+maps common errors to their causes and solutions.
+
+| Error message                 | Meaning                                | Common causes                                                                       | Resolution                                                                                                                                            |
+| ----------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Transaction would revert      | Simulation predicts on-chain failure   | Compliance failure, insufficient balance, invalid parameters, paused contract       | Check detailed error in wallet; verify compliance requirements and token status                                                                       |
+| Transfer amount exceeds limit | Transaction violates transfer limits   | Per-transaction maximum, daily/monthly limits, holder count restrictions            | Reduce amount below limit; wait for limit period reset; contact issuer to increase limits                                                             |
+| Nonce too low                 | Transaction nonce already used         | Duplicate transaction, wallet nonce desync, transaction already mined               | Reset wallet account; check transaction history for completed transaction                                                                             |
+| Insufficient balance          | Not enough tokens for transfer         | Attempting to transfer more than available, not accounting for held/locked tokens   | Verify actual balance; ensure no tokens are locked or reserved                                                                                        |
+| Module check failed           | Compliance module rejected transfer    | Country restrictions, investor count limit, time lock active, supply limit exceeded | Review token compliance settings; resolve specific module requirement; see [Compliance Troubleshooting](/docs/user-guides/troubleshooting/compliance) |
+| Token is paused               | Token contract paused by admin         | Maintenance, security incident, issuer-initiated pause                              | Wait for unpause announcement; contact token issuer for timeline                                                                                      |
+| Insufficient allowance        | Token approval too low                 | No approval set, approval consumed, approval revoked                                | Navigate to token settings; approve platform contract; set sufficient allowance; retry transaction                                                    |
+| Recipient not eligible        | Recipient fails eligibility checks     | No OnchainID, missing required claims, blocked address, restricted country          | Recipient must complete identity verification; obtain required claims from approved issuers                                                           |
+| Out of gas                    | Transaction consumed all allocated gas | Gas limit too low, complex operation, under-estimation                              | Increase gas limit by 20-30%; retry with higher gas; ensure sufficient native token balance                                                           |
+| Gas price too low             | Transaction under-priced for network   | Network congestion, outdated gas estimate, manual under-pricing                     | Use wallet's "speed up" feature; wait for lower congestion; use current gas price estimates                                                           |
+
+## Token approval workflow
+
+Many token operations require you to approve the platform's smart contracts to
+spend tokens on your behalf. This is a standard security pattern in blockchain
+applications—you grant explicit permission for contracts to move your tokens,
+preventing unauthorized access.
+
+Approval is a separate transaction that must complete before the main operation.
+When you see "insufficient allowance" errors, you need to:
+
+1. Navigate to the token settings or approval interface
+2. Submit an approval transaction for the relevant contract
+3. Wait for the approval transaction to confirm (usually 1-2 minutes)
+4. Retry your original transaction
+
+Some tokens require you to reset approval to zero before setting a new
+allowance. If your approval transaction fails, check whether the token uses this
+pattern and submit a zero-approval transaction first.
+
+## Balance and confirmation issues
+
+### Transfers complete but balances don't update
+
+Blockchain transactions are asynchronous—they're submitted, validated, executed,
+and then indexed by various systems. When you see a successful transaction but
+unchanged balances, it's usually a timing issue with one of these stages.
+
+First, verify the transaction completed on-chain using a blockchain explorer.
+The explorer shows ground truth—if it shows a successful transfer, the tokens
+have moved regardless of what UI displays. Platform interfaces rely on indexing
+services that may lag a few minutes behind the blockchain.
+
+Refresh your page after 2-3 block confirmations (typically 30-60 seconds). If
+the transaction succeeded on-chain but the UI still shows old balances after 5
+minutes, the indexing service may be delayed. Check the subgraph health metrics
+in the observability dashboard to see if indexing is running normally.
+
+### Wrong network or token
+
+Blockchain networks are isolated—tokens on Ethereum cannot transfer to Polygon
+addresses, even though both use the same address format. Similarly, tokens are
+distinct contracts, and you must select the correct token when initiating
+transfers.
+
+Always verify you're connected to the correct network in your wallet before
+signing transactions. The platform displays the expected network, and most
+wallets will prompt you to switch if you're on the wrong one. If you need to
+move assets between networks, use approved bridge services rather than direct
+transfers.
+
+### Transaction confirmed but reverted
+
+A transaction can be included in a block (confirmed) but still fail during
+execution (reverted). This happens when the transaction was properly formatted
+and paid for gas, but the smart contract logic rejected the operation.
+
+Reverted transactions consume gas but don't change state beyond the gas payment.
+Check the blockchain explorer for the revert reason—it will show the specific
+error that caused the failure. Common causes include compliance checks failing
+between submission and execution, or concurrent transactions that changed state
+unexpectedly.
+
+## Preventive practices
+
+Avoiding transaction failures starts with understanding the compliance
+requirements and system state before initiating transfers. Verify that both
+sender and recipient have the necessary identity verification and claims. Check
+the token's current status to ensure it's not paused or restricted.
+
+Maintain a reserve of native tokens for gas fees. Transaction failures due to
+insufficient gas balance are entirely preventable with proper account
+management. Keep enough for at least 10-20 transactions to handle retries and
+gas price fluctuations.
+
+Review transfer limits and compliance rules in the token details page before
+large or time-sensitive transfers. First-time transfers to new recipients cost
+more gas and may trigger additional compliance checks. Factor this into your
+timing and gas budget.
+
+Use the blockchain operations dashboard to monitor network conditions and
+historical gas costs. This helps you choose optimal timing for transfers and set
+appropriate gas parameters for reliable execution.
+
+## Getting support
+
+When you encounter persistent transaction issues that these troubleshooting
+steps don't resolve, gather comprehensive information before contacting support:
+
+- Transaction hash (even for failed transactions)
 - Wallet address (sender)
 - Recipient address
 - Token contract address
-- Error message (full text)
-- Screenshots from wallet and platform
+- Complete error message text
+- Screenshots from both wallet and platform
+- Timestamp of transaction attempt
 
-**Contact support:**
+Verify the transaction status in a blockchain explorer and note whether it's
+pending, failed, or successfully executed but showing incorrect results in the
+UI. Include the revert reason if the explorer displays one.
 
-- Email: support@platform.example
-- Include all information above
-- Specify token symbol and amount
-- Note time of transaction attempt
+Check the blockchain operations dashboard for any system-wide issues or
+announcements that might explain the failure. Network issues, scheduled
+maintenance, or known bugs may already have documented workarounds.
 
-**Blockchain verification:**
-
-- Check transaction on blockchain explorer
-- Note transaction status (pending, failed, success)
-- Copy revert reason if available
-- Verify block confirmation count
-
-**Response times:**
-
-- Failed transactions: 4-8 business hours
-- Pending transactions: 2-4 business hours
-- Missing tokens after success: 1-2 business hours
-
-## Preventive best practices
-
-**Before transferring:**
-
-- Verify recipient address twice
-- Check recipient compliance eligibility
-- Ensure sufficient gas balance
-- Review transfer amount and token symbol
-
-**Transaction hygiene:**
-
-- Use moderate gas settings for non-urgent transfers
-- Wait for confirmations before multiple transfers
-- Don't cancel transactions unless necessary
-- Keep record of transaction hashes
-
-**Compliance awareness:**
-
-- Verify you and recipient have required claims
-- Check for lock-up periods before attempting transfer
-- Review token transfer restrictions
-- Confirm recipient OnchainID verified
-
-**Monitoring:**
-
-- Watch transaction in blockchain explorer
-- Wait for sufficient confirmations (3-5 blocks)
-- Verify recipient received tokens on-chain
-- Keep records of successful transfers
-
-By following these practices, you'll minimize transaction issues and resolve
-problems faster.
+Response times vary by issue severity: missing tokens after successful
+transactions typically receive responses within 1-2 business hours, while
+general transaction failures are addressed within 4-8 hours.

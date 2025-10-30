@@ -1,22 +1,105 @@
 ---
 title: Token entities
 description:
-  Security tokens, holder balances, and transfer events in the subgraph
+  Security token entities form the core of ATK's digital asset infrastructure,
+  tracking ownership, balances, and transfer history across all asset types.
+  These entities connect smart contract state with TheGraph's indexing layer to
+  power real-time portfolio views, compliance monitoring, and settlement
+  tracking.
 pageTitle: Token entity reference (Token, TokenBalance, Transfer)
 tags: [token, erc-3643, balance, transfer, subgraph]
 ---
 
-Token entities represent ERC-3643 security tokens and their associated balances,
-transfers, and supply changes. All entities are indexed by TheGraph from
-blockchain events.
+## The security token data model
+
+ATK's token entities represent the digital lifecycle of regulated
+securities—from issuance through daily trading to final redemption. Unlike
+simple ERC-20 tokens that only track balances, ERC-3643 security tokens embed
+compliance rules, identity verification, and transfer restrictions directly into
+the ownership model. The subgraph entities mirror this complexity, indexing not
+just who owns what, but why transfers succeed or fail, which balances are frozen
+under regulatory hold, and how supply changes connect to corporate actions.
+
+Every security token in ATK (bonds, equities, funds, stablecoins, deposits)
+shares this foundational data structure. When an issuer mints 1M bond tokens,
+the `Token` entity records total supply and cap limits. When an investor
+receives tokens, a `TokenBalance` entity tracks their holding plus any frozen
+amounts. When tokens move in a DvP settlement, the immutable `Transfer` entity
+creates an audit trail that compliance officers can query years later.
 
 **Schema location**:
 [`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
 
+## Entity relationships
+
+<Mermaid
+  chart={`flowchart TB
+    Token(Token Contract)
+    Balance(TokenBalance)
+    Transfer(Transfer Event)
+    Mint(Mint Event)
+    Burn(Burn Event)
+    Account(Account/Investor)
+    Compliance(Compliance Module)
+    
+    Token -->|has many| Balance
+    Token -->|has many| Transfer
+    Token -->|has many| Mint
+    Token -->|has many| Burn
+    Token -->|enforces via| Compliance
+    
+    Balance -->|belongs to| Token
+    Balance -->|owned by| Account
+    
+    Transfer -->|from/to| Account
+    Transfer -->|updates| Balance
+    Transfer -->|recorded in| Token
+    
+    Mint -->|creates| Balance
+    Mint -->|increases| Token
+    
+    Burn -->|reduces| Balance
+    Burn -->|decreases| Token
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    
+    class Token primary
+    class Balance,Account secondary
+    class Transfer,Mint,Burn tertiary
+    class Compliance quaternary
+`}
+/>
+
+The diagram shows how token ownership flows through the system: `Token` entities
+define the security, `TokenBalance` records link investors to holdings, and
+immutable event entities (`Transfer`, `Mint`, `Burn`) create the audit trail
+that compliance and settlement workflows depend on.
+
 ## Token
 
-ERC-3643 security token contract with metadata, supply, and compliance
-configuration.
+The `Token` entity represents a deployed ERC-3643 security token contract—the
+digital wrapper for a real-world asset. This entity stores both static metadata
+(name, symbol, decimals) and dynamic operational state (total supply, pause
+status, holder count). For bonds, it includes financial parameters like maturity
+dates and face values. For all asset types, it maintains references to the
+compliance contract that gates every transfer and the identity registry that
+verifies investor eligibility.
+
+**Business purpose**: Provides the single source of truth for a security's
+on-chain state. Issuers query this entity to monitor circulating supply against
+caps. Compliance officers check pause status during investigations. DvP
+settlement contracts read total supply when calculating pro-rata distributions.
+Vault custody systems reference the compliance module to validate deposit
+eligibility.
+
+**Creator permissions**: Upon creation the deploying wallet is granted the token
+`governance` role so it can issue identity claims and configure governance-gated
+flows immediately after deployment. This enables claim submission, but the
+issuer still needs the relevant trusted-issuer topic permissions before those
+claims are recognized on-chain.
 
 ### Fields
 
@@ -51,59 +134,112 @@ type Token @entity {
 }
 ```
 
+**Field details**:
+
+| Field               | Business purpose                                                | DALP integration                                                                           |
+| ------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `totalSupply`       | Current circulating supply after mints/burns                    | Yield schedules calculate per-token distributions by dividing pool amount by `totalSupply` |
+| `cap`               | Maximum allowed supply (regulatory or structural limit)         | Prevents over-issuance; checked during mints in vault deposit flows                        |
+| `paused`            | Emergency stop preventing all transfers                         | Activated during security incidents; DvP settlements abort if `paused: true`               |
+| `compliance`        | Active compliance ruleset (KYC, investor limits, jurisdictions) | DvP atomic swaps verify both tokens pass compliance before executing settlement            |
+| `identityRegistry`  | Verifies investor identity claims (OnchainID)                   | Vault withdrawals confirm user has required claims before releasing custody                |
+| `holderCount`       | Number of unique addresses with balance &gt; 0                  | Regulatory reporting (e.g., "500+ shareholders triggers SEC filing")                       |
+| `maturityDate`      | When bond principal becomes due                                 | Triggers automated redemption workflows; yield schedules stop accruing interest            |
+| `denominationAsset` | Currency token for bond payments (e.g., USDC)                   | DvP settlement pairs: bond token vs denomination token atomic swap                         |
+
+### Token types
+
+**Why this matters**: Each asset type follows different regulatory frameworks
+and operational patterns. The `tokenType` field routes tokens to specialized
+workflows—bonds connect to yield schedules for coupon payments, deposits link to
+vault custody systems, stablecoins integrate with DvP settlement for treasury
+operations.
+
+| Type         | Use case                                | Typical compliance                            | DALP features                                                          |
+| ------------ | --------------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------- |
+| `bond`       | Fixed-income debt securities            | Investor accreditation, prospectus delivery   | Yield schedules (coupon payments), maturity redemption, DvP settlement |
+| `equity`     | Ownership shares with voting rights     | Shareholder caps, jurisdiction restrictions   | Dividend distributions via yield, governance token integration         |
+| `fund`       | Investment fund units (ETF/mutual fund) | Qualified purchaser rules, NAV reconciliation | Vault custody for underlying assets, yield for management fees         |
+| `stablecoin` | Fiat-pegged digital currency            | AML transaction monitoring, reserve audits    | DvP settlement denomination, vault collateral                          |
+| `deposit`    | Tokenized bank deposits or treasuries   | Banking regulations, FDIC limits              | Vault custody of deposits, yield for interest accrual                  |
+
 ### Relationships
 
-- **One-to-one**:
-  - `compliance` → Compliance contract
-  - `identityRegistry` → Identity registry
-  - `denominationAsset` → Denomination token (bonds)
-- **One-to-many**:
-  - `balances` → All TokenBalance records
-  - `transfers` → All Transfer events
-  - `mints` → All Mint events
-  - `burns` → All Burn events
-  - `complianceModules` → Active compliance modules
+**One-to-one**:
+
+- `compliance` → Compliance contract (transfers call `compliance.canTransfer()`
+  before executing)
+- `identityRegistry` → Identity registry (validates investor claims during KYC)
+- `denominationAsset` → Denomination token (bonds only; the currency used for
+  payments)
+
+**One-to-many**:
+
+- `balances` → All TokenBalance records (investor portfolio positions)
+- `transfers` → All Transfer events (complete audit trail for compliance
+  reporting)
+- `mints` → All Mint events (issuance history)
+- `burns` → All Burn events (redemption/cancellation history)
+- `complianceModules` → Active compliance modules (each enforces specific rules
+  like investor caps)
 
 ### Usage example
 
+**Scenario**: Portfolio manager wants to see top bondholders and verify none
+exceed regulatory concentration limits.
+
 ```graphql
-query GetToken($id: Bytes!) {
-  token(id: $id) {
+query GetBondholders($tokenId: Bytes!) {
+  token(id: $tokenId) {
     id
     name
     symbol
-    decimals
     tokenType
     totalSupply
     holderCount
-    paused
+    cap
     compliance {
       id
       requiredClaimTopics
     }
-    balances(first: 10, orderBy: balance, orderDirection: desc) {
+    balances(
+      first: 100
+      orderBy: balance
+      orderDirection: desc
+      where: { balance_gt: "0" }
+    ) {
       account {
         id
       }
       balance
       frozenBalance
+      isFrozen
     }
   }
 }
 ```
 
-### Token types
-
-- `bond` - Fixed-income securities with maturity dates
-- `equity` - Shares representing ownership
-- `fund` - Investment fund units
-- `stablecoin` - Pegged digital currencies
-- `deposit` - Tokenized deposits
+**Observability connection**: The Grafana "Token Metrics" dashboard visualizes
+`totalSupply` over time to detect unexpected mints (potential security issues)
+and tracks `holderCount` to identify concentration risk. Prometheus alerts fire
+when `paused: true` to notify operations teams of emergency stops.
 
 ## TokenBalance
 
-Account's balance in a specific token, including frozen amounts and freeze
-status.
+The `TokenBalance` entity records an investor's ownership position in a specific
+token. Unlike a simple balance number, this entity tracks both liquid and frozen
+amounts—critical for regulatory holds, pending DvP settlements, and compliance
+investigations. Each balance is uniquely identified by the token-account pair,
+enabling fast lookups by either dimension (e.g., "show me all BOND-2025 holders"
+or "show this investor's full portfolio").
+
+**Business purpose**: Powers portfolio views, enables regulatory holds, and
+feeds DvP settlement logic. When a compliance officer freezes a suspicious
+account, only `frozenBalance` locks—liquid tokens remain tradable. When a DvP
+swap executes, the settlement contract verifies both parties have sufficient
+liquid balance (`balance - frozenBalance`) before atomic transfer. Vault custody
+dashboards aggregate balances across tokens to show total asset value under
+management.
 
 ### Fields
 
@@ -119,24 +255,75 @@ type TokenBalance @entity {
 }
 ```
 
+**Field details**:
+
+| Field           | Business purpose                                      | DALP integration                                                               |
+| --------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `balance`       | Total tokens owned (frozen + liquid)                  | Yield distributions use total `balance` to calculate pro-rata entitlements     |
+| `frozenBalance` | Tokens temporarily locked by compliance or settlement | DvP contracts escrow tokens by increasing `frozenBalance` until swap completes |
+| `isFrozen`      | When true, entire balance is non-transferable         | Emergency account freeze; vault withdrawals blocked if `isFrozen: true`        |
+| `lastUpdated`   | Timestamp of last balance change                      | Audit trail for compliance; detects stale balances in custody reconciliation   |
+
+### Balance states
+
+**Understanding frozen vs liquid**: A `balance` of 1000 tokens with
+`frozenBalance` of 300 means:
+
+- **Total ownership**: 1000 tokens (appears in portfolio value calculations)
+- **Liquid tradable**: 700 tokens (can be transferred or sold)
+- **Locked/escrowed**: 300 tokens (held for settlement, regulatory hold, or
+  pending corporate action)
+
+**State transitions**:
+
+<Mermaid
+  chart={`flowchart TB
+    Normal(Normal Balance<br/>balance: 1000<br/>frozenBalance: 0<br/>isFrozen: false)
+    Partial(Partial Freeze<br/>balance: 1000<br/>frozenBalance: 300<br/>isFrozen: false)
+    Full(Full Freeze<br/>balance: 1000<br/>frozenBalance: 1000<br/>isFrozen: true)
+    
+    Normal -->|Compliance hold| Partial
+    Normal -->|Account freeze| Full
+    Partial -->|DvP escrow| Partial
+    Partial -->|Investigation| Full
+    Partial -->|Escrow released| Normal
+    Full -->|Hold released| Normal
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    
+    class Normal primary
+    class Partial tertiary
+    class Full quaternary
+`}
+/>
+
+**Why this matters for DALP**:
+
+- **DvP settlement**: Before executing atomic swap, verify
+  `balance - frozenBalance >= amountToTransfer` for both parties
+- **Yield distributions**: Pay on full `balance` even if partially frozen
+  (frozen tokens still earn yield)
+- **Vault custody**: Redemption requests fail if `isFrozen: true` (prevents
+  withdrawal during investigations)
+
 ### Composite ID
 
 The `id` field combines `token.id` and `account.id` to create a unique
 identifier for each token-holder pair. This enables fast lookups by either token
 or account.
 
-### Balance states
+**Example ID construction**:
+`0x1234...token ++ 0x5678...account = 0x1234...5678` (concatenated bytes)
 
-- `balance` - Total owned tokens (frozen + liquid)
-- `frozenBalance` - Tokens temporarily locked
-- `isFrozen` - When true, entire balance is frozen
+### Usage examples
 
-### Usage example
+**Portfolio query**: Investor dashboard showing all holdings with frozen status.
 
 ```graphql
-# Get account's portfolio
-query GetPortfolio($account: Bytes!) {
-  account(id: $account) {
+query GetInvestorPortfolio($accountId: Bytes!) {
+  account(id: $accountId) {
     balances(where: { balance_gt: "0" }) {
       token {
         id
@@ -152,10 +339,15 @@ query GetPortfolio($account: Bytes!) {
     }
   }
 }
+```
 
-# Get top token holders
-query GetTopHolders($token: Bytes!) {
-  token(id: $token) {
+**Compliance query**: Identify top holders to verify none exceed regulatory caps
+(e.g., no single investor &gt; 10% of supply).
+
+```graphql
+query GetTopHolders($tokenId: Bytes!) {
+  token(id: $tokenId) {
+    totalSupply
     balances(
       first: 100
       orderBy: balance
@@ -172,9 +364,27 @@ query GetTopHolders($token: Bytes!) {
 }
 ```
 
+**Observability connection**: The "Frozen Balance Alerts" dashboard tracks total
+`frozenBalance` across all tokens. Sudden spikes indicate either high DvP
+settlement volume (normal) or widespread compliance holds (investigate).
+Prometheus alerts fire when `frozenBalance / balance > 0.5` for accounts,
+flagging potential liquidity issues.
+
 ## Transfer
 
-Immutable record of token transfer events.
+The `Transfer` entity is an immutable event record created every time tokens
+move between addresses. This includes regular peer-to-peer transfers, DvP
+settlement swaps, and special cases like mints (from zero address) and burns (to
+zero address). Because transfers are immutable, they form a permanent audit
+trail that survives even if balances change later—critical for regulatory
+reporting and forensic investigations.
+
+**Business purpose**: Provides the complete transaction history for compliance
+audits, tax reporting, and settlement verification. When regulators request
+proof of beneficial ownership at a specific date, you query transfers up to that
+timestamp. When a DvP settlement disputes arises, the immutable transfer record
+shows exactly when and how tokens moved. Yield distribution contracts scan
+transfer history to identify shareholders eligible for dividends.
 
 ### Fields
 
@@ -191,50 +401,50 @@ type Transfer @entity(immutable: true) {
 }
 ```
 
+**Field details**:
+
+| Field             | Business purpose                                  | DALP integration                                                                 |
+| ----------------- | ------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `from` / `to`     | Sender and recipient addresses                    | DvP settlement: verify both `from` addresses match expected swap parties         |
+| `value`           | Amount transferred (in token's decimal precision) | Yield calculations: sum `value` for all transfers to/from an account in a period |
+| `blockTimestamp`  | When transfer occurred (used for cutoff dates)    | Dividend snapshots: "holders as of timestamp X" filters transfers by this field  |
+| `transactionHash` | Blockchain transaction ID for verification        | Settlement reconciliation: match on-chain tx to off-chain order books            |
+
 ### Immutability
 
 The `@entity(immutable: true)` directive ensures Transfer records are never
-updated after creation, maintaining an accurate historical ledger.
+updated after creation, maintaining an accurate historical ledger. This is
+enforced at both the subgraph mapping layer and the GraphQL schema
+level—attempts to update a Transfer entity will fail.
+
+**Why immutability matters**:
+
+- **Audit integrity**: Regulators can trust that transfer records haven't been
+  retroactively altered
+- **Settlement disputes**: Immutable transfers prove token delivery in DvP swaps
+  (can't be changed post-settlement)
+- **Tax reporting**: Annual transaction reports reference immutable transfer
+  history
+- **Performance**: Immutable entities enable aggressive caching in TheGraph
+  indexer
 
 ### Special addresses
 
-- `from: 0x0000000000000000000000000000000000000000` - Mint event
-- `to: 0x0000000000000000000000000000000000000000` - Burn event
+| Address                                            | Meaning                       | Usage                                                                        |
+| -------------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------------- |
+| `from: 0x0000000000000000000000000000000000000000` | Mint event (tokens created)   | Initial issuance, secondary offerings, bond coupon payments minted on-demand |
+| `to: 0x0000000000000000000000000000000000000000`   | Burn event (tokens destroyed) | Bond redemption at maturity, token buybacks, correcting over-issuance        |
 
-### Usage example
+### Usage examples
+
+**Settlement verification**: Confirm DvP swap executed correctly by checking
+both legs of the atomic transfer.
 
 ```graphql
-# Get recent transfers for a token
-query GetRecentTransfers($token: Bytes!) {
-  transfers(
-    where: { token: $token }
-    first: 20
-    orderBy: blockTimestamp
-    orderDirection: desc
-  ) {
-    id
-    from {
-      id
-    }
-    to {
-      id
-    }
-    value
-    blockTimestamp
-    transactionHash
-  }
-}
-
-# Get account's transfer history
-query GetAccountTransfers($account: Bytes!) {
-  transfers(
-    where: { or: [{ from: $account }, { to: $account }] }
-    orderBy: blockTimestamp
-    orderDirection: desc
-  ) {
+query VerifyDvPSettlement($txHash: Bytes!) {
+  transfers(where: { transactionHash: $txHash }) {
     id
     token {
-      name
       symbol
     }
     from {
@@ -249,11 +459,91 @@ query GetAccountTransfers($account: Bytes!) {
 }
 ```
 
-## Mint
+**Expected result**: Two transfers in same tx (bond tokens A→B, payment tokens
+B→A) confirm atomic swap.
 
-Token minting event (supply increase).
+**Compliance audit**: Generate complete transfer history for a specific investor
+during a tax year.
 
-### Fields
+```graphql
+query GetTaxYearTransfers(
+  $accountId: Bytes!
+  $startTime: BigInt!
+  $endTime: BigInt!
+) {
+  transfers(
+    where: {
+      or: [{ from: $accountId }, { to: $accountId }]
+      blockTimestamp_gte: $startTime
+      blockTimestamp_lte: $endTime
+    }
+    orderBy: blockTimestamp
+    orderDirection: asc
+  ) {
+    id
+    token {
+      name
+      symbol
+    }
+    from {
+      id
+    }
+    to {
+      id
+    }
+    value
+    blockTimestamp
+    transactionHash
+  }
+}
+```
+
+**Token activity monitoring**: Recent transfer volume for an asset (useful for
+market surveillance).
+
+```graphql
+query GetRecentTransferVolume($tokenId: Bytes!) {
+  transfers(
+    where: { token: $tokenId }
+    first: 100
+    orderBy: blockTimestamp
+    orderDirection: desc
+  ) {
+    id
+    from {
+      id
+    }
+    to {
+      id
+    }
+    value
+    blockTimestamp
+  }
+}
+```
+
+**Observability connection**: The "Transfer Volume" dashboard aggregates `value`
+by hour to detect unusual trading patterns (potential market manipulation). The
+"Settlement Latency" panel tracks time between DvP order submission and
+`blockTimestamp` of resulting transfer. Prometheus alerts fire when transfer
+count spikes &gt; 3 standard deviations (investigate for bot activity).
+
+## Mint and burn events
+
+`Mint` and `Burn` entities track supply changes—when tokens are created or
+destroyed. While these events also appear as `Transfer` records (with zero
+addresses), dedicated entities make it easier to query issuance history and
+calculate supply metrics.
+
+### Mint
+
+**Business purpose**: Records primary issuances, secondary offerings, and
+dynamic supply increases (like stablecoin minting to meet demand). Regulators
+require mint history to verify tokens weren't created without proper
+authorization. Yield distribution contracts query mints to identify new
+shareholders who joined after the last dividend payment.
+
+#### Fields
 
 ```graphql
 type Mint @entity(immutable: true) {
@@ -267,14 +557,17 @@ type Mint @entity(immutable: true) {
 }
 ```
 
-### Usage example
+#### Usage example
+
+**Issuance history**: Track all mints for a bond token to verify primary
+offering schedule.
 
 ```graphql
-query GetMintHistory($token: Bytes!) {
+query GetIssuanceHistory($tokenId: Bytes!) {
   mints(
-    where: { token: $token }
+    where: { token: $tokenId }
     orderBy: blockTimestamp
-    orderDirection: desc
+    orderDirection: asc
   ) {
     id
     to {
@@ -282,15 +575,24 @@ query GetMintHistory($token: Bytes!) {
     }
     value
     blockTimestamp
+    transactionHash
   }
 }
 ```
 
-## Burn
+**DALP integration**: When a vault receives deposits and mints receipt tokens,
+the `Mint` entity links the deposit transaction to the resulting token issuance.
+The vault reconciliation dashboard joins mints with deposit events to verify 1:1
+backing.
 
-Token burning event (supply decrease).
+### Burn
 
-### Fields
+**Business purpose**: Records token destruction at maturity (bond redemption),
+buybacks, or compliance actions (burning tokens from frozen accounts). Burn
+history proves supply reduction happened, preventing disputes about whether
+principal was repaid.
+
+#### Fields
 
 ```graphql
 type Burn @entity(immutable: true) {
@@ -304,48 +606,312 @@ type Burn @entity(immutable: true) {
 }
 ```
 
-### Usage example
+#### Usage example
+
+**Redemption tracking**: Verify bond principal was fully repaid at maturity.
 
 ```graphql
-query GetBurnHistory($token: Bytes!) {
-  burns(
-    where: { token: $token }
-    orderBy: blockTimestamp
-    orderDirection: desc
-  ) {
-    id
-    from {
+query GetRedemptionHistory($tokenId: Bytes!) {
+  token(id: $tokenId) {
+    totalSupply
+    maturityDate
+    burns(orderBy: blockTimestamp, orderDirection: desc) {
       id
+      from {
+        id
+      }
+      value
+      blockTimestamp
     }
-    value
-    blockTimestamp
   }
 }
 ```
 
+**Expected result**: After maturity date, total burns should equal original
+supply (remaining `totalSupply` near zero).
+
+**DALP integration**: When a DvP settlement completes a bond redemption
+(investor delivers bond token, receives denomination token), the settlement
+contract burns the bond. The `Burn` entity links the DvP transaction to the
+supply reduction, proving the bond was retired and can't be double-spent.
+
 ## Token statistics
 
-Token entities track key metrics automatically:
+Token entities track key metrics automatically in the subgraph mappings,
+eliminating the need for expensive on-chain queries or manual counting. These
+statistics update in real-time as events are indexed.
 
-- `holderCount` - Incremented on first balance, decremented when balance reaches
-  zero
-- `transferCount` - Incremented on every transfer
-- `mintCount` - Incremented on every mint
-- `burnCount` - Incremented on every burn
-- `totalSupply` - Updated on every mint/burn
+### Automated counters
 
-These statistics are maintained by subgraph mappings in
+| Metric          | Updated on                   | Business use case                                                   | Observability                                            |
+| --------------- | ---------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------- |
+| `holderCount`   | First balance / zero balance | Regulatory thresholds (e.g., &gt;500 holders = different SEC rules) | "Holder Growth" dashboard tracks over time               |
+| `transferCount` | Every transfer               | Trading volume analysis                                             | Alerts fire if count spikes (potential bot activity)     |
+| `mintCount`     | Every mint                   | Issuance frequency (detect unexpected mints)                        | "Supply Events" panel shows mint/burn ratio              |
+| `burnCount`     | Every burn                   | Redemption tracking (bonds should burn at maturity)                 | Alerts fire if burns occur before maturity (investigate) |
+| `totalSupply`   | Every mint/burn              | Current circulating supply (updates in real-time)                   | "Supply Drift" alerts fire if supply != expected value   |
+
+### Subgraph mappings
+
+These statistics are maintained by event handlers in
 [`kit/subgraph/src/token.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/src/token.ts).
+When a `Transfer` event is detected:
+
+1. Update `from` and `to` account balances
+2. If `to` balance changed from 0 → positive: increment `holderCount`
+3. If `from` balance changed to 0: decrement `holderCount`
+4. Increment `transferCount`
+5. If `from` is zero address: increment `mintCount` and update `totalSupply`
+6. If `to` is zero address: increment `burnCount` and update `totalSupply`
+
+**Why this matters**: Manual counting via GraphQL aggregations would timeout on
+large datasets. Pre-computed statistics enable instant dashboards and real-time
+alerts.
+
+## End-to-end workflow: bond issuance → transfer → redemption
+
+This workflow shows how token entities track a complete bond lifecycle,
+connecting smart contract events to DALP features.
+
+<Mermaid
+  chart={`flowchart TB
+    Issue(1. Issuer mints<br/>1M bond tokens)
+    Mint(Mint entity created<br/>totalSupply: 1M)
+    Balance1(TokenBalance created<br/>account: Treasury<br/>balance: 1M)
+    
+    Distribute(2. Treasury distributes<br/>to investors)
+    Transfer1(Transfer entities<br/>Treasury → Investors)
+    Balance2(TokenBalance updates<br/>multiple accounts)
+    
+    Trade(3. Investor sells<br/>via DvP settlement)
+    Freeze(frozenBalance increases<br/>during escrow)
+    Transfer2(Transfer entity<br/>Seller → Buyer)
+    DvP(DvP settlement completes<br/>atomic swap)
+    
+    Mature(4. Bond reaches<br/>maturity date)
+    Redeem(Investors redeem<br/>for denomination token)
+    Burn(Burn entities created<br/>totalSupply decreases)
+    Transfer3(Transfer events<br/>denomination → investors)
+    
+    Issue --> Mint --> Balance1
+    Balance1 --> Distribute --> Transfer1 --> Balance2
+    Balance2 --> Trade --> Freeze --> Transfer2 --> DvP
+    DvP --> Mature --> Redeem --> Burn --> Transfer3
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    
+    class Issue,Distribute,Trade,Mature primary
+    class Mint,Transfer1,Transfer2,Transfer3,Burn tertiary
+    class Balance1,Balance2,Freeze secondary
+    class DvP,Redeem quaternary
+`}
+/>
+
+**At each stage, token entities serve different DALP features**:
+
+1. **Issuance**: `Mint` entity proves authorized creation; `totalSupply` checked
+   against `cap`
+2. **Distribution**: `Transfer` entities create audit trail; `holderCount`
+   updated; yield schedules initialized
+3. **Trading**: `frozenBalance` escrows tokens in DvP; `Transfer` proves atomic
+   settlement
+4. **Redemption**: `Burn` entities reduce supply; `Transfer` of denomination
+   token completes payment
+
+## Cross-module integration
+
+Token entities don't exist in isolation—they're the foundation that other ATK
+modules build upon.
+
+### Compliance module
+
+**Connection**: Every token transfer queries the `compliance` contract reference
+to validate against rules (investor caps, jurisdiction restrictions, KYC
+status). The `TokenComplianceModule` entities link compliance rules to specific
+tokens.
+
+**Data flow**: `Transfer` attempted → Smart contract calls
+`token.compliance.canTransfer()` → Compliance checks identity registry →
+Transfer allowed/blocked → `Transfer` entity created (if allowed).
+
+**Observability**: "Compliance Rejection Rate" dashboard counts attempted
+transfers vs successful `Transfer` entities to identify problematic rules.
+
+### Yield schedules
+
+**Connection**: Yield distribution contracts scan `TokenBalance` entities to
+calculate pro-rata payments. The `balance` field determines each shareholder's
+entitlement.
+
+**Data flow**: Yield schedule triggers → Query `token.balances` at snapshot
+timestamp → Calculate `payment = yieldPool * (balance / totalSupply)` → Execute
+payments → New `Transfer` entities record distributions.
+
+**Observability**: "Yield Distribution" dashboard shows total paid vs total
+supply to verify 100% distribution.
+
+### Vault custody
+
+**Connection**: Vault deposit contracts mint receipt tokens (creating `Token`
+and `Mint` entities). Withdrawals burn receipt tokens (creating `Burn`
+entities). The token's `totalSupply` must match vault's underlying asset
+balance.
+
+**Data flow**: Deposit → Vault mints receipt token → `Mint` entity →
+`TokenBalance` updated. Withdrawal → Vault burns receipt token → `Burn` entity →
+`TokenBalance` reduced.
+
+**Observability**: "Vault Reconciliation" dashboard compares `token.totalSupply`
+(receipt tokens) vs vault's ERC-20 balance (underlying assets). Alerts fire on
+mismatch.
+
+### DvP settlement
+
+**Connection**: DvP settlement contracts escrow tokens by increasing
+`frozenBalance`, then execute atomic transfers creating paired `Transfer`
+entities (bond token one direction, payment token reverse).
+
+**Data flow**: DvP order → Escrow tokens (`frozenBalance++`) → Settlement
+executes → Two `Transfer` entities created in same tx → `frozenBalance`
+released.
+
+**Observability**: "DvP Settlement Latency" dashboard tracks time from escrow to
+final transfer. "Settlement Failures" panel counts frozen balances not released
+(investigate stuck orders).
+
+## Monitoring and observability
+
+Token entities feed multiple dashboards in ATK's observability stack (deployed
+via Helm charts). These dashboards turn raw entity data into actionable
+operational insights.
+
+### Key dashboards
+
+**Token Metrics** (Grafana):
+
+- `totalSupply` over time (detect unexpected mints/burns)
+- `holderCount` growth (track investor adoption)
+- `transferCount` by hour (identify trading patterns)
+- `cap` utilization percentage (warn before supply limit hit)
+
+**Frozen Balance Alerts** (Prometheus + Grafana):
+
+- Total `frozenBalance` across all tokens (high values = high DvP volume or
+  compliance holds)
+- Accounts with `isFrozen: true` (compliance investigations)
+- Frozen balance duration (detect stuck escrows &gt; 24 hours)
+
+**Transfer Volume** (Grafana):
+
+- Transfers per token per day (market surveillance)
+- Transfer `value` histogram (detect wash trading via identical amounts)
+- Cross-token transfer correlation (identify linked accounts)
+
+**Supply Reconciliation** (custom dashboard):
+
+- Compare `totalSupply` (from `Token` entity) vs sum of all
+  `TokenBalance.balance` values (should match exactly)
+- Compare mint count vs burn count (bonds should converge at maturity)
+- Vault receipt token supply vs underlying asset balance (1:1 ratio)
+
+### Sample Prometheus alerts
+
+```yaml
+# Alert if token supply drifts from expected value
+- alert: SupplyDrift
+  expr: abs(token_total_supply - token_expected_supply) > 1000
+  for: 5m
+  annotations:
+    summary: "Token {{ $labels.token_symbol }} supply mismatch"
+
+# Alert if frozen balance stuck for > 24h (possible DvP failure)
+- alert: StuckEscrow
+  expr: frozen_balance_duration_hours > 24
+  annotations:
+    summary: "Frozen balance on {{ $labels.account }} exceeds 24h"
+
+# Alert if transfer count spikes (potential bot activity)
+- alert: TransferSpike
+  expr: rate(token_transfer_count[5m]) > avg_over_time(token_transfer_count[1h]) * 3
+  annotations:
+    summary: "Transfer volume spike on {{ $labels.token_symbol }}"
+```
+
+**Why observability matters**: In production, token entities update thousands of
+times per day. Manual queries can't catch anomalies fast enough—automated
+dashboards and alerts turn subgraph data into operational intelligence.
+
+## Performance and indexing
+
+Token entities are optimized for query performance through strategic indexing
+and caching.
+
+### Entity count estimates
+
+**At scale** (1M tokens transferred, 10K investors, 100 tokens):
+
+- `Token`: 100 entities (low cardinality, fully cached)
+- `TokenBalance`: ~1M entities (high cardinality, indexed by `token.id` and
+  `account.id`)
+- `Transfer`: ~10M entities (immutable, indexed by `blockTimestamp` and
+  `transactionHash`)
+- `Mint`: ~10K entities (immutable, indexed by `token.id`)
+- `Burn`: ~5K entities (immutable, indexed by `token.id`)
+
+### Query optimization tips
+
+**Fast queries** (use indexed fields):
+
+- `token(id: "0x...")` — primary key lookup (instant)
+- `balances(where: { token: "0x..." })` — indexed foreign key (fast)
+- `transfers(where: { blockTimestamp_gte: X })` — indexed timestamp range (fast)
+
+**Slow queries** (avoid in hot paths):
+
+- `balances(where: { balance_gt: "1000" })` — full table scan (slow on 1M+
+  balances)
+- Aggregations like `sum(balance)` — not natively supported, use pre-computed
+  `totalSupply` instead
+
+**Pagination**: Always use `first` and `skip` when querying large entity sets
+like `transfers`. Fetching all transfers for a popular token (1M+ records) will
+timeout.
 
 ## See also
 
-- **[Investor entities](/docs/developer-guides/data-model/entity-investor)** -
-  Link token holders to user profiles
-- **[Compliance entities](/docs/developer-guides/data-model/entity-compliance)** -
-  Understand token transfer restrictions
-- **[Corporate action entities](/docs/developer-guides/data-model/entity-corporate-actions)** -
-  Dividends and voting for token holders
-- **[Data model overview](/docs/developer-guides/data-model/data-model-reference)** -
-  Complete data architecture
-- **[Contract reference](/docs/developer-guides/smart-contracts/contract-reference)** -
-  Token contract methods
+**Related entity documentation**:
+
+- [Investor entities](/docs/developer-guides/data-model/entity-investor) — Link
+  token holders to user profiles and KYC status
+- [Compliance entities](/docs/developer-guides/data-model/entity-compliance) —
+  Understand transfer restrictions and identity verification
+- [Corporate action entities](/docs/developer-guides/data-model/entity-corporate-actions)
+  — Dividends, voting, and other holder rights
+- [Data model overview](/docs/developer-guides/data-model/data-model-reference)
+  — Complete subgraph schema and entity relationships
+
+**Smart contract integration**:
+
+- [ERC-3643 token contracts](/docs/developer-guides/smart-contracts/contract-reference)
+  — On-chain token implementation that emits events indexed here
+- [Compliance module reference](/docs/architecture/smart-contracts/identity-compliance)
+  — Smart contract rules that `Token.compliance` enforces
+
+**DALP feature guides**:
+
+- [DvP settlement architecture](/docs/architecture/smart-contracts/addon-modules)
+  — How atomic swaps use `frozenBalance` for escrow
+- [Yield distribution system](/docs/architecture/smart-contracts/addon-modules)
+  — How yield schedules scan `TokenBalance` entities
+- [Vault custody workflows](/docs/architecture/smart-contracts/addon-modules) —
+  Receipt token minting and redemption flows
+
+**Operational guides**:
+
+- [Monitoring token metrics](/docs/developer-guides/deployment-ops/observability-monitoring)
+  — Using Grafana dashboards to track supply and transfers
+- [Troubleshooting frozen balances](/docs/user-guides/troubleshooting/assets) —
+  Diagnosing stuck DvP settlements

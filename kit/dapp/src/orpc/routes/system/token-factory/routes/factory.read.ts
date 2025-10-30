@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { theGraphMiddleware } from "@/orpc/middlewares/services/the-graph.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import * as z from "zod";
+import { z } from "zod";
 import { TokenFactoryDetailSchema } from "./factory.read.schema";
 
 /**

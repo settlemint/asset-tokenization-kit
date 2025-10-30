@@ -1,8 +1,13 @@
 ---
 title: Asset operations
 description:
-  Solutions for subscriptions, bonds, dividends, redemptions, and governance
-  voting problems
+  This guide covers troubleshooting for asset-specific operations including
+  token subscriptions, bond payments, dividend distributions, redemptions, and
+  governance voting. You'll learn how to diagnose and resolve issues unique to
+  each asset type, with specific attention to how operations integrate with DALP
+  lifecycle features like vaults, yield management, and DvP settlement. Use the
+  observability stack's compliance metrics panel and transaction dashboards to
+  identify which layer is blocking your operation.
 pageTitle: Asset-specific troubleshooting
 tags:
   [
@@ -16,441 +21,595 @@ tags:
   ]
 ---
 
-## Overview
-
-This guide covers troubleshooting for asset-specific operations including token
-subscriptions, bond payments, dividend distributions, redemptions, and
-governance voting. Learn how to resolve issues unique to each asset type.
-
-**Primary audience:** Investors, token holders **Related guides:**
-[Transaction Troubleshooting](/docs/user-guides/troubleshooting/transactions),
-[Compliance Troubleshooting](/docs/user-guides/troubleshooting/compliance),
-
-## How to use this guide
-
-1. **Identify asset type** - Determine if issue relates to subscriptions, bonds,
-   funds, or governance
-2. **Check eligibility** - Verify you meet requirements for the operation
-3. **Review asset status** - Check if asset is active, paused, or matured
-4. **Follow resolution steps** - Work through solutions for your scenario
-
-**Tip:** Always verify asset details and requirements before initiating
-operations.
-
-## Subscription issues
-
-### Cannot purchase tokens during subscription period
-
-**Symptoms:** Subscription button disabled, greyed out, or subscription
-transaction fails.
-
-**Solutions:**
-
-1. **Eligibility requirements:**
-   - Verify you have all required claims for asset
-   - Check eligibility matrix: **Account** &gt; **Eligible Assets**
-   - Common requirements:
-     - KYC verification
-     - Accredited investor status
-     - Jurisdiction eligibility
-   - Contact compliance to obtain missing claims
-
-2. **Subscription limits:**
-   - **Minimum not met:** Increase subscription amount above minimum
-   - **Maximum exceeded:** Reduce amount below per-investor limit
-   - **Offering oversubscribed:** Total offering may be fully subscribed
-   - Check subscription details page for limits
-
-3. **Payment issues:**
-   - Insufficient balance in payment token (USDC, USDT, etc.)
-   - Payment token not approved for platform spend
-   - Approve payment token: **Account** &gt; **Tokens** &gt; **Approve [Token]**
-   - Ensure approval amount covers subscription plus gas
-
-4. **Subscription timing:**
-   - Subscription period may have ended
-   - Check subscription start and end dates
-   - Early bird or tiers may have different timing
-
-**Verification:** Check token details page for subscription status, limits, and
-requirements.
-
-### Subscription transaction succeeded but tokens not received
-
-**Symptoms:** Payment deducted but security tokens not in wallet.
-
-**Solutions:**
-
-1. **Vesting period:**
-   - Tokens may be subject to vesting schedule
-   - Check subscription terms for vesting details
-   - Navigate to **Account** &gt; **Vesting** to see schedule
-
-2. **Distribution pending:**
-   - Issuer may distribute tokens after subscription closes
-   - Check subscription details for distribution date
-   - Wait for issuer to mint and distribute tokens
-
-3. **Compliance delay:**
-   - Final compliance checks may be in progress
-   - Issuer may be verifying all subscribers
-   - Contact issuer if delay &gt; expected distribution date
-
-**Verification:** Check transaction on blockchain explorer to confirm payment
-token transfer succeeded.
-
-## Bond and fixed income issues
-
-### Bond yield or coupon payment not received
-
-**Symptoms:** Expected payment not received on scheduled payment date.
-
-**Solutions:**
-
-1. **Eligibility check:**
-   - Verify you held tokens on **record date** (not payment date)
-   - Record date typically several days before payment date
-   - Check **Distribution History** for your eligibility status
-   - Tokens purchased after ex-date not eligible for current payment
-
-2. **Distribution timing:**
-   - Payment date does not mean instant payment
-   - Distribution may process later on payment date
-   - Check **Upcoming Distributions** for processing status
-   - Allow 24 hours from payment date
-
-3. **Distribution failed:**
-   - Check your address has verified OnchainID
-   - Ensure no compliance issues blocking transfer
-   - Verify issuer funded distribution wallet
-   - Check blockchain explorer for failed distribution transaction
-
-4. **Unclaimed distribution:**
-   - Some distributions require manual claim
-   - Navigate to **Account** &gt; **Unclaimed** and claim payment
-   - May have expiration period for claiming
-   - Claim promptly to avoid forfeiture
-
-**Verification:** Check blockchain explorer for distribution transaction to your
-address; verify payment token balance increased.
-
-### Cannot redeem bonds at maturity
-
-**Symptoms:** Redemption button disabled or redemption transaction fails.
-
-**Solutions:**
-
-1. **Maturity not reached:**
-   - Verify bond maturity date passed
-   - Check current date vs. maturity date on bond details
-   - Early redemption may not be allowed
-   - Check for early redemption penalties or restrictions
-
-2. **Redemption window:**
-   - Bonds may have specific redemption window after maturity
-   - Check bond prospectus for redemption terms
-   - Submit redemption request within allowed window
-   - Late redemption may have different process
-
-3. **Insufficient liquidity:**
-   - Bond issuer may lack reserves for redemption
-   - Redemption queued for processing when funds available
-   - Contact issuer for redemption timeline
-   - Check issuer announcements for liquidity updates
-
-4. **Compliance requirements:**
-   - Redemption requires same compliance as transfers
-   - Verify OnchainID verified and claims current
-   - Check no freeze or restrictions on account
-   - Ensure receiving address eligible
-
-**Note:** Redemption returns principal plus any final coupon payment; verify
-both amounts received.
-
-## Fund issues
-
-### Cannot redeem fund units
-
-**Symptoms:** Redemption button disabled, unavailable, or redemption request
-fails.
-
-**Solutions:**
-
-1. **Redemption schedule:**
-   - Funds typically have specific redemption windows (monthly, quarterly)
-   - Check fund prospectus for redemption schedule
-   - Submit redemption **request** during submission window
-   - Actual redemption executes later on redemption date
-
-2. **Redemption request vs. execution:**
-   - **Request window:** Period to submit redemption requests
-   - **Redemption date:** Date when redemption executes and payment made
-   - Note the difference; requests typically submitted days/weeks before
-     execution
-
-3. **Lock-up period:**
-   - Fund may have minimum holding period
-   - Check if you've held units for required duration
-   - Early redemption may incur penalties
-   - Verify lock-up period in fund terms
-
-4. **NAV calculation:**
-   - Redemption price based on Net Asset Value (NAV)
-   - NAV calculated on redemption date
-   - Price not known when submitting request
-   - Check fund details for NAV calculation frequency
-
-5. **Minimum holding requirement:**
-   - Some funds require minimum remaining balance
-   - Cannot redeem if it leaves balance below minimum
-   - Redeem all units instead of partial redemption
-   - Contact fund manager for exceptions
-
-**Tip:** Plan redemptions well in advance due to request windows and execution
-delays.
-
-### Fund NAV not updating or incorrect
-
-**Symptoms:** Net Asset Value shows stale or unexpected value.
-
-**Solutions:**
-
-1. **NAV calculation frequency:**
-   - NAV typically updated daily, weekly, or monthly
-   - Check fund details for calculation schedule
-   - Off-schedule days may show previous NAV
-   - Market closures affect calculation timing
-
-2. **Oracle delays:**
-   - NAV relies on price oracles for underlying assets
-   - Oracle updates may be delayed
-   - Wait for next scheduled update
-   - Check oracle status if persistent
-
-3. **Display issue:**
-   - Refresh page to get latest NAV
-   - Clear browser cache
-   - Verify on blockchain or fund manager site
-
-**Verification:** Compare platform NAV with fund manager's official NAV
-publication.
-
-## Governance and voting issues
-
-### Voting transaction fails or vote not counted
-
-**Symptoms:** Cannot submit vote on governance proposal or vote not reflected in
-tally.
-
-**Solutions:**
-
-1. **Voting eligibility:**
-   - Must hold tokens at **proposal creation block** (snapshot)
-   - Tokens acquired after proposal created have zero voting power
-   - Check **Voting Power** on proposal page
-   - Cannot retroactively gain voting power for active proposal
-
-2. **Already voted:**
-   - Can only vote once per proposal
-   - Cannot change vote after submission
-   - Check **Your Vote** section on proposal page
-   - Vote immutable once submitted
-
-3. **Proposal status:**
-   - Voting period may have ended
-   - Check proposal status: Active, Passed, Failed, Cancelled
-   - Cannot vote on closed proposals
-   - Verify proposal end time and current time
-
-4. **Voting power delegation:**
-   - If you delegated votes, you cannot vote directly
-   - Delegate votes on your behalf
-   - Check **Delegation** status on governance page
-   - Undelegate to vote yourself (only affects future proposals)
-
-**Note:** Delegation changes only apply to proposals created after delegation
+## Diagnostic approach for asset operations
+
+When an asset operation fails, the issue typically surfaces at one of three
+points: compliance verification (your identity claims don't meet requirements),
+timing constraints (you're outside the allowed window), or system state (the
+asset isn't ready or properly funded). ATK's observability dashboards surface
+these failures immediately, showing you exactly which check rejected your
+transaction before gas is consumed.
+
+Start by checking the **compliance metrics panel** in the observability stack.
+If a subscription button is greyed out, the dashboard will show which claim
+you're missing. If a bond redemption fails, the transaction dashboard reveals
+whether the issuer's vault has sufficient reserves. This unified visibility
+eliminates the guesswork that plagues fragmented tokenization systems.
+
+<Mermaid
+  chart={`flowchart TB
+    Start(Operation fails or blocked)
+    Check1{Check observability<br/>dashboard}
+    Compliance(Compliance layer<br/>rejection)
+    Timing(Timing window<br/>issue)
+    State(System state<br/>problem)
+    
+    ComplianceCheck[Review required claims<br/>in compliance panel]
+    TimingCheck[Verify dates and<br/>redemption windows]
+    StateCheck[Check vault funding<br/>and asset status]
+    
+    ComplianceFix[Obtain missing claims<br/>from compliance team]
+    TimingFix[Wait for correct<br/>window or period]
+    StateFix[Contact issuer to<br/>fund vault]
+    
+    Resolve(Operation succeeds)
+    
+    Start --> Check1
+    Check1 --> Compliance
+    Check1 --> Timing
+    Check1 --> State
+    
+    Compliance --> ComplianceCheck
+    Timing --> TimingCheck
+    State --> StateCheck
+    
+    ComplianceCheck --> ComplianceFix
+    TimingCheck --> TimingFix
+    StateCheck --> StateFix
+    
+    ComplianceFix --> Resolve
+    TimingFix --> Resolve
+    StateFix --> Resolve
+    
+    style Start fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Check1 fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Compliance fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Timing fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style State fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Resolve fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+`}
+/>
+
+The diagram above shows your diagnostic path. Every failed operation lands in
+one of these three categories, and the observability stack tells you which one
+within seconds.
+
+## Subscription failures: when you can't purchase tokens
+
+Subscription problems usually mean either you're not eligible, you're trying to
+buy an amount outside the configured limits, or your payment token isn't
+approved. The platform's subscription UI disables the purchase button when it
+detects these conditions, saving you failed transactions.
+
+### Eligibility verification through OnchainID claims
+
+ATK's compliance-by-design architecture means every security token checks your
+OnchainID claims before allowing transfers. Navigate to **Account** → **Eligible
+Assets** to see the eligibility matrix. Each row shows an asset and which claims
+it requires. Green checkmarks mean you have that claim; red Xs mean you need to
+obtain it from the compliance team.
+
+Common claim requirements include KYC verification (CLAIM_TOPIC_KYC), accredited
+investor status (CLAIM_TOPIC_ACCREDITED_INVESTOR), and jurisdiction eligibility
+(CLAIM_TOPIC_JURISDICTION). If you're missing any required claim, the token
+contract will reject your subscription attempt at the smart contract level. This
+ex-ante control prevents non-compliant transactions from ever executing, which
+is precisely how DALP platforms eliminate the compliance gaps that plague
+off-chain verification systems.
+
+Check the **compliance metrics panel** in your observability dashboard. It shows
+real-time claim status for your address and flags any claims approaching
+expiration. Claims typically expire after 12 months, requiring re-verification.
+The dashboard alerts you 30 days before expiration so you can renew without
+interrupting your trading ability.
+
+### Subscription limits and offering constraints
+
+Each security token offering configures minimum and maximum subscription
+amounts. Attempting to purchase less than the minimum triggers a "Subscription
+limit not met" error. Trying to exceed the per-investor maximum gets blocked
+with "Subscription limit exceeded." These limits appear on the subscription
+details page before you initiate purchase.
+
+Total offering caps also matter. If 95 other investors have already subscribed
+for the full offering amount, your subscription attempt will fail with "Offering
+oversubscribed." The subscription UI updates in real-time showing remaining
+allocation, but during high-demand offerings you might see availability
+disappear between loading the page and submitting your transaction. Check the
+transaction dashboard to confirm whether your subscription transaction reverted
+due to oversubscription or another cause.
+
+### Payment token approval and DvP mechanics
+
+ATK uses atomic DvP (delivery versus payment) settlement where your payment
+token and the security token exchange simultaneously or both revert. This
+requires two preconditions: you must hold sufficient payment token balance, and
+you must have approved the token contract to spend that amount.
+
+Navigate to **Account** → **Tokens** to see your payment token balances. The
+approval step is often overlooked. ERC-20 tokens require explicit approval
+before another contract can transfer them on your behalf. Click **Approve
+[Token]** for the payment token you're using (USDC, USDT, or institutional
+stablecoin). Approve an amount covering your subscription amount plus estimated
+gas costs.
+
+The DvP settlement coordinator contract handles the atomic swap. If either leg
+fails, both revert. This eliminates the counterparty risk inherent in
+traditional systems where payment clears days before security delivery. The
+transaction dashboard shows DvP settlement metrics including success rate,
+average settlement time, and failure reasons. In production deployments, ATK
+achieves 99%+ first-attempt DvP success for properly approved transactions.
+
+### Timing and subscription windows
+
+Offerings have defined subscription periods with start and end dates. Attempting
+to purchase before the opening date gets rejected with "Subscription period not
+started." After the closing date, you'll see "Subscription period ended."
+
+Some offerings use tiered structures with early-bird pricing or different terms
+for different periods. The subscription UI shows which tier is currently active
+and when it ends. If you're rushing to catch an early-bird tier, check the
+blockchain's current block timestamp against the tier end time. Network time is
+what matters, not your local system clock.
+
+## Post-subscription: when tokens don't appear immediately
+
+You successfully submitted a subscription transaction, saw it confirmed on the
+blockchain explorer, and your payment token was deducted. But the security
+tokens aren't in your wallet. Before assuming something broke, understand the
+three legitimate reasons for delayed token delivery.
+
+### Vesting schedules and cliff periods
+
+Many security offerings include vesting schedules where tokens are distributed
+over time rather than immediately. This is especially common for equity
+offerings to employees or early investors. Your subscription confirmation page
+shows if vesting applies.
+
+Navigate to **Account** → **Vesting** to see your schedule. Typical vesting uses
+a one-year cliff (no tokens for 12 months) followed by monthly distribution over
+36-48 months. During the cliff, your subscription is recorded and your payment
+was accepted, but tokens won't appear until the cliff expires.
+
+The vesting dashboard shows upcoming distribution dates and amounts. ATK's yield
+management system automates these distributions, calculating pro-rata amounts
+and executing transfers on schedule. No spreadsheets, no manual processing. The
+issuer configured the vesting schedule once during token deployment, and the
+smart contracts enforce it automatically.
+
+### Batch distribution after subscription closes
+
+Some issuers process subscriptions as a batch after the offering closes rather
+than minting tokens for each subscription individually. This approach reduces
+gas costs and allows the issuer to verify all subscribers before minting.
+
+The subscription details page displays the expected distribution date. This
+might be several days or weeks after the subscription period ends. During this
+window, your payment has been received but tokens haven't been minted yet. Check
+the issuer's announcements for distribution status updates.
+
+When distribution occurs, the issuer executes a batch mint operation through
+their SUPPLY_MANAGEMENT_ROLE wallet. The transaction dashboard shows mint events
+with timestamps. If the distribution date has passed and you still haven't
+received tokens, verify on the blockchain explorer whether the issuer executed
+the mint transaction. If they did but you didn't receive tokens, contact the
+issuer as there may have been an issue with the subscriber address list.
+
+### Final compliance verification delays
+
+Some regulated offerings require additional compliance verification after
+subscription but before token distribution. The compliance team might be
+verifying documentation, running sanctions checks, or confirming accreditation
+status with third-party providers.
+
+The compliance metrics panel shows if your subscription is flagged for
+additional review. Issuers typically complete these checks within 3-5 business
+days of the subscription period closing. If your subscription is pending review
+beyond the expected timeline, contact the compliance team directly. Provide your
+wallet address, the subscription transaction hash, and the token contract
+address.
+
+## Bond coupon payments and yield distribution
+
+Bond tokens in ATK use the yield management addon to automate interest payments.
+When a scheduled coupon payment date arrives, the yield contract calculates
+entitlements for all token holders at the record date and makes funds available
+for claiming. Understanding this flow helps diagnose why you might not have
+received an expected payment.
+
+### Record dates versus payment dates
+
+The **record date** determines who receives the payment. The **payment date** is
+when the issuer funds the distribution and makes it available for claiming.
+These are different dates, and confusion between them causes most "missing
+payment" reports.
+
+If you purchased bond tokens after the record date, you will not receive that
+period's coupon payment even if you hold tokens on the payment date. The
+previous holder, who owned tokens on the record date, is entitled to that
+payment. Check the **Distribution History** page to see your eligibility status
+for each scheduled payment. Green indicates you held tokens at record date; red
+means you were not a holder.
+
+Record dates typically fall 5-7 days before payment dates. This mirrors
+traditional bond market conventions. The bond details page lists all upcoming
+payment dates with their corresponding record dates. Set calendar reminders for
+record dates if you're considering selling bonds, as selling between record date
+and payment date means you forfeit the payment you're entitled to.
+
+### Automated yield calculation through smart contracts
+
+ATK's yield addon calculates coupon entitlements automatically based on token
+holdings at the record date snapshot. The smart contract queries the token
+contract for all holder addresses and balances at the record block, applies the
+coupon rate, and creates a claim record for each holder.
+
+This eliminates the manual spreadsheet process that plagues traditional bond
+operations. No export to Excel, no pro-rata calculations, no risk of missing a
+holder or miscalculating amounts. The calculation is deterministic and auditable
+on-chain.
+
+The yield dashboard (available in your observability stack) shows upcoming
+payments, calculation status, and fund availability. When the payment date
+arrives, check this dashboard to confirm the issuer has funded the distribution
+vault. If the vault balance is zero, payments cannot be claimed even though your
+entitlement is calculated. Contact the issuer to fund the vault.
+
+### Claiming distributions versus automatic transfers
+
+Some bond tokens automatically transfer coupon payments to holder addresses on
+the payment date. Others require manual claiming where you initiate a
+transaction to withdraw your entitlement from the yield contract. The bond
+prospectus specifies which mechanism applies.
+
+For manual-claim bonds, navigate to **Account** → **Unclaimed Distributions** to
+see pending payments. Each row shows the bond token, payment date, amount, and
+expiration deadline. Click **Claim** to initiate the withdrawal transaction. Be
+aware that some bonds impose claim expiration periods (commonly 90 days from
+payment date) after which unclaimed funds may be forfeited back to the issuer.
+
+The observability stack's transaction dashboard tracks claim success rates and
+processing times. If your claim transaction reverts, the error reason will
+appear in the dashboard. Common causes include insufficient vault funding
+(issuer hasn't deposited payment tokens), expired claim period, or frozen
+account due to compliance issues.
+
+## Bond redemption at maturity
+
+When a bond reaches its maturity date, holders can redeem their tokens for
+principal repayment plus any final coupon payment. The redemption process uses
+ATK's vault-based custody and DvP settlement to ensure atomic exchange: your
+bond tokens are burned and payment tokens are transferred in a single
 transaction.
 
-### Delegation not working or delegate cannot vote
+### Maturity date verification and redemption windows
 
-**Symptoms:** Delegated voting power not showing for delegate.
+First, confirm the maturity date has actually passed. The bond details page
+shows maturity date and a countdown timer. Blockchain time (block timestamp) is
+authoritative, not your local system clock. Early redemption attempts before
+maturity will revert with "Maturity date not reached."
 
-**Solutions:**
+Some bonds configure specific redemption windows after maturity rather than
+allowing immediate redemption. For example, a bond might mature on January 1 but
+only allow redemptions during January 15-31. This gives the issuer time to
+prepare liquidity. Check the bond prospectus for redemption window terms.
+Attempting to redeem outside the allowed window triggers a revert.
 
-1. **Delegation timing:**
-   - Delegation only applies to proposals created after delegation transaction
-   - Existing proposals use snapshot before delegation
-   - Wait for new proposals to see delegation effect
+The redemption UI shows whether the current date falls within an allowed
+redemption period. If you're outside the window, the UI displays the next
+opening date. Late redemption (attempting to redeem months or years after
+maturity) may have different procedures, so contact the issuer if you've missed
+the primary redemption window.
 
-2. **Self-delegation:**
-   - By default, voting power self-delegated
-   - Explicit delegation to another address overrides this
-   - Verify delegation transaction confirmed
+### Vault funding and liquidity constraints
 
-3. **Delegate address:**
-   - Ensure correct delegate address used
-   - Typo in address delegates to wrong party
-   - Check delegation status on governance page
+ATK's vault system holds the issuer's redemption reserves. When you initiate
+redemption, the vault must contain sufficient payment tokens to cover your
+redemption amount (principal plus final coupon). If the vault is underfunded,
+your redemption transaction will revert with "Insufficient vault balance."
 
-4. **Undelegate process:**
-   - To vote yourself, undelegate (re-delegate to self)
-   - Submit undelegate transaction
-   - Wait for confirmation
-   - Only affects future proposals
+Check the bond details page to see the vault's current funding status. The
+observability dashboard shows vault balance, total outstanding bond principal,
+and funding ratio. A funding ratio below 100% means the issuer hasn't fully
+reserved for all outstanding bonds.
 
-**Verification:** Check governance page for current delegation status and voting
-power distribution.
+Vault funding is the issuer's responsibility. If you encounter insufficient
+funds, contact the issuer's treasury operations team. They need to transfer
+payment tokens to the vault address. Once funded, you can retry your redemption
+immediately. The vault dashboard tracks funding events so you can see when the
+issuer has deposited reserves.
 
-## Dividend and distribution issues
+Enterprise issuers typically maintain 105-110% funding ratios to ensure
+redemptions never fail due to liquidity. If you're evaluating a bond offering,
+check the issuer's vault funding policy and historical funding ratios in the
+observability metrics. Consistent 100%+ funding demonstrates operational
+maturity.
 
-### Dividend not received or amount incorrect
+### Compliance requirements for redemption
 
-**Symptoms:** Expected dividend payment missing or lower than expected.
+Redemptions are treated as token transfers (from your address to the burn
+address) and therefore enforce the same compliance rules as secondary transfers.
+Even though you're destroying the tokens, your OnchainID must have valid,
+current claims meeting the token's requirements.
 
-**Solutions:**
+If your KYC claim expired after you purchased the bond but before maturity, the
+redemption will fail with "Compliance check failed." Navigate to **Account** →
+**Claims** to verify all required claims are current. Renew any expired claims
+through the compliance team before attempting redemption.
 
-1. **Eligibility verification:**
-   - Check you held shares on **record date**
-   - Purchased after ex-dividend date not eligible
-   - Review **Distribution History** for eligibility
-   - Verify holding quantity on record date
+Account freezes also block redemptions. If the compliance team has frozen your
+address due to sanctions screening or court order, you cannot redeem until the
+freeze is lifted. The compliance metrics panel shows your freeze status. Contact
+the compliance team to resolve the underlying issue.
 
-2. **Distribution calculation:**
-   - Dividend per share × shares held on record date
-   - Partial period ownership may result in proportional payment
-   - Check distribution announcement for per-share amount
-   - Verify your calculation matches
+## Fund redemptions and nAV-based pricing
 
-3. **Tax withholding:**
-   - Some jurisdictions withhold taxes from dividends
-   - Net payment lower than gross dividend
-   - Check distribution details for withholding information
-   - Contact issuer for tax documentation
+Fund tokens represent units in investment funds with variable net asset value
+(NAV). Unlike bonds with fixed redemption prices, fund redemptions settle at the
+NAV calculated on the redemption date. This creates complexity around timing and
+pricing that differs from other asset types.
 
-4. **Claim requirement:**
-   - Some dividends require manual claim
-   - Check **Account** &gt; **Unclaimed Distributions**
-   - Claim within expiration period
-   - Unclaimed dividends may be forfeited after deadline
+### Redemption request windows versus execution dates
 
-**Verification:** Check blockchain explorer for dividend transaction; verify
-token increase in your wallet.
+Most funds operate on a schedule where you submit a redemption request during a
+submission window, and the actual redemption executes days or weeks later on a
+redemption date. This two-phase process is standard in traditional fund
+operations and ATK preserves it for regulatory consistency.
 
-## Error messages reference
+For example, a monthly-redemption fund might accept redemption requests from the
+25th-30th of each month, with execution on the 15th of the following month. If
+you try to submit a request on the 31st, the UI will reject it and show the next
+submission window opening date. If you try to submit on the 10th, you're too
+early for that month's redemption cycle.
 
-### "Subscription limit exceeded"
+The fund details page displays the redemption schedule with upcoming submission
+windows and execution dates. Add these to your calendar if you're planning to
+exit the fund. Missing a submission window means waiting until the next cycle,
+which could be a month or quarter depending on the fund's redemption frequency.
 
-**Meaning:** Attempting to subscribe for more than allowed per investor or total
-offering amount.
+This is where understanding DALP's unified lifecycle platform becomes crucial.
+In fragmented systems, you'd be coordinating redemption requests through one
+vendor, waiting for NAV calculation from another vendor, and tracking settlement
+through a third. ATK handles the entire flow within one platform, with the
+observability dashboard showing exactly which phase your redemption is in.
 
-**Solution:** Reduce subscription amount below limit or wait if offering not yet
-fully subscribed.
+### NAV calculation timing and oracle dependencies
 
-### "Insufficient payment token balance"
+Net asset value is calculated based on the underlying assets held by the fund.
+For equity funds, this requires current prices for all holdings. For bond funds,
+it includes accrued interest and current valuations. ATK funds typically connect
+to price oracles (Chainlink, Pyth, or institutional data providers) to obtain
+real-time pricing.
 
-**Meaning:** Not enough payment token (USDC, USDT, etc.) to complete
-subscription.
+The fund details page shows the NAV calculation schedule (daily, weekly,
+monthly) and the last update time. If the NAV appears stale, check whether the
+current date falls on a scheduled calculation date. Weekends and holidays
+typically don't trigger updates unless the fund explicitly operates on a 24/7
+schedule.
 
-**Solution:** Add payment token to wallet and retry subscription.
+Oracle delays can cause NAV staleness. The observability dashboard includes an
+oracle status panel showing the last update time for each price feed the fund
+depends on. If a critical oracle hasn't updated recently, the NAV calculation
+might be paused waiting for fresh data. This is a safety mechanism preventing
+the fund from calculating with stale prices.
 
-### "Redemption window closed"
+When you submit a redemption request, the price you'll receive is the NAV
+calculated on the redemption date, not the NAV displayed when you submitted the
+request. Your redemption is priced "forward" at the next calculation. This
+protects the fund from arbitrage where investors might exploit stale NAVs. Plan
+your redemption strategy accordingly, understanding that the settlement price is
+unknown at request time.
 
-**Meaning:** Attempting to submit redemption request outside allowed window.
+### Lock-up periods and minimum holding requirements
 
-**Solution:** Wait for next redemption window; check fund calendar for dates.
+Many funds impose lock-up periods where tokens cannot be redeemed for a minimum
+holding duration after purchase. This is especially common in private equity
+funds, real estate funds, and other illiquid strategies. Your fund prospectus
+specifies the lock-up term (commonly 6-12 months).
 
-### "Tokens locked"
+The fund details page shows whether your specific holdings are subject to
+lock-up and when the lock-up expires. Each purchase of fund units might have its
+own lock-up expiration, so if you bought units in multiple tranches, some might
+be redeemable while others remain locked.
 
-**Meaning:** Tokens subject to lock-up period and cannot be redeemed or
-transferred.
+Attempting to redeem locked tokens triggers a "Tokens locked" error. The error
+message includes the unlock date. Mark this date on your calendar and retry
+redemption afterward. Some funds allow early redemption with penalties
+(typically forfeiting 5-10% of NAV). If your fund offers this option, the
+redemption UI will present a penalty-adjusted redemption amount and require
+explicit confirmation before proceeding.
 
-**Solution:** Wait until lock-up period expires; check token details for unlock
-date.
+Minimum holding requirements prevent you from reducing your position below a
+threshold (e.g., 1,000 units minimum). If you hold 1,500 units with a 1,000
+minimum, you cannot redeem 600 units as it would leave you with 900. The
+redemption UI enforces this by either rejecting partial redemptions that violate
+the minimum or requiring full redemption of all units. Contact the fund manager
+if you need an exception to the minimum holding policy.
 
-### "No voting power"
+## Governance voting and proposal participation
 
-**Meaning:** You held no tokens at proposal creation block.
+Governance tokens grant holders the right to vote on protocol proposals,
+parameter changes, or treasury spending decisions. ATK's governance module
+implements snapshot-based voting where voting power is determined at the block
+when the proposal is created, not when you cast your vote.
 
-**Solution:** Cannot vote on this proposal; will have power for future proposals
-if holding tokens.
+### Snapshot timing and voting power calculation
 
-### "Not eligible for distribution"
+When a governance proposal is created, the smart contract records the current
+block number as the snapshot block. Your voting power for that proposal equals
+your token balance at that specific block. Tokens acquired after the snapshot
+block give you zero voting power for that proposal, even if you hold them when
+you try to vote.
 
-**Meaning:** Did not hold tokens on record date for distribution.
+This prevents the same tokens from being used to vote multiple times by
+transferring them between addresses. It's a standard mechanism in on-chain
+governance, but it surprises users who expect their current balance to determine
+voting power.
 
-**Solution:** No action possible; must hold tokens on record date for future
-distributions.
+The proposal details page shows the snapshot block and your voting power for
+that specific proposal. If it shows zero, either you held no tokens at snapshot
+time or you had delegated your voting power to someone else. The governance page
+includes a voting power breakdown showing your self-delegated power versus power
+delegated to others.
 
-## Getting help
+If you're planning to participate in governance, hold tokens before proposals
+are created. Many protocols announce upcoming proposals days in advance, giving
+you time to acquire tokens and ensure eligibility. Set up observability alerts
+for new governance proposals so you can verify your voting power immediately
+after proposal creation.
 
-If asset-specific issues persist:
+### Vote delegation mechanics and timing
 
-**Gather information:**
+Token holders can delegate their voting power to another address without
+transferring the actual tokens. This allows passive holders to give voting power
+to engaged community members or governance specialists. Delegation is
+unidirectional (you delegate to someone, they don't delegate back) and affects
+all future proposals until you undelegate or redelegate.
 
-- Asset/token name and contract address
-- Operation attempting (subscribe, redeem, vote, etc.)
-- Your wallet address and token balance
-- Transaction hash if transaction submitted
-- Relevant dates (record date, maturity, etc.)
-- Error messages received
+The key constraint: delegation only applies to proposals created after the
+delegation transaction confirms. Existing proposals continue using the snapshot
+from before delegation. If you delegate today, proposals from yesterday remain
+unaffected.
 
-**Contact appropriate team:**
+To delegate, navigate to **Governance** → **Delegation** and enter the delegate
+address. Confirm the transaction and wait for confirmation. The delegate now
+votes with their own tokens plus any power delegated to them. You cannot vote
+directly while your power is delegated; attempting to vote triggers "Voting
+power delegated" error.
 
-- **Subscription issues:** Token issuer sales team
-- **Bond/dividend payments:** Issuer operations team
-- **Redemption issues:** Fund manager or issuer
-- **Voting issues:** Governance team or platform support
+To reclaim voting power, undelegate by delegating to your own address
+(self-delegation). This takes effect for proposals created after the undelegate
+transaction. You cannot retroactively undelegate to vote on an active proposal.
+The observability dashboard's governance metrics track delegation changes and
+show how voting power is distributed across the community.
 
-**For payment issues:**
+### Finality and vote immutability
 
-- Check distribution announcements first
-- Verify your eligibility on record date
-- Wait 24 hours from payment date before contacting
-- Provide transaction hash of your token holding on record date
+Once you submit a vote transaction, it's permanent. You cannot change your vote
+after submission. This prevents vote manipulation and ensures the tally remains
+consistent throughout the voting period.
 
-**Response times:**
+The proposal details page shows your vote status: not voted, voted for, voted
+against, or abstained. If you've already voted, the voting buttons are disabled
+and display your recorded choice. The blockchain explorer shows the vote
+transaction timestamp and your chosen option.
 
-- Subscription questions: 4-8 business hours
-- Payment inquiries: 1-2 business days
-- Redemption processing: Varies by asset (check prospectus)
-- Voting issues: 2-4 business hours during voting period
+Proposal status transitions matter. You can only vote during the "Active" voting
+period. Once a proposal moves to "Passed," "Failed," or "Cancelled" status,
+voting is closed. Attempting to vote on a closed proposal reverts with "Proposal
+not active."
 
-## Preventive best practices
+The observability dashboard tracks governance participation rates, vote
+distribution, and proposal outcomes. Administrators can see which proposals
+generated high engagement and which addresses consistently participate. This
+data helps optimize proposal timing and communication strategies.
 
-**Subscription planning:**
+## Error message directory and quick resolution paths
 
-- Review eligibility requirements before subscription period
-- Obtain required claims early
-- Approve payment tokens before subscription opens
-- Submit subscriptions early to avoid oversubscription
+ATK's error messages follow a consistent format indicating which layer rejected
+your operation. Understanding these patterns accelerates troubleshooting.
 
-**Distribution tracking:**
+**Compliance layer errors** indicate missing claims or account restrictions:
 
-- Note record dates and ex-dates on calendar
-- Verify token holdings before record date
-- Check for unclaimed distributions regularly
-- Claim distributions promptly
+- "Compliance check failed" → Check required claims in compliance metrics panel
+- "Address frozen" → Contact compliance team to resolve freeze reason
+- "Claim expired" → Renew claims through compliance verification process
 
-**Redemption planning:**
+**Timing layer errors** indicate you're outside allowed windows:
 
-- Understand redemption windows and schedules
-- Submit requests during submission windows
-- Plan for execution delays
-- Keep claims current for redemption
+- "Subscription period ended" → Wait for next offering or secondary market
+- "Redemption window closed" → Check fund calendar for next window
+- "Voting period ended" → Cannot vote on closed proposals
 
-**Governance participation:**
+**State layer errors** indicate system or configuration issues:
 
-- Hold tokens before proposal creation for voting power
-- Vote early in voting period
-- Understand delegation implications
-- Monitor governance calendar
+- "Insufficient vault balance" → Issuer needs to fund vault
+- "Offering oversubscribed" → Total allocation exhausted
+- "Tokens locked" → Wait for lock-up expiration date
 
-**Record keeping:**
+**Payment layer errors** indicate DvP settlement failures:
 
-- Save subscription confirmations
-- Record distribution amounts and dates
-- Keep redemption requests and confirmations
-- Screenshot voting confirmations
+- "Insufficient payment token balance" → Add funds to wallet
+- "Payment token not approved" → Approve token spending
 
-By planning ahead and understanding asset-specific requirements, you'll minimize
-issues and maximize successful operations.
+The observability dashboard consolidates these errors into a **failed operations
+panel** showing all recent revert reasons, affected users, and resolution
+status. Administrators monitor this panel to identify systemic issues (e.g.,
+vault underfunding affecting multiple users) versus individual problems (one
+user missing a required claim).
+
+## Preventive strategies using observability metrics
+
+The best troubleshooting is preventing issues before they occur. ATK's
+observability stack provides predictive monitoring that flags potential problems
+days or weeks in advance.
+
+**Claim expiration alerts** notify you 30 days before your OnchainID claims
+expire. Renew claims proactively to avoid mid-transaction failures. The
+compliance metrics panel shows all claim expiration dates for your address.
+
+**Vault funding monitors** track issuer reserve ratios. If a bond issuer's vault
+funding drops below 100%, the dashboard alerts administrators to deposit
+reserves before redemptions start failing. Investors can see public vault
+metrics and choose bonds from issuers with strong funding histories.
+
+**Redemption window reminders** integrate with the platform's calendar. Enable
+notifications for upcoming fund redemption submission windows so you never miss
+a cycle. The dashboard shows your notification preferences and calendar
+subscriptions.
+
+**Governance participation tracking** shows which proposals you're eligible to
+vote on and when voting periods end. Enable alerts for new proposals so you can
+verify voting power and participate early in the voting period.
+
+This proactive monitoring is a core DALP differentiator. Fragmented platforms
+leave users to coordinate these checks across multiple vendors' dashboards.
+ATK's unified observability stack surfaces everything in one place, with
+intelligent alerting that prevents issues rather than just reporting them after
+they occur.
+
+## Escalation and support workflows
+
+When self-service troubleshooting doesn't resolve your issue, escalate to the
+appropriate team with complete diagnostic information.
+
+**Information to gather before contacting support:** Document your wallet
+address, the specific asset (token name and contract address), the operation you
+attempted, any transaction hashes from failed attempts, error messages from the
+UI and blockchain explorer, and relevant dates (record dates, maturity dates,
+snapshot blocks). Screenshots of the observability dashboard showing your
+compliance status or vault funding are especially helpful.
+
+**Escalation paths by issue type:** For subscription issues, contact the
+issuer's sales or investor relations team. They can verify offering status and
+check subscription eligibility. For bond coupon or dividend payments, reach out
+to the issuer's operations or treasury team with your distribution entitlement
+calculation and wallet address. Redemption problems go to the fund manager or
+issuer operations, including documentation of NAV at request time versus
+execution time. Governance voting issues should be directed to the protocol's
+governance coordinator or community manager, including your snapshot block
+voting power.
+
+**Expected response times:** Standard support requests receive responses within
+4-8 business hours. Payment inquiries (missing coupon or dividend) are handled
+within 1-2 business days, including time for the issuer to verify vault funding
+and distribution execution. Urgent issues during active voting periods get
+priority attention within 2-4 hours. Critical problems affecting multiple users
+(such as systemic vault underfunding) trigger immediate escalation to platform
+operations.
+
+The observability dashboard includes a **support ticket tracker** showing open
+issues, response times, and resolution status. Administrators monitor support
+metrics to identify recurring problems and prioritize platform improvements.
+This feedback loop helps ATK continuously refine user experience and operational
+reliability.

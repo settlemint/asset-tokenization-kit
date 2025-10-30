@@ -6,7 +6,7 @@
  * Designed to support the asset tokenization platform's regulatory requirements.
  * @module ResidencyStatusValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Tuple of valid residency status values for type-safe iteration.

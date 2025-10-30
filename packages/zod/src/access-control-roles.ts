@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 import { accountArray } from "./account";
 import { ethereumAddress } from "./ethereum-address";
 import { ethereumHex } from "./ethereum-hex";

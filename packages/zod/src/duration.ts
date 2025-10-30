@@ -6,7 +6,7 @@
  * All durations are expressed in milliseconds for precision.
  * @module DurationValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Creates a Zod schema that validates duration values in milliseconds.

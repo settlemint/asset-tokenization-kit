@@ -18,7 +18,7 @@ import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockch
 import { systemRouter } from "@/orpc/procedures/system.router";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import type { VariablesOf } from "@settlemint/sdk-thegraph";
-import * as z from "zod";
+import { z } from "zod";
 import {
   EntityListInputSchema,
   EntityListOutputSchema,
