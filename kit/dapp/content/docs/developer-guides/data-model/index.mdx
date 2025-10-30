@@ -295,11 +295,9 @@ bun run db:generate  # Generate migration SQL from schema changes
 bun run db:migrate   # Apply migrations to the database
 ```
 
-For rapid prototyping in local environments, `bun run db:push` applies schema
-changes directly without generating migration files, but this should never be
-used in production environments. The observability stack monitors migration
-status and database schema version to detect drift between deployed
-environments.
+The observability stack monitors migration status and database schema version
+to detect drift between deployed environments. Always use migrations in
+production to maintain schema consistency and enable rollback capabilities.
 
 Key schema files:
 
@@ -322,10 +320,10 @@ Subgraph schema changes require a multi-step deployment process:
 cd kit/subgraph
 # 1. Edit schema.graphql with new entities or fields
 # 2. Generate TypeScript types for mapping handlers
-bun run subgraph:codegen
+bun run codegen
 # 3. Update event handlers in kit/subgraph/src/ to populate new fields
 # 4. Deploy updated subgraph
-bun run deploy
+bun run publish
 ```
 
 Unlike database migrations which preserve existing data, subgraph redeployments
