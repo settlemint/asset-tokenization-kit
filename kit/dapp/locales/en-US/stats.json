@@ -126,6 +126,15 @@
         "description": "You'll see your portfolio value here once you receive your first assets"
       }
     },
+    "activeClaims": {
+      "title": "Active claims",
+      "description": "Track how many identity claims are active",
+      "label": "Active claims",
+      "empty": {
+        "title": "No claims yet",
+        "description": "Active claims will appear here once you issue them"
+      }
+    },
     "portfolio": {
       "summary": {
         "title": "Portfolio Summary",
@@ -161,6 +170,9 @@
     }
   },
   "title": "Statistics",
+  "fromLastWeek": "from last week",
+  "fromLastMonth": "from last month",
+  "fromLastYear": "from last year",
   "widgets": {
     "assets": {
       "empty": "No assets yet",
