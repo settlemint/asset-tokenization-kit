@@ -148,6 +148,9 @@ export function AddTopicDialog({
                 <field.TextField
                   label={t("claimTopics.add.fields.signature.label")}
                   required={true}
+                  placeholder={t(
+                    "claimTopics.add.fields.signature.placeholder"
+                  )}
                   description={t(
                     "claimTopics.add.fields.signature.description"
                   )}

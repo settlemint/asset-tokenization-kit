@@ -46,7 +46,8 @@
         },
         "signature": {
           "label": "Claim data ABI types",
-          "description": "Claim data ABI types for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)"
+          "description": "Enter Solidity ABI types (optionally with param names), comma-separated. No function name, no parentheses. Examples: string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
+          "placeholder": "string claim"
         }
       },
       "verification": {
@@ -69,7 +70,8 @@
         },
         "signature": {
           "label": "Claim data ABI types",
-          "description": "Claim data ABI types for claim verification. Must follow the format: functionName(parameterTypes). E.g., hasLicense(address,bytes32)",
+          "description": "Enter Solidity ABI types (optionally with param names), comma-separated. No function name, no parentheses. Examples: string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
+          "placeholder": "string claim",
           "current": "Current: {{signature}}"
         }
       },
@@ -79,7 +81,9 @@
         "updating": "Updating..."
       },
       "validation": {
-        "signatureChanged": "New signature must be different from current signature"
+        "signatureChanged": "New signature must be different from current signature",
+        "noParentheses": "Remove parentheses; use a comma-separated type list.",
+        "noFunctionStyle": "Remove function name; use type, type, ..."
       }
     },
     "toast": {

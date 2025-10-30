@@ -18,12 +18,29 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import * as z from "zod";
 
+/**
+ * Normalizes ABI type signature by trimming spaces around commas and collapsing multiple spaces
+ */
+function normalizeAbiSignature(value: string): string {
+  return value
+    .split(",")
+    .map((part) => part.trim().replace(/\s+/g, " "))
+    .join(", ");
+}
+
 // Form schema with only editable fields
 const EditTopicFormSchema = z.object({
   signature: z
     .string()
     .min(1, "Signature is required")
-    .describe("New claim data ABI types for claim verification"),
+    .describe("New claim data ABI types for claim verification")
+    .refine((val) => !val.includes("(") && !val.includes(")"), {
+      message: "Remove parentheses; use a comma-separated type list.",
+    })
+    .refine((val) => !/^\w+\(/.test(val), {
+      message: "Remove function name; use type, type, ...",
+    })
+    .transform(normalizeAbiSignature),
   walletVerification: z.object({
     secretVerificationCode: z.string(),
     verificationType: z.enum(["PINCODE", "OTP", "SECRET_CODES"]),
@@ -143,6 +160,9 @@ export function EditTopicDialog({
                 <field.TextField
                   label={t("claimTopics.edit.fields.signature.label")}
                   required={true}
+                  placeholder={t(
+                    "claimTopics.edit.fields.signature.placeholder"
+                  )}
                   description={t(
                     "claimTopics.edit.fields.signature.description"
                   )}

@@ -3,6 +3,16 @@ import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schem
 import * as z from "zod";
 
 /**
+ * Normalizes ABI type signature by trimming spaces around commas and collapsing multiple spaces
+ */
+function normalizeAbiSignature(value: string): string {
+  return value
+    .split(",")
+    .map((part) => part.trim().replace(/\s+/g, " "))
+    .join(", ");
+}
+
+/**
  * Topic Create Input Schema
  * Validates input for creating a new topic scheme
  */
@@ -15,7 +25,14 @@ export const TopicCreateInputSchema = MutationInputSchema.extend({
   signature: z
     .string()
     .min(1, "Signature is required")
-    .describe("Claim data ABI types for claim verification"),
+    .describe("Claim data ABI types for claim verification")
+    .refine((val) => !val.includes("(") && !val.includes(")"), {
+      message: "Remove parentheses; use a comma-separated type list.",
+    })
+    .refine((val) => !/^\w+\(/.test(val), {
+      message: "Remove function name; use type, type, ...",
+    })
+    .transform(normalizeAbiSignature),
 });
 
 export type TopicCreateInput = z.infer<typeof TopicCreateInputSchema>;
