@@ -46,9 +46,9 @@ plague off-chain compliance systems.
 The compliance module architecture composes multiple restriction types: identity
 verification requirements (must hold valid KYC/AML claims), country-based
 restrictions (blocked jurisdictions cannot receive tokens), investor count
-limits (Regulation D cap of 2,000 investors for Reg D offerings), lock-up
-periods (tokens remain non-transferable until vesting), and address freezes
-(compliance officers can immobilize specific accounts).
+limits (Exchange Act Section 12(g) cap of 2,000 investors), lock-up periods
+(tokens remain non-transferable until vesting), and address freezes (compliance
+officers can immobilize specific accounts).
 
 Each restriction module implements a single concern and tests in isolation. But
 real securities often combine multiple restrictions simultaneously. A Regulation
