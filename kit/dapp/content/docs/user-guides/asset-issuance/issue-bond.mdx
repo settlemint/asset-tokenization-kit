@@ -1,68 +1,32 @@
 ---
 title: Issue a bond
 description:
-  Step-by-step guide to creating and managing a bond asset token on the platform
+  Bond tokens represent digital debt instruments that automate the entire
+  lifecycle from issuance to coupon payments, compliance checks, secondary
+  trading, and maturity redemption. Yield management automates coupon
+  distributions while DvP ensures atomic settlement, eliminating weeks of manual
+  coordination. Track bond performance in the fixed income dashboard to monitor
+  outstanding principal, accrued interest, and payment schedules in real-time.
 pageTitle: How to issue a bond token (Debt instrument)
 tags: [how-to, bond, issuance, yield, tutorial]
 ---
 
-## Overview
-
-Deploy a compliant bond token with optional yield distribution and redemption
-capabilities at maturity. Bond tokens represent fixed-term debt instruments
-backed by denomination assets (typically stablecoins).
-
-**Primary audience:** Corporate treasurers, investment bankers issuing tokenized
-bonds  
-**Secondary audience:** Financial operations personnel, debt capital markets
-teams
-
-<Mermaid
-  chart={`flowchart TB
-    Issued(Issued<br/>Tokens minted<br/>Compliance active)
-    Active(Active<br/>Trading enabled<br/>Yield accruing)
-    Matured(Matured<br/>Reached maturity date<br/>Redemption enabled)
-    Redeemed(Redeemed<br/>All tokens burned<br/>Lifecycle complete)
-    
-    Issued -->|Time passes| Active
-    Active -->|Maturity date reached| Matured
-    Matured -->|Holders redeem| Redeemed
-    
-    Active -.->|Coupon payments| Active
-    
-    style Issued fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
-    style Active fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
-    style Matured fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style Redeemed fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
-`}
-/>
-
-**Bond tokens progress through four lifecycle states**: Issued state begins at
-deployment when initial tokens are minted and compliance rules become active.
-Active state covers the trading period where holders can transfer bonds (subject
-to compliance checks) and claim coupon payments if yield is enabled. Matured
-state triggers at the configured maturity date, enabling redemption but
-typically freezing secondary trading. Redeemed state marks the end when all
-tokens have been burned in exchange for denomination assets. The state machine
-enforces proper sequencing—bonds cannot skip states or move backward.
-
 ## Before you start
 
-**Prerequisites:**
+Ensure you've completed the necessary setup before creating your bond token.
+You'll need your bond system factory deployed (this happens during platform
+onboarding), a denomination asset contract address (deploy a stablecoin or use
+an existing USDC/USDT contract), and fully defined bond terms including
+principal amount, coupon rate, maturity date, and payment frequency.
 
-- Completed [Getting started](/docs/user-guides/getting-started) onboarding
-- Bond system factory deployed during onboarding
-- Denomination asset (collateral token) deployed or address available
-- Bond terms defined (principal, coupon rate, maturity, currency)
+Time estimate: 15-20 minutes for bond deployment; additional time for yield
+configuration and initial funding.
 
-**Time estimate:** 15-20 minutes for bond deployment; additional time for yield
-configuration
-
-**Required knowledge:**
-
-- Basic blockchain wallet operations
-- Understanding of bond instruments (face value, maturity, coupon rates)
-- Familiarity with securities regulations (Reg D, Reg S, etc.)
+Required knowledge includes basic blockchain wallet operations (signing
+transactions, managing private keys), understanding of bond instruments (face
+value, maturity, coupon rates, yield calculations), and familiarity with
+applicable securities regulations such as Regulation D, Regulation S, or other
+frameworks governing your offering.
 
 ## Steps
 
@@ -72,11 +36,10 @@ configuration
 
 ### Navigate to bond creation
 
-From your dashboard:
-
-1. Click **Asset Management** in the left sidebar
-2. Select **Bonds** from the asset type list
-3. Click **Create New Bond Token**
+From your dashboard, click Asset Management in the left sidebar to access your
+asset portfolio. Select Bonds from the asset type list to view existing bond
+tokens and available templates. Click the Create New Bond Token button to launch
+the bond configuration wizard.
 
 ![Bond creation navigation](/images/screenshots/placeholder.svg) _Screenshot:
 Asset Management section showing Bonds category with existing bonds list and
@@ -90,117 +53,98 @@ Create New Bond Token button_
 
 #### Basic token information
 
-Enter your token details:
-
-- **Token name** - Full legal name of the bond offering (e.g., "TechCorp 2027
-  Senior Secured Notes")
-- **Token symbol** - Trading symbol (e.g., "TECH27")
-- **Decimals** - Token divisibility (18 for fractional bonds, 0 for whole-unit
-  bonds)
-- **Initial supply** - Number of tokens to mint at deployment (or 0 to mint
-  later)
+Your bond token requires standard ERC-3643 parameters that define its digital
+representation. Enter the token name using the full legal name of your
+offering—for example, "TechCorp 2027 Senior Secured Notes" clearly identifies
+the issuer, maturity year, and security type. The token symbol serves as the
+trading identifier; keep it concise like "TECH27". Set decimals to 18 for
+fractional bond ownership or 0 if bonds must trade as whole units. Initial
+supply determines how many tokens mint at deployment—you can set this to zero
+and mint later after verifying all configurations.
 
 ![Bond basic information](/images/screenshots/placeholder.svg) _Screenshot: Bond
 configuration form showing name, symbol, decimals, and initial supply input
 fields with validation_
 
-**Naming tip:** Include issuer name, maturity year, and security type for clear
-identification (e.g., "TechCorp 2027 Senior Secured Notes").
+Naming tip: Include issuer name, maturity year, and security type in your token
+name. This becomes crucial when investors hold multiple bonds and need to
+distinguish between them quickly.
 
 #### Bond-specific parameters
 
-Configure your debt instrument properties:
+Configure the financial terms that define your debt instrument. The maturity
+date determines when bondholders can redeem their tokens for denomination
+assets—select a future date using the date picker and the platform converts it
+to Unix timestamp automatically. Typical corporate bonds have 1-10 year
+maturities depending on capital needs and market conditions.
 
-**Maturity date**
+Face value specifies the redemption amount per token at maturity, denominated in
+your chosen stablecoin. Setting a face value of 1000 means each bond token
+redeems for 1,000 USDC (or whatever denomination asset you select). This creates
+the fundamental calculation: tokens held × face value = redemption proceeds. For
+a bondholder with 50 tokens at 1000 face value, redemption yields 50,000 USDC.
 
-Set the timestamp when the bond matures and becomes redeemable:
-
-1. Click the date picker field
-2. Select maturity date (must be future date)
-3. The platform converts to Unix timestamp automatically
-
-Typical corporate bonds have 1-10 year maturities.
-
-**Face value**
-
-Enter the redemption value per token at maturity:
-
-- Specified in denomination asset units
-- Typically set to 1000 (representing $1,000 face value per bond)
-- Determines redemption amount: tokens × face value = redemption proceeds
-
-**Denomination asset**
-
-Specify the underlying collateral token:
-
-- Enter the ERC20 contract address for the collateral token
-- Common choices: USDC, USDT, or platform stablecoin
-- Must be deployed ERC20 contract with decimals() function
-- Validates address format and checks contract exists
+The denomination asset serves as your underlying collateral token. Enter the
+ERC20 contract address for your stablecoin—USDC, USDT, or a platform-specific
+stablecoin all work as long as they implement the standard decimals() function.
+The platform validates the address format and checks that the contract exists
+on-chain before allowing deployment.
 
 ![Bond-specific parameters](/images/screenshots/placeholder.svg) _Screenshot:
 Bond parameters showing maturity date picker, face value input, and denomination
 asset address field with validation_
 
-**Example configuration:**
-
-- Face value: 1000
-- Denomination asset: 0x...USDC (USDC stablecoin)
-- Result: Each bond token redeems for 1,000 USDC at maturity
-
 </Step>
 
 <Step>
 
-### 3. Configure yield distribution (optional)
+### Configure yield distribution (optional)
 
-You can enable scheduled interest/coupon calculations through the yield add-on.
-
-**Note:** The yield module is an optional add-on. You must explicitly enable it
-during bond creation. Bonds deployed without this add-on cannot support
-scheduled coupon calculations and claim-based distributions.
+The yield module is an optional add-on that you must explicitly enable during
+bond creation—bonds deployed without it cannot support scheduled coupon
+calculations later. If you're issuing zero-coupon bonds or handling interest
+payments off-chain, you can skip this section.
 
 #### Yield schedule setup
 
-If you enabled the yield add-on, define your payment schedule:
-
-1. **Enable yield** - Toggle yield distribution on
-2. **Payment frequency** - Select from:
-   - Quarterly (every 3 months)
-   - Semi-annual (every 6 months)
-   - Annual (every 12 months)
-3. **First payment date** - Set initial distribution date
-4. **Yield rate** - Annual percentage rate (entered as basis points)
+Enabling the yield add-on activates automated interest distribution. Toggle
+yield distribution on, then select your payment frequency from quarterly (every
+3 months), semi-annual (every 6 months), or annual (every 12 months) options.
+Set the first payment date to establish when bondholders can begin claiming
+interest—this should align with your term sheet and investor expectations. Enter
+the yield rate as basis points where 5% annual = 500 basis points, 7.5% annual =
+750 basis points, and 10% annual = 1000 basis points.
 
 ![Yield schedule configuration](/images/screenshots/placeholder.svg)
 _Screenshot: Yield configuration showing payment frequency dropdown, first
 payment date picker, and yield rate input with basis points calculator_
 
-**Yield rate examples:**
+#### Payment mechanism and DvP settlement
 
-- 5% annual = 500 basis points
-- 7.5% annual = 750 basis points
-- 10% annual = 1000 basis points
+Yield management automates the complete coupon distribution process, eliminating
+the manual recordkeeping and payment coordination that traditionally consumes
+5-10 business days per payment cycle. The system captures a snapshot of who
+holds bonds at each payment date, calculates pro-rata entitlements based on
+holdings and your configured interest rate, and enables bondholders to claim
+their payments on-demand. DvP ensures atomic coupon payment settlement—the smart
+contract verifies the claimant's bond holdings and transfers the precise
+denomination asset amount in a single transaction. If either verification or
+transfer fails, the entire operation reverts, preventing any reconciliation
+mismatches.
 
-#### Payment mechanism
+When a payment date arrives, the yield module determines each holder's
+entitlement: (tokens held × face value × annual rate × period fraction) = coupon
+amount. For quarterly payments on a 6% annual rate bond with 1000 face value, a
+holder with 100 tokens receives (100 × 1000 × 0.06 × 0.25) = 1,500 USDC per
+quarter. Token holders claim their interest directly through the investor portal
+whenever convenient—no waiting for batch processing, no coordinating wire
+transfers, no $50-200 per bondholder fees that transfer agents typically charge.
 
-The yield module automates coupon distribution calculations based on:
-
-- **Bond terms** - Face value and interest rate you configured
-- **Payment currency** - Denomination asset (USDC, USDT, stablecoins, etc.)
-- **Holder proportions** - Automatic pro-rata calculation across all bondholders
-
-When a payment date arrives:
-
-1. The system captures who holds bonds at that moment
-2. Calculates what each holder is owed based on their holdings
-3. Token holders claim their interest payments directly through the investor
-   portal
-4. Each holder receives the correct proportion based on their bond holdings
-
-**Funding requirement:** Ensure your designated payment wallet holds sufficient
-funds before each payment date so bondholders can claim their interest. The
-platform shows you exactly how much funding is required for upcoming payments.
+Funding requirement: Ensure your designated payment wallet holds sufficient
+denomination assets before each payment date. The fixed income dashboard shows
+exactly how much funding is required for upcoming payments, calculating total
+outstanding interest across all bondholders. Transfer the required amount at
+least 24 hours before the payment date to avoid claim failures.
 
 <Callout type="info" title="Business context">
   Traditional bond administration requires collecting bondholder lists,
@@ -208,65 +152,62 @@ platform shows you exactly how much funding is required for upcoming payments.
   transfers, and reconciling which payments cleared. This process typically
   takes 5-10 business days and costs $50-200 per bondholder depending on
   transfer agent fees. ATK eliminates this operational overhead—bondholders
-  claim their interest on-demand, and the system tracks everything
-  automatically.
+  claim their interest on-demand, DvP ensures atomic settlement without
+  reconciliation, and the observability stack tracks everything automatically
+  through the fixed income dashboard.
 </Callout>
 
 </Step>
 
 <Step>
 
-### 4. Set compliance rules
+### Set compliance rules
 
-Your bond token enforces transfer restrictions through compliance modules.
+Your bond token enforces transfer restrictions through compliance modules that
+execute on every transaction. This embedded compliance layer ensures regulatory
+adherence without relying on off-chain monitoring or manual intervention.
 
 #### Regulatory framework selection
 
-Choose your applicable regulatory framework:
-
-- **Regulation D** - US private placement (accredited investors only)
-- **Regulation S** - Offshore offering (non-US investors)
-- **Regulation A** - US public offering (broader investor base)
-- **Custom** - Define custom compliance requirements
-
-**Note:** Selecting a framework provides pre-configured compliance modules. You
-can customize individual modules after deployment.
+Choose the framework that matches your offering structure. Regulation D supports
+US private placements where bonds can only transfer to accredited investors—the
+compliance module validates investor claims before allowing transfers.
+Regulation S enables offshore offerings by restricting US persons while allowing
+broader international distribution. Regulation A supports US public offerings
+with a wider investor base beyond just accredited individuals. The Custom option
+lets you define specific compliance requirements that don't fit standard
+frameworks.
 
 ![Compliance framework selection](/images/screenshots/placeholder.svg)
 _Screenshot: Compliance framework cards showing Reg D, Reg S, Reg A, and Custom
 options with descriptions_
 
+Selecting a framework provides pre-configured compliance modules that you can
+customize after deployment. For example, choosing Regulation D automatically
+enables accredited investor verification and US jurisdiction restrictions.
+
 #### Configure compliance modules
 
-Based on your selected framework, configure these modules:
+Country restrictions limit bond purchases by jurisdiction. Enable the Country
+Allow List module and select permitted countries—a Regulation D offering
+typically restricts to US only, while Regulation S excludes US but permits other
+jurisdictions. Alternatively, enable the Country Block List to specifically
+exclude certain countries while allowing all others.
 
-**Country restrictions**
+Investor eligibility requirements leverage OnchainID claims to verify
+participant status. Set required claims such as accredited investor status
+(mandatory for Reg D), KYC/AML verification level (typically Level 2 or higher
+for institutional offerings), or qualified purchaser certification for certain
+private placements. Only addresses holding all required claims in their
+OnchainID can receive or hold bonds—attempted transfers to non-compliant
+addresses revert with a compliance failure message.
 
-Limit bond purchases by jurisdiction:
-
-1. Enable **Country Allow List** module
-2. Select permitted countries from list
-3. Or enable **Country Block List** and select restricted countries
-
-Regulation D typically restricts to US only; Regulation S excludes US.
-
-**Investor eligibility**
-
-Set OnchainID claim requirements:
-
-- **Accredited investor** claim (required for Reg D)
-- **KYC/AML verification** level (typically Level 2 or higher)
-- **Qualified purchaser** status (for certain offerings)
-
-Only addresses with all required claims can hold bonds.
-
-**Transfer restrictions**
-
-Configure additional limits:
-
-- **Time Lock** - Enforce holding period (e.g., 12-month lock-up)
-- **Transfer Limit** - Cap maximum transfer size
-- **Supply Limit** - Set maximum bond issuance amount
+Additional transfer restrictions provide operational controls beyond basic
+eligibility. Time Lock enforces holding periods like the typical 12-month
+lock-up required under Rule 144 for US private placements. Transfer Limit caps
+maximum transfer sizes to prevent concentration risk or satisfy offering terms.
+Supply Limit sets the maximum total bond issuance to match your authorized
+principal amount.
 
 ![Compliance module configuration](/images/screenshots/placeholder.svg)
 _Screenshot: Compliance modules showing Country Allow List, Identity
@@ -276,80 +217,63 @@ Verification, and Time Lock modules with configuration panels_
 
 <Step>
 
-### 5. Assign operational roles
+### Assign operational roles
 
-Grant permissions for bond management.
+Grant permissions for bond management by assigning wallet addresses to
+operational roles. This role-based access control separates duties for security
+and operational clarity.
 
-#### Role assignments
+GOVERNANCE_ROLE manages compliance and bond lifecycle operations including
+setting yield schedules, adding or removing compliance modules, triggering bond
+maturation when the maturity date arrives, and configuring identity
+requirements. Typically assign this to your legal or compliance team's multisig
+wallet since these functions have regulatory implications.
 
-Assign wallet addresses to these operational roles:
+SUPPLY_MANAGEMENT_ROLE controls token supply through minting new bonds during
+primary issuance, burning bonds for cancellation or early redemption, and
+executing batch mint operations for large investor groups. Treasury operations
+teams typically hold this role since they coordinate capital raising activities.
 
-**GOVERNANCE_ROLE**
+CUSTODIAN_ROLE handles recovery and account freezing scenarios including
+freezing compromised accounts immediately upon breach notification, executing
+forced transfers to recover tokens from frozen addresses, and restoring access
+to legitimate owners. Assign this to your custodian service provider's wallet or
+a dedicated security operations multisig.
 
-Manages compliance and bond lifecycle:
-
-- Set yield schedules
-- Add/remove compliance modules
-- Trigger bond maturation
-- Configure identity requirements
-
-Typically assigned to: Legal/compliance team wallet
-
-**SUPPLY_MANAGEMENT_ROLE**
-
-Controls token supply:
-
-- Mint new bonds (primary issuance)
-- Burn bonds (cancellation)
-- Batch mint operations
-
-Typically assigned to: Treasury operations wallet
-
-**CUSTODIAN_ROLE**
-
-Handles recovery and freezing:
-
-- Freeze compromised accounts
-- Execute forced transfers
-- Recover lost tokens
-
-Typically assigned to: Custodian service wallet
-
-**EMERGENCY_ROLE**
-
-Emergency interventions:
-
-- Pause all transfers
-- Unpause after incident resolution
-
-Typically assigned to: Security operations wallet
+EMERGENCY_ROLE provides circuit-breaker functionality to pause all transfers
+during security incidents or regulatory investigations, then unpause after
+incident resolution. Security operations teams should control this role through
+a highly secured multisig wallet.
 
 ![Role assignment interface](/images/screenshots/placeholder.svg) _Screenshot:
 Role assignment form showing four roles with address inputs, descriptions, and
 current assignments_
 
-**Best practice:** Assign different wallet addresses to different roles for
-separation of duties. Use multisig wallets for GOVERNANCE_ROLE and
-EMERGENCY_ROLE.
+Best practice: Assign different wallet addresses to different roles to prevent
+any single compromise from gaining full control. Use multisig wallets requiring
+2-of-3 or 3-of-5 signatures for GOVERNANCE_ROLE and EMERGENCY_ROLE given their
+systemic impact.
 
 </Step>
 
 <Step>
 
-### 6. Review and deploy
+### Review and deploy
 
 #### Pre-deployment checklist
 
-Review your configuration summary:
+Review your configuration summary before deployment to catch any errors that
+would require redeployment:
 
-- [ ] Token name and symbol correct
-- [ ] Maturity date set correctly
-- [ ] Face value matches term sheet
-- [ ] Denomination asset address validated
-- [ ] Yield schedule configured (if applicable)
-- [ ] Compliance modules match regulatory framework
-- [ ] All operational roles assigned to correct addresses
-- [ ] Initial supply amount confirmed (or 0 if minting later)
+- [ ] Token name and symbol match your term sheet exactly
+- [ ] Maturity date set correctly (verify Unix timestamp if shown)
+- [ ] Face value matches your offering documents
+- [ ] Denomination asset address validated and correct contract
+- [ ] Yield schedule configured correctly if enabled (rate, frequency, first
+      payment)
+- [ ] Compliance modules match your regulatory framework requirements
+- [ ] All operational roles assigned to correct addresses (verify each address)
+- [ ] Initial supply amount confirmed or set to 0 for post-deployment minting
 
 ![Deployment summary review](/images/screenshots/placeholder.svg) _Screenshot:
 Pre-deployment summary showing all configured parameters in organized sections
@@ -357,21 +281,17 @@ with edit buttons_
 
 #### Deploy bond contract
 
-Execute your deployment:
+Click Deploy Bond Token to initiate the deployment sequence. Review the
+transaction details in the confirmation modal showing estimated gas costs and
+deployment steps. Enter your PIN or OTP to authenticate the operation, then
+confirm the transaction through your wallet.
 
-1. Click **Deploy Bond Token**
-2. Review the transaction details in the confirmation modal
-3. Enter your PIN or OTP to authenticate
-4. Confirm the transaction
-
-Your deployment will:
-
-1. Deploy the bond proxy contract (15-20 seconds)
-2. Initialize with your parameters (10 seconds)
-3. Assign roles to your specified addresses (5 seconds per role)
-4. Register with the identity registry (10 seconds)
-
-**Total deployment time:** 60-90 seconds
+The deployment process executes several on-chain operations: deploying the bond
+proxy contract (15-20 seconds depending on network congestion), initializing
+with your configured parameters (10 seconds), assigning roles to your specified
+addresses (5 seconds per role assignment transaction), and registering the token
+with the identity registry to enable compliance checks (10 seconds). Total
+deployment time typically runs 60-90 seconds from confirmation to completion.
 
 ![Deployment progress](/images/screenshots/placeholder.svg) _Screenshot:
 Deployment progress modal showing checklist of deployment steps with status
@@ -381,19 +301,17 @@ indicators (pending/in progress/complete)_
 
 <Step>
 
-### 7. Post-issuance actions
-
-After your successful deployment:
+### Post-issuance actions
 
 #### Verify deployment
 
-1. Note the contract address displayed
-2. Click **View Bond Token** to navigate to token details page
-3. Verify configuration on overview tab:
-   - Token information matches parameters
-   - Maturity date correct
-   - Denomination asset linked
-   - Roles assigned correctly
+Note the contract address displayed after successful deployment—this is your
+bond token's permanent on-chain identifier. Click View Bond Token to navigate to
+the token details page. Verify the configuration on the overview tab: confirm
+token information matches your input parameters, maturity date displays
+correctly with countdown timer, denomination asset links to the correct
+contract, compliance modules show as active, and roles assigned correctly to
+your specified addresses.
 
 ![Bond details overview](/images/screenshots/placeholder.svg) _Screenshot: Bond
 token details page showing key information, maturity countdown, yield schedule,
@@ -401,238 +319,509 @@ and compliance status_
 
 #### Mint initial allocation (if needed)
 
-If you deployed with zero initial supply:
-
-1. Navigate to **Actions** tab
-2. Click **Mint Bonds**
-3. Enter primary investor addresses and amounts
-4. Click **Execute Batch Mint**
+If you deployed with zero initial supply, mint tokens to primary investors
+through the Actions tab. Click Mint Bonds to open the batch minting interface.
+Enter recipient addresses and corresponding amounts—the interface supports CSV
+upload for large investor groups. Click Execute Batch Mint to process the
+operation.
 
 The contract validates each recipient's OnchainID and compliance status before
-minting.
-
-**Compliance check:** Minting fails if the recipient lacks required claims.
-Verify investor OnchainIDs before attempting to mint.
+minting. If any recipient lacks required claims (accredited investor status, KYC
+verification, jurisdiction eligibility), the entire batch transaction reverts
+with a detailed error message identifying the non-compliant address. Verify all
+investor OnchainIDs are properly configured before attempting to mint.
 
 #### Fund yield wallet
 
-For bonds with the yield add-on enabled:
+For bonds with yield add-on enabled, navigate to the Yield tab to view your
+yield wallet address. Calculate required funding: (total supply × face value ×
+yield rate × number of periods until maturity) + buffer for market growth.
+Transfer sufficient denomination assets to this wallet address. The fixed income
+dashboard displays current balance and shows whether funding is adequate for
+upcoming payments, with warnings appearing 48 hours before payment dates if
+balance is insufficient.
 
-1. Note the yield wallet address shown on the **Yield** tab
-2. Transfer sufficient denomination assets to yield wallet
-3. Calculation: (total supply × face value × yield rate × periods) + buffer
-4. Verify balance shows adequate funding for upcoming payments
-
-**Funding timeline:** Fund your yield wallet at least 24 hours before the first
-payment date.
+Fund your yield wallet at least 48 hours before the first payment date to ensure
+bondholders can claim their coupons without delay.
 
 #### Distribute offering documents
 
-Link legal documentation to your token:
+Link legal documentation to your token for investor verification. Navigate to
+the Documents tab and click Upload Offering Document. Select your PDF
+file—offering memorandum, term sheet, indenture, or other legal documents. The
+platform generates a cryptographic hash (SHA-256) of the document content and
+stores this hash on-chain as part of the token's immutable record.
 
-1. Navigate to the **Documents** tab
-2. Click **Upload Offering Document**
-3. Select your PDF file (offering memorandum, term sheet, etc.)
-4. The platform generates a cryptographic hash and stores it on-chain
-5. The document hash is displayed for verification
-
-Your investors can verify document authenticity by comparing hashes.
+Investors can verify document authenticity by downloading your document and
+comparing its hash against the on-chain value. Any modification to the
+document—even changing a single character—produces a completely different hash,
+making tampering immediately detectable.
 
 </Step>
 
 <Step>
 
-### 8. Manage bond lifecycle
+### Manage bond lifecycle
 
 #### Monitor yield distributions
 
-Track scheduled coupon calculations and claims:
-
-1. Navigate to **Yield** tab on bond details page
-2. Review upcoming payment schedule
-3. Monitor past claims:
-   - Payment date
-   - Amount claimed
-   - Claimants count
-   - Transaction hashes
+The Yield tab on your bond details page shows the complete payment schedule and
+historical distributions. Review upcoming payment dates with calculated amounts
+based on current token supply. Monitor past claims to track: payment date, total
+amount claimed by all bondholders, number of claimants (compared to total
+eligible holders), and transaction hashes for on-chain verification.
 
 ![Yield distribution history](/images/screenshots/placeholder.svg) _Screenshot:
 Yield tab showing upcoming payments schedule and historical distributions table
 with dates, amounts, and status_
 
+The fixed income dashboard aggregates this data across all your bond tokens,
+showing total outstanding interest obligations, payment trends over time, and
+claim rates (what percentage of eligible bondholders claimed their coupons
+within 24/48/72 hours of availability).
+
 #### Process maturity
 
-When your bond reaches maturity date:
+When your bond reaches its maturity date, the system enables redemption
+functionality. Navigate to the Actions tab where the Mature Bond button becomes
+available (it remains disabled until the maturity timestamp passes). Click
+Mature Bond to review maturation details including total redemption amount
+required (total supply × face value) and current denomination asset balance in
+your redemption wallet.
 
-1. Navigate to **Actions** tab
-2. Click **Mature Bond** (available only after maturity date)
-3. Review maturation details:
-   - Total redemption amount required
-   - Current denomination asset balance
-4. Ensure redemption wallet holds sufficient assets
-5. Click **Execute Maturation**
+Ensure your redemption wallet holds sufficient denomination assets to cover full
+redemption—if all bondholders redeem simultaneously, you need (total supply ×
+face value) denomination assets available. Click Execute Maturation to
+transition the bond into matured state.
 
-Maturation enables your token holders to redeem their bonds for denomination
-assets.
+Maturation disables most compliance checks on transfers (since the bond is being
+unwound rather than traded) and enables the redeem() function that burns tokens
+in exchange for denomination assets.
 
 #### Handle redemptions
 
-After maturation, your investors can redeem:
+After maturation, bondholders access redemption through their investor portal.
+From their perspective: they navigate to bond holdings, select the matured bond,
+click Redeem Bonds, enter the amount to redeem (or select "Redeem All"), and
+confirm the transaction. The smart contract burns their tokens and transfers
+denomination assets proportionally: (redeemed tokens × face value) = received
+assets.
 
-**Investor redemption process:**
-
-1. Investor navigates to their bond holdings
-2. Clicks **Redeem Bonds**
-3. Enters the amount to redeem
-4. Receives denomination assets proportionally
-
-**Your monitoring tasks:**
-
-- Track redemptions on the **Holders** tab
-- Monitor your denomination asset reserve balance
-- Review redemption events on the **Events** tab
+Your monitoring tasks during redemption period: track remaining outstanding
+supply on the Holders tab as investors redeem, monitor your denomination asset
+reserve balance to ensure adequate liquidity remains, review redemption events
+on the Events tab to identify any unusually large redemptions or patterns, and
+reconcile total redeemed amounts against your accounting records.
 
 ![Redemption tracking](/images/screenshots/placeholder.svg) _Screenshot: Bond
 events tab showing redemption transactions with holder addresses, amounts
 redeemed, and timestamps_
 
-### Common workflows
-
-**Increase bond supply:**
-
-To issue additional bonds after initial deployment:
-
-1. Prepare your new investor list with verified OnchainIDs
-2. Navigate to **Actions** > **Mint Bonds**
-3. Enter recipient addresses and amounts
-4. Execute batch mint
-
-**Compliance note:** All recipients must meet eligibility requirements;
-non-compliant addresses cause transaction revert.
-
-**Modify yield schedule:**
-
-To change payment frequency or rate (requires GOVERNANCE_ROLE):
-
-1. Navigate to the **Yield** tab
-2. Click **Update Schedule**
-3. Modify parameters (applies to new payments only; past payments are immutable)
-4. Confirm changes
-
-**Handle compromised investor account:**
-
-If an investor reports a compromised wallet (requires CUSTODIAN_ROLE):
-
-1. Navigate to **Participants** > **Entities**
-2. Search for the investor address
-3. Click **Actions** > **Freeze Account**
-4. Initiate recovery to a new wallet:
-   - Navigate to **Actions** > **Recover Tokens**
-   - Enter the frozen address and new recovery address
-   - Execute forced transfer
-5. Unfreeze the new address
+The observability stack provides redemption velocity metrics showing what
+percentage of bonds redeem within the first 24 hours, week, and month after
+maturation—useful data for planning future bond offerings and understanding
+investor behavior.
 
 </Step>
 
 </Steps>
 
+## Bond issuance workflow
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph Preparation("Step1. Preparation")
+      DefineTerms(Define bond terms<br/>Principal, rate, maturity)
+      DeployDenom(Deploy denomination asset<br/>or identify existing stablecoin)
+      PrepareCompliance(Prepare compliance rules<br/>Regulatory framework selection)
+    end
+
+    subgraph Configuration("Step2. Configuration")
+      CreateToken(Create bond token<br/>Name, symbol, decimals)
+      SetParams(Set bond parameters<br/>Face value, maturity date)
+      ConfigYield(Configure yield schedule<br/>Optional: rate, frequency)
+      SetCompliance(Set compliance modules<br/>KYC, jurisdiction, restrictions)
+      AssignRoles(Assign operational roles<br/>Governance, supply, custodian)
+    end
+
+    subgraph Deployment("Step3. Deployment")
+      Review(Review configuration<br/>Verify all parameters)
+      Deploy(Deploy smart contract<br/>60-90 seconds on-chain)
+      Verify(Verify deployment<br/>Contract address, functions)
+    end
+
+    subgraph Operations("Step4. Operations")
+      Mint(Mint initial allocation<br/>To verified investors)
+      Fund(Fund yield wallet<br/>If yield enabled)
+      UploadDocs(Upload offering docs<br/>Generate on-chain hash)
+    end
+
+    DefineTerms --> DeployDenom
+    DeployDenom --> PrepareCompliance
+    PrepareCompliance --> CreateToken
+
+    CreateToken --> SetParams
+    SetParams --> ConfigYield
+    ConfigYield --> SetCompliance
+    SetCompliance --> AssignRoles
+    AssignRoles --> Review
+
+    Review --> Deploy
+    Deploy --> Verify
+    Verify --> Mint
+
+    Mint --> Fund
+    Fund --> UploadDocs
+
+    style Preparation fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Configuration fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Deployment fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Operations fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+
+`} />
+
+The bond issuance workflow progresses through four major phases, each with
+specific deliverables and validation gates. Preparation establishes your bond's
+financial structure and regulatory framework before touching any smart
+contracts. Configuration translates those terms into on-chain parameters through
+the bond creation wizard. Deployment executes the actual blockchain transactions
+that instantiate your bond token. Operations completes the setup by minting
+tokens to investors and funding payment systems.
+
+## Coupon payment distribution
+
+<Mermaid
+  chart={`flowchart TB
+    PaymentDate(Payment date arrives<br/>Blockchain timestamp &gt;= schedule)
+    Snapshot(System captures snapshot<br/>Who holds bonds at this moment)
+    Calculate(Calculate entitlements<br/>Tokens × Face value × Rate × Period)
+    EnableClaim(Enable claim function<br/>Bondholders can claim anytime)
+
+    HolderClaim(Bondholder initiates claim<br/>Through investor portal)
+    VerifyID(Verify OnchainID<br/>Compliance check)
+    VerifyBalance(Verify bond balance<br/>Check holdings at snapshot)
+    ExecuteDvP(Execute DvP settlement<br/>Atomic: verify + transfer)
+
+    TransferAssets(Transfer denomination assets<br/>From yield wallet to holder)
+    RecordClaim(Record claim event<br/>On-chain immutable log)
+    UpdateDashboard(Update dashboard metrics<br/>Claim rate, remaining obligations)
+
+    PaymentDate --> Snapshot
+    Snapshot --> Calculate
+    Calculate --> EnableClaim
+    EnableClaim --> HolderClaim
+
+    HolderClaim --> VerifyID
+    VerifyID --> VerifyBalance
+    VerifyBalance --> ExecuteDvP
+    ExecuteDvP --> TransferAssets
+
+    TransferAssets --> RecordClaim
+    RecordClaim --> UpdateDashboard
+
+    style PaymentDate fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Snapshot fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Calculate fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style EnableClaim fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style HolderClaim fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style VerifyID fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style VerifyBalance fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ExecuteDvP fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style TransferAssets fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style RecordClaim fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style UpdateDashboard fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+
+`} />
+
+Coupon payment distribution follows a deterministic sequence that eliminates
+traditional settlement delays and reconciliation overhead. When the payment date
+arrives (determined by blockchain timestamp rather than business day
+conventions), the yield module captures a snapshot of current bondholders and
+their balances. This snapshot-based calculation prevents gaming where holders
+might buy bonds moments before payment just to capture the coupon—holdings must
+be present at the exact payment timestamp.
+
+The DvP settlement mechanism is central to reliability: the smart contract
+verifies both the claimant's OnchainID compliance and their bond balance at the
+snapshot time before transferring assets. If any verification fails—invalid
+identity, zero balance at snapshot, insufficient yield wallet funding—the entire
+operation reverts atomically. No partial payments, no reconciliation needed. The
+fixed income dashboard updates immediately with claim events, showing you
+real-time claim rates and remaining obligations.
+
+## Maturity redemption process
+
+<Mermaid
+  chart={`flowchart TB
+    MaturityDate(Maturity date reached<br/>Blockchain timestamp &gt;= maturity)
+    AdminMature(Admin triggers maturation<br/>GOVERNANCE_ROLE action)
+    TransitionState(Bond transitions to matured<br/>State machine update)
+    EnableRedeem(Enable redemption function<br/>Disable secondary trading)
+
+    HolderRedeem(Bondholder initiates redemption<br/>Through investor portal)
+    EnterAmount(Enter amount to redeem<br/>Or select redeem all)
+    CalcRedemption(Calculate redemption value<br/>Tokens × Face value)
+
+    VerifyBalance(Verify holder token balance<br/>Must hold tokens being redeemed)
+    BurnTokens(Burn redeemed tokens<br/>Reduce total supply)
+    TransferAssets(Transfer denomination assets<br/>Atomic settlement)
+
+    RecordEvent(Record redemption event<br/>On-chain immutable log)
+    UpdateMetrics(Update bond metrics<br/>Outstanding supply, redemption rate)
+    CheckComplete(All tokens redeemed?<br/>Supply == zero)
+    FinalState(Bond fully redeemed<br/>Lifecycle complete)
+
+    MaturityDate --> AdminMature
+    AdminMature --> TransitionState
+    TransitionState --> EnableRedeem
+    EnableRedeem --> HolderRedeem
+
+    HolderRedeem --> EnterAmount
+    EnterAmount --> CalcRedemption
+    CalcRedemption --> VerifyBalance
+
+    VerifyBalance --> BurnTokens
+    BurnTokens --> TransferAssets
+    TransferAssets --> RecordEvent
+
+    RecordEvent --> UpdateMetrics
+    UpdateMetrics --> CheckComplete
+    CheckComplete -->|Yes| FinalState
+    CheckComplete -->|No| HolderRedeem
+
+    style MaturityDate fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style AdminMature fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style TransitionState fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style EnableRedeem fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style HolderRedeem fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style EnterAmount fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style CalcRedemption fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style VerifyBalance fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style BurnTokens fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style TransferAssets fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style RecordEvent fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style UpdateMetrics fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style CheckComplete fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style FinalState fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+
+`} />
+
+The maturity redemption process converts bond tokens back to denomination assets
+at the predetermined face value. Unlike coupon payments which occur on a
+schedule, redemption requires administrative triggering—someone with
+GOVERNANCE_ROLE must call the mature() function once the maturity date arrives.
+This design prevents premature redemption attempts and gives the issuer control
+over exactly when redemption windows open.
+
+After maturation, the bond enters a terminal phase where its primary function is
+unwinding outstanding positions. Bondholders redeem at their convenience rather
+than waiting for batch processing. Each redemption burns tokens and transfers
+assets atomically—the burn and transfer succeed together or both revert,
+preventing any scenario where tokens burn without payment or payment occurs
+without burning. Monitor redemption velocity through the observability dashboard
+to anticipate when your outstanding obligations will fully resolve.
+
+## Secondary market trading flow
+
+<Mermaid
+  chart={`flowchart TB
+    SellerInitiate(Seller initiates transfer<br/>To buyer address)
+    CheckPaused(Check bond not paused<br/>EMERGENCY_ROLE control)
+    CheckMaturity(Check bond not matured<br/>Trading disabled after maturity)
+
+    VerifySenderID(Verify seller OnchainID<br/>Valid identity registry entry)
+    VerifyRecipientID(Verify buyer OnchainID<br/>Valid identity registry entry)
+
+    CheckCountry(Check jurisdiction rules<br/>Allow list / block list)
+    CheckClaims(Check required claims<br/>Accredited status, KYC level)
+    CheckTimeLock(Check holding period<br/>Time lock compliance)
+    CheckLimits(Check transfer limits<br/>Maximum transfer size)
+
+    ExecuteTransfer(Execute token transfer<br/>Update balances)
+    RecordEvent(Record transfer event<br/>On-chain audit log)
+    UpdateDashboard(Update trading metrics<br/>Volume, holder count, distribution)
+
+    SellerInitiate --> CheckPaused
+    CheckPaused --> CheckMaturity
+    CheckMaturity --> VerifySenderID
+
+    VerifySenderID --> VerifyRecipientID
+    VerifyRecipientID --> CheckCountry
+
+    CheckCountry --> CheckClaims
+    CheckClaims --> CheckTimeLock
+    CheckTimeLock --> CheckLimits
+
+    CheckLimits --> ExecuteTransfer
+    ExecuteTransfer --> RecordEvent
+    RecordEvent --> UpdateDashboard
+
+    style SellerInitiate fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style CheckPaused fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style CheckMaturity fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style VerifySenderID fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style VerifyRecipientID fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style CheckCountry fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style CheckClaims fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style CheckTimeLock fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style CheckLimits fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ExecuteTransfer fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style RecordEvent fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style UpdateDashboard fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+
+`} />
+
+Secondary market trading validates compliance before every transfer through the
+ERC-3643 compliance layer. When a bondholder initiates a transfer to another
+address, the smart contract executes a series of checks that replicate
+traditional transfer agent controls—except these checks happen in milliseconds
+rather than days and cost near-zero compared to manual review fees.
+
+The compliance check sequence runs through multiple validation gates: emergency
+pause status (allows circuit-breaking during incidents), maturity state
+(prevents trading after redemption period begins), sender and recipient
+OnchainID verification (both parties must have valid identities), jurisdiction
+rules (country allow lists or block lists based on your offering structure),
+required claims (accredited investor status, KYC verification level, any
+offering-specific requirements), holding period enforcement (time locks that
+implement Rule 144 or similar restrictions), and transfer size limits (caps on
+maximum transfer amounts).
+
+If any check fails, the transfer reverts with a specific error code identifying
+which compliance rule blocked the transaction. This provides clear feedback to
+users about why their transfer didn't execute and what they need to fix. The
+observability dashboard tracks rejected transfers separately from successful
+ones, helping you identify common compliance issues that might indicate investor
+education needs or misconfigured rules.
+
+### Redemption options comparison
+
+Different redemption structures serve different investor preferences and market
+conditions:
+
+| Redemption type | Timing                                | Issuer benefit                                         | Investor consideration                          |
+| --------------- | ------------------------------------- | ------------------------------------------------------ | ----------------------------------------------- |
+| Maturity-only   | Fixed date at term end                | Predictable capital structure, no refinancing pressure | Must hold to maturity for full value            |
+| Call provision  | Issuer can redeem early               | Refinancing flexibility if rates decline               | Reinvestment risk if called early               |
+| Put provision   | Investor can redeem early             | Higher yield premium compensates                       | Liquidity option at specified dates             |
+| Make-whole call | Early redemption + yield compensation | Flexibility with investor protection                   | Receives net present value of remaining coupons |
+
+The ATK platform currently implements maturity-only redemption through the
+standard bond lifecycle. Call and put provisions require additional smart
+contract logic to handle early redemption scenarios, premium calculations, and
+notice periods. If your offering requires these features, contact SettleMint to
+discuss custom implementation.
+
 ## Results
 
-After completing these steps, you will have:
+After completing these steps, you have a fully operational bond token deployed
+on-chain with your specified parameters and compliance framework. The bond token
+enforces transfer restrictions automatically, calculates coupon entitlements on
+your payment schedule if yield is enabled, and provides on-demand redemption at
+maturity.
 
-- A deployed bond token contract with your specified parameters
-- Configured compliance rules matching your regulatory framework
-- Assigned operational roles to designated wallet addresses
-- Minted initial bond allocations to verified investors
-- (Optional) Funded yield wallet for scheduled coupon calculations
-- Linked offering documents with on-chain hash verification
+Your operational infrastructure includes: designated wallet roles for
+governance, supply management, custodian, and emergency functions; funded yield
+wallet (if applicable) to handle coupon distributions; uploaded offering
+documents with cryptographic hash verification; and initial allocations minted
+to verified investors who passed compliance checks.
 
-Your bond token is now live and can process transfers according to your
-compliance rules. If you enabled the yield add-on, coupon entitlements will be
-calculated automatically on your configured schedule, and token holders can
-claim their coupons on-demand.
+Bondholders can now trade their positions in secondary markets (subject to
+compliance restrictions), claim coupon payments as they become available, and
+redeem tokens for denomination assets after maturity. The fixed income dashboard
+gives you real-time visibility into outstanding principal, accrued interest
+obligations, payment schedules, redemption activity, and compliance
+status—everything you need to manage the bond throughout its lifecycle.
 
 ## Troubleshooting
 
-**Deployment fails with "Invalid denomination asset":**
+**Deployment fails with "Invalid denomination asset":** Verify the address
+points to a valid ERC20 contract by checking it on a block explorer. Ensure the
+contract implements the decimals() function—some custom tokens omit this. If
+using a proxy contract, verify the proxy properly delegates to an implementation
+with full ERC20 interface.
 
-- Verify the address is a valid ERC20 contract
-- Check the denomination asset has a `decimals()` function
-- Ensure the denomination asset is not a proxy without proper interface
+**Yield claiming reverts:** Check your yield wallet denomination asset balance
+on the fixed income dashboard—insufficient funding is the most common cause.
+Verify the yield token address matches your denomination asset
+exactly—mismatches cause claim failures. Ensure the claimant has a verified
+OnchainID registered in the identity registry. Check the claimant held bonds at
+the payment date snapshot; acquiring bonds after the snapshot doesn't entitle
+them to that payment period.
 
-**Yield claiming reverts:**
+**Cannot mature bond:** Verify the current blockchain timestamp exceeds the
+maturity date—the mature() function remains disabled until maturity arrives.
+Check your address has GOVERNANCE_ROLE by viewing the role assignments on the
+bond details page. Ensure the bond hasn't already been matured by checking the
+current lifecycle state.
 
-- Check your yield wallet has sufficient denomination asset balance
-- Verify the yield token address matches the denomination asset
-- Ensure the claimant has a verified OnchainID
+**Mint fails for specific recipient:** Verify the recipient's OnchainID is
+registered in the identity registry by searching for their address on the
+Participants page. Check the recipient has all required claims: accredited
+investor status if using Regulation D, appropriate KYC verification level,
+correct jurisdiction. Confirm the recipient is not on any blocklist by reviewing
+compliance module settings. Try minting to a known-compliant address to isolate
+whether the issue is recipient-specific or affects all mints.
 
-**Cannot mature bond:**
+**Yield add-on not available after deployment:** The yield module must be
+explicitly enabled during bond creation—it's an optional add-on that integrates
+at deployment time. You cannot add the yield module to existing bonds; the smart
+contract architecture doesn't support post-deployment module injection. If you
+need scheduled coupon calculations for a bond you've already deployed, you must
+redeploy with the yield add-on enabled and migrate bondholders to the new
+contract.
 
-- Verify the current timestamp exceeds the maturity date
-- Check your address has GOVERNANCE_ROLE
-- Ensure the bond is not already matured
-
-**Mint fails for specific recipient:**
-
-- Verify the recipient's OnchainID is registered in the identity registry
-- Check the recipient has all required claims (accredited status, KYC level,
-  jurisdiction)
-- Confirm the recipient is not on a blocklist
-
-**Yield add-on not available after deployment:**
-
-- The yield module must be enabled during bond creation
-- You cannot add the yield module to existing bonds
-- Redeploy with the yield add-on enabled if scheduled coupon calculations are
-  required
+**Transfer blocked by compliance:** Check the compliance dashboard to see which
+specific rule blocked the transfer—country restrictions, missing claims, time
+lock, or transfer limit. Verify both sender and recipient have valid OnchainIDs
+in the identity registry. Review the compliance module configuration to ensure
+rules match your offering requirements—sometimes overly restrictive settings
+block legitimate transfers. Use the compliance simulation tool to test transfers
+before executing them on-chain.
 
 For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+contact SettleMint support with your contract address and transaction hash for
+specific transaction failures.
 
 ## Next steps
 
-After successfully issuing your bond token:
+After successfully issuing your bond token, onboard additional investors by
+following [Manage investors](/docs/user-guides/operations/manage-investors) to
+verify and whitelist bondholders—ensure each investor has required OnchainID
+claims before attempting to mint bonds to them.
 
-**Onboard investors**
+Execute corporate actions by reviewing
+[Corporate actions](/docs/user-guides/asset-issuance/corporate-actions) for
+special events beyond standard coupon payments—early redemptions, tender offers,
+or extraordinary distributions all require specific workflows.
 
-- Follow [Manage investors](/docs/user-guides/operations/manage-investors) to
-  verify and whitelist bondholders
-- Ensure each investor has required OnchainID claims before minting bonds
+Monitor compliance and operations through the fixed income dashboard to track
+transfer restrictions and violations, configure alerts for low yield wallet
+balances at least 48 hours before payment dates, and review holder reports
+regularly to understand bondholder composition and concentration.
 
-**Execute corporate actions**
-
-- Review [Corporate actions](/docs/user-guides/asset-issuance/corporate-actions)
-  for dividend distributions and special events
-- Set up yield schedules for recurring coupon calculations and claim-based
-  distributions
-
-**Monitor compliance and operations**
-
-- Use the compliance dashboard to track transfer restrictions and violations
-- Configure alerts for low yield wallet balances before payment dates
-- Review holder reports and transaction history regularly
-
-**Integrate payment rails**
-
-- Set up [Fiat bridge](/docs/user-guides/operations/fiat-bridge) to connect
-  traditional banking for off-chain settlement
-- Configure SWIFT/SEPA messaging for institutional investors
+Integrate payment rails by setting up
+[Fiat bridge](/docs/user-guides/operations/fiat-bridge) to connect traditional
+banking for investors who need off-chain settlement, and configure SWIFT or SEPA
+messaging for institutional investors requiring legacy payment infrastructure
+integration.
 
 ## See also
 
 **Related guides:**
 
 - [Issue equity](/docs/user-guides/asset-issuance/issue-equity) - Tokenize
-  shares with voting rights
+  shares with voting rights and dividend distributions
 - [Issue a fund](/docs/user-guides/asset-issuance/issue-fund) - Create
-  investment fund tokens
+  investment fund tokens with NAV tracking
 - [Getting started](/docs/user-guides/getting-started) - Complete platform setup
   tutorial
 
 **Reference documentation:**
 
 - [Bond contract reference](/docs/developer-guides/smart-contracts/contract-reference#iatkbond) -
-  Technical implementation details
+  Technical implementation details and function specifications
 - [Compliance modules](/docs/architecture/smart-contracts/identity-compliance) -
-  Available restriction rules
+  Available restriction rules and configuration options
 - [Troubleshooting](/docs/user-guides/troubleshooting) - Resolve common bond
   token issues

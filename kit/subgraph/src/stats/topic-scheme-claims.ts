@@ -8,7 +8,7 @@ import {
 /**
  * Fetch or create TopicSchemeClaimsState entity
  */
-function fetchTopicSchemeClaimsState(
+export function fetchTopicSchemeClaimsState(
   topicSchemeId: Bytes
 ): TopicSchemeClaimsState {
   let state = TopicSchemeClaimsState.load(topicSchemeId);
