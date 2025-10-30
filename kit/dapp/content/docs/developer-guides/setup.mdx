@@ -398,26 +398,22 @@ bun run dev:up
 
 **Services started:**
 
-| Service                 | Port | Purpose                                                                               |
-| ----------------------- | ---- | ------------------------------------------------------------------------------------- |
-| **anvil**               | 8545 | Local Ethereum node (Foundry Anvil) with instant block mining                         |
-| **txsigner**            | 8547 | Transaction signing service with deterministic test accounts                          |
-| **postgres**            | 5432 | PostgreSQL 16 for user data, sessions, and application state                          |
-| **redis**               | 6379 | In-memory cache for session storage and query results                                 |
-| **hasura**              | 8080 | GraphQL API over PostgreSQL (not actively used in current version but available)      |
-| **graph-node**          | 8000 | TheGraph indexing node for efficient blockchain event queries                         |
-| **ipfs**                | 5001 | IPFS node for subgraph deployment metadata (TheGraph dependency)                      |
-| **minio**               | 9000 | S3-compatible object storage for document uploads and file attachments                |
-| **minio-console**       | 9001 | MinIO web UI for browsing buckets and objects                                         |
-| **portal**              | 7700 | SettleMint blockchain explorer and contract interaction UI                            |
-| **blockscout-backend**  | 4000 | Blockscout API for transaction history and contract verification                      |
-| **blockscout-frontend** | 4001 | Blockscout web UI for exploring blocks, transactions, and addresses                   |
-| **blockscout-db**       | 5433 | Separate PostgreSQL instance for Blockscout data (isolated from application database) |
-| **blockscout-redis**    | 6380 | Dedicated Redis for Blockscout caching                                                |
+| Service                 | Port | Purpose                                   |
+| ----------------------- | ---- | ----------------------------------------- |
+| **anvil**               | 8545 | Local Ethereum node (Foundry Anvil)       |
+| **txsigner**            | 8547 | Transaction signing service               |
+| **postgres**            | 5432 | PostgreSQL database                       |
+| **redis**               | 6379 | Caching and session storage               |
+| **hasura**              | 8080 | GraphQL API (not used in current version) |
+| **graph-node**          | 8000 | TheGraph indexing node                    |
+| **minio**               | 9000 | S3-compatible object storage              |
+| **minio-console**       | 9001 | MinIO web console                         |
+| **portal**              | 7700 | SettleMint blockchain portal              |
+| **blockscout-backend**  | 4000 | Blockchain explorer API                   |
+| **blockscout-frontend** | 4001 | Blockchain explorer UI                    |
+| **drizzle-gateway**     | 4983 | Drizzle Studio database gateway           |
 
-**Verifying service health:**
-
-Wait for all services to report healthy status:
+**Wait for services to be healthy:**
 
 ```bash
 docker compose ps
@@ -561,10 +557,17 @@ bun run db:migrate
 definitions from `src/lib/db/schemas/`, and apply changes. If migrations fail,
 check:
 
-- PostgreSQL is healthy: `docker compose ps postgres`
-- Connection string is correct:
-  `postgresql://postgres:postgres@localhost:5432/postgres`
-- No conflicting PostgreSQL instance on port 5432: `lsof -i :5432`
+**Database management UI:**
+
+Access Drizzle Studio for database inspection and management:
+
+- **URL**: http://localhost:4983
+
+The Drizzle Gateway provides a web interface to browse tables, run queries, and
+inspect your database schema. Connect to your database using the connection
+string from your environment configuration.
+
+### 3. Subgraph indexing
 
 **Manual verification:** Connect directly with `psql`:
 

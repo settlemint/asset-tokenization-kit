@@ -1,8 +1,20 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
-import { getAssetIcon } from "@/components/system-assets/components/asset-icons";
-import { AssetTypeCard } from "@/components/onboarding/assets/asset-type-card";
+import { AssetTypeCard } from "@/components/platform-settings/asset-types/asset-type-card";
+import {
+  getAssetClassFromAssetType,
+  getDefaultExtensions,
+} from "@/components/platform-settings/asset-types/asset-types-constants";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { WarningAlert } from "@/components/ui/warning-alert";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -18,11 +30,24 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { CheckCircle2 } from "lucide-react";
+
+const ASSET_CLASS_ORDER = [
+  "fixedIncome",
+  "flexibleIncome",
+  "cashEquivalent",
+] as const;
 
 export function AssetTypeSelection() {
   const { refreshUserState, completeStepAndNavigate } =
     useOnboardingNavigation();
-  const { t } = useTranslation(["onboarding", "common", "tokens", "errors"]);
+  const { t } = useTranslation([
+    "onboarding",
+    "common",
+    "tokens",
+    "errors",
+    "asset-class",
+  ]);
   const queryClient = useQueryClient();
 
   const { data: systemDetails, isError: systemError } = useQuery(
@@ -72,6 +97,35 @@ export function AssetTypeSelection() {
     );
 
   const availableAssets = TokenTypeEnum.options;
+  type AssetType = (typeof availableAssets)[number];
+
+  const groupedAssetTypes = useMemo(() => {
+    const groups: Record<(typeof ASSET_CLASS_ORDER)[number], AssetType[]> = {
+      fixedIncome: [],
+      flexibleIncome: [],
+      cashEquivalent: [],
+    };
+
+    availableAssets.forEach((assetType) => {
+      const assetClass = getAssetClassFromAssetType(assetType);
+      groups[assetClass].push(assetType);
+    });
+
+    return groups;
+  }, [availableAssets]);
+
+  const assetClassSections = useMemo(
+    () =>
+      ASSET_CLASS_ORDER.map((assetClass) => ({
+        id: assetClass,
+        title: t(`categories.${assetClass}.name`, { ns: "asset-class" }),
+        description: t(`categories.${assetClass}.description`, {
+          ns: "asset-class",
+        }),
+        assets: groupedAssetTypes[assetClass],
+      })),
+    [groupedAssetTypes, t]
+  );
 
   // Create a set of already deployed asset types for easy lookup
   const deployedAssetTypes = useMemo(
@@ -162,63 +216,136 @@ export function AssetTypeSelection() {
                 <form.Field name="factories">
                   {(field) => (
                     <div className="space-y-4">
-                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {availableAssets.map((assetType) => {
-                          const Icon = getAssetIcon(assetType);
-                          const isDisabled =
-                            deployedAssetTypes.has(assetType) ||
-                            isFactoriesCreating;
-                          const isChecked = field.state.value.some(
-                            (factory) => factory.type === assetType
-                          );
-
-                          const handleToggle = (checked: boolean) => {
-                            if (isDisabled) {
-                              return;
-                            }
-
-                            const currentFactories = field.state.value ?? [];
-
-                            if (checked) {
-                              const alreadySelected = currentFactories.some(
-                                (factory) => factory.type === assetType
-                              );
-                              if (alreadySelected) {
-                                return;
-                              }
-
-                              const nextFactories = [
-                                ...currentFactories,
-                                {
-                                  type: assetType,
-                                  name: t(`asset-types.${assetType}`, {
-                                    ns: "tokens",
-                                  }),
-                                },
-                              ];
-                              field.handleChange(nextFactories);
-                            } else {
-                              const nextFactories = currentFactories.filter(
-                                (factory) => factory.type !== assetType
-                              );
-                              field.handleChange(nextFactories);
-                            }
-                          };
+                      <div className="space-y-6">
+                        {assetClassSections.map((section) => {
+                          if (section.assets.length === 0) {
+                            return null;
+                          }
 
                           return (
-                            <AssetTypeCard
-                              key={assetType}
-                              assetType={assetType}
-                              icon={Icon}
-                              isChecked={isChecked}
-                              isDisabled={isDisabled}
-                              disabledLabel={
-                                isDisabled
-                                  ? t("assets.deployed-label")
-                                  : undefined
-                              }
-                              onToggle={handleToggle}
-                            />
+                            <Card key={section.id}>
+                              <CardHeader>
+                                <CardTitle>{section.title}</CardTitle>
+                                <CardDescription>
+                                  {section.description}
+                                </CardDescription>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="grid gap-4 md:grid-cols-2 auto-rows-fr">
+                                  {section.assets.map((assetType) => {
+                                    const isDisabled =
+                                      deployedAssetTypes.has(assetType) ||
+                                      isFactoriesCreating;
+                                    const isChecked = field.state.value.some(
+                                      (factory) => factory.type === assetType
+                                    );
+
+                                    const handleToggle = (checked: boolean) => {
+                                      if (isDisabled) {
+                                        return;
+                                      }
+
+                                      const currentFactories =
+                                        field.state.value ?? [];
+
+                                      if (checked) {
+                                        const alreadySelected =
+                                          currentFactories.some(
+                                            (factory) =>
+                                              factory.type === assetType
+                                          );
+                                        if (alreadySelected) {
+                                          return;
+                                        }
+
+                                        const nextFactories = [
+                                          ...currentFactories,
+                                          {
+                                            type: assetType,
+                                            name: t(
+                                              `asset-types.${assetType}`,
+                                              {
+                                                ns: "tokens",
+                                              }
+                                            ),
+                                          },
+                                        ];
+                                        field.handleChange(nextFactories);
+                                      } else {
+                                        const nextFactories =
+                                          currentFactories.filter(
+                                            (factory) =>
+                                              factory.type !== assetType
+                                          );
+                                        field.handleChange(nextFactories);
+                                      }
+                                    };
+
+                                    const toggleSelection = () => {
+                                      handleToggle(!isChecked);
+                                    };
+
+                                    const assetDisplayName = t(
+                                      `asset-types.${assetType}`,
+                                      { ns: "tokens" }
+                                    );
+
+                                    return (
+                                      <div
+                                        key={assetType}
+                                        className="relative h-full"
+                                      >
+                                        <AssetTypeCard
+                                          assetType={assetType}
+                                          extensions={getDefaultExtensions(
+                                            assetType
+                                          )}
+                                          className="h-full"
+                                        >
+                                          {isDisabled ? (
+                                            <Badge
+                                              variant="outline"
+                                              className="flex h-9 items-center gap-1 px-3 text-sm"
+                                            >
+                                              <CheckCircle2 className="h-3 w-3" />
+                                              {t("assets.deployed-label")}
+                                            </Badge>
+                                          ) : (
+                                            <div className="h-9" />
+                                          )}
+                                        </AssetTypeCard>
+                                        <div
+                                          className={cn(
+                                            "pointer-events-none absolute inset-0 rounded-lg border-2 transition-colors",
+                                            isChecked
+                                              ? "border-primary bg-primary/5"
+                                              : "border-transparent"
+                                          )}
+                                        />
+                                        <button
+                                          type="button"
+                                          onClick={toggleSelection}
+                                          disabled={isDisabled}
+                                          aria-pressed={isChecked}
+                                          aria-label={`${isChecked ? "Deselect" : "Select"} ${assetDisplayName}`}
+                                          className={cn(
+                                            "absolute inset-0 rounded-lg bg-transparent",
+                                            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+                                            isDisabled
+                                              ? "cursor-not-allowed"
+                                              : "cursor-pointer hover:ring-2 hover:ring-primary/30"
+                                          )}
+                                        >
+                                          <span className="sr-only">
+                                            {`${isChecked ? "Deselect" : "Select"} ${assetDisplayName}`}
+                                          </span>
+                                        </button>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </CardContent>
+                            </Card>
                           );
                         })}
                       </div>
