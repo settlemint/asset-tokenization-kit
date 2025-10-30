@@ -1,25 +1,34 @@
 import { AssetExtensionsList } from "@/components/asset-extensions/asset-extensions-list";
 import { getAssetIcon } from "@/components/onboarding/assets/asset-icons";
+import { cn } from "@/lib/utils";
 import { TokenTypeEnum } from "@/orpc/routes/system/token-factory/routes/factory.create.schema";
 import type { AssetExtension } from "@atk/zod/asset-extensions";
+import type { ReactElement, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 interface AssetTypeCardProps {
   assetType: (typeof TokenTypeEnum.options)[number];
   extensions: AssetExtension[];
-  children: React.ReactNode;
+  children: ReactNode;
+  className?: string;
 }
 
 export function AssetTypeCard({
   assetType,
   extensions,
   children,
-}: AssetTypeCardProps): React.ReactElement {
+  className,
+}: AssetTypeCardProps): ReactElement {
   const { t } = useTranslation("asset-types");
   const Icon = getAssetIcon(assetType);
 
   return (
-    <div className="flex items-start justify-between p-4 rounded-lg border bg-background">
+    <div
+      className={cn(
+        "flex items-start justify-between p-4 rounded-lg border bg-background",
+        className
+      )}
+    >
       <div className="flex-1">
         <div className="flex items-center gap-3 mb-3">
           <Icon className="h-5 w-5 text-muted-foreground" />
