@@ -8,7 +8,7 @@ import * as z from "zod";
 function normalizeAbiSignature(value: string): string {
   return value
     .split(",")
-    .map((part) => part.trim().replace(/\s+/g, " "))
+    .map((part) => part.trim().replaceAll(/\s+/g, " "))
     .join(", ");
 }
 

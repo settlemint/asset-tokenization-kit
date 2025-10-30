@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-rm -rf node_modules
+find . -name 'node_modules' -type d -prune -exec rm -rf {} +
 rm -Rf kit/contracts/dependencies
 
 # Clean git files, excluding env files and turbo config
