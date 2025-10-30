@@ -1,10 +1,10 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
 import { BasicInfoTile } from "@/components/participants/entities/tiles/basic-info-tile";
 import { Badge } from "@/components/ui/badge";
-import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
@@ -160,19 +160,11 @@ function RouteComponent() {
     ? t(`asset-types:types.${assetTypeKey}.name`)
     : undefined;
 
-  const entityDescription = assetTypeKey
-    ? t(`asset-types:types.${assetTypeKey}.description`)
-    : (identity?.account?.contractName ?? "");
-
   const contractAddress = identity?.account?.id ?? identity?.id;
   const identityAddress = identity?.id ?? address;
 
   const truncatedAddress = (value: string) =>
     value.length <= 12 ? value : `${value.slice(0, 6)}…${value.slice(-4)}`;
-
-  const showEntityDescription = Boolean(
-    entityDescription && entityDescription !== entityTypeLabel
-  );
 
   if (!identity || !identity.account) {
     return (
@@ -196,9 +188,6 @@ function RouteComponent() {
           <p className="text-sm font-medium text-muted-foreground">
             {entityTypeLabel}
           </p>
-        ) : null}
-        {showEntityDescription ? (
-          <p className="text-sm text-muted-foreground">{entityDescription}</p>
         ) : null}
         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           {contractAddress ? (

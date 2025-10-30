@@ -45,21 +45,9 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
     return t("entities:entityTable.fallback.noName");
   }, [identity.account?.contractName, t, token?.name, token?.symbol]);
 
-  const description = useMemo(() => {
-    if (contractTypeKey) {
-      return t(`asset-types:types.${contractTypeKey}.description`);
-    }
-
-    return t("entities:page.description");
-  }, [contractTypeKey, contractTypeLabel, t]);
-
   const contractLabel = t("entities:entityTable.columns.address");
 
   const identityLabel = t("entities:entityTable.columns.identityAddress");
-
-  const showDescription = Boolean(
-    description && description !== contractTypeLabel
-  );
 
   return (
     <Tile>
@@ -74,9 +62,6 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
               <p className="text-sm font-medium text-muted-foreground">
                 {contractTypeLabel}
               </p>
-            ) : null}
-            {showDescription ? (
-              <p className="text-sm text-muted-foreground">{description}</p>
             ) : null}
           </div>
         </div>
