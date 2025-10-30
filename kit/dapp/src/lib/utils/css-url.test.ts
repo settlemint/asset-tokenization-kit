@@ -94,7 +94,7 @@ describe("safeCssBackgroundImage", () => {
   it("should prevent CSS injection attempts", () => {
     const maliciousUrl = "'); alert('XSS'); ('";
     const result = safeCssBackgroundImage(maliciousUrl);
-    expect(result).toBe("url('\\'\\); alert\\'XSS\\'\\); \\'')");
+    expect(result).toBe("url('\\); alert\\(\\'XSS\\'\\); \\(')");
     // The escaped version should not execute any code
     expect(result).not.toContain("alert('XSS')");
   });

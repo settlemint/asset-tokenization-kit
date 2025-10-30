@@ -109,6 +109,11 @@
     "previewSecondary": "副次的なアクション",
     "previewInputLabel": "入力例",
     "previewSwatchHeading": "パレットスナップショット",
-    "revertButton": "元に戻す"
+    "revertButton": "元に戻す",
+    "authPreviewWelcome": "お帰りなさい",
+    "authPreviewSignIn": "アカウントにサインイン",
+    "authPreviewEmailLabel": "メール",
+    "authPreviewPasswordLabel": "パスワード",
+    "authPreviewSignInButton": "サインイン"
   }
 }

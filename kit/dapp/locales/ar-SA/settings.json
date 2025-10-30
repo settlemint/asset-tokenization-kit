@@ -109,6 +109,11 @@
     "previewSecondary": "الإجراء الثانوي",
     "previewInputLabel": "مثال على الإدخال",
     "previewSwatchHeading": "لقطة لوحة الألوان",
-    "revertButton": "تراجع"
+    "revertButton": "تراجع",
+    "authPreviewWelcome": "مرحبًا بعودتك",
+    "authPreviewSignIn": "تسجيل الدخول إلى حسابك",
+    "authPreviewEmailLabel": "البريد الإلكتروني",
+    "authPreviewPasswordLabel": "كلمة المرور",
+    "authPreviewSignInButton": "تسجيل الدخول"
   }
 }

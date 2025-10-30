@@ -109,6 +109,11 @@
     "previewSecondary": "Secondary action",
     "previewInputLabel": "Example input",
     "previewSwatchHeading": "Palette snapshot",
-    "revertButton": "Revert"
+    "revertButton": "Revert",
+    "authPreviewWelcome": "Welcome back",
+    "authPreviewSignIn": "Sign in to your account",
+    "authPreviewEmailLabel": "Email",
+    "authPreviewPasswordLabel": "Password",
+    "authPreviewSignInButton": "Sign in"
   }
 }

@@ -57,7 +57,7 @@ describe("theme reset utilities", () => {
     });
     resetThemeMock.mockResolvedValue(undefined);
 
-    const result = await resetThemeToDefaults();
+    const result = await resetThemeToDefaults({ bucket: TEST_BUCKET });
 
     expect(deleteFileMock).toHaveBeenCalledTimes(2);
     expect(deleteFileMock).toHaveBeenNthCalledWith(

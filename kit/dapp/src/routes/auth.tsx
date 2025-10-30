@@ -89,14 +89,16 @@ function LayoutComponent() {
           {images.authLightUrl ? (
             <img
               src={images.authLightUrl}
-              alt="Authentication"
+              alt=""
+              aria-hidden="true"
               className="block dark:hidden w-full h-full object-cover opacity-50"
             />
           ) : null}
           {images.authDarkUrl ? (
             <img
               src={images.authDarkUrl}
-              alt="Authentication"
+              alt=""
+              aria-hidden="true"
               className="hidden dark:block w-full h-full object-cover opacity-50"
             />
           ) : null}
@@ -112,14 +114,16 @@ function LayoutComponent() {
                 {images.authLightUrl ? (
                   <img
                     src={images.authLightUrl}
-                    alt="Authentication"
+                    alt=""
+                    aria-hidden="true"
                     className="block dark:hidden h-12 w-auto object-contain"
                   />
                 ) : null}
                 {images.authDarkUrl ? (
                   <img
                     src={images.authDarkUrl}
-                    alt="Authentication"
+                    alt=""
+                    aria-hidden="true"
                     className="hidden dark:block h-12 w-auto object-contain"
                   />
                 ) : null}

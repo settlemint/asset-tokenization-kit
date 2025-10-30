@@ -205,7 +205,7 @@ export function UnifiedImagesCard({
     if (section === "logo") {
       return draft.logo[key as keyof typeof draft.logo] as string | undefined;
     }
-    return draft.images[key as keyof typeof draft.images] as string | undefined;
+    return draft.images[key as keyof typeof draft.images];
   };
 
   const renderImagePreview = (
@@ -236,11 +236,11 @@ export function UnifiedImagesCard({
             <div className="absolute inset-0 flex items-center justify-center bg-background/80">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             </div>
-          ) : !url ? (
+          ) : url ? null : (
             <div className="absolute inset-0 flex items-center justify-center">
               <ImageIcon className="h-8 w-8 text-muted-foreground" />
             </div>
-          ) : null}
+          )}
         </div>
       );
     }
@@ -288,7 +288,9 @@ export function UnifiedImagesCard({
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => onPickFile(pair.lightMode)}
+                    onClick={() => {
+                      onPickFile(pair.lightMode);
+                    }}
                     disabled={uploadStatus[pair.lightMode]}
                   >
                     <UploadCloud className="h-4 w-4 mr-2" />
@@ -321,7 +323,9 @@ export function UnifiedImagesCard({
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => onPickFile(pair.darkMode)}
+                    onClick={() => {
+                      onPickFile(pair.darkMode);
+                    }}
                     disabled={uploadStatus[pair.darkMode]}
                   >
                     <UploadCloud className="h-4 w-4 mr-2" />
@@ -368,7 +372,9 @@ export function UnifiedImagesCard({
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => onPickFile(single.mode)}
+                    onClick={() => {
+                      onPickFile(single.mode);
+                    }}
                     disabled={uploadStatus[single.mode]}
                   >
                     <UploadCloud className="h-4 w-4 mr-2" />
