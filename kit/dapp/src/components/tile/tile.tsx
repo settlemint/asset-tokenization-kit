@@ -62,7 +62,11 @@ export function Tile({
 
   return (
     <TileContext.Provider value={contextValue}>
-      <Card data-slot="tile" className={cn("h-full", className)} {...props}>
+      <Card
+        data-slot="tile"
+        className={cn("h-full border-border/60 bg-muted/50 bg-none", className)}
+        {...props}
+      >
         {children}
       </Card>
     </TileContext.Provider>

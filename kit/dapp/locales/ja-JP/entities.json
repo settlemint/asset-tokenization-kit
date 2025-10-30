@@ -13,6 +13,11 @@
     "active": "有効",
     "inactive": "無効"
   },
+  "details": {
+    "basicInfo": {
+      "title": "基本情報"
+    }
+  },
   "entityTable": {
     "columns": {
       "name": "名前",

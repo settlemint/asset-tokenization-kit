@@ -125,6 +125,12 @@
     "lastNameInfo": "Legal last name"
   },
   "details": {
+    "basicInfo": {
+      "title": "Basic info",
+      "success": "User details updated",
+      "editTitle": "Edit basic info",
+      "editDescription": "Update the user's name and email address."
+    },
     "kycInformation": "Information"
   },
   "profile": {

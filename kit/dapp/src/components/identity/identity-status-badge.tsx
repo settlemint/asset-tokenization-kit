@@ -9,12 +9,11 @@ export function IdentityStatusBadge({
   isRegistered,
 }: IdentityStatusBadgeProps) {
   const { t } = useTranslation("identities");
+  const statusKey = isRegistered
+    ? "status.registered"
+    : "status.pendingRegistration";
 
   return (
-    <Badge variant={isRegistered ? "default" : "outline"}>
-      {isRegistered
-        ? t("status.active", { defaultValue: "Active" })
-        : t("status.inactive", { defaultValue: "Inactive" })}
-    </Badge>
+    <Badge variant={isRegistered ? "default" : "outline"}>{t(statusKey)}</Badge>
   );
 }

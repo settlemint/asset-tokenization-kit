@@ -13,6 +13,11 @@
     "active": "نشط",
     "inactive": "غير نشط"
   },
+  "details": {
+    "basicInfo": {
+      "title": "معلومات أساسية"
+    }
+  },
   "entityTable": {
     "columns": {
       "name": "الاسم",

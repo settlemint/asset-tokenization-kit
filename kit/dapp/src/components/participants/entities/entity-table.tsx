@@ -3,10 +3,11 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
+import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
 import { Badge } from "@/components/ui/badge";
 import { orpc } from "@/orpc/orpc-client";
 import type { EntityListOutput } from "@/orpc/routes/system/entity/routes/entity.list.schema";
-import { EntityTypeLabels } from "@atk/zod/entity-types";
+import { entityTypes } from "@atk/zod/entity-types";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
@@ -21,7 +22,7 @@ const columnHelper = createStrictColumnHelper<EntityRow>();
 
 export const EntityTable = withErrorBoundary(function EntityTable() {
   const router = useRouter();
-  const { t } = useTranslation("entities");
+  const { t } = useTranslation(["entities", "identities"]);
   const isNavigatingRef = useRef(false);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -108,12 +109,13 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
   );
 
   const columns = useMemo(() => {
-    const entityTypeOptions = Object.entries(EntityTypeLabels).map(
-      ([value, label]) => ({
-        value,
-        label: t(`entityTable.types.${value}`, { defaultValue: label }),
-      })
-    );
+    const entityTypeOptions = entityTypes.map((type) => {
+      const translationKey = `entityTable.types.${type}` as const;
+      return {
+        value: type,
+        label: t(translationKey),
+      };
+    });
 
     return withAutoFeatures([
       columnHelper.accessor("contractName", {
@@ -185,20 +187,19 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
           options: [
             {
               value: "registered",
-              label: t("status.registered"),
+              label: t("identities:status.registered"),
             },
             {
               value: "pending",
-              label: t("status.pending"),
+              label: t("identities:status.pendingRegistration"),
             },
           ],
           renderCell: ({ getValue }) => {
             const status = getValue();
-            const translationKey =
-              status === "registered" ? "status.registered" : "status.pending";
-            const variant = status === "registered" ? "default" : "outline";
 
-            return <Badge variant={variant}>{t(translationKey)}</Badge>;
+            return (
+              <IdentityStatusBadge isRegistered={status === "registered"} />
+            );
           },
         },
       }),

@@ -37,7 +37,9 @@ async function collectFiles(): Promise<{
     const absolutePath = join(docsDir, normalizedPath);
     const slugs = deriveSlugs(normalizedPath);
     const url = buildUrlFromSlugs(slugs);
-    const content = await readFile(absolutePath, "utf8");
+    const rawContent = await readFile(absolutePath);
+    const content =
+      typeof rawContent === "string" ? rawContent : rawContent.toString("utf8");
 
     files.push({
       path: absolutePath,
@@ -113,8 +115,11 @@ async function main(): Promise<void> {
       },
     },
     determinatePathname: classifyPathname,
-    pathToUrl: (filePath) => {
-      const relativePath = toPosix(relative(docsDir, filePath));
+    pathToUrl: (filePath: string | URL | Buffer) => {
+      const resolvedPath: string = String(filePath);
+      const relativePath = toPosix(
+        relative(docsDir, resolvedPath as string) as string
+      );
       if (relativePath.startsWith("..")) return undefined;
 
       return buildUrlFromSlugs(deriveSlugs(relativePath));

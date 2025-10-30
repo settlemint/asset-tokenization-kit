@@ -1,13 +1,13 @@
+import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import {
   Tile,
   TileContent,
   TileHeader,
   TileTitle,
 } from "@/components/tile/tile";
-import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
+import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import type { Identity } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
-import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
 import { Building2 } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,21 +25,12 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
   const paused = token?.pausable?.paused ?? false;
   const contractTypeKey = token?.type ?? null;
 
-  const toTitleCase = (value: string) =>
-    value
-      .split(/[\s_-]+/)
-      .filter(Boolean)
-      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-      .join(" ");
-
   const contractTypeLabel = useMemo(() => {
     if (!contractTypeKey) {
       return null;
     }
 
-    return t(`asset-types.types.${contractTypeKey}.name`, {
-      defaultValue: toTitleCase(contractTypeKey),
-    });
+    return t(`asset-types:types.${contractTypeKey}.name`);
   }, [contractTypeKey, t]);
 
   const displayName = useMemo(() => {
@@ -51,30 +42,20 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
       return identity.account.contractName;
     }
 
-    return t("entities:entityTable.fallback.noName", {
-      defaultValue: "Unnamed",
-    });
-  }, [identity.account.contractName, t, token?.name, token?.symbol]);
+    return t("entities:entityTable.fallback.noName");
+  }, [identity.account?.contractName, t, token?.name, token?.symbol]);
 
   const description = useMemo(() => {
     if (contractTypeKey) {
-      return t(`asset-types.types.${contractTypeKey}.description`, {
-        defaultValue: contractTypeLabel ?? toTitleCase(contractTypeKey),
-      });
+      return t(`asset-types:types.${contractTypeKey}.description`);
     }
 
-    return t("entities:page.description", {
-      defaultValue: "Entity managed through the platform",
-    });
+    return t("entities:page.description");
   }, [contractTypeKey, contractTypeLabel, t]);
 
-  const contractLabel = t("entities:entityTable.columns.address", {
-    defaultValue: "Contract Address",
-  });
+  const contractLabel = t("entities:entityTable.columns.address");
 
-  const identityLabel = t("entities:entityTable.columns.identityAddress", {
-    defaultValue: "Identity Address",
-  });
+  const identityLabel = t("entities:entityTable.columns.identityAddress");
 
   const showDescription = Boolean(
     description && description !== contractTypeLabel
@@ -88,11 +69,7 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
             <Building2 className="size-5" aria-hidden="true" />
           </span>
           <div className="space-y-1">
-            <TileTitle>
-              {t("entities:details.basicInfo.title", {
-                defaultValue: "Basic Info",
-              })}
-            </TileTitle>
+            <TileTitle>{t("entities:details.basicInfo.title")}</TileTitle>
             {contractTypeLabel ? (
               <p className="text-sm font-medium text-muted-foreground">
                 {contractTypeLabel}

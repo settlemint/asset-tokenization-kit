@@ -125,6 +125,12 @@
     "lastNameInfo": "法的姓"
   },
   "details": {
+    "basicInfo": {
+      "title": "基本情報",
+      "success": "ユーザー情報を更新しました",
+      "editTitle": "基本情報を編集",
+      "editDescription": "ユーザーの氏名とメールアドレスを更新します。"
+    },
     "kycInformation": "情報"
   },
   "profile": {

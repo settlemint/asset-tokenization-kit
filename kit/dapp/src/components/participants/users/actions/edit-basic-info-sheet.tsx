@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BaseActionSheet } from "@/components/manage-dropdown/core/base-action-sheet";
+import { useSession } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth/auth.client";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { UserReadOutput } from "@/orpc/routes/user/routes/user.read.schema";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   useCallback,
@@ -29,6 +31,8 @@ interface EditBasicInfoSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (values: BasicInfoFormState) => void;
+  canEdit: boolean;
+  systemRoles?: Partial<Record<AccessControlRoles, boolean>>;
 }
 
 const FORM_ID = "edit-basic-info-form";
@@ -41,9 +45,25 @@ export function EditBasicInfoSheet({
   open,
   onOpenChange,
   onSubmit,
+  canEdit,
+  systemRoles,
 }: EditBasicInfoSheetProps) {
   const { t } = useTranslation(["user", "common"]);
+  const { data: session } = useSession();
   const queryClient = useQueryClient();
+
+  const sessionCanEdit =
+    session?.user?.role === "admin" ||
+    Boolean(session?.user?.isAdmin) ||
+    Boolean(session?.user?.roles?.admin) ||
+    Boolean(session?.user?.roles?.systemManager) ||
+    Boolean(systemRoles?.admin) ||
+    Boolean(systemRoles?.systemManager);
+  const allowEdit = canEdit && sessionCanEdit;
+
+  if (!allowEdit) {
+    return null;
+  }
 
   const initialFormState = useMemo<BasicInfoFormState>(
     () => ({
@@ -110,16 +130,32 @@ export function EditBasicInfoSheet({
         });
 
       if (existingKyc) {
-        await client.user.kyc.upsert({
+        type KycUpsertPayload = Parameters<typeof client.user.kyc.upsert>[0];
+
+        const rawDob = existingKyc.dob;
+        const parsedDob = (() => {
+          if (!rawDob) {
+            return undefined;
+          }
+
+          const candidate = rawDob instanceof Date ? rawDob : new Date(rawDob);
+          return Number.isNaN(candidate.getTime()) ? undefined : candidate;
+        })();
+
+        const kycPayload: Omit<KycUpsertPayload, "dob"> & {
+          dob?: Date;
+        } = {
           id: existingKyc.id,
           userId: existingKyc.userId,
           firstName: firstName || existingKyc.firstName,
           lastName: lastName || existingKyc.lastName,
-          dob: new Date(existingKyc.dob),
           country: existingKyc.country,
           residencyStatus: existingKyc.residencyStatus,
           nationalId: existingKyc.nationalId,
-        });
+          ...(parsedDob ? { dob: parsedDob } : {}),
+        };
+
+        await client.user.kyc.upsert(kycPayload as KycUpsertPayload);
       }
 
       return {
@@ -156,14 +192,11 @@ export function EditBasicInfoSheet({
       const submission = persistBasicInfo(formState);
 
       toast.promise(submission, {
-        loading: t("common:actions.saving", { defaultValue: "Saving" }),
-        success: t("user:details.basicInfo.success", {
-          defaultValue: "User details updated",
-        }),
+        loading: t("common:actions.saving"),
+        success: t("user:details.basicInfo.success"),
         error: (error: Error) =>
           t("common:error", {
             message: error.message,
-            defaultValue: error.message,
           }),
       });
 
@@ -180,15 +213,11 @@ export function EditBasicInfoSheet({
     <BaseActionSheet
       open={open}
       onOpenChange={onOpenChange}
-      title={t("user:details.basicInfo.editTitle", {
-        defaultValue: "Edit basic info",
-      })}
-      description={t("user:details.basicInfo.editDescription", {
-        defaultValue: "Update the user's name and email address.",
-      })}
+      title={t("user:details.basicInfo.editTitle")}
+      description={t("user:details.basicInfo.editDescription")}
       submit={
         <Button type="submit" form={FORM_ID} disabled={isSaving}>
-          {t("common:actions.save", { defaultValue: "Save changes" })}
+          {t("common:actions.save")}
         </Button>
       }
       onCancel={handleCancel}
@@ -197,7 +226,7 @@ export function EditBasicInfoSheet({
       <form id={FORM_ID} className="space-y-4" onSubmit={handleSubmit}>
         <div className="space-y-2">
           <Label htmlFor="basic-info-first-name">
-            {t("user:fields.firstName", { defaultValue: "First name" })}
+            {t("user:fields.firstName")}
           </Label>
           <Input
             id="basic-info-first-name"
@@ -208,7 +237,7 @@ export function EditBasicInfoSheet({
         </div>
         <div className="space-y-2">
           <Label htmlFor="basic-info-last-name">
-            {t("user:fields.lastName", { defaultValue: "Last name" })}
+            {t("user:fields.lastName")}
           </Label>
           <Input
             id="basic-info-last-name"
@@ -218,9 +247,7 @@ export function EditBasicInfoSheet({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="basic-info-email">
-            {t("user:fields.email", { defaultValue: "Email" })}
-          </Label>
+          <Label htmlFor="basic-info-email">{t("user:fields.email")}</Label>
           <Input
             id="basic-info-email"
             type="email"

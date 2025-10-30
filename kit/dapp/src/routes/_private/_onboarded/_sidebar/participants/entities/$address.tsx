@@ -44,18 +44,20 @@ export const Route = createFileRoute(
       })
     );
 
-    const token = await queryClient
-      .ensureQueryData(
-        orpc.token.read.queryOptions({
-          input: { tokenAddress: identity.account.id },
-        })
-      )
-      .catch((error: unknown) => {
-        if (error instanceof ORPCError && error.status === 404) {
-          return undefined;
-        }
-        throw error;
-      });
+    const account = identity.account;
+
+    const buildBreadcrumb = (title: string) => [
+      createI18nBreadcrumbMetadata("participants", {
+        href: "/participants/users",
+      }),
+      createI18nBreadcrumbMetadata("participantsEntities", {
+        href: "/participants/entities",
+      }),
+      {
+        title,
+        href: `/participants/entities/${address}`,
+      },
+    ];
 
     const isRegistered =
       identity.registered !== undefined && identity.registered !== false
@@ -66,31 +68,47 @@ export const Route = createFileRoute(
       claims: identity.claims,
       identity: identity.id,
       isRegistered,
-      account: identity.account,
+      account,
       isContract: identity.isContract,
     };
 
+    if (!account) {
+      const breadcrumbTitle = `${address.slice(0, 6)}…${address.slice(-4)}`;
+
+      return {
+        identity,
+        token: null,
+        claimsData,
+        breadcrumb: buildBreadcrumb(breadcrumbTitle),
+      };
+    }
+
+    const token = await queryClient
+      .ensureQueryData(
+        orpc.token.read.queryOptions({
+          input: { tokenAddress: account.id },
+        })
+      )
+      .catch((error: unknown) => {
+        if (
+          error instanceof ORPCError &&
+          (error.status === 404 || error.code === "UNAUTHORIZED")
+        ) {
+          return undefined;
+        }
+        throw error;
+      });
+
     const breadcrumbTitle =
       token?.name ??
-      identity.account.contractName ??
+      account.contractName ??
       `${address.slice(0, 6)}…${address.slice(-4)}`;
 
     return {
       identity,
       token: token ?? null,
       claimsData,
-      breadcrumb: [
-        createI18nBreadcrumbMetadata("participants", {
-          href: "/participants/users",
-        }),
-        createI18nBreadcrumbMetadata("participantsEntities", {
-          href: "/participants/entities",
-        }),
-        {
-          title: breadcrumbTitle,
-          href: `/participants/entities/${address}`,
-        },
-      ],
+      breadcrumb: buildBreadcrumb(breadcrumbTitle),
     };
   },
   errorComponent: DefaultCatchBoundary,
@@ -138,23 +156,12 @@ function RouteComponent() {
     `${address.slice(0, 6)}…${address.slice(-4)}`;
 
   const assetTypeKey = token?.type ?? null;
-  const toTitleCase = (value: string) =>
-    value
-      .split(/[\s_-]+/)
-      .filter(Boolean)
-      .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
-      .join(" ");
-
   const entityTypeLabel = assetTypeKey
-    ? t(`asset-types.types.${assetTypeKey}.name`, {
-        defaultValue: toTitleCase(assetTypeKey),
-      })
+    ? t(`asset-types:types.${assetTypeKey}.name`)
     : undefined;
 
   const entityDescription = assetTypeKey
-    ? t(`asset-types.types.${assetTypeKey}.description`, {
-        defaultValue: entityTypeLabel ?? toTitleCase(assetTypeKey),
-      })
+    ? t(`asset-types:types.${assetTypeKey}.description`)
     : (identity?.account?.contractName ?? "");
 
   const contractAddress = identity?.account?.id ?? identity?.id;
@@ -197,9 +204,7 @@ function RouteComponent() {
           {contractAddress ? (
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide">
-                {t("entities:entityTable.columns.address", {
-                  defaultValue: "Contract Address",
-                })}
+                {t("entities:entityTable.columns.address")}
               </span>
               <CopyToClipboard
                 value={contractAddress}
@@ -213,9 +218,7 @@ function RouteComponent() {
           ) : null}
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold uppercase tracking-wide">
-              {t("entities:entityTable.columns.identityAddress", {
-                defaultValue: "Identity Address",
-              })}
+              {t("entities:entityTable.columns.identityAddress")}
             </span>
             <CopyToClipboard
               value={identityAddress}

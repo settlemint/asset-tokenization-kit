@@ -13,6 +13,11 @@
     "active": "Active",
     "inactive": "Inactive"
   },
+  "details": {
+    "basicInfo": {
+      "title": "Basic info"
+    }
+  },
   "entityTable": {
     "columns": {
       "name": "Name",

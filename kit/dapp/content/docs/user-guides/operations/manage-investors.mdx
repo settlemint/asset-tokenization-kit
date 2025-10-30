@@ -65,6 +65,13 @@ From the compliance dashboard:
    - **Email invitation** - Send invite link to investor email
    - **Direct registration** - Provide investor with registration URL
 
+### Entity list status reference
+
+- **Registered** - Identity successfully registered on-chain and ready for use
+  in workflows.
+- **Pending registration** - Identity invited or created but awaiting
+  registration to complete onboarding.
+
 ### Investor self-registration
 
 Investor completes registration:
@@ -98,6 +105,10 @@ Platform collects required information based on investor type:
 - Tax identification number (SSN, EIN, VAT number)
 - Source of funds declaration
 - Employment and income information (for accredited investor determination)
+
+**DOB validation:** The participant edit workflow only stores dates of birth
+that parse to a valid calendar date, so malformed inputs are ignored until
+corrected.
 
 **Institutional investors:**
 
@@ -239,6 +250,9 @@ Add claims to investor OnchainID:
    - Adds claim to investor's OnchainID contract
    - Records claim in compliance database
 8. Claim appears in investor's claims list
+
+**Contract linkage:** Non-contract identities skip token prefetch until an
+account contract exists, so token tiles stay blank until linkage is provisioned.
 
 **Claim issuer:** Platform is registered as trusted claim issuer in the system.
 Only trusted issuers can issue claims accepted by compliance modules.

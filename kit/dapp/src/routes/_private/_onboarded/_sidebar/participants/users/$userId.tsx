@@ -8,7 +8,7 @@ import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import * as z from "zod";
 
@@ -44,6 +44,33 @@ export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/participants/users/$userId"
 )({
   parseParams: (params) => routeParamsSchema.parse(params),
+  beforeLoad: async ({ context: { queryClient, orpc } }) => {
+    const [currentUser, system] = await Promise.all([
+      queryClient.ensureQueryData(orpc.user.me.queryOptions()),
+      queryClient.ensureQueryData(
+        orpc.system.read.queryOptions({
+          input: { id: "default" },
+        })
+      ),
+    ]);
+
+    const systemRoles = (system.userPermissions?.roles ?? {}) as Partial<
+      Record<AccessControlRoles, boolean>
+    >;
+    const hasAdminAccess =
+      currentUser.role === "admin" ||
+      Boolean(systemRoles.admin) ||
+      Boolean(systemRoles.systemManager);
+
+    if (!hasAdminAccess) {
+      throw redirect({
+        to: "/participants/users",
+        replace: true,
+      });
+    }
+
+    return { currentUser, systemRoles } as const;
+  },
   /**
    * Loader function to prepare user data
    * Fetches user information using the ORPC user.read endpoint
@@ -91,9 +118,11 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { user: loaderUser } = Route.useLoaderData();
   const { userId } = Route.useParams();
+  const routeContext = Route.useRouteContext();
+  const { orpc } = routeContext;
   // Subscribe to live user data so UI reacts to updates
   const { data: queriedUser } = useQuery(
-    Route.useRouteContext().orpc.user.read.queryOptions({
+    orpc.user.read.queryOptions({
       input: { userId },
     })
   );
@@ -107,6 +136,17 @@ function RouteComponent() {
   };
 
   const detailedUser = user as ExtendedUser;
+  const currentUserDetail = routeContext.currentUser as
+    | ExtendedUser
+    | undefined;
+  const systemRoles =
+    (routeContext.systemRoles as
+      | Partial<Record<AccessControlRoles, boolean>>
+      | undefined) ?? ({} as Partial<Record<AccessControlRoles, boolean>>);
+  const canEdit =
+    (currentUserDetail?.role ?? "user") === "admin" ||
+    Boolean(systemRoles.admin) ||
+    Boolean(systemRoles.systemManager);
   const displayName = getUserDisplayName(detailedUser);
   const { t } = useTranslation("user");
   const isAdminType =
@@ -186,7 +226,11 @@ function RouteComponent() {
         </div>
       </div>
       <div className="grid auto-rows-fr items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <BasicInfoTile user={user} />
+        <BasicInfoTile
+          user={user}
+          canEdit={canEdit}
+          systemRoles={systemRoles}
+        />
       </div>
 
       {/* Nested Sub Routes */}
