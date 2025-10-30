@@ -49,6 +49,7 @@
   "yes": "はい",
   "no": "いいえ",
   "timeInterval": {
+    "HOURLY": "毎時",
     "DAILY": "毎日",
     "WEEKLY": "毎週",
     "MONTHLY": "毎月（30日）",

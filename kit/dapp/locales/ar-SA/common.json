@@ -49,6 +49,7 @@
   "yes": "نعم",
   "no": "لا",
   "timeInterval": {
+    "HOURLY": "ساعي",
     "DAILY": "يومي",
     "WEEKLY": "أسبوعي",
     "MONTHLY": "شهري (30 يومًا)",

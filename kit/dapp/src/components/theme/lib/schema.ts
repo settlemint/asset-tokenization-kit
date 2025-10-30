@@ -90,6 +90,8 @@ const fontSchema = z.object({
 const logoSchema = z.object({
   lightUrl: themeAssetURL.optional(),
   darkUrl: themeAssetURL.optional(),
+  lightIconUrl: themeAssetURL.optional(),
+  darkIconUrl: themeAssetURL.optional(),
   alt: z.string().max(200).optional().default("Logo"),
   width: z.number().int().positive().optional(),
   height: z.number().int().positive().optional(),
@@ -212,6 +214,8 @@ export const DEFAULT_THEME: ThemeConfig = {
     alt: "SettleMint",
     lightUrl: "/logos/settlemint-logo-h-lm.svg",
     darkUrl: "/logos/settlemint-logo-h-dm.svg",
+    lightIconUrl: "/logos/settlemint-logo-i-lm.svg",
+    darkIconUrl: "/logos/settlemint-logo-i-dm.svg",
   },
   fonts: {
     sans: {

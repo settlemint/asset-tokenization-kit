@@ -29,28 +29,11 @@
         "wallet": "EOA",
         "identity": "アイデンティティアドレス",
         "type": "種類",
-        "verifications": "検証",
-        "status": "ステータス",
-        "lastActive": "最終アクティビティ",
-        "created": "作成日",
-        "role": "ロール",
-        "actions": "操作"
+        "status": "ステータス"
       },
       "status": {
         "registered": "登録済み",
-        "pending": "保留",
-        "notConnected": "未接続",
-        "identityNeeded": "アイデンティティが必要",
-        "notRegistered": "未登録",
-        "pendingRegistration": "登録処理中",
-        "admin": "管理者",
-        "adminAriaLabel": "ユーザーは管理者です",
-        "registeredAriaLabel": "ユーザーは登録済みです",
-        "notRegisteredAriaLabel": "ユーザーは未登録です",
-        "pendingAriaLabel": "ユーザーの状態は保留です",
-        "notConnectedAriaLabel": "ユーザーのウォレットは未接続です",
-        "identityNeededAriaLabel": "ユーザーにはアイデンティティが必要です",
-        "pendingRegistrationAriaLabel": "ユーザーの登録は処理中です"
+        "pending": "保留"
       },
       "type": {
         "admin": "管理者",
@@ -60,9 +43,6 @@
       "verifications": {
         "none": "検証なし"
       },
-      "identity": {
-        "none": "アイデンティティなし"
-      },
       "actions": {
         "viewDetails": "詳細を表示",
         "menu": "メニュー",
@@ -71,7 +51,6 @@
       "search": {
         "placeholder": "名前、メール、またはウォレットで検索..."
       },
-      "noWallet": "ウォレットなし",
       "emptyState": {
         "title": "ユーザーが見つかりません",
         "description": "まだユーザーが登録されていません。",
@@ -82,8 +61,8 @@
         "navigationFailed": "ユーザー詳細へのナビゲーションに失敗しました"
       },
       "fallback": {
-        "never": "未実行",
-        "unknown": "不明"
+        "unknown": "不明",
+        "none": "なし"
       }
     }
   },
@@ -98,7 +77,8 @@
     "table": {
       "columns": {
         "name": "名前",
-        "role": "ロール"
+        "role": "ロール",
+        "lastActive": "最終アクティビティ"
       },
       "errors": {
         "navigationFailed": "ユーザー詳細へのナビゲーションに失敗しました",

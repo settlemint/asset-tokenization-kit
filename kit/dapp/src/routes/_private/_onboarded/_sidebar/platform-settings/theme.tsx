@@ -44,6 +44,7 @@ import {
 import { localStorageService } from "@/lib/utils/local-storage";
 import { orpc } from "@/orpc/orpc-client";
 import type {
+  ThemeLogoMode,
   ThemeLogoUploadInput,
   ThemeLogoUploadOutput,
 } from "@/orpc/routes/settings/routes/theme.upload-logo.schema";
@@ -109,7 +110,7 @@ function ThemeSettingsPage() {
 
   if (!isAdmin) {
     return (
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="w-full p-6 space-y-6">
         <RouterBreadcrumb />
         <Alert variant="destructive">
           <Shield className="h-4 w-4" />
@@ -161,17 +162,20 @@ function ThemeSettingsPage() {
   const [validationSummary, setValidationSummary] = useState<string | null>(
     null
   );
-  const [logoUploadStatus, setLogoUploadStatus] = useState<{
-    light: boolean;
-    dark: boolean;
-  }>({
+  const [logoUploadStatus, setLogoUploadStatus] = useState<
+    Record<ThemeLogoMode, boolean>
+  >({
     light: false,
     dark: false,
+    lightIcon: false,
+    darkIcon: false,
   });
 
-  const logoObjectUrls = useRef<{ light?: string; dark?: string }>({});
+  const logoObjectUrls = useRef<Partial<Record<ThemeLogoMode, string>>>({});
   const lightLogoInputRef = useRef<HTMLInputElement | null>(null);
   const darkLogoInputRef = useRef<HTMLInputElement | null>(null);
+  const lightIconLogoInputRef = useRef<HTMLInputElement | null>(null);
+  const darkIconLogoInputRef = useRef<HTMLInputElement | null>(null);
   const lastSavedDraftRef = useRef<string | null>(null);
   const previewStyleElementRef = useRef<HTMLStyleElement | null>(null);
 
@@ -267,7 +271,12 @@ function ThemeSettingsPage() {
     setPreviewDraft(cloned);
     setCompiledCss(precompiledCss ?? compileThemeCSS(cloned));
     setIsCompiling(false);
-    setLogoUploadStatus({ light: false, dark: false });
+    setLogoUploadStatus({
+      light: false,
+      dark: false,
+      lightIcon: false,
+      darkIcon: false,
+    });
     clearLogoObjectUrls();
   };
 
@@ -446,19 +455,45 @@ function ThemeSettingsPage() {
   const draftSerialized = useMemo(() => JSON.stringify(draft), [draft]);
   const baseSerialized = useMemo(() => JSON.stringify(baseTheme), [baseTheme]);
   const hasUnsavedChanges = draftSerialized !== baseSerialized;
-  const hasPendingLogoUpload = logoUploadStatus.light || logoUploadStatus.dark;
+  const hasPendingLogoUpload = Object.values(logoUploadStatus).some(Boolean);
 
-  const handleLogoFile = (mode: "light" | "dark", file: File | null) => {
+  const resolveLogoFieldKey = (
+    mode: ThemeLogoMode
+  ): "lightUrl" | "darkUrl" | "lightIconUrl" | "darkIconUrl" => {
+    switch (mode) {
+      case "light":
+        return "lightUrl";
+      case "dark":
+        return "darkUrl";
+      case "lightIcon":
+        return "lightIconUrl";
+      case "darkIcon":
+        return "darkIconUrl";
+    }
+  };
+
+  const resolveFallbackLogo = (mode: ThemeLogoMode): string => {
+    switch (mode) {
+      case "light":
+        return "/logos/settlemint-logo-h-lm.svg";
+      case "dark":
+        return "/logos/settlemint-logo-h-dm.svg";
+      case "lightIcon":
+        return "/logos/settlemint-logo-i-lm.svg";
+      case "darkIcon":
+        return "/logos/settlemint-logo-i-dm.svg";
+    }
+  };
+
+  const handleLogoFile = (mode: ThemeLogoMode, file: File | null) => {
     if (!file) {
       return;
     }
 
-    const fieldPath = mode === "light" ? "logo.lightUrl" : "logo.darkUrl";
+    const fieldKey = resolveLogoFieldKey(mode);
+    const fieldPath = `logo.${fieldKey}` as const;
     const currentValues = form.state.values as ThemeConfig;
-    const previousValue =
-      mode === "light"
-        ? currentValues.logo.lightUrl
-        : currentValues.logo.darkUrl;
+    const previousValue = currentValues.logo[fieldKey];
 
     const previousObjectUrl = logoObjectUrls.current[mode];
     if (previousObjectUrl) {
@@ -470,11 +505,7 @@ function ThemeSettingsPage() {
     form.setFieldValue(fieldPath, objectUrl);
 
     const optimisticDraft = cloneThemeConfig(draft);
-    if (mode === "light") {
-      optimisticDraft.logo.lightUrl = objectUrl;
-    } else {
-      optimisticDraft.logo.darkUrl = objectUrl;
-    }
+    optimisticDraft.logo[fieldKey] = objectUrl;
     updatePreviewDraft(optimisticDraft);
 
     setLogoUploadStatus((state) => ({ ...state, [mode]: true }));
@@ -484,11 +515,15 @@ function ThemeSettingsPage() {
     );
 
     const fallbackUrl =
-      typeof previousValue === "string" && previousValue.length > 0
+      (typeof previousValue === "string" && previousValue.length > 0
         ? previousValue
-        : mode === "light"
-          ? (baseTheme.logo.lightUrl ?? "")
-          : (baseTheme.logo.darkUrl ?? "");
+        : (() => {
+            const baseUrl = baseTheme.logo[fieldKey] ?? "";
+            if (baseUrl.length > 0) {
+              return baseUrl;
+            }
+            return resolveFallbackLogo(mode);
+          })()) ?? resolveFallbackLogo(mode);
 
     const contentType = file.type as ThemeLogoUploadInput["contentType"];
 
@@ -526,11 +561,7 @@ function ThemeSettingsPage() {
     uploadPromise
       .then(({ result, etag, uploadedAt }) => {
         const nextDraft = getDraftSnapshot();
-        if (mode === "light") {
-          nextDraft.logo.lightUrl = result.publicUrl;
-        } else {
-          nextDraft.logo.darkUrl = result.publicUrl;
-        }
+        nextDraft.logo[fieldKey] = result.publicUrl;
         nextDraft.logo.etag = etag.length > 0 ? etag : nextDraft.logo.etag;
         nextDraft.logo.updatedAt = uploadedAt;
         updatePreviewDraft(nextDraft);
@@ -543,11 +574,7 @@ function ThemeSettingsPage() {
       })
       .catch((error: unknown) => {
         const fallbackDraft = getDraftSnapshot();
-        if (mode === "light") {
-          fallbackDraft.logo.lightUrl = fallbackUrl;
-        } else {
-          fallbackDraft.logo.darkUrl = fallbackUrl;
-        }
+        fallbackDraft.logo[fieldKey] = fallbackUrl;
         updatePreviewDraft(fallbackDraft);
         form.setFieldValue(fieldPath, fallbackUrl);
         toast.error(error instanceof Error ? error.message : String(error));
@@ -559,9 +586,19 @@ function ThemeSettingsPage() {
       });
   };
 
-  const openLogoFileDialog = (mode: "light" | "dark") => {
-    const target =
-      mode === "light" ? lightLogoInputRef.current : darkLogoInputRef.current;
+  const openLogoFileDialog = (mode: ThemeLogoMode) => {
+    const target = (() => {
+      switch (mode) {
+        case "light":
+          return lightLogoInputRef.current;
+        case "dark":
+          return darkLogoInputRef.current;
+        case "lightIcon":
+          return lightIconLogoInputRef.current;
+        case "darkIcon":
+          return darkIconLogoInputRef.current;
+      }
+    })();
     target?.click();
   };
 
@@ -668,7 +705,7 @@ function ThemeSettingsPage() {
         if (workerRef.current === null) {
           const worker = new globalThis.Worker(
             new URL(
-              "@/components/theme/lib/theme-css.worker.ts",
+              /* @vite-ignore */ "@/components/theme/lib/theme-css.worker.ts",
               import.meta.url
             ),
             { type: "module" }
@@ -803,7 +840,7 @@ function ThemeSettingsPage() {
   }, [t, lightTokens.length, darkTokens.length]);
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="w-full p-6 space-y-6">
       <RouterBreadcrumb />
 
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -882,6 +919,8 @@ function ThemeSettingsPage() {
                   onFileSelected={handleLogoFile}
                   lightInputRef={lightLogoInputRef}
                   darkInputRef={darkLogoInputRef}
+                  lightIconInputRef={lightIconLogoInputRef}
+                  darkIconInputRef={darkIconLogoInputRef}
                   uploadStatus={logoUploadStatus}
                   t={tTheme}
                 />

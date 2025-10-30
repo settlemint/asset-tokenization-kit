@@ -33,6 +33,7 @@ describe("theme validation", () => {
     const largeLogo = sanitizeThemeForValidation(DEFAULT_THEME);
     const buffer = Buffer.alloc(600 * 1024, 0);
     largeLogo.logo.lightUrl = `data:image/svg+xml;base64,${buffer.toString("base64")}`;
+    largeLogo.logo.lightIconUrl = `data:image/svg+xml;base64,${buffer.toString("base64")}`;
 
     const issues = validateThemeLimits(largeLogo);
     expect(issues.some((issue) => issue.code === "LOGO_TOO_LARGE")).toBe(true);

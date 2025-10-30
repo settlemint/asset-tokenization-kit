@@ -1,15 +1,13 @@
 ---
-title: Asset management
+title: Token management UX
 description:
-  User-facing workflows for creating, managing, and operating tokenized assets
+  The asset management interface provides intuitive workflows for issuing,
+  operating, and monitoring tokenized financial instruments. Designed for both
+  financial professionals and compliance officers, the interface abstracts
+  blockchain complexity while maintaining full control and transparency.
 pageTitle: Asset management interface - User workflows and screens
 tags: [architecture, ux, workflows, asset-management, interface]
 ---
-
-The asset management interface provides intuitive workflows for issuing,
-operating, and monitoring tokenized financial instruments. Designed for both
-financial professionals and compliance officers, the interface abstracts
-blockchain complexity while maintaining full control and transparency.
 
 ## Core user workflows
 
@@ -22,52 +20,52 @@ steps:
   chart={`
 flowchart TB
     subgraph "Step 1: Asset Type Selection"
-        TypeSelect["Choose Asset Class
+        TypeSelect("Choose Asset Class
         • Bond (debt instrument)
         • Equity (company shares)
         • Fund (investment units)
-        • StableCoin (fiat-backed)"]
+        • StableCoin (fiat-backed)")
     end
 
     subgraph "Step 2: Basic Configuration"
-        BasicInfo["Enter Token Details
+        BasicInfo("Enter Token Details
         • Name & symbol
         • Total supply
         • Decimals
-        • Optional: ISIN/ticker"]
+        • Optional: ISIN/ticker")
     end
 
     subgraph "Step 3: Compliance Rules"
-        Compliance["Configure Transfer Rules
+        Compliance("Configure Transfer Rules
         • Identity requirements
         • Country restrictions
         • Investor caps
-        • Time locks"]
+        • Time locks")
     end
 
     subgraph "Step 4: Asset-Specific Features"
-        Features["Enable Extensions
+        Features("Enable Extensions
         Bond: maturity, yield schedule
         Equity: voting, dividends
         Fund: NAV, management fees
-        StableCoin: reserve backing"]
+        StableCoin: reserve backing")
     end
 
     subgraph "Step 5: Review & Deploy"
-        Review["Review Configuration
+        Review("Review Configuration
         • Gas estimation
         • Contract preview
-        • Compliance summary"]
-        Deploy["Submit Transaction
+        • Compliance summary")
+        Deploy("Submit Transaction
         • Wallet confirmation
-        • Progress monitoring"]
+        • Progress monitoring")
     end
 
     subgraph "Step 6: Post-Deployment"
-        Success["Asset Live
+        Success("Asset Live
         • Token address
         • View dashboard
-        • Distribute to holders"]
+        • Distribute to holders")
     end
 
     TypeSelect --> BasicInfo
@@ -77,13 +75,13 @@ flowchart TB
     Review --> Deploy
     Deploy --> Success
 
-    style TypeSelect fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style BasicInfo fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Compliance fill:#d97706,stroke:#92400e,color:#fff
-    style Features fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Review fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Deploy fill:#d97706,stroke:#92400e,color:#fff
-    style Success fill:#10b981,stroke:#047857,color:#fff
+    style TypeSelect fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style BasicInfo fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Compliance fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Features fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Review fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Deploy fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Success fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
 
 `} />
 
@@ -155,7 +153,7 @@ Configuration adapts to selected asset type:
 **Equity features:**
 
 - Voting mechanism (on-chain governance integration)
-- Dividend policy (automatic distribution, claimable)
+- Dividend policy (scheduled calculation, claimable)
 - Share class (common, preferred, non-voting)
 - Anti-dilution protection
 
@@ -216,17 +214,17 @@ At-a-glance metrics:
   chart={`
 flowchart LR
     subgraph "Key Metrics"
-        Supply["Total Supply: 1M tokens"]
-        Holders["Holder Count: 47 investors"]
-        Value["Market Cap: $5.2M"]
-        Compliance["Compliance Status: ✓ All transfers allowed"]
+        Supply("Total Supply: 1M tokens")
+        Holders("Holder Count: 47 investors")
+        Value("Market Cap: $5.2M")
+        Compliance("Compliance Status: ✓ All transfers allowed")
     end
 
     subgraph "Quick Actions"
-        Mint["Mint Tokens"]
-        Transfer["Distribute"]
-        Pause["Emergency Pause"]
-        Settings["Configure"]
+        Mint("Mint Tokens")
+        Transfer("Distribute")
+        Pause("Emergency Pause")
+        Settings("Configure")
     end
 
     Supply --> Mint
@@ -234,10 +232,10 @@ flowchart LR
     Value --> Settings
     Compliance --> Pause
 
-    style Supply fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Holders fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Value fill:#10b981,stroke:#047857,color:#fff
-    style Compliance fill:#10b981,stroke:#047857,color:#fff
+    style Supply fill:#6ba4d4,stroke:#4a7ba8,color:#fff
+    style Holders fill:#6ba4d4,stroke:#4a7ba8,color:#fff
+    style Value fill:#5fc9bf,stroke:#3a9d96,color:#fff
+    style Compliance fill:#5fc9bf,stroke:#3a9d96,color:#fff
 
 `} />
 
@@ -344,11 +342,11 @@ For assets with payment features:
 - Set payment date
 - Preview per-holder allocation (pro-rata calculation)
 
-**Automated distributions:**
+**Scheduled distributions:**
 
 - Configure recurring schedules (quarterly coupons)
-- Link to bank account for automatic funding
-- Set up notifications (email holders before payment)
+- Link yield wallet for claim-based funding
+- Set up notifications (email holders before payment date)
 
 #### Permissions tab (permissions.tsx)
 
@@ -382,37 +380,37 @@ Compliance officers manage investor onboarding:
 <Mermaid
   chart={`
 flowchart TB
-    Application["Investor Applies
+    Application("Investor Applies
     • Submits personal info
     • Uploads KYC documents
-    • Connects wallet"]
+    • Connects wallet")
 
-    Queue["Review Queue
+    Queue("Review Queue
     • Compliance officer notified
     • Document verification
-    • Background checks"]
+    • Background checks")
 
     Decision{"Approve or Reject?"}
 
-    Approve["Approve Identity
+    Approve("Approve Identity
     • Create OnchainID
     • Issue claim topics
-    • Add to token whitelist"]
+    • Add to token whitelist")
 
-    Reject["Reject Application
+    Reject("Reject Application
     • Provide rejection reason
     • Notify investor
-    • Log compliance decision"]
+    • Log compliance decision")
 
-    Identity["OnchainID Created
+    Identity("OnchainID Created
     • Blockchain identity registered
     • Claims cryptographically signed
-    • Linked to wallet"]
+    • Linked to wallet")
 
-    Eligible["Eligible for Trading
+    Eligible("Eligible for Trading
     • Can receive tokens
     • Compliance checks pass
-    • Participate in distributions"]
+    • Participate in distributions")
 
     Application --> Queue
     Queue --> Decision
@@ -421,12 +419,13 @@ flowchart TB
     Approve --> Identity
     Identity --> Eligible
 
-    style Application fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Queue fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Approve fill:#10b981,stroke:#047857,color:#fff
-    style Reject fill:#d97706,stroke:#92400e,color:#fff
-    style Identity fill:#10b981,stroke:#047857,color:#fff
-    style Eligible fill:#10b981,stroke:#047857,color:#fff
+    style Application fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Queue fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Decision fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Approve fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Reject fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Identity fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Eligible fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
 
 `} />
 
@@ -526,9 +525,9 @@ Interface: Token dashboard → Actions tab
    - Transfer stablecoin to distribution contract
    - Or authorize payment from linked bank account
 7. Submit transaction:
-   - Execute distribution on-chain
-   - Each holder can claim their portion
-   - Or system pushes to holder wallets automatically
+   - Execute distribution schedule on-chain
+   - System calculates entitlements for each holder
+   - Holders claim their portion on-demand
 8. Confirm completion:
    - View distribution receipt
    - Export payment proof for accounting

@@ -40,7 +40,7 @@ export function ClaimYieldSheet({
           }),
           qc.invalidateQueries({
             queryKey: orpc.fixedYieldSchedule.read.queryOptions({
-              input: { id: yieldSchedule?.id ?? "" },
+              input: { contract: yieldSchedule?.id ?? "" },
             }).queryKey,
           }),
           qc.invalidateQueries({

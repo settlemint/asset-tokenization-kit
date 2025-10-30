@@ -95,7 +95,6 @@ export function NavAsset() {
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
-                        tooltip={t("asset")}
                         className={hasActiveChild ? "font-semibold" : ""}
                       >
                         <assetClass.icon />

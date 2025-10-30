@@ -1,0 +1,1186 @@
+---
+title: Integration playbook
+description:
+  ATK is designed as an open platform that integrates with external systems
+  through well-defined integration patterns. This playbook covers payment rails,
+  KYC providers, identity providers, custody solutions, and corporate action
+  automation.
+pageTitle: How to integrate external systems with ATK
+tags: [how-to, integration, payment-rails, kyc, webhooks, api]
+---
+
+**Primary role:** Technical architects, integration engineers
+
+**Secondary readers:** Product managers planning integrations, developers
+implementing adapters
+
+## Integration architecture
+
+### Integration layers
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph "External Systems"
+        PaymentRail(Payment Rails<br/>RTGS, SWIFT, Stablecoins)
+        KYCProvider(KYC Providers<br/>Sumsub, Jumio, Onfido)
+        Identity(Identity Providers<br/>OAuth, SAML, LDAP)
+        Custody(Custody Providers<br/>Fireblocks, Copper)
+        CorporateAction(Corporate Action<br/>Registrars, Transfer Agents)
+    end
+    
+    subgraph "Integration Layer"
+        PaymentAdapter(Payment Adapter)
+        KYCAdapter(KYC Adapter)
+        IdentityAdapter(Identity Adapter)
+        CustodyAdapter(Custody Adapter)
+        WebhookHandler(Webhook Handler)
+    end
+    
+    subgraph "ATK Platform"
+        ORPC(ORPC Procedures)
+        SmartContracts(Smart Contracts)
+        Database(PostgreSQL)
+        EventBus(Event Bus)
+    end
+    
+    PaymentRail --> PaymentAdapter
+    KYCProvider --> KYCAdapter
+    Identity --> IdentityAdapter
+    Custody --> CustodyAdapter
+    CorporateAction --> WebhookHandler
+    
+    PaymentAdapter --> ORPC
+    KYCAdapter --> ORPC
+    IdentityAdapter --> ORPC
+    CustodyAdapter --> ORPC
+    WebhookHandler --> ORPC
+    
+    ORPC --> SmartContracts
+    ORPC --> Database
+    ORPC --> EventBus
+    
+    style PaymentAdapter fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style KYCAdapter fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style IdentityAdapter fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style CustodyAdapter fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ORPC fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
+/>
+
+### Integration principles
+
+**Adapter pattern:**
+
+Each external system integrates through a dedicated adapter that:
+
+- Translates between external API and ATK data models
+- Handles authentication and rate limiting
+- Implements retry logic and circuit breakers
+- Maintains integration state
+
+**Event-driven:**
+
+Integrations use events to trigger actions:
+
+- External webhook triggers ATK procedure
+- ATK emits event consumed by external system
+- Asynchronous processing via message queue
+
+**Idempotent operations:**
+
+All integration endpoints are idempotent:
+
+- Duplicate webhook deliveries are safe
+- Retry logic won't create duplicate state
+- Use unique transaction IDs to track operations
+
+## Payment rails integration
+
+### Supported payment rails
+
+ATK supports integration with multiple payment systems for settlement:
+
+| Payment Rail                          | Settlement Time | Currency Support | Use Case                          |
+| ------------------------------------- | --------------- | ---------------- | --------------------------------- |
+| **Stablecoins (USDC, USDT)**          | &lt;1 minute    | USD, EUR         | DvP settlement, instant transfers |
+| **RTGS (Real-Time Gross Settlement)** | 1-2 hours       | Local currencies | Large value domestic transfers    |
+| **SWIFT**                             | 1-5 days        | 150+ currencies  | Cross-border transfers            |
+| **SEPA**                              | 1-2 days        | EUR              | European domestic transfers       |
+| **FedNow**                            | &lt;1 minute    | USD              | US instant payments               |
+| **ACH**                               | 1-3 days        | USD              | US domestic batched transfers     |
+
+### Stablecoin settlement integration
+
+**Architecture:**
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant Buyer
+    participant DvPContract
+    participant StablecoinAdapter
+    participant USDCContract
+    participant Seller
+    
+    Buyer->>DvPContract: Initiate DvP trade<br/>(buy 1000 tokens for $10,000 USDC)
+    DvPContract->>StablecoinAdapter: Request payment verification
+    StablecoinAdapter->>USDCContract: Check buyer USDC balance
+    USDCContract-->>StablecoinAdapter: Balance confirmed
+    StablecoinAdapter-->>DvPContract: Payment verified
+    
+    Note over DvPContract: Atomic settlement
+    
+    DvPContract->>USDCContract: Transfer $10,000 USDC<br/>buyer → seller
+    USDCContract-->>DvPContract: Payment confirmed
+    DvPContract->>Buyer: Transfer 1000 tokens<br/>escrow → buyer
+    DvPContract->>Seller: Notify settlement complete
+    
+    style DvPContract fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style StablecoinAdapter fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff`}
+/>
+
+**Implementation:**
+
+```typescript
+// kit/dapp/src/integrations/payment/stablecoin-adapter.ts
+import { viem } from "@/lib/viem";
+import { parseUnits, Address } from "viem";
+
+export class StablecoinAdapter {
+  constructor(
+    private readonly usdcContractAddress: Address,
+    private readonly tokenContractAddress: Address
+  ) {}
+
+  async initiateDvPSettlement(params: {
+    buyer: Address;
+    seller: Address;
+    tokenAmount: bigint;
+    usdcAmount: bigint;
+  }) {
+    // 1. Verify buyer has sufficient USDC balance
+    const balance = await viem.readContract({
+      address: this.usdcContractAddress,
+      abi: ERC20_ABI,
+      functionName: "balanceOf",
+      args: [params.buyer],
+    });
+
+    if (balance < params.usdcAmount) {
+      throw new Error("Insufficient USDC balance");
+    }
+
+    // 2. Initiate atomic DvP settlement
+    const hash = await viem.writeContract({
+      address: this.tokenContractAddress,
+      abi: DVP_ABI,
+      functionName: "executeDvP",
+      args: [
+        params.buyer,
+        params.seller,
+        params.tokenAmount,
+        this.usdcContractAddress,
+        params.usdcAmount,
+      ],
+    });
+
+    // 3. Wait for settlement confirmation
+    const receipt = await viem.waitForTransactionReceipt({ hash });
+
+    return {
+      settlementId: hash,
+      status: receipt.status === "success" ? "completed" : "failed",
+      timestamp: new Date(),
+    };
+  }
+}
+```
+
+**Configuration:**
+
+```typescript
+// Environment variables
+USDC_CONTRACT_ADDRESS=0x... // Circle USDC contract
+USDT_CONTRACT_ADDRESS=0x... // Tether USDT contract
+DVP_CONTRACT_ADDRESS=0x... // ATK DvP settlement contract
+```
+
+### RTGS/SWIFT integration
+
+**Architecture:**
+
+RTGS and SWIFT require bank-side integration. ATK provides webhook endpoints for
+payment notifications.
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant Investor
+    participant Bank
+    participant ATK
+    participant TokenContract
+    
+    Investor->>Bank: Initiate wire transfer<br/>Reference: ATK-TX-12345
+    Bank->>Bank: Process RTGS/SWIFT payment
+    Bank->>ATK: POST /webhooks/payment<br/>{"ref": "ATK-TX-12345", "amount": 10000}
+    
+    ATK->>ATK: Validate webhook signature
+    ATK->>ATK: Match reference to pending order
+    ATK->>TokenContract: Mint tokens for investor
+    TokenContract-->>ATK: Tokens minted
+    ATK-->>Bank: 200 OK
+    ATK->>Investor: Notify: Tokens delivered`}
+/>
+
+**Webhook handler:**
+
+```typescript
+// kit/dapp/src/orpc/procedures/webhooks/payment.ts
+import { z } from "zod";
+import { procedure } from "../middleware";
+
+const paymentWebhookSchema = z.object({
+  referenceId: z.string(), // ATK-TX-XXXXX
+  amount: z.number(),
+  currency: z.enum(["USD", "EUR", "GBP"]),
+  bankTransactionId: z.string(),
+  timestamp: z.string(),
+  signature: z.string(), // HMAC signature
+});
+
+export const handlePaymentWebhook = procedure
+  .input(paymentWebhookSchema)
+  .mutation(async ({ input, ctx }) => {
+    // 1. Verify webhook signature
+    const isValid = verifyHMAC(input, process.env.BANK_WEBHOOK_SECRET!);
+    if (!isValid) {
+      throw new Error("Invalid webhook signature");
+    }
+
+    // 2. Find pending order by reference
+    const order = await ctx.db
+      .select()
+      .from(orders)
+      .where(eq(orders.referenceId, input.referenceId))
+      .limit(1);
+
+    if (!order.length) {
+      throw new Error("Order not found");
+    }
+
+    // 3. Verify payment amount matches
+    if (order[0].expectedAmount !== input.amount) {
+      throw new Error("Amount mismatch");
+    }
+
+    // 4. Mint tokens for investor
+    await ctx.txSigner.writeContract({
+      address: order[0].tokenAddress,
+      functionName: "mint",
+      args: [order[0].investorAddress, order[0].tokenAmount],
+    });
+
+    // 5. Mark order as completed
+    await ctx.db
+      .update(orders)
+      .set({
+        status: "completed",
+        paymentProof: input.bankTransactionId,
+        completedAt: new Date(input.timestamp),
+      })
+      .where(eq(orders.id, order[0].id));
+
+    return { success: true, orderId: order[0].id };
+  });
+```
+
+**Security configuration:**
+
+```typescript
+// Webhook authentication
+BANK_WEBHOOK_SECRET=<SharedSecret>
+BANK_WEBHOOK_IP_WHITELIST=203.0.113.0/24
+
+// Configure in bank admin panel
+WEBHOOK_URL=https://atk.example.com/api/webhooks/payment
+WEBHOOK_EVENTS=["payment.completed", "payment.failed"]
+```
+
+### SEPA Direct Debit integration
+
+For recurring payments (e.g., fund subscriptions):
+
+```typescript
+// kit/dapp/src/integrations/payment/sepa-adapter.ts
+export class SEPAAdapter {
+  async createDirectDebitMandate(params: {
+    investorId: string;
+    iban: string;
+    creditorId: string;
+    mandateRef: string;
+  }) {
+    // Generate SEPA XML mandate
+    const mandate = generateSEPAMandate({
+      debtor: { iban: params.iban },
+      creditor: { id: params.creditorId },
+      mandateId: params.mandateRef,
+      signatureDate: new Date().toISOString().split("T")[0],
+    });
+
+    // Store mandate in database
+    await ctx.db.insert(paymentMandates).values({
+      investorId: params.investorId,
+      mandateRef: params.mandateRef,
+      iban: params.iban,
+      status: "pending_signature",
+      mandateXml: mandate,
+    });
+
+    return { mandateRef: params.mandateRef, xmlDocument: mandate };
+  }
+
+  async initiateDirectDebit(params: {
+    mandateRef: string;
+    amount: number;
+    currency: "EUR";
+    description: string;
+  }) {
+    // Create SEPA Direct Debit XML
+    const debitXml = generateSEPADebit({
+      mandateRef: params.mandateRef,
+      amount: params.amount,
+      currency: params.currency,
+      remittanceInfo: params.description,
+      executionDate: addDays(new Date(), 1), // Next business day
+    });
+
+    // Submit to bank via SFTP or API
+    await bankAPI.submitDirectDebit(debitXml);
+
+    return { debitId: generateId(), status: "pending" };
+  }
+}
+```
+
+## KYC provider integration
+
+### KYC provider adapter pattern
+
+**Supported providers:**
+
+- **Sumsub** - Automated identity verification
+- **Jumio** - Document verification and biometrics
+- **Onfido** - Identity checks and AML screening
+- **Trulioo** - Global identity verification
+- **ComplyAdvantage** - AML/sanctions screening
+
+**Adapter interface:**
+
+```typescript
+// kit/dapp/src/integrations/kyc/kyc-provider.interface.ts
+export interface IKYCProvider {
+  // Submit KYC application to provider
+  submitApplication(params: {
+    applicantId: string;
+    firstName: string;
+    lastName: string;
+    dateOfBirth: string;
+    nationality: string;
+    documentType: "passport" | "drivers_license" | "id_card";
+    documentImages: Buffer[];
+  }): Promise<{ verificationId: string }>;
+
+  // Check verification status
+  getVerificationStatus(verificationId: string): Promise<{
+    status: "pending" | "approved" | "rejected" | "review";
+    reason?: string;
+    completedAt?: Date;
+  }>;
+
+  // Handle webhook from provider
+  handleWebhook(
+    payload: unknown,
+    signature: string
+  ): Promise<{
+    verificationId: string;
+    status: string;
+    investorId: string;
+  }>;
+}
+```
+
+### Sumsub integration example
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant Investor
+    participant DApp
+    participant ORPC
+    participant SumsubAdapter
+    participant Sumsub
+    participant ComplianceOfficer
+    
+    Investor->>DApp: Submit KYC application
+    DApp->>ORPC: kyc.submit()
+    ORPC->>SumsubAdapter: submitApplication()
+    SumsubAdapter->>Sumsub: POST /resources/applicants
+    Sumsub-->>SumsubAdapter: applicantId
+    SumsubAdapter-->>ORPC: verificationId
+    ORPC-->>Investor: Application submitted
+    
+    Note over Sumsub: Automated verification
+    
+    Sumsub->>SumsubAdapter: Webhook: verification.completed
+    SumsubAdapter->>ORPC: kyc.processWebhook()
+    ORPC->>ORPC: Update application status
+    
+    alt Approved
+        ORPC->>ORPC: Deploy OnchainID
+        ORPC->>ORPC: Issue KYC claim
+        ORPC->>Investor: Notify: KYC approved
+    else Rejected
+        ORPC->>Investor: Notify: Additional documents needed
+    else Needs review
+        ORPC->>ComplianceOfficer: Manual review required
+    end
+    
+    style SumsubAdapter fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style ORPC fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff`}
+/>
+
+**Implementation:**
+
+```typescript
+// kit/dapp/src/integrations/kyc/sumsub-adapter.ts
+import crypto from "crypto";
+import axios from "axios";
+
+export class SumsubAdapter implements IKYCProvider {
+  private readonly baseURL = "https://api.sumsub.com";
+  private readonly appToken = process.env.SUMSUB_APP_TOKEN!;
+  private readonly secretKey = process.env.SUMSUB_SECRET_KEY!;
+
+  async submitApplication(params: {
+    applicantId: string;
+    firstName: string;
+    lastName: string;
+    dateOfBirth: string;
+    nationality: string;
+    documentType: string;
+    documentImages: Buffer[];
+  }) {
+    const endpoint = "/resources/applicants";
+    const method = "POST";
+
+    // Generate Sumsub authentication signature
+    const timestamp = Math.floor(Date.now() / 1000);
+    const signature = this.generateSignature(method, endpoint, timestamp);
+
+    // Create applicant
+    const response = await axios.post(
+      `${this.baseURL}${endpoint}`,
+      {
+        externalUserId: params.applicantId,
+        fixedInfo: {
+          firstName: params.firstName,
+          lastName: params.lastName,
+          dob: params.dateOfBirth,
+          country: params.nationality,
+        },
+        requiredIdDocs: {
+          docSets: [
+            {
+              idDocSetType: params.documentType.toUpperCase(),
+              types: ["IDENTITY"],
+            },
+          ],
+        },
+      },
+      {
+        headers: {
+          "X-App-Token": this.appToken,
+          "X-App-Access-Sig": signature,
+          "X-App-Access-Ts": timestamp.toString(),
+        },
+      }
+    );
+
+    // Upload document images
+    for (const image of params.documentImages) {
+      await this.uploadDocument(response.data.id, image);
+    }
+
+    return { verificationId: response.data.id };
+  }
+
+  async handleWebhook(payload: any, signature: string) {
+    // Verify webhook signature
+    const isValid = this.verifyWebhookSignature(payload, signature);
+    if (!isValid) {
+      throw new Error("Invalid webhook signature");
+    }
+
+    // Extract verification data
+    const { applicantId, reviewResult, externalUserId } = payload;
+
+    return {
+      verificationId: applicantId,
+      status: reviewResult.reviewAnswer, // GREEN, RED, YELLOW
+      investorId: externalUserId,
+    };
+  }
+
+  private generateSignature(
+    method: string,
+    endpoint: string,
+    timestamp: number
+  ): string {
+    const message = `${timestamp}${method}${endpoint}`;
+    return crypto
+      .createHmac("sha256", this.secretKey)
+      .update(message)
+      .digest("hex");
+  }
+
+  private verifyWebhookSignature(payload: any, signature: string): boolean {
+    const calculatedSig = crypto
+      .createHmac("sha256", this.secretKey)
+      .update(JSON.stringify(payload))
+      .digest("hex");
+
+    return crypto.timingSafeEqual(
+      Buffer.from(signature),
+      Buffer.from(calculatedSig)
+    );
+  }
+}
+```
+
+**Configuration:**
+
+```typescript
+// Environment variables
+SUMSUB_APP_TOKEN=<ApplicationToken>
+SUMSUB_SECRET_KEY=<SecretKey>
+SUMSUB_WEBHOOK_SECRET=<WebhookSecret>
+
+// Configure in Sumsub dashboard
+WEBHOOK_URL=https://atk.example.com/api/webhooks/kyc
+WEBHOOK_EVENTS=["applicantReviewed", "applicantPending"]
+```
+
+### AML screening integration
+
+For ongoing AML monitoring:
+
+```typescript
+// kit/dapp/src/integrations/kyc/aml-screening.ts
+import { ComplyAdvantageAPI } from "@complyadvantage/api";
+
+export class AMLScreeningAdapter {
+  private readonly client = new ComplyAdvantageAPI(
+    process.env.COMPLYADVANTAGE_API_KEY!
+  );
+
+  async screenInvestor(params: {
+    investorId: string;
+    fullName: string;
+    dateOfBirth: string;
+    nationality: string;
+  }) {
+    // Search sanctions, PEP, and adverse media lists
+    const searchResult = await this.client.searches.create({
+      search_term: params.fullName,
+      fuzziness: 0.7,
+      filters: {
+        birth_year: parseInt(params.dateOfBirth.split("-")[0]),
+        types: ["sanction", "warning", "fitness-probity", "pep"],
+      },
+    });
+
+    // Parse results
+    const hits = searchResult.data.filter((result: any) =>
+      result.match_types.includes("name_exact")
+    );
+
+    if (hits.length > 0) {
+      // Store alert for compliance officer review
+      await ctx.db.insert(amlAlerts).values({
+        investorId: params.investorId,
+        alertType: "potential_match",
+        matchData: JSON.stringify(hits),
+        status: "pending_review",
+        createdAt: new Date(),
+      });
+
+      return { risk: "high", matches: hits.length };
+    }
+
+    return { risk: "low", matches: 0 };
+  }
+
+  async schedulePeriodicScreening(investorId: string) {
+    // Create recurring screening job
+    await ctx.db.insert(screeningSchedules).values({
+      investorId,
+      frequency: "monthly",
+      lastScreenedAt: new Date(),
+      nextScreenAt: addMonths(new Date(), 1),
+    });
+  }
+}
+```
+
+## External identity provider integration
+
+### OAuth 2.0 / OpenID Connect integration
+
+Integrate with corporate identity providers for SSO:
+
+```typescript
+// kit/dapp/src/integrations/identity/oauth-adapter.ts
+import { OAuth2Client } from "google-auth-library";
+
+export class OAuthAdapter {
+  private readonly client = new OAuth2Client(
+    process.env.OAUTH_CLIENT_ID,
+    process.env.OAUTH_CLIENT_SECRET,
+    process.env.OAUTH_REDIRECT_URI
+  );
+
+  async initiateLogin() {
+    const authUrl = this.client.generateAuthUrl({
+      access_type: "offline",
+      scope: ["openid", "email", "profile"],
+      state: generateSecureToken(), // CSRF protection
+    });
+
+    return { loginUrl: authUrl };
+  }
+
+  async handleCallback(code: string, state: string) {
+    // Verify state parameter (CSRF protection)
+    const isValidState = await verifyStateToken(state);
+    if (!isValidState) {
+      throw new Error("Invalid state parameter");
+    }
+
+    // Exchange authorization code for tokens
+    const { tokens } = await this.client.getToken(code);
+    this.client.setCredentials(tokens);
+
+    // Fetch user info
+    const userInfo = await this.client.verifyIdToken({
+      idToken: tokens.id_token!,
+      audience: process.env.OAUTH_CLIENT_ID,
+    });
+
+    const payload = userInfo.getPayload();
+
+    // Create or update user in ATK
+    const user = await ctx.db
+      .insert(users)
+      .values({
+        email: payload.email!,
+        firstName: payload.given_name,
+        lastName: payload.family_name,
+        externalId: payload.sub,
+        provider: "oauth",
+      })
+      .onConflictDoUpdate({
+        target: users.email,
+        set: { lastLoginAt: new Date() },
+      });
+
+    return { userId: user.id, email: payload.email };
+  }
+}
+```
+
+### SAML 2.0 integration
+
+For enterprise SSO with SAML:
+
+```typescript
+// kit/dapp/src/integrations/identity/saml-adapter.ts
+import * as saml2 from "saml2-js";
+
+export class SAMLAdapter {
+  private readonly sp = new saml2.ServiceProvider({
+    entity_id: process.env.SAML_ENTITY_ID!,
+    private_key: process.env.SAML_PRIVATE_KEY!,
+    certificate: process.env.SAML_CERTIFICATE!,
+    assert_endpoint: process.env.SAML_ACS_URL!,
+  });
+
+  private readonly idp = new saml2.IdentityProvider({
+    sso_login_url: process.env.SAML_SSO_URL!,
+    sso_logout_url: process.env.SAML_LOGOUT_URL!,
+    certificates: [process.env.SAML_IDP_CERT!],
+  });
+
+  async initiateLogin() {
+    const loginUrl = this.sp.create_login_request_url(this.idp, {});
+    return { loginUrl };
+  }
+
+  async handleAssertion(samlResponse: string) {
+    return new Promise((resolve, reject) => {
+      this.sp.post_assert(
+        this.idp,
+        { SAMLResponse: samlResponse },
+        (err, result) => {
+          if (err) {
+            return reject(err);
+          }
+
+          // Extract user attributes
+          const { name_id, email, given_name, family_name, groups } =
+            result.user;
+
+          // Create/update user with mapped roles
+          const user = ctx.db.insert(users).values({
+            email,
+            firstName: given_name,
+            lastName: family_name,
+            externalId: name_id,
+            provider: "saml",
+            roles: mapGroupsToRoles(groups),
+          });
+
+          resolve({ userId: user.id, email });
+        }
+      );
+    });
+  }
+}
+```
+
+## Third-party custody integration
+
+### Fireblocks integration
+
+For institutional custody:
+
+```typescript
+// kit/dapp/src/integrations/custody/fireblocks-adapter.ts
+import { FireblocksSDK } from "fireblocks-sdk";
+import { readFileSync } from "fs";
+
+export class FireblocksAdapter {
+  private readonly client = new FireblocksSDK(
+    readFileSync(process.env.FIREBLOCKS_PRIVATE_KEY_PATH!, "utf8"),
+    process.env.FIREBLOCKS_API_KEY!
+  );
+
+  async createVaultAccount(investorId: string, name: string) {
+    const vault = await this.client.createVaultAccount({
+      name: `${name}-${investorId}`,
+      customerRefId: investorId,
+      autoFuel: true,
+    });
+
+    return { vaultId: vault.id };
+  }
+
+  async executeTransaction(params: {
+    vaultId: string;
+    assetId: string;
+    operation: "MINT" | "TRANSFER" | "BURN";
+    amount: string;
+    destination?: string;
+  }) {
+    const tx = await this.client.createTransaction({
+      operation: params.operation,
+      source: {
+        type: "VAULT_ACCOUNT",
+        id: params.vaultId,
+      },
+      destination: params.destination
+        ? {
+            type: "EXTERNAL_WALLET",
+            oneTimeAddress: { address: params.destination },
+          }
+        : undefined,
+      assetId: params.assetId,
+      amount: params.amount,
+      note: `ATK ${params.operation}`,
+    });
+
+    return { transactionId: tx.id, status: tx.status };
+  }
+
+  async handleWebhook(payload: any, signature: string) {
+    // Verify webhook signature
+    const isValid = this.verifyWebhookSignature(payload, signature);
+    if (!isValid) {
+      throw new Error("Invalid Fireblocks webhook signature");
+    }
+
+    // Process transaction status update
+    const { id, status, txHash } = payload;
+
+    await ctx.db
+      .update(custodyTransactions)
+      .set({
+        status,
+        blockchainTxHash: txHash,
+        completedAt: status === "COMPLETED" ? new Date() : undefined,
+      })
+      .where(eq(custodyTransactions.externalId, id));
+
+    return { success: true };
+  }
+}
+```
+
+## Corporate actions automation
+
+### Webhook configuration for dividend payments
+
+```typescript
+// kit/dapp/src/integrations/corporate-actions/dividend-distributor.ts
+export class DividendDistributor {
+  async scheduleDividendPayment(params: {
+    tokenAddress: Address;
+    recordDate: Date;
+    paymentDate: Date;
+    amountPerToken: bigint;
+    paymentCurrency: "USDC" | "USDT";
+  }) {
+    // 1. Capture token holders snapshot at record date
+    const snapshot = await this.captureHolderSnapshot(
+      params.tokenAddress,
+      params.recordDate
+    );
+
+    // 2. Calculate dividend amounts
+    const distributions = snapshot.map((holder) => ({
+      address: holder.address,
+      dividendAmount:
+        (holder.balance * params.amountPerToken) / BigInt(10 ** 18),
+    }));
+
+    // 3. Schedule payment execution
+    await ctx.db.insert(scheduledPayments).values({
+      tokenAddress: params.tokenAddress,
+      paymentDate: params.paymentDate,
+      distributions: JSON.stringify(distributions),
+      status: "scheduled",
+    });
+
+    // 4. Set up cron job for payment execution
+    await scheduleJob(params.paymentDate, async () => {
+      await this.executePayments(
+        params.tokenAddress,
+        distributions,
+        params.paymentCurrency
+      );
+    });
+
+    return { distributionCount: distributions.length };
+  }
+
+  private async executePayments(
+    tokenAddress: Address,
+    distributions: Array<{ address: Address; dividendAmount: bigint }>,
+    currency: string
+  ) {
+    const currencyContract = currency === "USDC" ? USDC_ADDRESS : USDT_ADDRESS;
+
+    // Execute batch payment
+    for (const dist of distributions) {
+      await viem.writeContract({
+        address: currencyContract,
+        abi: ERC20_ABI,
+        functionName: "transfer",
+        args: [dist.address, dist.dividendAmount],
+      });
+
+      // Record payment in database
+      await ctx.db.insert(dividendPayments).values({
+        tokenAddress,
+        recipientAddress: dist.address,
+        amount: dist.dividendAmount.toString(),
+        currency,
+        paidAt: new Date(),
+      });
+    }
+  }
+}
+```
+
+### Registrar integration for corporate action notifications
+
+```typescript
+// kit/dapp/src/integrations/corporate-actions/registrar-adapter.ts
+export class RegistrarAdapter {
+  async notifyCorporateAction(params: {
+    tokenAddress: Address;
+    actionType: "dividend" | "stock_split" | "rights_issue" | "redemption";
+    recordDate: Date;
+    paymentDate?: Date;
+    ratio?: string;
+  }) {
+    // Generate corporate action notification
+    const notification = {
+      isin: await this.getISIN(params.tokenAddress),
+      actionType: params.actionType,
+      recordDate: params.recordDate.toISOString(),
+      paymentDate: params.paymentDate?.toISOString(),
+      ratio: params.ratio,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Send to registrar via API
+    await axios.post(process.env.REGISTRAR_API_URL!, notification, {
+      headers: {
+        Authorization: `Bearer ${process.env.REGISTRAR_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    // Store notification record
+    await ctx.db.insert(corporateActionNotifications).values({
+      tokenAddress: params.tokenAddress,
+      actionType: params.actionType,
+      notifiedAt: new Date(),
+      externalRef: notification.timestamp,
+    });
+  }
+}
+```
+
+## Integration best practices
+
+### Webhook security
+
+**Signature verification:**
+
+Always verify webhook signatures to prevent spoofing:
+
+```typescript
+function verifyWebhookSignature(
+  payload: string,
+  signature: string,
+  secret: string
+): boolean {
+  const expectedSignature = crypto
+    .createHmac("sha256", secret)
+    .update(payload)
+    .digest("hex");
+
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expectedSignature)
+  );
+}
+```
+
+**IP whitelisting:**
+
+Restrict webhook endpoints to known provider IPs:
+
+```typescript
+// In NGINX ingress
+nginx.ingress.kubernetes.io/whitelist-source-range: "203.0.113.0/24,198.51.100.0/24"
+```
+
+**Idempotency:**
+
+Use unique transaction IDs to prevent duplicate processing:
+
+```typescript
+async function handleWebhook(payload: { transactionId: string /* ... */ }) {
+  // Check if already processed
+  const existing = await ctx.db
+    .select()
+    .from(processedWebhooks)
+    .where(eq(processedWebhooks.transactionId, payload.transactionId))
+    .limit(1);
+
+  if (existing.length > 0) {
+    return { status: "already_processed" };
+  }
+
+  // Process webhook
+  await processPayment(payload);
+
+  // Record as processed
+  await ctx.db.insert(processedWebhooks).values({
+    transactionId: payload.transactionId,
+    processedAt: new Date(),
+  });
+
+  return { status: "processed" };
+}
+```
+
+### Error handling and retries
+
+**Circuit breaker pattern:**
+
+```typescript
+import { CircuitBreaker } from "opossum";
+
+const breaker = new CircuitBreaker(kycProvider.submitApplication, {
+  timeout: 30000, // 30s
+  errorThresholdPercentage: 50,
+  resetTimeout: 60000, // 1 minute
+});
+
+breaker.on("open", () => {
+  console.error("Circuit breaker opened - KYC provider unavailable");
+  // Switch to fallback or manual processing
+});
+
+// Use circuit breaker
+await breaker.fire(applicationData);
+```
+
+**Exponential backoff:**
+
+```typescript
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        throw error;
+      }
+
+      const delay = baseDelay * Math.pow(2, attempt);
+      await sleep(delay);
+    }
+  }
+
+  throw new Error("Max retries exceeded");
+}
+```
+
+### Monitoring integrations
+
+**Track integration health:**
+
+Use observability dashboard to monitor:
+
+1. **Success rate** - Track successful vs. failed integration calls
+2. **Response time** - Monitor p50/p95/p99 latency for external APIs
+3. **Error types** - Categorize failures (timeout, 4xx, 5xx, validation)
+4. **Webhook delivery** - Track webhook receipt and processing time
+
+**Alert configuration:**
+
+```yaml
+# Grafana alert for integration failures
+- alert: HighIntegrationFailureRate
+  expr:
+    rate(integration_errors_total[5m]) / rate(integration_requests_total[5m]) >
+    0.1
+  for: 10m
+  labels:
+    severity: warning
+  annotations:
+    summary: "High failure rate for {{ $labels.integration }}"
+    description:
+      "Integration {{ $labels.integration }} failure rate >10% for 10 minutes"
+```
+
+## Testing integrations
+
+### Sandbox environments
+
+Use provider sandbox environments for testing:
+
+```typescript
+// Environment-aware configuration
+const SUMSUB_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://api.sumsub.com"
+    : "https://test-api.sumsub.com";
+
+const FIREBLOCKS_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://api.fireblocks.io"
+    : "https://sandbox-api.fireblocks.io";
+```
+
+### Mock adapters for local development
+
+```typescript
+// kit/dapp/src/integrations/kyc/mock-kyc-adapter.ts
+export class MockKYCAdapter implements IKYCProvider {
+  async submitApplication(params: any) {
+    // Simulate processing delay
+    await sleep(2000);
+
+    return {
+      verificationId: `mock-${generateId()}`,
+    };
+  }
+
+  async getVerificationStatus(verificationId: string) {
+    // Auto-approve for testing
+    return {
+      status: "approved" as const,
+      completedAt: new Date(),
+    };
+  }
+
+  async handleWebhook(payload: any, signature: string) {
+    return {
+      verificationId: payload.id,
+      status: "approved",
+      investorId: payload.externalUserId,
+    };
+  }
+}
+
+// Use in development
+export const kycAdapter =
+  process.env.NODE_ENV === "development"
+    ? new MockKYCAdapter()
+    : new SumsubAdapter();
+```
+
+## Troubleshooting
+
+**Webhook not receiving:**
+
+- Verify webhook URL is publicly accessible
+- Check firewall/ingress whitelist includes provider IPs
+- Confirm webhook is configured in provider dashboard
+- Test with webhook testing tools (webhook.site, requestbin)
+
+**Signature verification failing:**
+
+- Ensure secret key matches provider configuration
+- Check payload encoding (some providers sign raw bytes, others sign JSON
+  string)
+- Verify timestamp tolerance for time-based signatures
+- Log both calculated and received signatures for debugging
+
+**Integration timeout:**
+
+- Check provider status page for outages
+- Verify network connectivity from ATK to provider
+- Increase timeout configuration
+- Implement circuit breaker to prevent cascading failures
+
+For additional help, see
+[Production operations](/docs/developer-guides/deployment-ops/production-operations)
+or
+[Observability monitoring](/docs/developer-guides/deployment-ops/observability-monitoring).
+
+## Next steps
+
+- **Compliance configuration** - Configure modules to work with KYC claims:
+  [Compliance configuration](/docs/user-guides/operations/compliance-configuration)
+- **Payment rails** - Implement stablecoin settlement:
+  [DvP settlement](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/contracts/contracts/addons/xvp/ATKXvPSettlementImplementation.sol)
+- **Observability** - Monitor integration health:
+  [Observability & monitoring](/docs/developer-guides/deployment-ops/observability-monitoring)
+- **API reference** - Explore ORPC procedures:
+  [API reference](/docs/developer-guides/api-integration/api-reference)

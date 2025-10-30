@@ -1,0 +1,168 @@
+---
+title: Data model overview
+description:
+  The Asset Tokenization Kit uses a dual-layer data architecture combining
+  off-chain PostgreSQL storage with on-chain TheGraph indexing. This design
+  provides fast access to user data while maintaining an immutable audit trail
+  of all blockchain events.
+pageTitle: Data model architecture overview
+tags: [data-model, architecture, database, subgraph, postgresql, thegraph]
+---
+
+## Data architecture
+
+```
+Off-Chain Data (PostgreSQL + Drizzle)
+├── Authentication & Users
+├── KYC Profiles
+├── Exchange Rates
+└── Settings
+
+On-Chain Data (TheGraph Subgraph)
+├── Accounts & Identities
+├── Tokens & Balances
+├── Compliance & Access Control
+├── Events & Transactions
+└── Statistics & Analytics
+```
+
+### Data flow
+
+1. Blockchain events → TheGraph indexer → GraphQL API → dApp
+2. User actions → dApp → PostgreSQL → API responses
+3. Transaction metadata → Both systems for complete view
+
+### Linking layers
+
+The two data layers connect through Ethereum addresses:
+
+- Database: `user.wallet` (Address)
+- Subgraph: `Account.id` (Bytes)
+- Link: `user.wallet === Account.id`
+
+This enables queries like "fetch KYC profile for this token holder" by joining
+on wallet address.
+
+## Entity groups
+
+### Token & holder entities
+
+Core entities for security tokens, balances, and transfers.
+
+**[Token entities reference →](/docs/developer-guides/data-model/entity-token)**
+
+Covers:
+
+- Token (ERC-3643 security tokens)
+- TokenBalance (holder positions)
+- Transfer, Mint, Burn (transaction events)
+
+### Investor & identity entities
+
+User accounts, KYC profiles, and on-chain identities.
+
+**[Investor entities reference →](/docs/developer-guides/data-model/entity-investor)**
+
+Covers:
+
+- User (authentication and profiles)
+- Investor (off-chain KYC data)
+- Identity (ERC-734/735 on-chain identities)
+- RegisteredIdentity (identity registry entries)
+
+### Compliance entities
+
+Compliance modules, claim topics, and access control.
+
+**[Compliance entities reference →](/docs/developer-guides/data-model/entity-compliance)**
+
+Covers:
+
+- Compliance (main compliance contract)
+- ComplianceModule (rule engines)
+- IdentityClaim (ERC-735 claims)
+- AccessControl (role-based permissions)
+
+### Corporate action entities
+
+Dividends, voting, and other corporate actions.
+
+**[Corporate action entities reference →](/docs/developer-guides/data-model/entity-corporate-actions)**
+
+Covers:
+
+- DividendDistribution (dividend events)
+- VotingProposal (shareholder voting)
+- CorporateAction (general actions)
+- DividendClaim (investor claims)
+
+## Schema locations
+
+### Database schemas (PostgreSQL)
+
+All database schemas are defined using Drizzle ORM in
+[`kit/dapp/src/lib/db/schemas/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/lib/db/schemas):
+
+- `auth.ts` - Authentication tables
+- `kyc.ts` - KYC profiles
+- `exchange-rates.ts` - Currency rates
+- `settings.ts` - Application config
+
+### Subgraph schema (TheGraph)
+
+Blockchain entity definitions in
+[`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql).
+
+## Schema migrations
+
+### Database migrations
+
+Managed by Drizzle Kit in
+[`kit/dapp/drizzle.config.ts`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/drizzle.config.ts).
+
+**Generate migration**:
+
+```bash
+cd kit/dapp
+bun run db:generate
+```
+
+**Apply migration**:
+
+```bash
+bun run db:migrate
+```
+
+**Push schema directly** (dev only):
+
+```bash
+bun run db:push
+```
+
+### Subgraph updates
+
+Subgraph schema changes require redeployment.
+
+**Update schema**:
+
+1. Edit
+   [`kit/subgraph/schema.graphql`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/subgraph/schema.graphql)
+2. Run `bun run subgraph:codegen`
+3. Update mappings in
+   [`kit/subgraph/src/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/subgraph/src)
+4. Redeploy: `bun run deploy`
+
+## Next steps
+
+- **[Token entities](/docs/developer-guides/data-model/entity-token)** -
+  Security tokens and balances
+- **[Investor entities](/docs/developer-guides/data-model/entity-investor)** -
+  Users and identities
+- **[Compliance entities](/docs/developer-guides/data-model/entity-compliance)** -
+  Rules and claims
+- **[Corporate action entities](/docs/developer-guides/data-model/entity-corporate-actions)** -
+  Dividends and voting
+- **[API Reference](/docs/developer-guides/api-integration/api-reference)** -
+  Query patterns and examples
+- **[Contract Reference](/docs/developer-guides/smart-contracts/contract-reference)** -
+  Smart contract interfaces

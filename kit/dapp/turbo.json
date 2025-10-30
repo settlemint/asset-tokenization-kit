@@ -67,7 +67,7 @@
       "dependsOn": ["codegen", "artifacts", "^test:ci"]
     },
     "lint": {
-      "dependsOn": ["codegen"],
+      "dependsOn": ["codegen", "docs:validate-links"],
       "inputs": [
         "src/**/*.{js,jsx,ts,tsx}",
         ".eslintrc*",
@@ -76,6 +76,10 @@
         "tsconfig.json"
       ],
       "outputs": [".eslintcache"]
+    },
+    "docs:validate-links": {
+      "inputs": ["content/docs/**/*", "tools/validate-doc-links.ts"],
+      "outputs": []
     }
   }
 }

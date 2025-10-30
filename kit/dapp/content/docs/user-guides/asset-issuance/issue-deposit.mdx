@@ -1,0 +1,720 @@
+---
+title: Issue a deposit certificate
+description:
+  Deposit tokens represent digital certificates of deposit with fixed terms,
+  interest rates, and maturity-based redemption. This guide walks you through
+  deploying compliant deposit tokens from configuration through maturity
+  processing on the platform.
+pageTitle: How to issue a deposit token (Digital deposit certificates)
+tags: [how-to, deposit, certificate, collateral, banking]
+---
+
+**Who should read this:** Banks, credit unions, financial institutions, and
+deposit-taking entities issuing tokenized certificates of deposit (CDs) or time
+deposits.
+
+**Time required:** 15-20 minutes for deposit deployment; additional time for
+interest configuration.
+
+**Prerequisites:**
+
+- Completed [Getting started](/docs/user-guides/getting-started) onboarding
+- Deposit system factory deployed during onboarding
+- Denomination asset (payment token) deployed or address available
+- Deposit terms defined (term length, interest rate, early withdrawal penalties)
+- Banking license or deposit-taking authorization
+
+## Step 1: Navigate to deposit creation
+
+From the main dashboard:
+
+1. Click **Asset Management** in the left sidebar
+2. Select **Deposits** from the asset type list
+3. Click **Create New Deposit Token** button
+
+![Deposit creation navigation](/images/screenshots/placeholder.svg) _Screenshot:
+Asset Management section showing Deposits category with existing deposit
+products list and Create New Deposit Token button_
+
+## Step 2: Configure deposit parameters
+
+### Basic token information
+
+Enter standard token details:
+
+- **Token name** - Full legal name (e.g., "FirstBank 12-Month CD January 2026")
+- **Token symbol** - Trading symbol (e.g., "FB12M-JAN26")
+- **Decimals** - Token divisibility (0 for whole certificates, 18 for fractional
+  deposits)
+- **Initial supply** - Number of tokens to mint at deployment (typically 0 for
+  deposits)
+
+![Deposit basic information](/images/screenshots/placeholder.svg) _Screenshot:
+Deposit configuration form showing name, symbol, decimals, and initial supply
+fields with validation_
+
+**Naming guidance:** Include term length and maturity period in name for clear
+identification of deposit product.
+
+### Deposit-specific parameters
+
+Configure certificate of deposit properties:
+
+**Term length**
+
+Set deposit duration:
+
+- **Fixed term** - Specify exact term length (e.g., 3 months, 6 months, 12
+  months, 24 months)
+- **Maturity date** - Calculated automatically: issue date + term length
+- **Business day adjustment** - Adjust maturity to business day if falls on
+  weekend/holiday
+
+Common CD terms: 3-month, 6-month, 12-month, 24-month, 36-month, 60-month
+
+**Interest rate**
+
+Define deposit yield:
+
+- **Annual percentage rate (APR)** - Nominal interest rate (entered as basis
+  points)
+- **Compounding frequency** - Simple, monthly, quarterly, semi-annual, annual
+- **Interest payment method** - At maturity or periodic distribution
+
+![Deposit term configuration](/images/screenshots/placeholder.svg) _Screenshot:
+Deposit parameters showing term length input, maturity date (auto-calculated),
+APR input with basis points converter, and compounding frequency dropdown_
+
+**Interest rate examples:**
+
+- 2.5% APR = 250 basis points
+- 4.0% APR = 400 basis points
+- 5.5% APR = 550 basis points
+
+**Denomination asset**
+
+Specify the underlying deposit currency:
+
+- Enter the ERC20 contract address for the deposit token
+- Common choices: USDC, USDT, or institutional stablecoin
+- Must be deployed ERC20 contract with decimals() function
+- Validates address format and checks contract exists
+
+**Example configuration:**
+
+- Term: 12 months
+- APR: 4.0% (400 bps)
+- Denomination: USDC
+- Result: Depositors receive 4% annual interest paid in USDC
+
+### Early withdrawal configuration
+
+Set penalties for pre-maturity redemption:
+
+**Early withdrawal penalty**
+
+- **Penalty type** - Fixed fee, interest forfeiture, or percentage of principal
+- **Penalty amount** - Fee in basis points or fixed amount
+- **Grace period** - Days after issuance allowing penalty-free withdrawal
+  (optional)
+
+**Early withdrawal options**
+
+- **Allowed** - Depositors can withdraw early with penalty
+- **Restricted** - Early withdrawal only in specific circumstances
+- **Prohibited** - No early withdrawal until maturity
+
+![Early withdrawal configuration](/images/screenshots/placeholder.svg)
+_Screenshot: Early withdrawal settings showing penalty type dropdown, penalty
+amount input, grace period field, and withdrawal restrictions selector_
+
+**Typical penalties:**
+
+- 3-month CD: 90 days interest forfeiture
+- 12-month CD: 180 days interest forfeiture
+- 24-month CD: 365 days interest forfeiture
+
+## Step 3: Configure issuance workflow
+
+Deposit tokens use subscription-based issuance.
+
+### Subscription settings
+
+Define how customers purchase deposits:
+
+**Minimum deposit**
+
+- **Minimum initial deposit** - Smallest certificate amount (e.g., $1,000)
+- **Deposit increments** - Allowed denomination steps (e.g., $100 increments)
+- **Maximum deposit** - Per-depositor cap (if applicable, e.g., $250,000 FDIC
+  limit)
+
+**Subscription period**
+
+Set offering window:
+
+- **Opening date** - When deposit sales begin
+- **Closing date** - Last day to purchase deposits (optional)
+- **Continuous offering** - Allow rolling deposits with staggered maturities
+
+**Settlement**
+
+- **Subscription settlement** - T+0, T+1, T+2 settlement for deposit funding
+- **Funding wallet** - Address where depositors transfer payment tokens
+
+![Subscription configuration](/images/screenshots/placeholder.svg) _Screenshot:
+Subscription settings showing minimum deposit input, increment selector,
+subscription period date pickers, and settlement configuration_
+
+### Allocation method
+
+Choose how deposits are issued:
+
+**First-come-first-served**
+
+- Deposits issued immediately upon payment receipt
+- No allocation cap (continuous offering)
+
+**Fixed allocation**
+
+- Total deposit pool size specified
+- Allocations filled until pool exhausted
+- May implement pro-rata allocation if oversubscribed
+
+**Timed issuance**
+
+- Deposits issued on specific dates (e.g., monthly)
+- Batched processing of subscription requests
+
+## Step 4: Set compliance rules
+
+Deposit tokens enforce banking regulations and depositor eligibility.
+
+### Regulatory framework selection
+
+Choose applicable regulatory framework:
+
+- **FDIC Insurance** - US bank deposits (up to $250,000 per depositor)
+- **EU Deposit Guarantee** - European Economic Area deposits
+- **Regulation D (Federal Reserve)** - Reserve requirements and transfer
+  restrictions
+- **Bank Secrecy Act (BSA)** - AML requirements for deposit accounts
+- **Custom** - Jurisdiction-specific banking regulations
+
+The platform pre-configures compliance modules for selected framework.
+
+![Compliance framework selection](/images/screenshots/placeholder.svg)
+_Screenshot: Regulatory framework cards showing FDIC, EU DGS, Reg D, BSA, and
+Custom options with deposit insurance and reserve requirement summaries_
+
+### Configure compliance modules
+
+Based on selected framework, configure modules:
+
+**Depositor eligibility**
+
+Set OnchainID claim requirements:
+
+- **KYC/AML verification** - Level 1 (individual) or Level 2 (enhanced)
+- **Jurisdiction verification** - Eligible depositor countries
+- **Sanctions screening** - Not on OFAC/EU sanctions lists
+- **Account type** - Individual, joint, business, trust, retirement account
+
+Only addresses with all required claims can hold deposit tokens.
+
+**Transfer restrictions**
+
+Configure secondary market rules:
+
+**Regulation D compliance** (if applicable):
+
+- **Transfer approval** - Require bank approval for secondary transfers
+- **Assignability** - Deposits may be non-transferable until maturity
+
+**Note:** Regulation D transfer limits (6 withdrawals/transfers per month) and
+FDIC insurance caps ($250,000 per depositor) must be monitored manually
+off-chain. The platform does not automatically enforce these limits. Automated
+enforcement features are planned for a future release.
+
+![Compliance module configuration](/images/screenshots/placeholder.svg)
+_Screenshot: Compliance modules showing Depositor Eligibility requirements and
+Transfer Restrictions configuration_
+
+**Regulation D important:** Federal Reserve Regulation D historically limited
+convenient transfers from savings deposits to 6 per month. You must monitor and
+enforce this limit through your deposit operations processes.
+
+## Step 5: Assign operational roles
+
+Grant permissions for deposit management:
+
+### Role assignments
+
+Assign addresses to deposit-specific roles:
+
+**GOVERNANCE_ROLE**
+
+Manages deposit product lifecycle:
+
+- Configure deposit terms
+- Set interest rates
+- Update maturity parameters
+- Manage compliance settings
+
+Typically assigned to: Treasury operations or product management wallet
+
+**SUPPLY_MANAGEMENT_ROLE**
+
+Controls deposit issuance:
+
+- Mint new deposit tokens (process subscriptions)
+- Burn deposit tokens (process redemptions/maturities)
+- Batch mint operations
+
+Typically assigned to: Deposit operations wallet
+
+**CUSTODIAN_ROLE**
+
+Handles account operations:
+
+- Freeze compromised accounts
+- Execute forced transfers (court orders)
+- Recover lost deposits
+- Process estate settlements
+
+Typically assigned to: Custodian services or legal compliance wallet
+
+**EMERGENCY_ROLE**
+
+Emergency interventions:
+
+- Pause all transfers
+- Pause new deposits
+- Activate early redemption during crisis
+- Unpause after incident resolution
+
+Typically assigned to: Risk management wallet
+
+![Role assignment interface](/images/screenshots/placeholder.svg) _Screenshot:
+Role assignment form showing four roles with address inputs, role descriptions,
+permission lists, and recommended multisig indicators_
+
+**Best practice:** Use multisig wallets for SUPPLY_MANAGEMENT_ROLE to ensure
+dual control over deposit minting and redemptions.
+
+## Step 6: Review and deploy
+
+### Pre-deployment checklist
+
+Verify configuration:
+
+- [ ] Token name and symbol match product documentation
+- [ ] Term length and maturity date correct
+- [ ] Interest rate matches advertised APR
+- [ ] Denomination asset address validated
+- [ ] Early withdrawal penalties align with deposit agreement
+- [ ] Minimum deposit meets regulatory and business requirements
+- [ ] Compliance framework matches banking license
+- [ ] All operational roles assigned to secure wallets
+
+![Deployment summary review](/images/screenshots/placeholder.svg) _Screenshot:
+Pre-deployment summary showing deposit parameters, term/rate, subscription
+settings, compliance framework, and roles in organized sections_
+
+### Deploy deposit contract
+
+Execute deployment:
+
+1. Click **Deploy Deposit Token**
+2. Review transaction details
+3. Enter your PIN or OTP for authentication
+4. Confirm transaction
+
+The platform:
+
+1. Deploys deposit proxy contract (15-20 seconds)
+2. Initializes with your parameters (10 seconds)
+3. Configures interest calculation (5 seconds)
+4. Assigns roles to specified addresses (5 seconds per role)
+5. Registers with identity registry (10 seconds)
+
+Total deployment time: 60-90 seconds
+
+![Deployment progress](/images/screenshots/placeholder.svg) _Screenshot:
+Deployment progress modal showing step-by-step deployment status with checkmarks
+and timestamps_
+
+## Step 7: Post-issuance actions
+
+After successful deployment:
+
+### Verify deployment
+
+1. Note the contract address
+2. Click **View Deposit Token** to navigate to details page
+3. Verify configuration:
+   - Token information matches parameters
+   - Term length and maturity date correct
+   - Interest rate configured properly
+   - Roles assigned correctly
+
+![Deposit details overview](/images/screenshots/placeholder.svg) _Screenshot:
+Deposit token details page showing key metrics, term/maturity countdown,
+interest rate, total deposits, and depositor count_
+
+### Fund payment wallet
+
+Prepare for interest and redemption payments:
+
+1. Note the payment wallet address shown on **Payments** tab
+2. Calculate required reserves:
+   - Total expected deposits
+   - Total interest liability: deposits × APR × (term / 365)
+   - Reserve buffer for early withdrawals
+3. Transfer denomination assets to payment wallet
+4. Verify balance shows adequate funding
+
+**Funding calculation example:**
+
+- Expected deposits: $1,000,000
+- APR: 4%
+- Term: 12 months
+- Interest liability: $1,000,000 × 0.04 × 1 = $40,000
+- Total reserves needed: $1,040,000 + buffer
+
+### Enable subscriptions
+
+Open deposit product for customer purchases:
+
+1. Navigate to **Settings** tab
+2. Toggle **Accept Subscriptions** to enabled
+3. Confirm subscription period dates correct
+4. Review payment wallet configured
+5. Save changes
+
+Customers can now purchase deposit tokens.
+
+## Step 8: Manage deposit lifecycle
+
+### Process subscription requests
+
+Handle customer deposit purchases:
+
+**Subscription workflow:**
+
+1. Customer submits deposit purchase via dApp:
+   - Enters deposit amount
+   - Reviews terms and interest rate
+   - Transfers payment tokens to funding wallet
+2. Request appears in **Subscriptions** &gt; **Pending** queue
+3. Navigate to **Subscriptions** tab
+4. Review request details:
+   - Customer identity and compliance status
+   - Deposit amount
+   - Payment token and transaction hash
+   - Issue date (determines maturity)
+5. Verify payment received in funding wallet
+6. Click **Approve Subscription**
+
+**Approval actions:**
+
+- The system issues deposit tokens to customer address
+- Records deposit amount, issue date, maturity date
+- Starts interest accrual
+- Updates total deposits outstanding
+
+<Callout type="default" title="For developers">
+  See [Contract
+  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
+  technical details on deposit token implementation and interest accrual
+  calculation.
+</Callout>
+
+![Subscription queue](/images/screenshots/placeholder.svg) _Screenshot:
+Subscription requests table showing pending deposits with customer, amount,
+payment confirmation, issue date, maturity date, and approve button_
+
+**Compliance check:** The system validates customer OnchainID and enforces
+per-depositor insurance limits before issuing deposit tokens, automating
+compliance that traditionally requires manual review.
+
+### Track interest accrual
+
+Monitor interest calculations:
+
+1. Navigate to **Interest** tab
+2. Review accrual metrics:
+   - Total accrued interest across all deposits
+   - Interest expense per day
+   - Maturity schedule (upcoming interest payments)
+   - Payment wallet balance vs. liability
+
+**Interest calculation:**
+
+**Simple interest (at maturity):**
+
+- Interest = Principal × APR × (Term / 365)
+
+**Compound interest (periodic):**
+
+- Interest = Principal × [(1 + APR/n)^(n × Term) - 1]
+- Where n = compounding periods per year
+
+The system calculates interest automatically based on configured method,
+eliminating manual interest calculations and reducing errors.
+
+<Callout type="info" title="Business context">
+  Traditional CD interest calculation requires manual computation for each
+  certificate, tracking maturity dates in spreadsheets, and coordinating with
+  core banking systems to process interest payments. This manual process is
+  error-prone and labor-intensive, typically costing $5-15 per certificate per
+  payment period. ATK automates the entire interest lifecycle, reducing
+  operational costs by 85-95% and eliminating calculation errors.
+</Callout>
+
+![Interest tracking](/images/screenshots/placeholder.svg) _Screenshot: Interest
+tab showing total accrued interest, daily expense rate, maturity schedule table,
+and payment wallet funding status_
+
+### Process maturity redemptions
+
+Handle deposits reaching maturity:
+
+**Maturity workflow:**
+
+1. Platform identifies deposits reaching maturity date
+2. Deposits appear in **Maturities** &gt; **Ready for Processing**
+3. Navigate to **Maturities** tab
+4. Review maturity batch:
+   - Deposit holders
+   - Principal amounts
+   - Interest owed
+   - Total redemption amounts
+5. Verify payment wallet has sufficient funds
+6. Click **Process Maturity Batch**
+
+**Processing actions:**
+
+- The system calculates redemption proceeds: principal + interest
+- Burns deposit tokens from holder addresses
+- Transfers proceeds to holders in denomination asset
+- Records maturity event in deposit history
+- Updates outstanding deposit balance
+
+<Callout type="info" title="Business context">
+  Traditional CD maturity processing requires manually identifying maturing
+  certificates, calculating interest for each, coordinating with the core
+  banking system to credit accounts, and sending maturity notices. This process
+  typically takes 2-5 business days and introduces errors in 10-15% of cases.
+  ATK automates the entire maturity workflow with zero calculation errors and
+  instant settlement.
+</Callout>
+
+![Maturity processing](/images/screenshots/placeholder.svg) _Screenshot:
+Maturities tab showing deposits reaching maturity with holder, principal,
+interest, total proceeds, and process batch button_
+
+**Automatic processing:** Configure automatic maturity processing to execute
+redemptions on maturity date without manual intervention, eliminating the manual
+workload of tracking and processing hundreds or thousands of maturing CDs.
+
+### Handle early withdrawal requests
+
+Process pre-maturity redemptions:
+
+**Early withdrawal workflow:**
+
+1. Customer submits early withdrawal request via dApp:
+   - Enters withdrawal amount (partial or full)
+   - Reviews early withdrawal penalty
+   - Confirms request
+2. Request appears in **Withdrawals** &gt; **Pending** queue
+3. Navigate to **Withdrawals** tab
+4. Review request details:
+   - Customer address
+   - Deposit amount to withdraw
+   - Accrued interest (if any)
+   - Early withdrawal penalty calculation
+   - Net proceeds to customer
+5. Verify early withdrawal allowed per deposit terms
+6. Click **Approve Withdrawal**
+
+**Penalty calculation example:**
+
+- Principal: $10,000
+- Accrued interest: $150 (4.5 months at 4% APR)
+- Penalty: 180 days interest = $197
+- Net proceeds: $10,000 + $150 - $197 = $9,953
+
+![Early withdrawal queue](/images/screenshots/placeholder.svg) _Screenshot:
+Early withdrawal requests showing customer, principal, accrued interest,
+penalty, net proceeds, and approve/reject buttons_
+
+**Discretion:** Some early withdrawal requests may require manual review and
+approval per banking policies.
+
+## Common workflows
+
+### Handle rollover deposits
+
+Automatically renew maturing deposits:
+
+1. Configure rollover settings before initial maturity:
+   - Navigate to **Settings** &gt; **Rollover**
+   - Enable automatic rollover
+   - Set rollover term (same or different duration)
+   - Configure new interest rate (current market rate)
+2. On maturity date:
+   - Platform identifies deposits eligible for rollover
+   - Sends notification to depositors
+   - Depositors opt-in or opt-out via dApp
+3. Process rollovers:
+   - Opt-in deposits: Keep tokens, update maturity date, apply new rate
+   - Opt-out deposits: Process as normal maturity redemption
+
+**Opt-in default:** Configure whether rollover is opt-in (customer must choose)
+or opt-out (automatic unless customer declines). The system tracks customer
+preferences and executes rollovers automatically, eliminating manual tracking of
+renewal elections.
+
+<Callout type="default" title="For developers">
+  See [Contract
+  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
+  technical details on rollover mechanism implementation and maturity date
+  updates.
+</Callout>
+
+### Adjust interest rates
+
+Change rates for new deposits:
+
+1. Navigate to **Settings** &gt; **Interest Rate**
+2. Click **Update Rate**
+3. Enter new APR (basis points)
+4. Set effective date for new deposits
+5. Confirm rate change
+6. Requires GOVERNANCE_ROLE permission
+
+**Note:** Interest rate changes apply only to new deposits issued after
+effective date. Existing deposits maintain original rate.
+
+### Process bulk deposits
+
+Handle institutional or large deposits:
+
+1. Negotiate deposit terms with institutional customer
+2. Navigate to **Actions** &gt; **Issue Bulk Deposit**
+3. Enter:
+   - Customer address (verified OnchainID required)
+   - Deposit amount
+   - Custom terms (if negotiated rates differ)
+   - Settlement reference
+4. Verify large payment received
+5. Execute bulk mint
+6. Issue confirmation documentation
+
+**Best practice:** Use separate deposit token contracts for wholesale vs. retail
+deposits if terms differ significantly.
+
+### Handle escheatment
+
+Process unclaimed matured deposits:
+
+1. Identify deposits matured but not redeemed after dormancy period
+   (state-specific, typically 3-5 years)
+2. Navigate to **Compliance** &gt; **Unclaimed Property**
+3. Review unclaimed deposits list
+4. Attempt customer contact per state regulations
+5. If no response, transfer to state unclaimed property fund:
+   - Burn tokens from holder address
+   - Transfer proceeds to state escrow wallet
+   - File unclaimed property report with state
+
+Requires compliance with individual state escheatment laws.
+
+## Best practices
+
+**Before deployment:**
+
+- Ensure banking license permits deposit-taking activities
+- Verify denomination asset qualifies as legal deposit (stablecoin regulations)
+- Configure reserve requirements per Federal Reserve or local regulations
+- Prepare deposit insurance documentation (FDIC or equivalent)
+- Set up accounting systems for deposit liability tracking
+
+**During operations:**
+
+- Maintain payment wallet with 110-120% of maturity obligations
+- Reconcile on-chain deposits with general ledger daily
+- Monitor interest accrual for accounting accuracy
+- Track per-depositor insurance limits to avoid over-insurance
+- Review early withdrawal requests for suspicious patterns
+- Execute maturity processing on maturity date (not before/after)
+
+**Regulatory compliance:**
+
+- File call reports (regulatory reporting) including tokenized deposits
+- Maintain reserve requirements per Regulation D
+- Implement Reg D transfer limits if applicable
+- Screen depositors against sanctions lists
+- File CTRs (Currency Transaction Reports) for large transactions (&gt;$10,000)
+- Maintain depositor records per Bank Secrecy Act
+
+**Customer service:**
+
+- Send maturity reminders 30 days before maturity
+- Provide clear disclosure of deposit terms and penalties
+- Offer rollover options before maturity
+- Maintain customer support for early withdrawal inquiries
+- Provide monthly statements showing principal and interest
+
+## Troubleshooting
+
+**Deployment fails with "Invalid term length"**
+
+- Verify term is positive number of days
+- Check term is reasonable (typically 30-2,190 days / 1 month to 6 years)
+- Ensure term format is correct integer
+
+**Subscription processing reverts**
+
+- Verify customer OnchainID has required KYC claims
+- Check deposit amount meets minimum requirement
+- Ensure deposit does not exceed per-depositor insurance limit
+- Confirm denomination asset payment received in funding wallet
+
+**Maturity processing fails**
+
+- Verify payment wallet has sufficient denomination asset balance
+- Check calculation: sum of (principal + interest) for all maturities
+- Ensure maturity date has passed (cannot process early)
+- Confirm holders have valid OnchainIDs
+
+**Early withdrawal reverts**
+
+- Check early withdrawal is allowed per deposit terms
+- Verify penalty calculation is correct
+- Ensure payment wallet has sufficient funds for net proceeds
+- Confirm customer holds sufficient deposit tokens
+
+**Interest accrual showing incorrect amount**
+
+- Verify deposit issue date is correct
+- Check interest rate matches configured APR
+- Ensure compounding frequency setting is correct
+- Confirm denomination asset decimals factor correctly
+
+For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+
+## Next steps
+
+- **Configure payments** - Set up
+  [Fiat bridge](/docs/user-guides/operations/fiat-bridge) for traditional
+  banking integration
+- **Manage depositors** - Review
+  [Manage investors](/docs/user-guides/operations/manage-investors) for KYC
+  workflows
+- **Monitor compliance** - Deep dive into
+  [Compliance certification](/docs/architecture/quality/compliance-certification)
+- **Automate operations** - Configure automatic maturity processing and rollover
+  workflows

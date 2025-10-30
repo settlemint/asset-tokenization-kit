@@ -29,28 +29,11 @@
         "wallet": "EOA",
         "identity": "Identitätsadresse",
         "type": "Typ",
-        "verifications": "Verifizierungen",
-        "status": "Status",
-        "lastActive": "Zuletzt aktiv",
-        "created": "Erstellt am",
-        "role": "Rolle",
-        "actions": "Aktionen"
+        "status": "Status"
       },
       "status": {
         "registered": "Registriert",
-        "pending": "Ausstehend",
-        "notConnected": "Nicht verbunden",
-        "identityNeeded": "Identität erforderlich",
-        "notRegistered": "Nicht registriert",
-        "pendingRegistration": "Registrierung ausstehend",
-        "admin": "Administrator",
-        "adminAriaLabel": "Benutzer ist Administrator",
-        "registeredAriaLabel": "Benutzer ist registriert",
-        "notRegisteredAriaLabel": "Benutzer ist nicht registriert",
-        "pendingAriaLabel": "Status ausstehend",
-        "notConnectedAriaLabel": "Wallet des Benutzers ist nicht verbunden",
-        "identityNeededAriaLabel": "Identität wird benötigt",
-        "pendingRegistrationAriaLabel": "Registrierung wird bearbeitet"
+        "pending": "Ausstehend"
       },
       "type": {
         "admin": "Administrator",
@@ -60,9 +43,6 @@
       "verifications": {
         "none": "Keine Verifizierungen"
       },
-      "identity": {
-        "none": "Keine Identität"
-      },
       "actions": {
         "viewDetails": "Details anzeigen",
         "menu": "Menü",
@@ -71,7 +51,6 @@
       "search": {
         "placeholder": "Nach Name, E-Mail oder Wallet suchen..."
       },
-      "noWallet": "Kein Wallet",
       "emptyState": {
         "title": "Keine Benutzer gefunden",
         "description": "Es wurden noch keine Benutzer registriert.",
@@ -82,8 +61,8 @@
         "navigationFailed": "Navigation zu den Benutzerdetails fehlgeschlagen"
       },
       "fallback": {
-        "never": "Nie",
-        "unknown": "Unbekannt"
+        "unknown": "Unbekannt",
+        "none": "Keine"
       }
     }
   },
@@ -98,7 +77,8 @@
     "table": {
       "columns": {
         "name": "Name",
-        "role": "Rolle"
+        "role": "Rolle",
+        "lastActive": "Zuletzt aktiv"
       },
       "errors": {
         "navigationFailed": "Navigation zu den Benutzerdetails fehlgeschlagen",

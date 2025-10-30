@@ -2,34 +2,42 @@
 title: Corporate bonds
 pageTitle: Corporate bond issuance for capital markets
 description:
-  Corporate bond issuance with automated coupon payments and redemption
+  Corporate bond issuance through ATK reduces time-to-market from months to days
+  while automating ongoing servicing. The platform handles primary distribution,
+  coupon payments, and redemption with embedded compliance controls.
 tags: [use-case, bonds, debt, capital-markets, automation]
 ---
 
-## The scenario
+**Who should read this:** Corporate treasurers, investment bankers, capital
+markets teams evaluating faster execution and reduced operational overhead.
+
+**Business value:** Cut issuance timelines by 80%, eliminate transfer agent
+fees, calculate quarterly coupon entitlements with on-demand claiming, and gain
+real-time cap table visibility.
+
+## Business challenge
 
 MidCorp Industries needs to raise $50 million through a three-year bond
-offering. Traditional underwriting would take months of roadshows, weeks of
+offering. Traditional underwriting involves months of roadshows, weeks of
 settlement, and ongoing manual processes for coupon payments and investor
-communications. They want faster execution, broader access, and automated
-servicing.
+communications.
 
 ### Traditional approach
 
 <Mermaid
   chart={`
 flowchart TB
-    START[Term Sheet]
-    LEGAL[Legal Review<br/>4-6 weeks]
-    ROADSHOW[Roadshow<br/>2-3 weeks]
-    BOOK[Book Building<br/>1-2 weeks]
-    SETTLE[Settlement<br/>T+2 to T+5]
-    MANUAL[Manual Processes]
+    START(Term Sheet)
+    LEGAL(Legal Review<br/>4-6 weeks)
+    ROADSHOW(Roadshow<br/>2-3 weeks)
+    BOOK(Book Building<br/>1-2 weeks)
+    SETTLE(Settlement<br/>T+2 to T+5)
+    MANUAL(Manual Processes)
     
-    COUPON[Quarterly Coupon<br/>Manual Calculation]
-    WIRE[Wire Instructions<br/>80+ Investors]
-    RECON[Reconciliation<br/>Days of Work]
-    AGENT[Transfer Agent<br/>Monthly Fees]
+    COUPON(Quarterly Coupon<br/>Manual Calculation)
+    WIRE(Wire Instructions<br/>80+ Investors)
+    RECON(Reconciliation<br/>Days of Work)
+    AGENT(Transfer Agent<br/>Monthly Fees)
     
     START --> LEGAL
     LEGAL --> ROADSHOW
@@ -41,74 +49,159 @@ flowchart TB
     MANUAL --> RECON
     MANUAL --> AGENT
     
-    style START fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style LEGAL fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style ROADSHOW fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style BOOK fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style SETTLE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style MANUAL fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style COUPON fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style WIRE fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style RECON fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
-    style AGENT fill:#d97706,stroke:#92400e,stroke-width:2px,color:#fff
+    style START fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style LEGAL fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style ROADSHOW fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style BOOK fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style SETTLE fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style MANUAL fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style COUPON fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style WIRE fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style RECON fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style AGENT fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
 `}
 />
 
-## How ATK handles it
+## How ATK solves it
 
-**Term sheet to deployment in days**: MidCorp's treasury team uses the Asset
-Designer to configure a bond token: $50 million principal, 5% annual coupon paid
-quarterly, three-year maturity, USD denomination. They select Regulation D
-compliance template to limit the offering to accredited US investors.
+**ATK's lifecycle management capabilities eliminate manual processes:**
+
+- **DvP settlement** for atomic primary distribution and secondary trading
+- **Vault custody** for secure treasury management with multi-signature controls
+- **Scheduled yield calculations** for quarterly coupon entitlements without
+  manual spreadsheet work
+
+### Configuration and deployment
+
+MidCorp's treasury team uses the Asset Designer to configure a bond token: $50
+million principal, 5% annual coupon paid quarterly, three-year maturity, USD
+denomination. They select a Regulation D compliance template to limit the
+offering to accredited US investors.
 
 The platform generates the smart contract with compliance controls embedded.
+**Critically, ATK also deploys a fixed yield schedule contract that will
+calculate quarterly coupon entitlements for claim-based distribution** and
+connects the bond to the XvP settlement system for atomic trading.
+
 MidCorp uploads their offering memorandum, which gets cryptographically hashed
-and linked to the token metadata. The legal documentation lives permanently with
-the asset.
+and linked to the token metadata. Legal documentation remains permanently
+associated with the asset.
 
-**Investor onboarding with built-in compliance**: Accredited investors connect
-through the Investor Portal and complete KYC verification via an integrated
-provider. Their OnchainID gets updated with an accreditation claim. Only wallet
-addresses linked to verified, accredited identities can receive bond tokens.
+### Investor onboarding with embedded compliance
 
-**Primary distribution**: MidCorp allocates tokens to a subscriber list. The
-platform enforces that every recipient meets eligibility requirements.
-Non-accredited addresses simply cannot receive tokens; the transfer reverts
-automatically. No risk of accidental non-compliant distribution.
+Accredited investors connect through the Investor Portal and complete KYC
+verification via an integrated provider. Their OnchainID receives an
+accreditation claim. Only wallet addresses linked to verified, accredited
+identities can receive bond tokens. Non-accredited addresses cannot receive
+tokens; transfers revert automatically.
 
-**Automated quarterly coupons**: Every quarter on the coupon date, the platform
-calculates interest owed to each holder based on their proportional ownership.
-Using integrated payment rails or tokenized cash, it distributes payments
-automatically. Every holder receives their exact amount without manual
-calculations or wire transfer instructions.
+### Primary distribution with DvP settlement
 
-**Real-time cap table visibility**: MidCorp's IR team sees current ownership in
-real time. No waiting for monthly reports from a transfer agent. When investors
-trade bonds on secondary markets (if permitted), the cap table updates
-immediately.
+MidCorp allocates tokens to a subscriber list. **Using ATK's XvP settlement
+system, investors exchange cash (stablecoins or tokenized deposits) for bond
+tokens atomically.** If an investor's payment fails, they don't receive tokens.
+If token transfer fails (e.g., compliance violation), payment doesn't leave
+their wallet. Both legs execute together or both revert—true delivery versus
+payment.
 
-**Maturity and redemption**: At three years, the platform automatically handles
-redemption: bond tokens get burned, principal plus final interest gets
-distributed, and the issuance concludes with complete audit trails showing every
-payment, every holder, every compliance check throughout the lifecycle.
+The platform enforces that every recipient meets eligibility requirements,
+eliminating risk of non-compliant distribution. Settlement is instant with T+0
+finality. No reconciliation required.
 
-## The outcomes
+### Scheduled coupon calculations via yield schedules
 
-### With ATK
+**ATK's fixed yield schedule contract calculates quarterly entitlements without
+manual spreadsheet work.** Every quarter, the yield system calculates interest
+owed to each holder based on proportional ownership at the snapshot block. Token
+holders claim their coupons directly through the smart contract with
+cryptographic proof of entitlement.
+
+The platform supports claims through:
+
+- **Tokenized cash settlement** – Token holders claim their distributions when
+  stablecoins or tokenized deposits fund the yield wallet
+- **Off-chain payment adapters** – Integration with treasury systems for
+  traditional wire/ACH settlement (roadmap)
+- **Manual approval workflows** – For jurisdictions requiring human review
+  before disbursement
+
+**This eliminates the nightmare of calculating payments for hundreds of
+investors, generating wire instructions, and reconciling settlements.** The
+yield schedule is configured once during issuance; entitlements are calculated
+automatically on payment dates, and investors claim their coupons on-demand. No
+spreadsheets. No transfer agent. No manual wire transfers.
+
+### Vault custody for treasury operations
+
+**MidCorp's bond proceeds are held in ATK's multi-signature vault** with
+configurable approval requirements. Treasury operations require multiple
+signatures—no single person can move funds unilaterally. The vault provides:
+
+- **Maker-checker workflows** where one admin proposes and others approve
+- **Emergency pause** capabilities to freeze operations if accounts are
+  compromised
+- **Full audit trails** showing every proposal, approval, and execution
+- **Role-based access control** separating operational roles
+
+This provides bank-grade custody without requiring integration with external
+custodians.
+
+### Real-time cap table visibility
+
+MidCorp's IR team sees current ownership in real time through the admin
+dashboard. No waiting for monthly reports from a transfer agent. When investors
+trade bonds on secondary markets (if permitted through ATK's XvP settlement
+system with atomic DvP), the cap table updates immediately.
+
+### Maturity and redemption
+
+At three years, the platform handles redemption automatically: bond tokens are
+burned, principal plus final interest is distributed, and the issuance concludes
+with complete audit trails showing every payment, every holder, and every
+compliance check throughout the lifecycle.
+
+## Key capabilities
+
+| Capability                 | Traditional                            | With ATK                                       |
+| -------------------------- | -------------------------------------- | ---------------------------------------------- |
+| **Issuance timeline**      | 8-12 weeks                             | Days                                           |
+| **Settlement**             | T+2 to T+5                             | Instant atomic finality                        |
+| **Coupon processing**      | Manual calculation & wire instructions | Scheduled calculations with on-demand claiming |
+| **Cap table updates**      | Monthly from transfer agent            | Real-time on-chain                             |
+| **Compliance enforcement** | Post-trade surveillance                | Pre-transfer validation                        |
+| **Transfer agent fees**    | Ongoing quarterly fees                 | Eliminated                                     |
+
+## Measurable outcomes
+
+**Time savings** – Illustrative deployments reduce issuance timelines from 8-12
+weeks to under two weeks by eliminating roadshow logistics and settlement
+delays.
+
+**Cost reduction** – Transfer agent fees for ongoing servicing are eliminated.
+Legal review time decreases because compliance templates are pre-vetted.
+Operations overhead drops as corporate actions execute automatically.
+
+**Secondary market liquidity** – Instant settlement enables institutional
+investors to trade positions knowing finality arrives in minutes rather than
+days.
+
+**Compliance certainty** – Zero non-compliant transfers because only verified
+accredited investors can hold tokens. Transfer restrictions are enforced at the
+smart contract level.
 
 <Mermaid
   chart={`
 flowchart TB
-    START[Term Sheet]
-    CONFIG[Asset Designer<br/>2-3 days]
-    DEPLOY[Smart Contract<br/>Deploy]
-    DIST[Primary Distribution<br/>Instant Settlement]
-    AUTO[Automated Lifecycle]
+    START(Term Sheet)
+    CONFIG(Asset Designer<br/>Configure Bond)
+    DEPLOY(Smart Contract<br/>Deploy to Chain)
+    DIST(Primary Distribution<br/>Instant Settlement)
+    AUTO(Automated Lifecycle)
     
-    COUPON[Quarterly Coupon<br/>Automatic Distribution]
-    REALTIME[Real-time Cap Table<br/>No Delays]
-    COMPLIANCE[Zero Non-compliant<br/>Transfers]
-    REDEMPTION[Maturity Redemption<br/>Fully Automated]
+    COUPON(Quarterly Coupon<br/>Scheduled Distribution)
+    REALTIME(Real-time Cap Table<br/>No Reconciliation)
+    COMPLIANCE(Transfer Validation<br/>Every Transaction)
+    REDEMPTION(Maturity Redemption<br/>Automated Burn)
     
     START --> CONFIG
     CONFIG --> DEPLOY
@@ -119,29 +212,54 @@ flowchart TB
     AUTO --> COMPLIANCE
     AUTO --> REDEMPTION
     
-    style START fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff
-    style CONFIG fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style DEPLOY fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style DIST fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style AUTO fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style COUPON fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style REALTIME fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style COMPLIANCE fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
-    style REDEMPTION fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    style START fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style CONFIG fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style DEPLOY fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style DIST fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style AUTO fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style COUPON fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style REALTIME fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style COMPLIANCE fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style REDEMPTION fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
 `}
 />
 
-**Time savings**: Traditional bond issuance took 8-12 weeks from term sheet to
-first settlement. With ATK, MidCorp went live in 10 days.
+The diagram above shows the ATK bond lifecycle, from configuration through
+automated servicing to redemption.
 
-**Cost reduction**: Eliminated transfer agent fees for ongoing servicing,
-reduced legal review time because compliance templates are pre-vetted, cut
-operations overhead because corporate actions are automated.
+## Compliance considerations
 
-**Broader access**: Secondary markets emerged because settlement happens
-instantly. Institutional investors could trade positions knowing settlement
-completes in minutes, not days.
+Bond tokens operate under securities regulations requiring:
 
-**Compliance certainty**: Zero non-compliant transfers because only verified
-accredited investors could hold tokens. Regulatory comfort increased
-dramatically.
+- **Accredited investor verification** – Enforced via OnchainID claims before
+  token transfer
+- **Transfer restrictions** – Lock-up periods, ROFR rights, and volume limits
+  configured in compliance modules
+- **Jurisdiction controls** – Geographic restrictions via country allow/block
+  lists
+- **Audit trails** – Every transaction, compliance check, and lifecycle event
+  recorded on-chain
+
+For detailed compliance architecture, see
+[Compliance & Security](/docs/executive-overview/compliance-security).
+
+## Implementation checklist
+
+1. Define bond terms (principal, coupon rate, maturity, currency)
+2. Select compliance template (Reg D, Reg S, or custom ruleset)
+3. Integrate KYC/AML provider for investor verification
+4. Configure payment adapter for coupon distributions (tokenized cash or
+   off-chain settlement)
+5. Upload offering documents and link to token metadata
+6. Deploy smart contract and conduct primary distribution
+7. Configure coupon scheduler and test distribution workflow
+8. Set up admin dashboard access for IR and operations teams
+
+## Next steps
+
+- Review
+  [SMART Protocol architecture](/docs/architecture/smart-contracts/smart-protocol)
+  to understand embedded compliance
+- Explore [Developer Documentation](/docs/developer-guides/reference) for
+  technical integration details
+- Contact your SettleMint representative to discuss a bond tokenization pilot

@@ -1,0 +1,6 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#f3f4f6"/>
+  <rect x="50" y="50" width="700" height="500" fill="#fff" stroke="#e5e7eb" stroke-width="2"/>
+  <text x="400" y="300" font-family="Arial, sans-serif" font-size="24" fill="#9ca3af" text-anchor="middle">Screenshot Placeholder</text>
+  <text x="400" y="340" font-family="Arial, sans-serif" font-size="16" fill="#d1d5db" text-anchor="middle">Image to be replaced with actual UI screenshot</text>
+</svg>

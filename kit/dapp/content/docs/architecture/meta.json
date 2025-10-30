@@ -1,11 +1,18 @@
 {
   "title": "Architecture",
   "pages": [
-    "overview",
+    "core-components",
+    "frontend-layer",
+    "api-layer",
+    "blockchain-layer",
+    "data-layer",
+    "deployment-layer",
+    "system-architecture",
     "smart-contracts",
     "application",
     "data-indexing",
     "integration-operations",
-    "quality-performance"
+    "performance",
+    "quality"
   ]
 }

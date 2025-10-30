@@ -1,0 +1,602 @@
+---
+title: Compliance configuration
+description:
+  Compliance modules enforce regulatory requirements automatically during token
+  transfers. This guide shows you how to select, configure, and test compliance
+  modules before deploying them to production tokens.
+pageTitle: How to configure compliance modules for token compliance rules
+tags: [how-to, compliance, modules, configuration, testing]
+---
+
+**Primary role:** Compliance officers, token issuers
+
+**Secondary readers:** Technical architects designing compliance frameworks
+
+## Before you start
+
+Make sure you have:
+
+- Platform admin or compliance officer role
+- Understanding of regulatory requirements for your jurisdiction (Reg D, MiCA,
+  UCITS, etc.)
+- Target token contract address (if configuring existing token)
+- List of required compliance rules for your asset type
+
+**Time required:** 15-30 minutes per token to configure and test compliance
+
+## Step 1: Understand available modules
+
+ATK provides 10+ pre-built compliance modules covering common regulatory
+scenarios.
+
+### Module catalog
+
+**Country-based restrictions:**
+
+- **Country allow list** - Only permit investors from approved countries
+- **Country block list** - Block investors from prohibited jurisdictions
+  (sanctions compliance)
+
+**Identity verification:**
+
+- **SMART identity verification** - Advanced logical expressions for KYC/AML
+  requirements
+- **Identity allow list** - Whitelist specific identity contracts (private
+  placements)
+- **Identity block list** - Block specific identity contracts (compliance
+  violations)
+- **Address block list** - Block specific wallet addresses (sanctions, fraud
+  prevention)
+
+**Transfer and supply limits:**
+
+- **Token supply limit** - Enforce maximum issuance caps (MiCA EUR 8M, Reg CF
+  USD 5M)
+- **Investor count** - Restrict number of unique investors (private placements)
+- **Transfer approval** - Require pre-approval for transfers (Japanese FSA
+  compliance)
+
+**Time-based restrictions:**
+
+- **Time lock** - Enforce minimum holding periods (Reg D lock-ups, vesting)
+
+### Module decision tree
+
+Use this decision tree to select appropriate modules:
+
+<Mermaid
+  chart={`flowchart TB
+    Start(Start: Define requirements) --> Q1{Geographic<br/>restrictions?}
+    Q1 -->|Yes| Q1a{Allow or<br/>block list?}
+    Q1a -->|Allow specific| CountryAllow(Country Allow List)
+    Q1a -->|Block specific| CountryBlock(Country Block List)
+    Q1 -->|No| Q2{Identity<br/>verification?}
+    
+    Q2 -->|Yes| Q2a{Complex<br/>logic needed?}
+    Q2a -->|Yes| IdentitySMART(SMART Identity Verification)
+    Q2a -->|No| IdentitySimple(Identity Allow/Block List)
+    Q2 -->|No| Q3
+    
+    Q3{Investor<br/>limits?} -->|Yes| Q3a{Count or<br/>cap?}
+    Q3a -->|Count investors| InvestorCount(Investor Count Module)
+    Q3a -->|Cap supply| SupplyLimit(Token Supply Limit)
+    Q3 -->|No| Q4
+    
+    Q4{Transfer<br/>approval?} -->|Yes| TransferApproval(Transfer Approval Module)
+    Q4 -->|No| Q5
+    
+    Q5{Holding<br/>period?} -->|Yes| TimeLock(Time Lock Module)
+    Q5 -->|No| End(Review selection)
+    
+    style Start fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Q1 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Q2 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Q3 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Q4 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Q5 fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff`}
+/>
+
+## Step 2: Configure modules for common scenarios
+
+### Scenario 1: Accredited investor offering (Reg D 506c)
+
+**Requirements:**
+
+- Only US investors
+- Must be accredited investors
+- Maximum 100 investors
+- 6-month holding period
+
+**Module configuration:**
+
+1. **Country allow list**: Restrict to US (ISO code 840)
+2. **SMART identity verification**: Require ACCREDITED_INVESTOR claim
+3. **Investor count**: Cap at 100 qualified investors
+4. **Time lock**: 180-day holding period
+
+Navigate to **Asset Management** &gt; **Tokens** &gt; [Your Token] &gt;
+**Compliance** tab:
+
+**Add country allow list:**
+
+1. Click **Add Module**
+2. Select **Country Allow List**
+3. Enter configuration:
+   ```json
+   {
+     "allowedCountries": [840]
+   }
+   ```
+4. Click **Save**
+
+**Add identity verification:**
+
+1. Click **Add Module**
+2. Select **SMART Identity Verification**
+3. Enter expression (postfix notation: `[ACCREDITED_INVESTOR]`):
+   ```json
+   {
+     "requiredExpression": [
+       {
+         "type": "TOPIC",
+         "value": 42
+       }
+     ]
+   }
+   ```
+   (Assuming topic ID 42 = ACCREDITED_INVESTOR)
+4. Click **Save**
+
+**Add investor count:**
+
+1. Click **Add Module**
+2. Select **Investor Count**
+3. Enter configuration:
+   ```json
+   {
+     "maxInvestors": 100,
+     "global": false,
+     "countryCodes": [],
+     "countryLimits": [],
+     "topicFilter": [
+       {
+         "type": "TOPIC",
+         "value": 42
+       }
+     ]
+   }
+   ```
+4. Click **Save**
+
+**Add time lock:**
+
+1. Click **Add Module**
+2. Select **Time Lock**
+3. Enter configuration:
+   ```json
+   {
+     "holdPeriod": 15552000,
+     "allowExemptions": false,
+     "exemptionExpression": []
+   }
+   ```
+   (15552000 seconds = 180 days)
+4. Click **Save**
+
+### Scenario 2: MiCA-compliant stablecoin
+
+**Requirements:**
+
+- Maximum EUR 8M issuance
+- KYC and AML verified investors
+- No sanctioned countries
+
+**Module configuration:**
+
+1. **Country block list**: Block sanctioned jurisdictions
+2. **SMART identity verification**: Require KYC AND AML claims
+3. **Token supply limit**: EUR 8M cap (MiCA requirement)
+
+**Add country block list:**
+
+```json
+{
+  "blockedCountries": [643, 408, 760, 368]
+}
+```
+
+(Russia=643, North Korea=408, Syria=760, Iraq=368)
+
+**Add identity verification:**
+
+```json
+{
+  "requiredExpression": [
+    {
+      "type": "TOPIC",
+      "value": 1
+    },
+    {
+      "type": "TOPIC",
+      "value": 2
+    },
+    {
+      "type": "AND",
+      "value": 0
+    }
+  ]
+}
+```
+
+(Postfix: `[KYC, AML, AND]` where KYC=1, AML=2)
+
+**Add supply limit:**
+
+```json
+{
+  "maxSupply": 0,
+  "limitType": 0,
+  "periodLength": 0,
+  "useBaseCurrency": true,
+  "maxBaseCurrencyValue": 8000000,
+  "baseCurrencyDecimals": 18
+}
+```
+
+(EUR 8M in 18-decimal representation)
+
+### Scenario 3: Geographic restrictions with holding limits
+
+**Requirements:**
+
+- Allow US, UK, and Germany only
+- Maximum 50 investors per country
+- No individual holding &gt; 10% of supply
+
+**Module configuration:**
+
+1. **Country allow list**: US, UK, Germany
+2. **Investor count**: 50 per country limit
+3. **Token supply limit**: Configure 10% individual cap (custom implementation)
+
+**Add country allow list:**
+
+```json
+{
+  "allowedCountries": [840, 826, 276]
+}
+```
+
+(US=840, UK=826, Germany=276)
+
+**Add investor count with per-country limits:**
+
+```json
+{
+  "maxInvestors": 0,
+  "global": false,
+  "countryCodes": [840, 826, 276],
+  "countryLimits": [50, 50, 50],
+  "topicFilter": []
+}
+```
+
+### Scenario 4: Complex identity requirements
+
+**Requirements:**
+
+- Allow smart contracts OR individuals with (KYC AND AML)
+- Block politically exposed persons (PEPs)
+
+**Module configuration:**
+
+Use SMART identity verification with complex expression:
+
+**Expression logic:** `CONTRACT OR ((KYC AND AML) AND NOT PEP)`
+
+**Postfix tokens:** `[CONTRACT, KYC, AML, AND, PEP, NOT, AND, OR]`
+
+```json
+{
+  "requiredExpression": [
+    {
+      "type": "TOPIC",
+      "value": 50
+    },
+    {
+      "type": "TOPIC",
+      "value": 1
+    },
+    {
+      "type": "TOPIC",
+      "value": 2
+    },
+    {
+      "type": "AND",
+      "value": 0
+    },
+    {
+      "type": "TOPIC",
+      "value": 10
+    },
+    {
+      "type": "NOT",
+      "value": 0
+    },
+    {
+      "type": "AND",
+      "value": 0
+    },
+    {
+      "type": "OR",
+      "value": 0
+    }
+  ]
+}
+```
+
+(CONTRACT=50, KYC=1, AML=2, PEP=10)
+
+## Step 3: Test compliance rules
+
+**CRITICAL:** Always test compliance configurations before deploying to
+production tokens.
+
+### Testing workflow
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant Admin
+    participant TestToken
+    participant Compliance
+    participant TestInvestor
+    
+    Admin->>TestToken: Deploy test token
+    Admin->>TestToken: Configure compliance modules
+    Admin->>Compliance: Add test scenarios
+    
+    Note over Admin,TestInvestor: Positive tests
+    Admin->>TestInvestor: Create investor with correct claims
+    TestInvestor->>TestToken: Attempt transfer
+    TestToken->>Compliance: Validate transfer
+    Compliance-->>TestToken: ✅ Approved
+    TestToken-->>TestInvestor: Transfer succeeds
+    
+    Note over Admin,TestInvestor: Negative tests
+    Admin->>TestInvestor: Create investor missing claims
+    TestInvestor->>TestToken: Attempt transfer
+    TestToken->>Compliance: Validate transfer
+    Compliance-->>TestToken: ❌ Rejected
+    TestToken-->>TestInvestor: Transfer reverts
+    
+    Admin->>Compliance: Review test results
+    Admin->>TestToken: Approve configuration`}
+/>
+
+### Create test environment
+
+1. Navigate to **Asset Management** &gt; **Tokens**
+2. Click **Create Test Token**
+3. Select token type matching your production token
+4. Name it `TEST_[TokenName]` for clarity
+5. Configure the same compliance modules as production
+
+### Test investor profiles
+
+Create test investor profiles with different claim combinations:
+
+**Profile 1: Fully compliant**
+
+- Has all required claims (KYC, AML, ACCREDITED, etc.)
+- Expected result: Transfers succeed
+
+**Profile 2: Missing required claim**
+
+- Has KYC but missing AML
+- Expected result: Transfers blocked
+
+**Profile 3: Wrong jurisdiction**
+
+- Has KYC/AML but wrong country claim
+- Expected result: Transfers blocked
+
+**Profile 4: Expired claim**
+
+- Had required claims but they expired
+- Expected result: Transfers blocked
+
+### Execute test transfers
+
+For each test profile:
+
+1. Navigate to **Test Tools** &gt; **Compliance Simulator**
+2. Select test token
+3. Select from/to investor profiles
+4. Enter transfer amount
+5. Click **Simulate Transfer**
+6. Review pre-flight validation results
+7. If approved, execute on-chain transaction
+8. Verify blockchain result matches pre-flight check
+
+### Validation checklist
+
+Mark each test scenario:
+
+- ✅ Compliant investor can receive tokens
+- ✅ Non-compliant investor blocked
+- ✅ Compliant investor can transfer to another compliant investor
+- ✅ Compliant investor blocked from transferring to non-compliant investor
+- ✅ Investor count limit enforced
+- ✅ Supply limit enforced
+- ✅ Time lock enforced
+- ✅ Country restrictions enforced
+- ✅ Error messages are clear and actionable
+
+### Common test failures
+
+**Module not binding to token:**
+
+- Check module address is correct
+- Verify module is added to compliance contract
+- Confirm token references correct compliance contract
+
+**Claims not recognized:**
+
+- Verify claim topic IDs match module configuration
+- Check claim issuer is trusted issuer for token
+- Ensure claims have not expired
+
+**Unexpected approvals/rejections:**
+
+- Review module execution order (modules execute in order added)
+- Check for module configuration conflicts
+- Verify identity registry is correctly populated
+
+## Step 4: Integration with identity registry
+
+Compliance modules rely on identity registry for claim lookups.
+
+### Verify identity registry connection
+
+1. Navigate to **Platform Settings** &gt; **Compliance**
+2. Verify **Identity Registry** address is set
+3. Check **Trusted Issuers** list includes your claim issuer
+4. Ensure **Claim Topics** are registered with correct IDs
+
+### Required claim topics
+
+Register all claim topics used by your modules:
+
+| Topic Name          | Topic ID | Purpose                         |
+| ------------------- | -------- | ------------------------------- |
+| KYC_VERIFIED        | 1        | Basic identity verification     |
+| AML_VERIFIED        | 2        | Anti-money laundering check     |
+| ACCREDITED_INVESTOR | 42       | US accredited investor status   |
+| QUALIFIED_PURCHASER | 43       | US qualified purchaser status   |
+| COUNTRY             | 100      | Country of residence            |
+| INVESTOR_TYPE       | 101      | Individual/institutional        |
+| PEP_STATUS          | 10       | Politically exposed person flag |
+| CONTRACT_ENTITY     | 50       | Smart contract entity           |
+
+Navigate to **Platform Settings** &gt; **Compliance** &gt; **Claim Topics** to
+add missing topics.
+
+## Step 5: Deploy to production
+
+After successful testing, deploy compliance configuration to production token.
+
+### Production deployment checklist
+
+Before deploying:
+
+- ✅ All test scenarios passed
+- ✅ Compliance officer reviewed configuration
+- ✅ Legal team approved module selection
+- ✅ Identity registry populated with investor claims
+- ✅ Documentation updated with compliance rules
+- ✅ Investor communications prepared explaining restrictions
+- ✅ Support team trained on error messages
+
+### Deploy configuration
+
+1. Navigate to production token: **Asset Management** &gt; **Tokens** &gt;
+   [Production Token]
+2. Go to **Compliance** tab
+3. Click **Import Configuration**
+4. Select test token configuration
+5. Review each module carefully
+6. Click **Deploy to Production**
+7. Sign transaction with admin wallet
+8. Wait for confirmation (30-45 seconds)
+9. Verify modules appear in **Active Modules** list
+
+### Post-deployment verification
+
+1. Check module configuration using blockchain explorer
+2. Execute test transfer with known compliant investor
+3. Execute test transfer with known non-compliant investor (should fail)
+4. Review transaction logs in observability dashboard
+5. Confirm error messages display correctly in dApp
+
+## Best practices
+
+### Module selection
+
+- Start minimal: Add only modules required by regulations
+- Layer gradually: Test each module independently before combining
+- Document rationale: Record why each module is required for audit trail
+- Review regularly: Compliance requirements change; reassess quarterly
+
+### Configuration management
+
+- Version control: Store module configurations in git repository
+- Change tracking: Log all configuration changes with justification
+- Rollback plan: Keep previous configurations for emergency rollback
+- Test environment: Maintain test token mirror of production for changes
+
+### Testing rigor
+
+- Comprehensive coverage: Test all rule combinations
+- Edge cases: Test boundary conditions (exact limits, expiration times)
+- Failure modes: Verify appropriate errors for each rejection reason
+- Performance: Test with realistic transaction volumes
+- Gas costs: Measure gas consumption for compliance checks
+
+### Operational procedures
+
+- Emergency response: Define process for urgent compliance changes
+- Monitoring: Set up alerts for compliance violation attempts
+- Investor support: Provide clear guidance on claim requirements
+- Regular audits: Review compliance effectiveness monthly
+- Regulatory updates: Subscribe to jurisdiction regulatory news
+
+## Troubleshooting
+
+### Module configuration not taking effect
+
+- **Check transaction status**: Verify configuration transaction confirmed
+- **Verify module binding**: Ensure module added to token's compliance contract
+- **Review module order**: Earlier modules can block later modules from
+  executing
+- **Clear cache**: Some dApp views cache module configuration for 5 minutes
+
+### Compliant investors being blocked
+
+- **Verify claim presence**: Check investor OnchainID contains required claims
+- **Check claim expiration**: Expired claims are invalid
+- **Confirm issuer trust**: Verify claim issuer is registered trusted issuer
+- **Review expression logic**: Complex expressions can have unintended logic
+- **Test in simulator**: Use compliance simulator to debug specific investor
+
+### Module gas costs too high
+
+- **Reduce module count**: Combine similar modules where possible
+- **Optimize expressions**: Simplify complex identity verification expressions
+- **Review state updates**: Modules with state updates (count tracking) cost
+  more
+- **Consider off-chain validation**: Use API pre-flight checks to avoid failed
+  transactions
+
+### Inconsistent results between pre-flight and on-chain
+
+- **Check data freshness**: API cache may be stale; wait 30 seconds and retry
+- **Verify chain state**: Claims may have changed between pre-flight and
+  execution
+- **Review timestamp dependencies**: Time lock modules depend on block timestamp
+- **Confirm module versions**: Ensure API validation uses same module logic
+
+For additional help, see
+[Compliance troubleshooting](/docs/user-guides/troubleshooting/compliance) or
+check the observability dashboard for compliance metrics.
+
+## Next steps
+
+- **Monitor compliance metrics** - Review compliance dashboard for violation
+  patterns:
+  [Observability & monitoring](/docs/developer-guides/deployment-ops/observability-monitoring)
+- **Investor onboarding** - Ensure investors have required claims:
+  [Manage investors](/docs/user-guides/operations/manage-investors)
+- **Smart contract reference** - Deep dive into module implementation:
+  [Identity & compliance contracts](/docs/architecture/smart-contracts/identity-compliance)
+- **Integration patterns** - Connect external compliance systems:
+  [Integration playbook](/docs/architecture/integration-operations/integration-playbook)

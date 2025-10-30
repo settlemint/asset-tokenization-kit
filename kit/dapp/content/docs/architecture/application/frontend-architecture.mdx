@@ -1,16 +1,13 @@
 ---
 title: Frontend design
 description:
-  Modern TanStack-based web application with type-safe routing and reactive
-  state management
+  The Asset Tokenization Kit frontend is built as a modern, type-safe
+  single-page application using TanStack's ecosystem. It delivers a responsive,
+  accessible user experience for managing tokenized assets while maintaining
+  strict type safety from backend to browser.
 pageTitle: Frontend architecture - TanStack dApp and UX principles
 tags: [architecture, frontend, tanstack, react, typescript, ui]
 ---
-
-The Asset Tokenization Kit frontend is built as a modern, type-safe single-page
-application using TanStack's ecosystem. It delivers a responsive, accessible
-user experience for managing tokenized assets while maintaining strict type
-safety from backend to browser.
 
 ## Technology foundation
 
@@ -42,8 +39,9 @@ The interface is built on accessible, composable primitives:
 - **Lucide React** - Consistent icon library (version 0.548)
 
 All UI components prioritize accessibility (WCAG 2.1 AA compliance), keyboard
-navigation, and screen reader support. See `src/components/ui/` for the
-component library.
+navigation, and screen reader support. See
+[`src/components/ui/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/components/ui)
+for the component library.
 
 ### Type safety and validation
 
@@ -62,7 +60,9 @@ class of runtime errors.
 
 ### File-based routing structure
 
-Routes are defined in `src/routes/` using TanStack Router's file conventions:
+Routes are defined in
+[`src/routes/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/routes)
+using TanStack Router's file conventions:
 
 <Mermaid
   chart={`
@@ -93,11 +93,11 @@ flowchart TB
     Onboarded --> Sidebar
     Sidebar --> Pages
 
-    style Root fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Private fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Onboarded fill:#10b981,stroke:#047857,color:#fff
-    style Sidebar fill:#10b981,stroke:#047857,color:#fff
-    style Pages fill:#10b981,stroke:#047857,color:#fff
+    style Root fill:#6ba4d4,stroke:#4a7ba8,color:#fff
+    style Private fill:#8571d9,stroke:#654bad,color:#fff
+    style Onboarded fill:#5fc9bf,stroke:#3a9d96,color:#fff
+    style Sidebar fill:#5fc9bf,stroke:#3a9d96,color:#fff
+    style Pages fill:#5fc9bf,stroke:#3a9d96,color:#fff
 
 `} />
 
@@ -131,13 +131,13 @@ flowchart LR
     subgraph "Server State"
         Query["Query Cache
         (TanStack Query)"]
-        Optimistic["Optimistic Updates"]
+        Optimistic("Optimistic Updates")
     end
 
     subgraph "Remote Sources"
-        ORPC["ORPC API"]
-        GraphQL["TheGraph Subgraph"]
-        Chain["Blockchain (Viem)"]
+        ORPC("ORPC API")
+        GraphQL("TheGraph Subgraph")
+        Chain("Blockchain (Viem)")
     end
 
     UI --> Query
@@ -148,9 +148,9 @@ flowchart LR
     Query --> Chain
     Optimistic --> Query
 
-    style UI fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Query fill:#10b981,stroke:#047857,color:#fff
-    style ORPC fill:#0ea5e9,stroke:#0369a1,color:#fff
+    style UI fill:#8571d9,stroke:#654bad,color:#fff
+    style Query fill:#5fc9bf,stroke:#3a9d96,color:#fff
+    style ORPC fill:#6ba4d4,stroke:#4a7ba8,color:#fff
 
 `} />
 
@@ -171,7 +171,9 @@ flowchart LR
 
 The application uses three primary data sources:
 
-**1. ORPC API** (`src/orpc/`) - Type-safe RPC for business logic:
+**1. ORPC API**
+([`src/orpc/`](https://github.com/settlemint/asset-tokenization-kit/tree/main/kit/dapp/src/orpc)) -
+Type-safe RPC for business logic:
 
 ```typescript
 import { orpc } from "@/orpc/client";
@@ -220,31 +222,31 @@ const { data: theme } = useQuery(
 ### Asset designer wizard
 
 Multi-step token creation interface at
-`src/routes/_private/_onboarded/_sidebar/addon-designer.tsx`:
+[`src/routes/_private/_onboarded/_sidebar/addon-designer.tsx`](https://github.com/settlemint/asset-tokenization-kit/blob/main/kit/dapp/src/routes/_private/_onboarded/_sidebar/addon-designer.tsx):
 
 <Mermaid
   chart={`
 flowchart TB
-    Start["Select Asset Type
-    (Bond, Equity, Fund, StableCoin)"]
+    Start("Select Asset Type
+    (Bond, Equity, Fund, StableCoin)")
 
-    Details["Configure Details
-    (Name, symbol, supply)"]
+    Details("Configure Details
+    (Name, symbol, supply)")
 
-    Compliance["Set Compliance Rules
-    (KYC, country filters, caps)"]
+    Compliance("Set Compliance Rules
+    (KYC, country filters, caps)")
 
-    Extensions["Add Extensions
-    (Pausable, yield, voting)"]
+    Extensions("Add Extensions
+    (Pausable, yield, voting)")
 
-    Review["Review & Deploy
-    (Gas estimation, preview)"]
+    Review("Review & Deploy
+    (Gas estimation, preview)")
 
-    Deploy["Deploy Transaction
-    (Monitor status)"]
+    Deploy("Deploy Transaction
+    (Monitor status)")
 
-    Complete["Asset Created
-    (Navigate to token page)"]
+    Complete("Asset Created
+    (Navigate to token page)")
 
     Start --> Details
     Details --> Compliance
@@ -253,13 +255,21 @@ flowchart TB
     Review --> Deploy
     Deploy --> Complete
 
-    style Start fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Details fill:#0ea5e9,stroke:#0369a1,color:#fff
-    style Compliance fill:#d97706,stroke:#92400e,color:#fff
-    style Extensions fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Review fill:#8b5cf6,stroke:#6d28d9,color:#fff
-    style Deploy fill:#d97706,stroke:#92400e,color:#fff
-    style Complete fill:#10b981,stroke:#047857,color:#fff
+    style Start fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Details fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Compliance fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Extensions fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Review fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Deploy fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Complete fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+
+    style Start fill:#6ba4d4,stroke:#4a7ba8,color:#fff
+    style Details fill:#6ba4d4,stroke:#4a7ba8,color:#fff
+    style Compliance fill:#b661d9,stroke:#8a3fb3,color:#fff
+    style Extensions fill:#8571d9,stroke:#654bad,color:#fff
+    style Review fill:#8571d9,stroke:#654bad,color:#fff
+    style Deploy fill:#b661d9,stroke:#8a3fb3,color:#fff
+    style Complete fill:#5fc9bf,stroke:#3a9d96,color:#fff
 
 `} />
 
@@ -459,12 +469,16 @@ Generates static assets with SSR support for faster initial loads.
 
 ## Integration points
 
-The frontend connects to multiple backend services:
+The frontend connects to backend services exclusively through the ORPC API
+layer:
 
-- **ORPC API** (`/api/rpc`) - Business logic and database queries
-- **TheGraph Subgraph** - Blockchain event indexing
-- **Hasura GraphQL** - Real-time database subscriptions
-- **SettleMint Portal** - Blockchain transaction submission
-- **MinIO** - Document storage (KYC docs, asset prospectuses)
+- **ORPC API** (`/api/rpc`) - All business logic, database queries, and
+  blockchain data access
+- **SettleMint Portal** - Blockchain transaction submission (wallet-initiated)
+- **MinIO** - Document storage access (via signed URLs from ORPC)
+
+The ORPC API layer internally coordinates with TheGraph subgraph, PostgreSQL,
+and other data sources. This architecture ensures consistent authentication,
+validation, and error handling across all data access patterns.
 
 See [Backend API architecture](./backend-api) for service integration details.

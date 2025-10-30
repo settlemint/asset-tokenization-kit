@@ -103,6 +103,10 @@ export function DataTablePagination<TData>({
     return null;
   }
 
+  const tableState = table.getState();
+  const pageSize = tableState.pagination.pageSize;
+  const pageIndex = tableState.pagination.pageIndex;
+
   return (
     <div className="flex items-center justify-between px-2 py-1">
       <div className="flex-1 text-xs">
@@ -130,12 +134,9 @@ export function DataTablePagination<TData>({
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <p className="text-muted-foreground text-xs">{t("rowsPerPage")}</p>
-          <Select
-            value={String(table.getState().pagination.pageSize)}
-            onValueChange={handlePageSizeChange}
-          >
+          <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
             <SelectTrigger className="h-6 w-[65px] text-xs px-2 py-1">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
+              <SelectValue placeholder={String(pageSize)} />
             </SelectTrigger>
             <SelectContent side="top" className="max-h-[200px]">
               {[10, 20, 30, 50, 100].map((pageSize) => (
@@ -173,7 +174,7 @@ export function DataTablePagination<TData>({
           </Button>
           <div className="flex items-center gap-1 text-muted-foreground text-xs px-2 tabular-nums">
             <span className="transition-all duration-200">
-              {String(table.getState().pagination.pageIndex + 1)}
+              {String(pageIndex + 1)}
             </span>
             <span>/</span>
             <span className="transition-all duration-200">

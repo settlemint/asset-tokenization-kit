@@ -1,0 +1,11 @@
+{
+  "title": "Data model",
+  "pages": [
+    "index",
+    "data-model-reference",
+    "entity-token",
+    "entity-investor",
+    "entity-compliance",
+    "entity-corporate-actions"
+  ]
+}

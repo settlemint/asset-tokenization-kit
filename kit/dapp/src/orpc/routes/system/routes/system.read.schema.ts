@@ -180,6 +180,9 @@ export const SystemSchema = z.object({
               complianceModuleCreate: z
                 .boolean()
                 .describe("Whether the user can create compliance modules"),
+              fixedYieldScheduleCreate: z
+                .boolean()
+                .describe("Whether the user can create fixed yield schedules"),
               grantRole: z
                 .boolean()
                 .describe("Whether the user can grant roles"),

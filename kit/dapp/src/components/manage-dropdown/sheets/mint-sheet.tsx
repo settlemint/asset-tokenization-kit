@@ -1,4 +1,5 @@
 import { AddressSelectOrInputToggle } from "@/components/address/address-select-or-input-toggle";
+import { invalidateTokenActionQueries } from "@/components/manage-dropdown/core/invalidate-token-action-queries";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Web3Address } from "@/components/web3/web3-address";
@@ -79,39 +80,10 @@ export function MintSheet({ open, onOpenChange, asset }: MintSheetProps) {
           ? variables.recipients
           : [variables.recipients];
 
-        // PERFORMANCE: Run all query invalidations in parallel
-        const invalidationPromises = [
-          // Refresh token data to show updated supply and balances
-          qc.invalidateQueries({
-            queryKey: orpc.token.read.queryKey({
-              input: { tokenAddress: asset.id },
-            }),
-          }),
-          // Refresh holders data to show updated balances
-          qc.invalidateQueries({
-            queryKey: orpc.token.holders.queryKey({
-              input: { tokenAddress: asset.id },
-            }),
-          }),
-        ];
-
-        // Add individual recipient holder queries if we have recipients
-        if (recipients && recipients.length > 0) {
-          const recipientInvalidations = recipients.map(
-            (recipientAddress: string) =>
-              qc.invalidateQueries({
-                queryKey: orpc.token.holder.queryKey({
-                  input: {
-                    tokenAddress: asset.id,
-                    holderAddress: recipientAddress,
-                  },
-                }),
-              })
-          );
-          invalidationPromises.push(...recipientInvalidations);
-        }
-
-        await Promise.all(invalidationPromises);
+        await invalidateTokenActionQueries(qc, {
+          tokenAddress: asset.id,
+          holderAddresses: recipients as EthereumAddress[],
+        });
       },
     })
   );

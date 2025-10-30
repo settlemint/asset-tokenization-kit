@@ -31,8 +31,18 @@ describe("TopicSchemeStats", () => {
         totalRevokedClaims: number;
       } | null
     > = {
-      accreditedInvestor: null,
-      issuerJurisdiction: null,
+      accreditedInvestor: {
+        totalActiveClaims: 0,
+        totalIssuedClaims: 0,
+        totalRemovedClaims: 0,
+        totalRevokedClaims: 0,
+      },
+      issuerJurisdiction: {
+        totalActiveClaims: 0,
+        totalIssuedClaims: 0,
+        totalRemovedClaims: 0,
+        totalRevokedClaims: 0,
+      },
       assetClassification: {
         totalActiveClaims: 2,
         totalIssuedClaims: 2,
@@ -45,7 +55,12 @@ describe("TopicSchemeStats", () => {
         totalRemovedClaims: 0,
         totalRevokedClaims: 0,
       },
-      qualifiedInstitutionalInvestor: null,
+      qualifiedInstitutionalInvestor: {
+        totalActiveClaims: 0,
+        totalIssuedClaims: 0,
+        totalRemovedClaims: 0,
+        totalRevokedClaims: 0,
+      },
       contractIdentity: {
         totalActiveClaims: 8,
         totalIssuedClaims: 8,
@@ -70,10 +85,30 @@ describe("TopicSchemeStats", () => {
         totalRemovedClaims: 0,
         totalRevokedClaims: 0,
       },
-      accreditedInvestorVerified: null,
-      issuerReportingCompliant: null,
-      issuerProspectusFiled: null,
-      issuerLicensed: null,
+      accreditedInvestorVerified: {
+        totalActiveClaims: 0,
+        totalIssuedClaims: 0,
+        totalRemovedClaims: 0,
+        totalRevokedClaims: 0,
+      },
+      issuerReportingCompliant: {
+        totalActiveClaims: 0,
+        totalIssuedClaims: 0,
+        totalRemovedClaims: 0,
+        totalRevokedClaims: 0,
+      },
+      issuerProspectusFiled: {
+        totalActiveClaims: 0,
+        totalIssuedClaims: 0,
+        totalRemovedClaims: 0,
+        totalRevokedClaims: 0,
+      },
+      issuerLicensed: {
+        totalActiveClaims: 0,
+        totalIssuedClaims: 0,
+        totalRemovedClaims: 0,
+        totalRevokedClaims: 0,
+      },
       antiMoneyLaundering: {
         totalActiveClaims: 5,
         totalIssuedClaims: 6,
@@ -86,9 +121,24 @@ describe("TopicSchemeStats", () => {
         totalRemovedClaims: 0,
         totalRevokedClaims: 0,
       },
-      professionalInvestor: null,
-      issuerProspectusExempt: null,
-      regulationS: null,
+      professionalInvestor: {
+        totalActiveClaims: 0,
+        totalIssuedClaims: 0,
+        totalRemovedClaims: 0,
+        totalRevokedClaims: 0,
+      },
+      issuerProspectusExempt: {
+        totalActiveClaims: 0,
+        totalIssuedClaims: 0,
+        totalRemovedClaims: 0,
+        totalRevokedClaims: 0,
+      },
+      regulationS: {
+        totalActiveClaims: 0,
+        totalIssuedClaims: 0,
+        totalRemovedClaims: 0,
+        totalRevokedClaims: 0,
+      },
     };
 
     // Verify each topic scheme matches expected stats

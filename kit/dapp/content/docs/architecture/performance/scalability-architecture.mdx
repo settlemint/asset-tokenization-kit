@@ -1,0 +1,211 @@
+---
+title: Scalability patterns
+description:
+  The Asset Tokenization Kit scales horizontally by adding more instances of
+  stateless components. No single bottleneck limits throughput. This page
+  documents the scalability patterns, load balancing strategies, and
+  auto-scaling policies that enable ATK to handle production workloads as
+  adoption grows.
+pageTitle: Scalability patterns
+tags: [architecture, scalability, load-balancing, auto-scaling]
+---
+
+## Scalability architecture
+
+ATK scales horizontally by adding more instances of stateless components. No
+single bottleneck limits throughput.
+
+### Horizontal scaling patterns
+
+**Stateless API instances** - ORPC API servers hold no session state. Requests
+route to any available instance via a load balancer. Scaling from 2 instances to
+10 instances increases API throughput from 2,000 requests/second to 10,000
+requests/second linearly.
+
+**Read replica scaling** - Adding PostgreSQL read replicas increases read
+capacity proportionally. Two replicas double read throughput. Replicas lag the
+primary by less than 1 second, so queries tolerate eventual consistency.
+
+**Redis clustering** - Redis runs in cluster mode with data sharded across 3
+nodes. Each node handles a portion of the keyspace. Adding nodes increases cache
+capacity and throughput proportionally.
+
+### Load balancing strategies
+
+**Round-robin for API instances** - HTTP requests distribute evenly across API
+instances using round-robin load balancing. This maximizes throughput when all
+instances have equal capacity.
+
+**Least-connections for database** - Database queries route to the replica with
+the fewest active connections. This prevents hot replicas from becoming
+bottlenecks while cold replicas sit idle.
+
+**Geographic routing for frontend** - The TanStack Start dApp deploys to
+multiple regions. Users route to the nearest region based on geographic
+proximity. This reduces latency from 200ms (cross-continent) to 20ms (same
+continent).
+
+### Auto-scaling policies
+
+**CPU-based scaling for API** - Kubernetes HorizontalPodAutoscaler adds API pods
+when average CPU utilization exceeds 70%. This prevents CPU saturation from
+degrading response times during traffic spikes.
+
+**Queue depth scaling for workers** - Background job workers scale based on
+queue depth. When more than 100 jobs accumulate, Kubernetes spawns additional
+worker pods to drain the queue faster.
+
+**Connection pool saturation for database** - When connection pool utilization
+exceeds 80% for more than 5 minutes, alerts trigger manual intervention to add
+read replicas or increase pool size.
+
+## Scaling for specific workloads
+
+Different components have different scaling characteristics based on their role
+in the system.
+
+### Frontend scaling
+
+The TanStack Start dApp is a stateless server-side rendered application that
+scales horizontally:
+
+- **Deployment units** - Each instance runs in a container with 1GB memory and 1
+  CPU
+- **Scaling trigger** - CPU > 70% average across all pods
+- **Geographic distribution** - Deploy to multiple regions for reduced latency
+- **CDN offloading** - Static assets serve from CDN, reducing origin server load
+
+### API scaling
+
+ORPC API servers are stateless and scale linearly:
+
+- **Deployment units** - Each instance runs with 2GB memory and 2 CPU
+- **Scaling trigger** - CPU > 70% or request queue depth > 100
+- **Session affinity** - Not required; requests route to any instance
+- **Database connection pooling** - Each instance maintains a pool of 20
+  connections
+
+### Database scaling
+
+PostgreSQL scales through read replicas and vertical scaling of the primary:
+
+- **Read replicas** - Add replicas for read-heavy workloads (analytics,
+  reporting)
+- **Primary vertical scaling** - Increase CPU/memory when write throughput
+  becomes bottleneck
+- **Connection pooling** - PgBouncer handles 200 application connections with 20
+  database connections
+- **Replication lag** - Monitor lag; acceptable threshold is < 1 second
+
+### Cache scaling
+
+Redis cluster mode provides horizontal scaling for cache capacity:
+
+- **Cluster mode** - 3+ nodes with data sharded by key hash
+- **Adding nodes** - Increases capacity and throughput linearly
+- **Replication** - Each primary shard has 1+ replicas for high availability
+- **Eviction policy** - `allkeys-lru` removes least recently used keys when
+  memory full
+
+### Blockchain scaling
+
+Blockchain performance depends on the underlying network, but ATK optimizes
+interaction patterns:
+
+- **Transaction batching** - Multicall aggregation reduces RPC calls
+- **RPC endpoint redundancy** - Multiple RPC endpoints provide failover and load
+  distribution
+- **Subgraph scaling** - TheGraph nodes scale independently of the application
+- **Event processing** - Parallel processing when events are independent
+
+## Capacity planning
+
+Plan capacity based on expected workload characteristics:
+
+### Traffic patterns
+
+- **Peak load factor** - Design for 3x average load to handle spikes
+- **Geographic distribution** - Deploy to regions where users are concentrated
+- **Time-based patterns** - Scale up during business hours, down during
+  off-hours
+
+### Resource estimation
+
+| Component         | Load Metric             | Scaling Ratio                 | Example                       |
+| ----------------- | ----------------------- | ----------------------------- | ----------------------------- |
+| API instances     | Requests/second         | 1 instance per 1,000 req/s    | 10,000 req/s → 10 instances   |
+| Database replicas | Read queries/second     | 1 replica per 5,000 queries/s | 15,000 queries/s → 3 replicas |
+| Redis nodes       | Cache operations/second | 1 node per 50,000 ops/s       | 150,000 ops/s → 3 nodes       |
+| Worker pods       | Jobs/minute             | 1 pod per 100 jobs/min        | 500 jobs/min → 5 pods         |
+
+### Growth planning
+
+- **Monitor trends** - Track metrics over time to predict growth
+- **Headroom policy** - Maintain 30% spare capacity for unexpected spikes
+- **Cost optimization** - Right-size instances based on actual usage patterns
+- **Scaling limits** - Understand maximum capacity of each component
+
+## Performance under load
+
+Scalability ensures the system maintains performance targets as load increases:
+
+### Load testing scenarios
+
+**Steady-state load** - System maintains P95 response times < 300ms at sustained
+70% capacity utilization.
+
+**Spike load** - System auto-scales within 2 minutes when load doubles suddenly.
+Response times may increase to P95 < 500ms during scale-up, then return to <
+300ms.
+
+**Gradual growth** - Auto-scaling keeps pace with gradual traffic increases.
+System adds capacity before saturation occurs.
+
+### Degradation strategies
+
+When load exceeds scaling capacity, degrade gracefully:
+
+1. **Rate limiting** - Enforce per-user limits to prevent abuse
+2. **Queue shedding** - Drop low-priority background jobs
+3. **Cache extension** - Serve stale data with longer TTLs
+4. **Feature flagging** - Disable non-critical features temporarily
+
+## Monitoring and alerts
+
+Track scaling metrics to ensure capacity meets demand:
+
+### Key metrics
+
+- **API throughput** - Requests/second, P95 latency
+- **Database connections** - Active connections, pool utilization
+- **Cache hit rate** - Hit rate %, eviction rate
+- **Auto-scaling events** - Pod count, scaling trigger reason
+- **Resource utilization** - CPU %, memory %, disk I/O
+
+### Alert thresholds
+
+- **API P95 > 500ms** - Critical; investigate immediately
+- **Database pool > 80%** - Warning; prepare to scale
+- **Cache hit rate < 80%** - Warning; review cache strategy
+- **Pod count at maximum** - Critical; increase cluster capacity
+
+## Common scaling anti-patterns
+
+Avoid these mistakes that limit scalability:
+
+- **Session affinity** - Don't store session state in API instances; use Redis
+- **Single database primary** - Add read replicas for read-heavy workloads
+- **Unbounded queues** - Monitor queue depth and scale workers accordingly
+- **Manual scaling** - Automate scaling policies instead of manual intervention
+- **Ignoring geographic distribution** - Deploy to multiple regions for global
+  users
+- **Over-provisioning** - Right-size instances based on actual usage
+
+## See also
+
+- [Frontend and API optimization](/docs/architecture/performance/frontend-api-optimization) -
+  Frontend build-time, runtime, and API performance strategies
+- [Infrastructure performance](/docs/architecture/performance/infrastructure-performance) -
+  Database, cache, smart contract, and blockchain performance
+- [Performance operations](/docs/architecture/performance/performance-operations) -
+  Testing, monitoring, and optimization workflow

@@ -27,7 +27,13 @@ export async function resetThemeToDefaults(
   const removedObjects: string[] = [];
 
   const logoKeys = new Set<string>();
-  for (const url of [currentTheme.logo.lightUrl, currentTheme.logo.darkUrl]) {
+  const logoUrls = [
+    currentTheme.logo.lightUrl,
+    currentTheme.logo.darkUrl,
+    currentTheme.logo.lightIconUrl,
+    currentTheme.logo.darkIconUrl,
+  ];
+  for (const url of logoUrls) {
     if (!url) continue;
     const key = extractObjectKey(url, bucket);
     if (key) {
