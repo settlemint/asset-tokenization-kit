@@ -38,7 +38,7 @@ Smart contracts organized into three interconnected layers handling tokens,
 compliance, and identity. Each layer provides focused functionality while
 maintaining clear interfaces between components.
 
-### Token layer - Asset contracts
+### Token layer - asset contracts
 
 **Core token contracts** implement ERC-20 interfaces with compliance hooks.
 Every transfer validates against compliance contract before executing state
@@ -68,7 +68,7 @@ Each deployment registers token address in central registry enabling discovery
 and verification. Factory upgrades introduce new token types without migrating
 existing assets.
 
-### Compliance layer - Modular rules
+### Compliance layer - modular rules
 
 **Compliance orchestration contract** coordinates multiple rule modules. Each
 token configures active modules and their parameters. Transfer validation

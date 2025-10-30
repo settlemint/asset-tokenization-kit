@@ -48,7 +48,7 @@ This architecture enables fast queries (subgraph pre-indexes everything),
 security (ORPC enforces auth), and flexibility (easy to add data sources without
 changing frontend code).
 
-## Architecture: Frontend → ORPC → TheGraph
+## Architecture: frontend → ORPC → TheGraph
 
 **CRITICAL**: The frontend never queries TheGraph directly. All blockchain data
 flows through the ORPC API layer, which provides authentication, validation, and
@@ -292,8 +292,7 @@ dataSources:
         - System
         - Event
       eventHandlers:
-        - event:
-            ATKSystemCreated(indexed address,indexed address,indexed address)
+        - event: ATKSystemCreated(indexed address,indexed address,indexed address)
           handler: handleATKSystemCreated
       file: ./src/system-factory/system-factory.ts
 
@@ -305,8 +304,7 @@ templates:
       abi: Token
     mapping:
       eventHandlers:
-        - event:
-            TransferCompleted(indexed address,indexed address,indexed
+        - event: TransferCompleted(indexed address,indexed address,indexed
             address,uint256)
           handler: handleTransferCompleted
         - event: MintCompleted(indexed address,indexed address,indexed uint256)
@@ -682,7 +680,7 @@ export const read = authRouter.token.read
   });
 ```
 
-### Frontend: Query ORPC, not TheGraph
+### Frontend: query ORPC, not TheGraph
 
 Components use generated ORPC client:
 
