@@ -1,15 +1,13 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
-import { ManageIdentityDropdown } from "@/components/manage-dropdown/manage-identity-dropdown";
-import { getIdentityTabConfiguration } from "@/components/tab-navigation/identity-tab-configuration";
-import { TabNavigation } from "@/components/tab-navigation/tab-navigation";
-import { Web3Address } from "@/components/web3/web3-address";
-import { client } from "@/orpc/orpc-client";
-import { getEthereumAddress } from "@atk/zod/ethereum-address";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { BasicInfoTile } from "@/components/participants/entities/tiles/basic-info-tile";
+import { Badge } from "@/components/ui/badge";
+import { ORPCError } from "@orpc/client";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
@@ -17,37 +15,10 @@ const routeParamsSchema = z.object({
   address: z.string().min(1),
 });
 
-/**
- * Route configuration for the identity details page parent route
- *
- * This route handles the address parameter and provides shared data loading
- * for all identity detail sub-routes. The route is authenticated and requires
- * the user to be onboarded.
- *
- * Route path: `/participants/entities/{address}`
- *
- * @remarks
- * - The address parameter must be a non-empty string (wallet/identity address)
- * - Identity data uses hardcoded dummy data for now
- * - This is a parent route that provides shared layout and tab navigation
- * - Requires appropriate permissions to view identity data
- *
- * @example
- * ```
- * // Navigating to this route
- * navigate({
- *   to: '/participants/entities/$address',
- *   params: { address: '0x1234567890123456789012345678901234567890' }
- * });
- * ```
- */
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/participants/entities/$address"
 )({
   parseParams: (params) => routeParamsSchema.parse(params),
-  /**
-   * Loader function to fetch identity data from ORPC API
-   */
   loader: async ({ context: { queryClient, orpc }, params: { address } }) => {
     const system = await queryClient.ensureQueryData(
       orpc.system.read.queryOptions({
@@ -63,97 +34,196 @@ export const Route = createFileRoute(
 
     if (!canViewEntities) {
       throw redirect({
-        to: "/",
+        to: "/participants/entities",
+        replace: true,
       });
     }
 
-    const identity = await client.system.identity.read({
-      identityId: address,
-    });
+    const identity = await queryClient.ensureQueryData(
+      orpc.system.identity.read.queryOptions({
+        input: { identityId: address },
+      })
+    );
+
+    const account = identity.account;
+
+    const buildBreadcrumb = (title: string) => [
+      createI18nBreadcrumbMetadata("participants", {
+        href: "/participants/users",
+      }),
+      createI18nBreadcrumbMetadata("participantsEntities", {
+        href: "/participants/entities",
+      }),
+      {
+        title,
+        href: `/participants/entities/${address}`,
+      },
+    ];
+
+    const isRegistered =
+      identity.registered !== undefined && identity.registered !== false
+        ? identity.registered.isRegistered
+        : false;
 
     const claimsData = {
       claims: identity.claims,
       identity: identity.id,
-      isRegistered: identity.registered
-        ? identity.registered.isRegistered
-        : false,
-      account: identity.account,
+      isRegistered,
+      account,
       isContract: identity.isContract,
     };
 
+    if (!account) {
+      const breadcrumbTitle = `${address.slice(0, 6)}…${address.slice(-4)}`;
+
+      return {
+        identity,
+        token: null,
+        claimsData,
+        breadcrumb: buildBreadcrumb(breadcrumbTitle),
+      };
+    }
+
+    const token = await queryClient
+      .ensureQueryData(
+        orpc.token.read.queryOptions({
+          input: { tokenAddress: account.id },
+        })
+      )
+      .catch((error: unknown) => {
+        if (
+          error instanceof ORPCError &&
+          (error.status === 404 || error.code === "UNAUTHORIZED")
+        ) {
+          return undefined;
+        }
+        throw error;
+      });
+
+    const breadcrumbTitle =
+      token?.name ??
+      account.contractName ??
+      `${address.slice(0, 6)}…${address.slice(-4)}`;
+
     return {
+      identity,
+      token: token ?? null,
       claimsData,
-      breadcrumb: [
-        createI18nBreadcrumbMetadata("participants", {
-          href: "/participants/users",
-        }),
-        createI18nBreadcrumbMetadata("participantsEntities", {
-          href: "/participants/entities",
-        }),
-        {
-          title: `${address.slice(0, 6)}...${address.slice(-4)}`,
-          href: `/participants/entities/${address}`,
-        },
-      ],
+      breadcrumb: buildBreadcrumb(breadcrumbTitle),
     };
   },
   errorComponent: DefaultCatchBoundary,
   component: RouteComponent,
 });
 
-/**
- * Parent route component with shared layout and tab navigation
- *
- * This component provides the shared layout for all identity detail pages
- * including header, breadcrumbs, tabs, and renders child routes through Outlet.
- */
 function RouteComponent() {
-  const { claimsData } = Route.useLoaderData();
+  const {
+    identity: loaderIdentity,
+    token: loaderToken,
+    claimsData,
+  } = Route.useLoaderData();
   const { address } = Route.useParams();
-  const { t } = useTranslation(["identities", "common"]);
+  const { t } = useTranslation([
+    "entities",
+    "identities",
+    "tokens",
+    "asset-types",
+    "common",
+  ]);
 
-  // Generate tab configuration based on identity data
-  // Only memoize based on properties that affect tab configuration
-  const tabConfigs = useMemo(
-    () => getIdentityTabConfiguration({ address }),
-    [address]
+  const routeContext = Route.useRouteContext();
+
+  const { data: queriedIdentity } = useQuery(
+    routeContext.orpc.system.identity.read.queryOptions({
+      input: { identityId: address },
+    })
   );
 
-  // Transform tab configurations to TabItemProps with translations
-  const tabs = useMemo(() => {
-    type IdentityTabKey = "details" | "claims";
-    type IdentityTabConfig = { href: string; tabKey: IdentityTabKey };
-    return (tabConfigs as IdentityTabConfig[]).map((config) => ({
-      href: config.href,
-      name: t(`identities:tabs.${config.tabKey}`),
-    }));
-  }, [tabConfigs, t]);
+  const identity = queriedIdentity ?? loaderIdentity;
+  const tokenAddress = identity?.account?.id;
+
+  const { data: queriedToken } = useQuery({
+    ...routeContext.orpc.token.read.queryOptions({
+      input: { tokenAddress: tokenAddress ?? address },
+    }),
+    enabled: Boolean(tokenAddress),
+  });
+
+  const token = queriedToken ?? loaderToken ?? null;
+
+  const displayName =
+    token?.name ??
+    identity?.account?.contractName ??
+    `${address.slice(0, 6)}…${address.slice(-4)}`;
+
+  const assetTypeKey = token?.type ?? null;
+  const entityTypeLabel = assetTypeKey
+    ? t(`asset-types:types.${assetTypeKey}.name`)
+    : undefined;
+
+  const contractAddress = identity?.account?.id ?? identity?.id;
+  const identityAddress = identity?.id ?? address;
+
+  const truncatedAddress = (value: string) =>
+    value.length <= 12 ? value : `${value.slice(0, 6)}…${value.slice(-4)}`;
+
+  if (!identity || !identity.account) {
+    return (
+      <div className="space-y-6 p-6">
+        <RouterBreadcrumb />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 p-6">
-      {/* Header Section */}
+      <RouterBreadcrumb />
       <div className="space-y-2">
-        <RouterBreadcrumb />
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold tracking-tight">
-              <Web3Address
-                address={getEthereumAddress(address)}
-                showPrettyName={false}
-                copyToClipboard={false}
-              />
-            </h1>
-            <IdentityStatusBadge isRegistered={claimsData.isRegistered} />
+        <div className="flex flex-wrap items-center gap-2">
+          <h1 className="text-3xl font-bold tracking-tight mr-2">
+            {displayName}
+          </h1>
+          <IdentityStatusBadge isRegistered={claimsData.isRegistered} />
+        </div>
+        {entityTypeLabel ? (
+          <p className="text-sm font-medium text-muted-foreground">
+            {entityTypeLabel}
+          </p>
+        ) : null}
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          {contractAddress ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide">
+                {t("entities:entityTable.columns.address")}
+              </span>
+              <CopyToClipboard
+                value={contractAddress}
+                className="inline-flex items-center gap-2"
+              >
+                <Badge variant="outline" className="font-mono">
+                  {truncatedAddress(contractAddress)}
+                </Badge>
+              </CopyToClipboard>
+            </div>
+          ) : null}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wide">
+              {t("entities:entityTable.columns.identityAddress")}
+            </span>
+            <CopyToClipboard
+              value={identityAddress}
+              className="inline-flex items-center gap-2"
+            >
+              <Badge variant="outline" className="font-mono">
+                {truncatedAddress(identityAddress)}
+              </Badge>
+            </CopyToClipboard>
           </div>
-          <ManageIdentityDropdown identity={claimsData} />
         </div>
       </div>
-
-      {/* Tab Navigation */}
-      <TabNavigation items={tabs} />
-
-      {/* Child Routes */}
-      <Outlet />
+      <div className="grid auto-rows-fr items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <BasicInfoTile identity={identity} token={token} />
+      </div>
     </div>
   );
 }

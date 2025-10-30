@@ -11,6 +11,11 @@
     "registered": "Registered",
     "pending": "Pending registration"
   },
+  "details": {
+    "basicInfo": {
+      "title": "Basic info"
+    }
+  },
   "entityTable": {
     "columns": {
       "name": "Name",

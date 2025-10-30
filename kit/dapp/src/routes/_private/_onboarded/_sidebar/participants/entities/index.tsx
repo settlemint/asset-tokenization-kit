@@ -39,43 +39,47 @@ function EntityManagementPage() {
 
   if (!canViewEntities) {
     return (
-      <div className="w-full p-6">
-        <RouterBreadcrumb />
-        <div className="mt-6 rounded-lg border bg-card p-6">
-          <h1 className="text-2xl font-semibold">
-            {t("entities:accessDenied.title")}
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            {t("entities:accessDenied.description")}
-          </p>
+      <div className="space-y-6 p-6">
+        <div className="space-y-2">
+          <RouterBreadcrumb />
+          <div className="rounded-lg border bg-card p-6">
+            <h1 className="text-2xl font-semibold">
+              {t("entities:accessDenied.title")}
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              {t("entities:accessDenied.description")}
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full p-6">
-      <RouterBreadcrumb />
-      <div className="mb-8 mt-4">
-        <h1 className="text-3xl font-bold">
-          {t("navigation:entityManagement")}
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          {t("entities:page.description")}
-        </p>
-      </div>
+    <div className="space-y-6 p-6">
+      <div className="space-y-2">
+        <RouterBreadcrumb />
+        <div className="mb-8 ">
+          <h1 className="text-3xl font-bold">
+            {t("navigation:entityManagement")}
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            {t("entities:page.description")}
+          </p>
+        </div>
 
-      <Suspense
-        fallback={
-          <div className="rounded-lg border bg-card p-6">
-            <p className="text-muted-foreground">
-              {t("entities:page.loading")}
-            </p>
-          </div>
-        }
-      >
-        <EntityTable />
-      </Suspense>
+        <Suspense
+          fallback={
+            <div className="rounded-lg border bg-card p-6">
+              <p className="text-muted-foreground">
+                {t("entities:page.loading")}
+              </p>
+            </div>
+          }
+        >
+          <EntityTable />
+        </Suspense>
+      </div>
     </div>
   );
 }

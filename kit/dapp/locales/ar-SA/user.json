@@ -125,6 +125,12 @@
     "lastNameInfo": "اسم العائلة القانوني"
   },
   "details": {
+    "basicInfo": {
+      "title": "معلومات أساسية",
+      "success": "تم تحديث تفاصيل المستخدم",
+      "editTitle": "تعديل المعلومات الأساسية",
+      "editDescription": "حدّث اسم المستخدم وعنوان بريده الإلكتروني."
+    },
     "kycInformation": "المعلومات"
   },
   "profile": {

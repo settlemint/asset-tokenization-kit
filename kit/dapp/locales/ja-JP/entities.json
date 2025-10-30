@@ -8,8 +8,13 @@
     "description": "エンティティを管理する権限がありません。追加のアクセスについては管理者に連絡してください。"
   },
   "status": {
-    "registered": "登録済み",
-    "pending": "登録待ち"
+    "registered": "有効",
+    "pending": "無効"
+  },
+  "details": {
+    "basicInfo": {
+      "title": "基本情報"
+    }
   },
   "entityTable": {
     "columns": {
