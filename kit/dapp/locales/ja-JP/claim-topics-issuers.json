@@ -45,8 +45,9 @@
           "description": "この請求トピックのための一意で人間が読める名前。例：専門ライセンス"
         },
         "signature": {
-          "label": "関数署名",
-          "description": "請求検証のための関数署名。形式は次のようにする必要があります：functionName(parameterTypes)。例：hasLicense(address,bytes32)"
+          "label": "クレームデータABIタイプ",
+          "description": "Solidity ABIタイプ（オプションでパラメータ名を含む）をカンマ区切りで入力してください。関数名も括弧も不要です。例：string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
+          "placeholder": "string claim"
         }
       },
       "verification": {
@@ -68,8 +69,9 @@
           "description": "トピックID：{{topicId}} • トピック名は変更できません"
         },
         "signature": {
-          "label": "関数署名",
-          "description": "請求検証のための関数署名。形式は次のようにする必要があります：functionName(parameterTypes)。例：hasLicense(address,bytes32)",
+          "label": "クレームデータABIタイプ",
+          "description": "Solidity ABIタイプ（オプションでパラメータ名を含む）をカンマ区切りで入力してください。関数名も括弧も不要です。例：string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
+          "placeholder": "string claim",
           "current": "現在の署名：{{signature}}"
         }
       },
@@ -79,7 +81,9 @@
         "updating": "更新中..."
       },
       "validation": {
-        "signatureChanged": "新しい署名は現在の署名と異なる必要があります"
+        "signatureChanged": "新しい署名は現在の署名と異なる必要があります",
+        "noParentheses": "括弧を削除してください。カンマ区切りのタイプリストを使用してください。",
+        "noFunctionStyle": "関数名を削除してください。タイプ、タイプ、...を使用してください。"
       }
     },
     "toast": {
