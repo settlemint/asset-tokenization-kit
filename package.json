@@ -69,7 +69,7 @@
     "@noble/hashes": "2.0.1",
     "@types/js-yaml": "4.0.9",
     "js-yaml": "4.1.0",
-    "lefthook": "2.0.1"
+    "lefthook": "2.0.2"
   },
   "devDependencies": {
     "@prettier/plugin-oxc": "0.0.4",
