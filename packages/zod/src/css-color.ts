@@ -6,7 +6,7 @@
  * injection patterns like url(), javascript:, and script tags.
  * @module CSSColorValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Validates that a CSS value doesn't contain dangerous patterns

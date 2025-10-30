@@ -1,7 +1,7 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { from } from "dnum";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * GraphQL query to fetch bond status statistics for a specific token

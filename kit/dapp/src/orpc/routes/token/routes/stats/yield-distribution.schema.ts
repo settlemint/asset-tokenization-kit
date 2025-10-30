@@ -1,7 +1,7 @@
 import { bigDecimal } from "@atk/zod/bigdecimal";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { timestamp } from "@atk/zod/timestamp";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Input validation schema for yield distribution API endpoint.

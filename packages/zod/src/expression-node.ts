@@ -8,7 +8,7 @@
  * @module ExpressionNodeValidation
  */
 
-import * as z from "zod";
+import { z } from "zod";
 import { ExpressionTypeEnum, expressionType } from "./expression-type";
 import { type ATKTopic, getTopicId } from "./topics";
 

@@ -6,7 +6,7 @@ import { decimals } from "@atk/zod/decimals";
 import { isin } from "@atk/zod/isin";
 import { isoCountryCodeNumeric } from "@atk/zod/iso-country-code";
 import { optionalString } from "@atk/zod/optional-string";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Base fields common to all token types

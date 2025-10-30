@@ -2,7 +2,7 @@ import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-
 import { UserVerificationSchema } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { ClaimTopicSchema } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for custom claim topics registered at runtime.

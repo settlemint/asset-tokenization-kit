@@ -3,7 +3,7 @@ import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { tokenRouter } from "@/orpc/procedures/token.router";
 import { FixedYieldScheduleSchema } from "@/orpc/routes/fixed-yield-schedule/routes/fixed-yield-schedule.read.schema";
 import { from } from "dnum";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * GraphQL query to fetch yield schedule and period data for a bond token

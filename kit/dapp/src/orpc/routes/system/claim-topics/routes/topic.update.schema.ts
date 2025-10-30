@@ -1,6 +1,6 @@
 import { BaseMutationOutputSchema } from "@/orpc/routes/common/schemas/mutation-output.schema";
 import { MutationInputSchema } from "@/orpc/routes/common/schemas/mutation.schema";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Topic Update Input Schema

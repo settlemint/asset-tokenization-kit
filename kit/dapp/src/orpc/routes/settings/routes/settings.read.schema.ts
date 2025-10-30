@@ -1,5 +1,5 @@
 import { settingKeySchema } from "@atk/zod/settings-key";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for reading a single setting by key.

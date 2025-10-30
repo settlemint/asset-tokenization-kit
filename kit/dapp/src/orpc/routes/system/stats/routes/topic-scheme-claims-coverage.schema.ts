@@ -1,5 +1,5 @@
 import { TopicSchemeSchema } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Output schema for topic scheme claims coverage endpoint.

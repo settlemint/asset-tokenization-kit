@@ -6,7 +6,7 @@
  * time-based operations in financial applications.
  * @module TimeUnitValidation
  */
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Available time measurement units from seconds to years.

@@ -1,5 +1,5 @@
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for a topic scheme reference in the trusted issuer context

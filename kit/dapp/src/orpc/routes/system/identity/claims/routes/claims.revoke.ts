@@ -7,7 +7,7 @@ import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { authRouter } from "@/orpc/procedures/auth.router";
 import { fetchClaimByTopicAndIdentity } from "@/orpc/routes/user/utils/identity.util";
 import { encodeAbiParameters, getAddress, keccak256 } from "viem";
-import * as z from "zod";
+import { z } from "zod";
 
 // GraphQL query to check if a user has management key on an identity
 const CHECK_MANAGEMENT_KEY_QUERY = theGraphGraphql(`

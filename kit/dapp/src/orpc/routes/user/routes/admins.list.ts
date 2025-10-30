@@ -11,7 +11,7 @@ import {
 } from "@/orpc/routes/user/utils/user-response.util";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { eq, inArray } from "drizzle-orm";
-import * as z from "zod";
+import { z } from "zod";
 
 // GraphQL query to fetch multiple identities by wallet addresses
 const READ_IDENTITIES_QUERY = theGraphGraphql(`

@@ -19,7 +19,7 @@ import {
   or,
   sql,
 } from "drizzle-orm";
-import * as z from "zod";
+import { z } from "zod";
 
 // GraphQL query to fetch multiple identities by wallet addresses
 const READ_IDENTITIES_QUERY = theGraphGraphql(`

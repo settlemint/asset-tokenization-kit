@@ -28,7 +28,7 @@
  */
 
 import { ethereumAddress } from "@atk/zod/ethereum-address";
-import * as z from "zod";
+import { z } from "zod";
 import { MutationInputSchema } from "../../../common/schemas/mutation.schema";
 
 /**

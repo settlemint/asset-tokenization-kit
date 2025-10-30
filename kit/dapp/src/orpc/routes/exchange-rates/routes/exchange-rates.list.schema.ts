@@ -6,7 +6,7 @@
  */
 import { PaginatedListSchema } from "@/orpc/routes/common/schemas/paginated-list.schema";
 import { type FiatCurrency, fiatCurrency } from "@atk/zod/fiat-currency";
-import * as z from "zod";
+import { z } from "zod";
 
 /**
  * Schema for listing exchange rates with optional filters.
