@@ -47,7 +47,7 @@ instructions (see infrastructure documentation).
 
 All personas—investors, issuers, compliance officers,
 administrators—authenticate through a single identity system backed by
-[OnchainID contracts](/docs/architecture/smart-contracts/identity-management).
+[OnchainID contracts](/docs/architecture/smart-contracts/identity-compliance).
 When an investor completes KYC, compliance officers see the signed claim
 immediately. When issuers schedule coupon payments, observability dashboards
 update in real-time. This architecture eliminates race conditions inherent in
@@ -57,7 +57,7 @@ multi-database systems.
 
 Traditional platforms maintain complex state machines tracking escrow periods,
 settlement windows, and custody transfers. The Kit's
-[delivery-versus-payment (DvP) mechanism](/docs/architecture/smart-contracts/trading-mechanisms#dvp-settlement)
+[delivery-versus-payment (DvP) mechanism](/docs/architecture/smart-contracts/addon-modules#xvp-settlement-atomic-cross-chain-delivery)
 collapses this to atomic transactions: compliance checks, payment, and token
 delivery happen in a single block, eliminating intermediate states that require
 manual reconciliation.
