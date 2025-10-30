@@ -23,7 +23,7 @@ describe("Topic schemes stats state (integration)", () => {
     // Create a test topic scheme to populate stats data
     await adminClient.system.claimTopics.topicCreate({
       name: testTopicName,
-      signature: "isTestVerified(address)",
+      signature: "address",
       walletVerification: {
         verificationType: VerificationType.pincode,
         secretVerificationCode: DEFAULT_PINCODE,
