@@ -23,6 +23,7 @@ vi.mock("react-i18next", () => ({
 
 // Mock lucide-react
 vi.mock("lucide-react", () => ({
+  CheckIcon: () => <div data-testid="check-icon">✓</div>,
   ChevronLeft: () => <div data-testid="chevron-left-icon">←</div>,
   SearchIcon: () => <div data-testid="search-icon">🔍</div>,
 }));
