@@ -115,7 +115,7 @@ flowchart TB
         Claims(ERC-735 Claims<br/>KYC claim<br/>AML claim<br/>Accreditation claim<br/>Jurisdiction claim)
     end
     
-    subgraph Authorities["Trusted Authorities"]
+    subgraph Authorities("Trusted Authorities")
         KYCProvider(KYC Provider)
         Regulator(Regulator)
         Issuer(Issuer)
@@ -180,19 +180,19 @@ compliance.
 <Mermaid
   chart={`
 flowchart TB
-    subgraph Constants["Shared Constants"]
+    subgraph Constants("Shared Constants")
         KeyPurposes(ERC734KeyPurposes)
         KeyTypes(ERC734KeyTypes)
         ClaimSchemes(ERC735ClaimSchemes)
     end
     
-    subgraph Extensions["Extension Layer"]
+    subgraph Extensions("Extension Layer")
         ERC734Ext(ERC734<br/>Key Management)
         ERC735Ext(ERC735<br/>Claim Management)
         ClaimAuth(ClaimAuthorizationExtension)
     end
     
-    subgraph Implementations["Identity Implementations"]
+    subgraph Implementations("Identity Implementations")
         UserID(OnChainIdentity<br/>Standard User)
         ContractID(OnChainContractIdentity<br/>Direct Issuance)
         RevocationID(OnChainIdentityWithRevocation<br/>Revocation Support)
@@ -391,17 +391,17 @@ token configures its own specific rules.
 <Mermaid
   chart={`
 flowchart TB
-    subgraph Tokens["Token Contracts"]
+    subgraph Tokens("Token Contracts")
         TokenA(Bond Token A<br/>Corporate Bonds)
         TokenB(Fund Token B<br/>Investment Funds)
         TokenC(Deposit Token C<br/>Bank Deposits)
     end
     
-    subgraph Orchestration["Compliance Engine"]
+    subgraph Orchestration("Compliance Engine")
         Compliance(SMARTCompliance Contract<br/>Rule Orchestration)
     end
     
-    subgraph Modules["Compliance Modules<br/>Global Instances"]
+    subgraph Modules("Compliance Modules<br/>Global Instances")
         Country(Country Restrictions<br/>Allow/Block Lists)
         Identity(Identity Verification<br/>Logical Expressions)
         Supply(Supply Limits<br/>Lifetime/Period Caps)

@@ -79,23 +79,23 @@ multiple components.
 
 <Mermaid
   chart={`flowchart TB
-    subgraph "Presentation Tier"
+    subgraph PresentationTier("Presentation Tier")
         Frontend(Frontend Layer<br/>Web & Mobile Interfaces<br/>Asset Designer, Portfolio Dashboard)
     end
     
-    subgraph "Application Tier"
+    subgraph ApplicationTier("Application Tier")
         API(API Layer<br/>Business Logic & Orchestration<br/>Asset Management, Investor Operations)
     end
     
-    subgraph "Blockchain Tier"
+    subgraph BlockchainTier("Blockchain Tier")
         Blockchain(Blockchain Layer<br/>Smart Contracts & Event Indexing<br/>Tokens, Vaults, XvP, Yield)
     end
     
-    subgraph "Data Tier"
+    subgraph DataTier("Data Tier")
         Data(Data Layer<br/>Storage & Caching<br/>PostgreSQL, Redis, MinIO)
     end
     
-    subgraph "Infrastructure Tier"
+    subgraph InfrastructureTier("Infrastructure Tier")
         Deploy(Deployment Layer<br/>Testing & Orchestration<br/>Kubernetes, Observability Stack)
     end
     
@@ -338,13 +338,13 @@ near-real-time data for frontend displays.
 
 <Mermaid
   chart={`flowchart TB
-    subgraph "Smart Contract Layer"
+    subgraph SmartContractLayer("Smart Contract Layer")
         Core(Core System<br/>Factories, Access Control)
         Assets(Asset Tokens<br/>Bond, Equity, Fund)
         Addons(Lifecycle Addons<br/>Vault, XvP, Yield)
     end
     
-    subgraph "Indexing Layer"
+    subgraph IndexingLayer("Indexing Layer")
         Graph(TheGraph Subgraph<br/>Event Processing)
         GraphQL(GraphQL API<br/>Query Interface)
     end
@@ -425,20 +425,20 @@ transmits in plaintext.
 
 <Mermaid
   chart={`flowchart TB
-    subgraph "Application Data"
+    subgraph ApplicationData("Application Data")
         Postgres[(PostgreSQL<br/>Relational State<br/>SERIALIZABLE Isolation)]
     end
     
-    subgraph "Cache Layer"
+    subgraph CacheLayer("Cache Layer")
         Redis[(Redis<br/>In-Memory Cache<br/>Tiered TTL Strategy)]
     end
     
-    subgraph "Object Storage"
+    subgraph ObjectStorage("Object Storage")
         MinIO[(MinIO<br/>S3-Compatible Storage)]
         IPFS[(IPFS<br/>Content Addressing)]
     end
     
-    subgraph "API Layer"
+    subgraph APILayer("API Layer")
         Services(Business Services)
     end
     
@@ -525,16 +525,16 @@ ensuring problems surface before users report them.
 
 <Mermaid
   chart={`flowchart TB
-    subgraph "Testing Infrastructure"
+    subgraph TestingInfrastructure("Testing Infrastructure")
         E2E(Playwright E2E Tests<br/>Complete Workflow Validation<br/>&gt;90% Coverage)
     end
     
-    subgraph "Deployment Infrastructure"
+    subgraph DeploymentInfrastructure("Deployment Infrastructure")
         Helm(Helm Charts<br/>Kubernetes Manifests)
         K8s(Kubernetes Cluster<br/>HPA, Read Replicas)
     end
     
-    subgraph "Observability Stack"
+    subgraph ObservabilityStack("Observability Stack")
         Prom(Prometheus<br/>Metrics Collection)
         Loki(Loki<br/>Log Aggregation)
         Otel(OpenTelemetry<br/>Distributed Tracing)

@@ -69,7 +69,7 @@
     "lint": {
       "dependsOn": ["codegen", "docs:validate-links"],
       "inputs": [
-        "src/**/*.{js,jsx,ts,tsx}",
+        "src/**/*.{js,jsx,ts,tsx.mdx}",
         ".eslintrc*",
         "eslint.config.*",
         "package.json",

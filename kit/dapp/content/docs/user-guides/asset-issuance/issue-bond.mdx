@@ -430,13 +430,13 @@ investor behavior.
 
 <Mermaid
   chart={`flowchart TB
-    subgraph Preparation["Step1. Preparation"]
+    subgraph Preparation("Step1. Preparation")
       DefineTerms(Define bond terms<br/>Principal, rate, maturity)
       DeployDenom(Deploy denomination asset<br/>or identify existing stablecoin)
       PrepareCompliance(Prepare compliance rules<br/>Regulatory framework selection)
     end
 
-    subgraph Configuration["Step2. Configuration"]
+    subgraph Configuration("Step2. Configuration")
       CreateToken(Create bond token<br/>Name, symbol, decimals)
       SetParams(Set bond parameters<br/>Face value, maturity date)
       ConfigYield(Configure yield schedule<br/>Optional: rate, frequency)
@@ -444,13 +444,13 @@ investor behavior.
       AssignRoles(Assign operational roles<br/>Governance, supply, custodian)
     end
 
-    subgraph Deployment["Step3. Deployment"]
+    subgraph Deployment("Step3. Deployment")
       Review(Review configuration<br/>Verify all parameters)
       Deploy(Deploy smart contract<br/>60-90 seconds on-chain)
       Verify(Verify deployment<br/>Contract address, functions)
     end
 
-    subgraph Operations["Step4. Operations"]
+    subgraph Operations("Step4. Operations")
       Mint(Mint initial allocation<br/>To verified investors)
       Fund(Fund yield wallet<br/>If yield enabled)
       UploadDocs(Upload offering docs<br/>Generate on-chain hash)
