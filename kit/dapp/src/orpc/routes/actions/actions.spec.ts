@@ -81,7 +81,7 @@ describe("Actions API", () => {
 
         // Optional fields
         if (action.executedAt !== null) {
-          expect(typeof action.executedAt).toBe("bigint");
+          expect(action.executedAt).toBeInstanceOf(Date);
         }
         if (action.executedBy !== null) {
           expect(action.executedBy).toMatch(/^0x[a-fA-F0-9]{40}$/);
