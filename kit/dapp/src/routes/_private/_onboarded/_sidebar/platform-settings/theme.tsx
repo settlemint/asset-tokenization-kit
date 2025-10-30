@@ -31,7 +31,6 @@ import {
   THEME_COMPILE_THRESHOLD,
 } from "@/components/theme/lib/theme-editor-helpers";
 import type { ThemeFormApi } from "@/components/theme/lib/types";
-import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -55,7 +54,6 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Shield } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -78,13 +76,10 @@ export const Route = createFileRoute(
     const user = await queryClient.ensureQueryData(
       orpcClient.user.me.queryOptions()
     );
-    const isAdmin = user.role === "admin";
 
-    if (isAdmin) {
-      await queryClient.ensureQueryData(
-        orpcClient.settings.theme.get.queryOptions({ input: {} })
-      );
-    }
+    await queryClient.ensureQueryData(
+      orpcClient.settings.theme.get.queryOptions({ input: {} })
+    );
 
     return {
       breadcrumb: [
@@ -93,7 +88,6 @@ export const Route = createFileRoute(
         }),
         createI18nBreadcrumbMetadata("settings.theme.title"),
       ],
-      isAdmin,
       userId: user.id,
     };
   },
@@ -103,24 +97,10 @@ export const Route = createFileRoute(
 function ThemeSettingsPage() {
   const { t } = useTranslation(["navigation", "settings"]);
   const { t: tTheme } = useTranslation("settings", { keyPrefix: "theme" });
-  const { isAdmin, userId } = Route.useLoaderData();
+  const { userId } = Route.useLoaderData();
 
   const normalizeFieldPath = (path: string): string =>
     path.replaceAll(/\[(\w+)\]/g, "." + "$1").replace(/^[.]+/, "");
-
-  if (!isAdmin) {
-    return (
-      <div className="w-full p-6 space-y-6">
-        <RouterBreadcrumb />
-        <Alert variant="destructive">
-          <Shield className="h-4 w-4" />
-          <AlertTitle>
-            {t("settings.theme.notAuthorized", { ns: "navigation" })}
-          </AlertTitle>
-        </Alert>
-      </div>
-    );
-  }
 
   const { data: baseTheme } = useSuspenseQuery(
     orpc.settings.theme.get.queryOptions({ input: {} })
