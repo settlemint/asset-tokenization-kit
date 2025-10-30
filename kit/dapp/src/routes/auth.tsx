@@ -59,92 +59,101 @@ function LayoutComponent() {
     [backgroundDarkUrl]
   );
 
-  const backgroundStyles = useMemo(
-    () => `
-      :root {
-        --auth-bg-image: ${safeBackgroundLightUrl};
-      }
-      .dark {
-        --auth-bg-image: ${safeBackgroundDarkUrl};
-      }
-    `,
-    [safeBackgroundLightUrl, safeBackgroundDarkUrl]
-  );
-
-  const inlineStyle = useMemo(
-    () => ({
-      backgroundImage: `var(--auth-bg-image, ${safeBackgroundLightUrl})`,
-    }),
-    [safeBackgroundLightUrl]
-  );
-
   return (
-    // Full-screen container with theme-aware background images
-    <div className="min-h-screen w-full bg-center bg-cover" style={inlineStyle}>
-      <style dangerouslySetInnerHTML={{ __html: backgroundStyles }} />
-
-      {/* Optional auth page image overlay */}
-      {(images.authLightUrl ?? images.authDarkUrl) ? (
-        <div className="absolute inset-0 pointer-events-none">
-          {images.authLightUrl ? (
-            <img
-              src={images.authLightUrl}
-              alt=""
-              aria-hidden="true"
-              className="block dark:hidden w-full h-full object-cover opacity-50"
-            />
-          ) : null}
-          {images.authDarkUrl ? (
+    <>
+      {/* Full-screen container with theme-aware background images - dark mode */}
+      <div
+        className="min-h-screen w-full bg-center bg-cover hidden dark:block"
+        style={{ backgroundImage: safeBackgroundDarkUrl }}
+      >
+        {/* Optional auth page image overlay */}
+        {images.authDarkUrl ? (
+          <div className="absolute inset-0 pointer-events-none">
             <img
               src={images.authDarkUrl}
               alt=""
               aria-hidden="true"
-              className="hidden dark:block w-full h-full object-cover opacity-50"
+              className="w-full h-full object-cover opacity-50"
             />
-          ) : null}
-        </div>
-      ) : null}
+          </div>
+        ) : null}
 
-      {/* Application branding - top left corner */}
-      <div className="absolute top-8 left-8 flex flex-col items-end gap-0 z-10">
-        <div className={cn("flex w-full items-center gap-3")}>
-          <div className="flex h-12 w-48 items-center justify-center overflow-hidden rounded-lg text-sidebar-primary-foreground">
-            {images.authLightUrl || images.authDarkUrl ? (
-              <>
-                {images.authLightUrl ? (
-                  <img
-                    src={images.authLightUrl}
-                    alt=""
-                    aria-hidden="true"
-                    className="block dark:hidden h-12 w-auto object-contain"
-                  />
-                ) : null}
-                {images.authDarkUrl ? (
-                  <img
-                    src={images.authDarkUrl}
-                    alt=""
-                    aria-hidden="true"
-                    className="hidden dark:block h-12 w-auto object-contain"
-                  />
-                ) : null}
-              </>
-            ) : (
-              <Logo forcedColorMode="dark" className="h-12 w-48" />
-            )}
+        {/* Application branding - top left corner */}
+        <div className="absolute top-8 left-8 flex flex-col items-end gap-0 z-10">
+          <div className={cn("flex w-full items-center gap-3")}>
+            <div className="flex h-12 w-48 items-center justify-center overflow-hidden rounded-lg text-sidebar-primary-foreground">
+              {images.authDarkUrl ? (
+                <img
+                  src={images.authDarkUrl}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-12 w-auto object-contain"
+                />
+              ) : (
+                <Logo forcedColorMode="dark" className="h-12 w-48" />
+              )}
+            </div>
           </div>
         </div>
+
+        {/* User controls - top right corner */}
+        <div className="absolute top-8 right-8 flex gap-2 z-10">
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
+
+        {/* Centered content area for auth forms */}
+        <div className="flex min-h-screen items-center justify-center relative z-10">
+          <Outlet />
+        </div>
       </div>
 
-      {/* User controls - top right corner */}
-      <div className="absolute top-8 right-8 flex gap-2 z-10">
-        <LanguageSwitcher />
-        <ThemeToggle />
-      </div>
+      {/* Full-screen container with theme-aware background images - light mode */}
+      <div
+        className="min-h-screen w-full bg-center bg-cover block dark:hidden"
+        style={{ backgroundImage: safeBackgroundLightUrl }}
+      >
+        {/* Optional auth page image overlay */}
+        {images.authLightUrl ? (
+          <div className="absolute inset-0 pointer-events-none">
+            <img
+              src={images.authLightUrl}
+              alt=""
+              aria-hidden="true"
+              className="w-full h-full object-cover opacity-50"
+            />
+          </div>
+        ) : null}
 
-      {/* Centered content area for auth forms */}
-      <div className="flex min-h-screen items-center justify-center relative z-10">
-        <Outlet />
+        {/* Application branding - top left corner */}
+        <div className="absolute top-8 left-8 flex flex-col items-end gap-0 z-10">
+          <div className={cn("flex w-full items-center gap-3")}>
+            <div className="flex h-12 w-48 items-center justify-center overflow-hidden rounded-lg text-sidebar-primary-foreground">
+              {images.authLightUrl ? (
+                <img
+                  src={images.authLightUrl}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-12 w-auto object-contain"
+                />
+              ) : (
+                <Logo forcedColorMode="dark" className="h-12 w-48" />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* User controls - top right corner */}
+        <div className="absolute top-8 right-8 flex gap-2 z-10">
+          <LanguageSwitcher />
+          <ThemeToggle />
+        </div>
+
+        {/* Centered content area for auth forms */}
+        <div className="flex min-h-screen items-center justify-center relative z-10">
+          <Outlet />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -5,6 +5,7 @@ const ALLOWED_CONTENT_TYPES = [
   "image/png",
   "image/jpeg",
   "image/webp",
+  "image/x-icon",
 ] as const;
 
 const LOGO_MODES = [

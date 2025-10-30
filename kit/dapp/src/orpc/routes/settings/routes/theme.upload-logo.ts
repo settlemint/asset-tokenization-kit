@@ -96,30 +96,9 @@ export const uploadLogo = authRouter.settings.theme.uploadLogo
       }
     })();
 
-    // Generate a direct MinIO URL for the uploaded asset
-    // URL will be valid for 7 days to allow long-lived caching
-    const publicUrlExpiry = 7 * 24 * 60 * 60; // 7 days in seconds
-    const publicUrl = await context.minioClient.presignedGetObject(
-      bucket,
-      objectKey,
-      publicUrlExpiry
-    );
-
-    // Normalize the public URL protocol for local development
-    const normalizedPublicUrl = (() => {
-      try {
-        const url = new URL(publicUrl);
-        if (
-          env.SETTLEMINT_INSTANCE === "local" &&
-          (url.hostname === "localhost" || url.hostname === "127.0.0.1")
-        ) {
-          url.protocol = "http:";
-        }
-        return url.toString();
-      } catch {
-        return publicUrl;
-      }
-    })();
+    // Generate a stable, non-expiring public URL for the asset
+    // Use the standard /{bucket}/{objectKey} path format
+    const publicUrl = `/${bucket}/${objectKey}`;
 
     const expiresAt = new Date(Date.now() + expirySeconds * 1000).toISOString();
 
@@ -127,7 +106,7 @@ export const uploadLogo = authRouter.settings.theme.uploadLogo
       mode,
       bucket,
       objectKey,
-      publicUrl: normalizedPublicUrl,
+      publicUrl,
       uploadUrl: normalizedUploadUrl,
       method: "PUT" as const,
       headers: {

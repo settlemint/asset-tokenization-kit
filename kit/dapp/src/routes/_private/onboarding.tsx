@@ -29,51 +29,58 @@ function OnboardingLayout() {
     [backgroundDarkUrl]
   );
 
-  const backgroundStyles = useMemo(
-    () => `
-      :root {
-        --onboarding-bg-image: ${safeBackgroundLightUrl};
-      }
-      .dark {
-        --onboarding-bg-image: ${safeBackgroundDarkUrl};
-      }
-    `,
-    [safeBackgroundLightUrl, safeBackgroundDarkUrl]
-  );
-
-  const inlineStyle = useMemo(
-    () => ({
-      backgroundImage: `var(--onboarding-bg-image, ${safeBackgroundLightUrl})`,
-    }),
-    [safeBackgroundLightUrl]
-  );
-
   return (
-    <div
-      className="h-screen w-screen bg-no-repeat bg-cover"
-      style={inlineStyle}
-    >
-      <style dangerouslySetInnerHTML={{ __html: backgroundStyles }} />
-      <DialogCardLayout
-        header={
-          <div className="h-24">
-            <div className="absolute top-8 left-8 flex flex-col items-end gap-0">
-              <div className={cn("flex w-full items-center gap-3")}>
-                <div className="flex h-12 w-48 items-center justify-center overflow-hidden rounded-lg text-sidebar-primary-foreground">
-                  <Logo forcedColorMode="dark" className="h-12 w-48" />
+    <>
+      <div
+        className="h-screen w-screen bg-no-repeat bg-cover hidden dark:block"
+        style={{ backgroundImage: safeBackgroundDarkUrl }}
+      >
+        <DialogCardLayout
+          header={
+            <div className="h-24">
+              <div className="absolute top-8 left-8 flex flex-col items-end gap-0">
+                <div className={cn("flex w-full items-center gap-3")}>
+                  <div className="flex h-12 w-48 items-center justify-center overflow-hidden rounded-lg text-sidebar-primary-foreground">
+                    <Logo forcedColorMode="dark" className="h-12 w-48" />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="absolute top-8 right-8 flex gap-2">
-              <LanguageSwitcher />
-              <ThemeToggle />
+              <div className="absolute top-8 right-8 flex gap-2">
+                <LanguageSwitcher />
+                <ThemeToggle />
+              </div>
             </div>
-          </div>
-        }
+          }
+        >
+          <Outlet />
+        </DialogCardLayout>
+      </div>
+      <div
+        className="h-screen w-screen bg-no-repeat bg-cover block dark:hidden"
+        style={{ backgroundImage: safeBackgroundLightUrl }}
       >
-        <Outlet />
-      </DialogCardLayout>
-    </div>
+        <DialogCardLayout
+          header={
+            <div className="h-24">
+              <div className="absolute top-8 left-8 flex flex-col items-end gap-0">
+                <div className={cn("flex w-full items-center gap-3")}>
+                  <div className="flex h-12 w-48 items-center justify-center overflow-hidden rounded-lg text-sidebar-primary-foreground">
+                    <Logo forcedColorMode="dark" className="h-12 w-48" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="absolute top-8 right-8 flex gap-2">
+                <LanguageSwitcher />
+                <ThemeToggle />
+              </div>
+            </div>
+          }
+        >
+          <Outlet />
+        </DialogCardLayout>
+      </div>
+    </>
   );
 }
