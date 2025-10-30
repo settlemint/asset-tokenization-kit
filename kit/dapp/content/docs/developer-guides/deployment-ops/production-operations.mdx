@@ -1550,6 +1550,320 @@ Critical alerts page on-call engineer via PagerDuty. Warning-level blockchain
 alerts notify operations Slack channel. Other warnings send email to engineering
 team.
 
+## Incident response runbook
+
+Production incidents require structured response workflows to minimize downtime
+and ensure proper root cause analysis. The incident response process follows a
+clear escalation path from detection through resolution and postmortem.
+
+<Mermaid
+  chart={`flowchart TB
+    Detection(Alert fires)
+    Triage(On-call engineer assesses)
+    SeverityCheck{Severity level?}
+    Critical(Critical: P0/P1)
+    Warning(Warning: P2/P3)
+    EscalateCheck{Escalate?}
+    Escalate(Escalate to senior team)
+    Mitigation(Immediate mitigation)
+    Rollback(Option: Rollback deployment)
+    Scale(Option: Scale resources)
+    Restart(Option: Restart services)
+    Communication(Update status page)
+    Resolution(Address root cause)
+    Verify(Verify resolution)
+    Postmortem(Document incident)
+    ActionItems(Create action items)
+    
+    Detection --> Triage
+    Triage --> SeverityCheck
+    SeverityCheck -->|P0/P1| Critical
+    SeverityCheck -->|P2/P3| Warning
+    Critical --> EscalateCheck
+    Warning --> Mitigation
+    EscalateCheck -->|Yes| Escalate
+    EscalateCheck -->|No| Mitigation
+    Escalate --> Mitigation
+    Mitigation --> Rollback
+    Mitigation --> Scale
+    Mitigation --> Restart
+    Rollback --> Communication
+    Scale --> Communication
+    Restart --> Communication
+    Communication --> Resolution
+    Resolution --> Verify
+    Verify --> Postmortem
+    Postmortem --> ActionItems
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    
+    class Detection,Verify,ActionItems primary
+    class Triage,SeverityCheck,EscalateCheck secondary
+    class Critical,Warning,Mitigation,Communication,Postmortem tertiary
+    class Escalate,Rollback,Scale,Restart,Resolution quaternary
+`}
+/>
+
+### Incident severity classification
+
+**P0 - Critical (immediate response):**
+
+- Complete service outage affecting all users
+- Data loss or corruption detected
+- Security breach or unauthorized access
+- Blockchain consensus failure (validators offline)
+
+**P1 - High (15-minute response):**
+
+- Partial service degradation affecting &gt;50% users
+- Settlement transaction failures &gt;5% rate
+- Database replication lag &gt;5 minutes
+- Critical component failure with redundancy active
+
+**P2 - Medium (1-hour response):**
+
+- Performance degradation within SLA but trending worse
+- Single component failure with no user impact
+- Subgraph indexing lag &gt;50 blocks
+- Non-critical alert patterns requiring investigation
+
+**P3 - Low (next business day):**
+
+- Minor performance issues
+- Non-blocking errors in logs
+- Resource utilization trending toward limits
+- Documentation or configuration improvements needed
+
+### Escalation criteria
+
+Escalate incidents when:
+
+- Mitigation attempts fail after 30 minutes
+- Impact scope increases during response
+- Root cause requires specialized expertise (smart contracts, blockchain
+  infrastructure)
+- Incident affects compliance or regulatory obligations
+- Multiple components failing simultaneously suggests systemic issue
+
+Escalation contacts maintained in PagerDuty rotation. For P0 incidents, engage
+incident commander role to coordinate cross-team response.
+
+### Communication protocols
+
+**Status page updates:**
+
+Update status page at:
+
+- Incident start (within 5 minutes of confirmation)
+- Every 30 minutes during active mitigation
+- Significant changes in scope or impact
+- Resolution confirmation
+- Postmortem publication
+
+Status page example entries:
+
+```text
+[Investigating] Settlement transactions experiencing delays &gt;2 minutes. Team investigating blockchain node connectivity.
+
+[Identified] Issue identified as RPC gateway upstream health check failure. Restarting ERPC pods.
+
+[Monitoring] ERPC gateway restored. Monitoring settlement latency for 30 minutes before confirming resolution.
+
+[Resolved] Settlement transactions returned to normal latency &lt;5s. Root cause: upstream timeout configuration too aggressive.
+```
+
+**Stakeholder notifications:**
+
+- P0/P1: Immediate Slack notification to #incidents channel + PagerDuty alert
+- P0: Email to executive stakeholders within 15 minutes
+- All: Post-incident summary to #engineering within 24 hours
+- P0/P1: Postmortem document within 5 business days
+
+### Mitigation playbooks
+
+**Rollback deployment:**
+
+```bash
+# Check recent deployments
+helm history atk -n atk
+
+# Rollback to previous revision
+helm rollback atk -n atk
+
+# Monitor rollback progress
+kubectl rollout status deployment/atk-dapp -n atk
+watch kubectl get pods -n atk
+```
+
+Use rollback when:
+
+- Recent deployment correlates with incident start time
+- New version showing increased error rates or latency
+- Configuration change caused service disruption
+
+**Scale resources:**
+
+```bash
+# Scale application replicas
+kubectl scale deployment/atk-dapp -n atk --replicas=6
+
+# Scale RPC nodes for increased blockchain read capacity
+kubectl scale statefulset/besu-rpc -n atk --replicas=5
+
+# Scale Hasura for database query load
+helm upgrade atk . -n atk \
+  --set hasura.replicaCount=4 \
+  --reuse-values
+```
+
+Use scaling when:
+
+- CPU/memory utilization &gt;85% sustained
+- Request queue depth increasing
+- Response times degrading under load
+- Connection pool exhaustion
+
+**Restart services:**
+
+```bash
+# Restart DApp deployment
+kubectl rollout restart deployment/atk-dapp -n atk
+
+# Restart ERPC gateway to refresh upstream health
+kubectl rollout restart deployment/erpc -n atk
+
+# Restart Hasura for database connection reset
+kubectl rollout restart deployment/hasura -n atk
+
+# Restart specific pod (last resort)
+kubectl delete pod -n atk hasura-PODNAME
+```
+
+Use restarts when:
+
+- Application showing memory leaks or resource exhaustion
+- Stale connections to external services
+- Configuration reload required without full redeployment
+- Clearing transient error states
+
+### Root cause analysis
+
+After immediate mitigation, identify root cause through observability stack:
+
+**Metrics analysis:** Review dashboard metrics for 2 hours before incident.
+Compare against baseline to identify anomalies. Look for:
+
+- Resource utilization spikes (CPU, memory, network)
+- Error rate increases in specific components
+- Latency percentile degradation (p95, p99)
+- Throughput drops or queue depth increases
+
+**Log correlation:** Query Loki for error patterns:
+
+```text
+{namespace="atk"} |= "error" or "fatal" or "exception"
+  | json
+  | __error__=""
+  | line_format "{{.timestamp}} {{.level}} {{.component}} {{.message}}"
+```
+
+Filter to incident time window. Identify first occurrence of errors and trace
+backward to triggering event.
+
+**Trace analysis:** Open Tempo and search for failed requests during incident
+window. Follow trace spans to identify:
+
+- Which component introduced latency or errors
+- External dependency timeouts or failures
+- Database query performance issues
+- Authentication or authorization failures
+
+**Change correlation:** Review recent changes:
+
+```bash
+# Recent deployments
+helm history atk -n atk
+
+# Recent pod restarts
+kubectl get events -n atk --sort-by='.lastTimestamp' | head -50
+
+# Git commits deployed
+git log --since="2 hours ago" --oneline
+```
+
+Correlate incident timing with deployments, configuration changes, or
+infrastructure modifications.
+
+### Postmortem documentation
+
+Document every P0 and P1 incident with structured postmortem:
+
+**Incident summary:**
+
+- Date and time (start, detection, mitigation, resolution)
+- Severity classification
+- Impact scope (users affected, revenue impact, SLA breach duration)
+- Incident commander and responders
+
+**Timeline:**
+
+Chronological sequence of events with timestamps:
+
+```text
+14:23 UTC - Alert fired: HighSettlementLatency
+14:25 UTC - On-call engineer acknowledged
+14:28 UTC - Identified ERPC upstream health check failures
+14:30 UTC - Status page updated: Investigating
+14:32 UTC - Restarted ERPC deployment
+14:35 UTC - Settlement latency returning to normal
+14:45 UTC - Confirmed resolution, updated status page
+```
+
+**Root cause:**
+
+Single-sentence root cause statement, followed by detailed explanation:
+
+```text
+Root cause: ERPC gateway upstream health check timeout set to 5s caused false negatives during normal Besu block production delays of 10-15s, marking healthy RPC nodes as unhealthy and routing traffic to single remaining node.
+```
+
+**Impact assessment:**
+
+- Users affected: Estimated 200 active users during incident window
+- Transactions affected: 347 settlement transactions delayed &gt;2 minutes
+- SLA impact: Settlement latency SLA (&lt;5s) breached for 22 minutes
+- Revenue impact: Minimal (transactions completed, delayed only)
+
+**Mitigation actions:**
+
+1. Restarted ERPC deployment to reset upstream health state (14:32 UTC)
+2. Verified settlement latency returned to normal &lt;5s (14:35 UTC)
+3. Monitored for 30 minutes to confirm stable state
+
+**Corrective actions (with owners and due dates):**
+
+- **Action 1:** Increase ERPC upstream health check timeout from 5s to 30s
+  (Owner: DevOps, Due: 2025-01-30)
+- **Action 2:** Add alerting for ERPC upstream health check failures (Owner:
+  SRE, Due: 2025-02-05)
+- **Action 3:** Document ERPC tuning guidelines in runbook (Owner: Tech Writer,
+  Due: 2025-02-10)
+- **Action 4:** Review all service health check timeouts for appropriate values
+  (Owner: Platform Team, Due: 2025-02-15)
+
+**Lessons learned:**
+
+- Health check timeouts must account for normal system variability
+- Upstream health check failures should trigger alerts before routing impact
+- Need better observability into ERPC upstream selection decisions
+- Status page updates were timely and clear (positive feedback from users)
+
+Store postmortems in shared documentation repository (Git or Confluence).
+Reference in future incident response and system design discussions.
+
 ## External observability forwarding
 
 Send telemetry to external platforms for long-term retention, advanced analysis,

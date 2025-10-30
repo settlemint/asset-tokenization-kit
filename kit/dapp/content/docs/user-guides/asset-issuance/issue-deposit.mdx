@@ -60,6 +60,94 @@ subscription mechanics, compliance framework, and operational role assignments.
 Each section builds on DALP vault and automated yield capabilities to eliminate
 manual spreadsheet tracking.
 
+### Deposit issuance workflow
+
+The following diagram illustrates the complete deposit issuance process from
+initial configuration through deployment and activation:
+
+<Mermaid
+  chart={`flowchart TB
+    Start(Start Deposit Creation)
+    Config(Product Configuration<br/>Name, Terms, Yield Rate)
+    ValidateConfig{Configuration<br/>Valid?}
+    ConfigError(Fix Configuration Errors<br/>- Term length &gt; 0<br/>- Valid APR<br/>- Proper decimals)
+    
+    Vault(Vault Linking<br/>Connect Custody Vault)
+    ValidateVault{Vault<br/>Connected?}
+    VaultError(Fix Vault Issues<br/>- Valid contract address<br/>- Correct denomination asset<br/>- Matching decimals)
+    
+    Liquidity(Liquidity Checks<br/>Verify Reserve Availability)
+    ValidateLiquidity{Sufficient<br/>Reserves?}
+    LiquidityError(Fund Vault<br/>- Calculate liability<br/>- Add 10-20% buffer<br/>- Transfer assets)
+    
+    Compliance(Compliance Setup<br/>KYC Requirements, Jurisdictions)
+    ValidateCompliance{Framework<br/>Valid?}
+    ComplianceError(Fix Compliance Config<br/>- Select framework<br/>- Configure claims<br/>- Set restrictions)
+    
+    Roles(Assign Roles<br/>Governance, Supply, Custodian)
+    ValidateRoles{Roles<br/>Assigned?}
+    RolesError(Assign Multisig Wallets<br/>- Governance role<br/>- Supply management<br/>- Emergency role)
+    
+    Review(Review Configuration)
+    ValidateReview{All Checks<br/>Pass?}
+    ReviewError(Address Review Issues<br/>- Verify parameters<br/>- Check conflicts<br/>- Validate roles)
+    
+    Deploy(Deploy Token Contract)
+    DeploySuccess{Deployment<br/>Successful?}
+    DeployError(Retry Deployment<br/>- Check gas limits<br/>- Verify network<br/>- Confirm wallet)
+    
+    Publish(Enable Subscriptions<br/>Publish to dApp)
+    Complete(Deposit Token Live)
+    
+    Start --> Config
+    Config --> ValidateConfig
+    ValidateConfig -->|Valid| Vault
+    ValidateConfig -->|Invalid| ConfigError
+    ConfigError --> Config
+    
+    Vault --> ValidateVault
+    ValidateVault -->|Valid| Liquidity
+    ValidateVault -->|Invalid| VaultError
+    VaultError --> Vault
+    
+    Liquidity --> ValidateLiquidity
+    ValidateLiquidity -->|Sufficient| Compliance
+    ValidateLiquidity -->|Insufficient| LiquidityError
+    LiquidityError --> Liquidity
+    
+    Compliance --> ValidateCompliance
+    ValidateCompliance -->|Valid| Roles
+    ValidateCompliance -->|Invalid| ComplianceError
+    ComplianceError --> Compliance
+    
+    Roles --> ValidateRoles
+    ValidateRoles -->|Assigned| Review
+    ValidateRoles -->|Missing| RolesError
+    RolesError --> Roles
+    
+    Review --> ValidateReview
+    ValidateReview -->|Pass| Deploy
+    ValidateReview -->|Fail| ReviewError
+    ReviewError --> Review
+    
+    Deploy --> DeploySuccess
+    DeploySuccess -->|Success| Publish
+    DeploySuccess -->|Failed| DeployError
+    DeployError --> Deploy
+    
+    Publish --> Complete
+    
+    classDef processNode fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef decisionNode fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef errorNode fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    classDef successNode fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    
+    class Start,Config,Vault,Liquidity,Compliance,Roles,Review,Deploy,Publish,Complete processNode
+    class ValidateConfig,ValidateVault,ValidateLiquidity,ValidateCompliance,ValidateRoles,ValidateReview,DeploySuccess decisionNode
+    class ConfigError,VaultError,LiquidityError,ComplianceError,RolesError,ReviewError,DeployError errorNode
+`}
+/>
+
 ## Configure deposit parameters
 
 ### Basic token information

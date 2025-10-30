@@ -24,6 +24,118 @@ While other platforms stop at token creation, ATK delivers the full stack of
 lifecycle management tools that make digital assets operationally viable for
 institutional finance.
 
+## Addon taxonomy by lifecycle phase
+
+ATK System Addons organize around the digital asset lifecycle—from issuance
+through active trading, yield management, custody, settlement, and governance.
+Each addon targets specific operational requirements at different lifecycle
+phases, and naturally composes with multiple asset types.
+
+<Mermaid chart={`
+flowchart TB
+    subgraph Issuance["Issuance Phase"]
+        Mintable(Mintable<br/>Token Creation)
+        Pausable(Pausable<br/>Emergency Controls)
+    end
+
+    subgraph Trading["Trading Phase"]
+        Snapshots(Snapshots<br/>Balance Records)
+        TransferLimits(Transfer Limits<br/>Volume Controls)
+    end
+
+    subgraph Yield["Yield Phase"]
+        FixedYield(Fixed Yield<br/>Scheduled Payments)
+        VariableYield(Variable Yield<br/>Dynamic Distributions)
+    end
+
+    subgraph Custody["Custody Phase"]
+        Vault(Vault<br/>Multi-Signature)
+        Multisig(Multisig<br/>Maker-Checker)
+    end
+
+    subgraph Settlement["Settlement Phase"]
+        XvP(XvP<br/>Atomic Swaps)
+        DvP(DvP<br/>Delivery vs Payment)
+    end
+
+    subgraph Governance["Governance Phase"]
+        Voting(Voting<br/>Token Holders)
+        Proposals(Proposals<br/>Decision Making)
+    end
+
+    subgraph Assets["Asset Types"]
+        Bonds(Bonds)
+        Equities(Equities)
+        Funds(Funds)
+        Deposits(Deposits)
+        Stablecoins(Stablecoins)
+    end
+
+    Mintable --> Bonds
+    Mintable --> Equities
+    Mintable --> Funds
+    Mintable --> Deposits
+    Mintable --> Stablecoins
+
+    Pausable --> Bonds
+    Pausable --> Equities
+    Pausable --> Funds
+    Pausable --> Deposits
+    Pausable --> Stablecoins
+
+    Snapshots --> Bonds
+    Snapshots --> Equities
+    Snapshots --> Funds
+
+    TransferLimits --> Equities
+    TransferLimits --> Stablecoins
+
+    FixedYield --> Bonds
+    FixedYield --> Deposits
+
+    VariableYield --> Funds
+    VariableYield --> Equities
+
+    Vault --> Bonds
+    Vault --> Equities
+    Vault --> Funds
+    Vault --> Stablecoins
+
+    Multisig --> Bonds
+    Multisig --> Equities
+    Multisig --> Funds
+
+    XvP --> Bonds
+    XvP --> Equities
+    XvP --> Funds
+    XvP --> Stablecoins
+
+    DvP --> Bonds
+    DvP --> Equities
+    DvP --> Funds
+
+    Voting --> Equities
+    Voting --> Funds
+
+    Proposals --> Equities
+    Proposals --> Funds
+
+    style Issuance fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Trading fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Yield fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Custody fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Settlement fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Governance fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+
+`} />
+
+This taxonomy reveals how addons cluster by operational phase while remaining
+composable. A bond token leverages issuance addons (mintable, pausable), yield
+addons (fixed yield schedule), custody addons (vault for treasury management),
+and settlement addons (DvP for institutional trades). Each addon integrates
+through well-defined interfaces, enabling complex workflows without tight
+coupling.
+
 ### DvP settlement: Eliminating counterparty risk
 
 Consider a real-world scenario: a pension fund purchases tokenized corporate

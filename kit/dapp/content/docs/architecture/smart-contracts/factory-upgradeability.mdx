@@ -236,6 +236,47 @@ Upgrades follow a structured sequence to minimize risk and ensure atomicity. The
 process begins with implementation deployment, followed by upgrade proposal,
 authorization verification, proxy update, and post-upgrade validation.
 
+The following sequence diagram illustrates the complete upgrade flow from the
+factory owner's initiation through the proxy's implementation pointer update:
+
+<Mermaid
+  chart={`
+sequenceDiagram
+    participant FactoryOwner as Factory Owner
+    participant UpgradeContract as Upgrade Contract
+    participant Proxy as Proxy
+    participant OldImpl as Old Implementation
+    participant NewImpl as New Implementation
+    
+    FactoryOwner->>UpgradeContract: initiate upgrade(newImplAddress)
+    UpgradeContract->>UpgradeContract: validate new implementation
+    UpgradeContract->>UpgradeContract: verify authorization
+    UpgradeContract->>Proxy: upgradeToAndCall(newImpl)
+    
+    Proxy->>OldImpl: delegatecall _authorizeUpgrade
+    OldImpl->>UpgradeContract: check permissions
+    UpgradeContract-->>OldImpl: authorized
+    OldImpl-->>Proxy: upgrade authorized
+    
+    Proxy->>Proxy: update implementation pointer
+    Note over Proxy: Storage remains unchanged<br/>Address stays constant
+    
+    Proxy->>NewImpl: delegatecall initialize (if needed)
+    NewImpl-->>Proxy: initialization complete
+    
+    Note over OldImpl: Old implementation remains<br/>deployed for existing state
+    Note over NewImpl: New implementation receives<br/>all future calls
+    
+    Proxy-->>UpgradeContract: upgrade complete
+    UpgradeContract-->>FactoryOwner: success
+`}
+/>
+
+This upgrade pattern ensures existing state remains intact while seamlessly
+transitioning to new logic. The old implementation contract remains deployed and
+accessible for historical reference, but the proxy redirects all future calls to
+the new implementation.
+
 <Mermaid
   chart={`
 sequenceDiagram

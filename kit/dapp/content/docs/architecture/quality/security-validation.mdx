@@ -14,6 +14,66 @@ Related topics:
 [Testing and quality gates](/docs/architecture/quality/testing-quality),
 [Compliance certification](/docs/architecture/quality/compliance-certification)
 
+## Security validation cadence
+
+Security validation operates across multiple time scales, creating overlapping
+defense layers that feed into incident response. Continuous automated scans
+catch common vulnerabilities immediately. Daily checks monitor dependencies and
+secrets. Weekly manual reviews identify logic errors. Quarterly penetration
+tests validate defenses under adversarial conditions. Annual comprehensive
+audits provide third-party assurance for regulators and stakeholders.
+
+<Mermaid
+  chart={`flowchart TB
+    Continuous(Continuous<br/>Automated Scans<br/>Every Commit)
+    Daily(Daily<br/>Secret Scanning<br/>Dependency Checks)
+    Weekly(Weekly<br/>Manual Code Reviews<br/>Security-Focused Reviews)
+    Quarterly(Quarterly<br/>External Penetration Tests<br/>Bug Bounty Program)
+    Annual(Annual<br/>Comprehensive Security Audits<br/>Regulatory Compliance)
+    
+    Incident(Incident Response<br/>Detection &amp; Resolution)
+    Metrics(Security Metrics<br/>Dashboard &amp; Observability)
+    
+    Continuous --> Daily
+    Daily --> Weekly
+    Weekly --> Quarterly
+    Quarterly --> Annual
+    
+    Continuous -.-> Incident
+    Daily -.-> Incident
+    Weekly -.-> Incident
+    Quarterly -.-> Incident
+    Annual -.-> Incident
+    
+    Continuous --> Metrics
+    Daily --> Metrics
+    Weekly --> Metrics
+    Quarterly --> Metrics
+    Annual --> Metrics
+    
+    Incident --> Metrics
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    
+    class Continuous,Daily primary
+    class Weekly,Quarterly secondary
+    class Annual tertiary
+    class Incident,Metrics quaternary
+`}
+/>
+
+This layered validation model implements defense-in-depth security controls
+required by audit frameworks including SOC 2 Type II and ISO 27001. Each
+validation layer operates independently while feeding findings into centralized
+security metrics dashboards. The observability stack surfaces vulnerability
+trends, mean-time-to-remediation, and coverage statistics, providing audit
+evidence of effective vulnerability management. When validation layers detect
+issues, findings route through the incident response system for systematic
+triage and remediation according to severity-based SLAs.
+
 ## Automated security scanning
 
 Automated security scanning forms the first defense layer, executing on every

@@ -84,6 +84,54 @@ statistics and user-specific claim status for dashboard displays.
 `}
 />
 
+## Entity documentation and schema locations
+
+The data model documentation is organized into four entity groups, each mapping
+to specific schema files in the codebase. This flowchart shows how documentation
+pages relate to the actual schema implementations:
+
+<Mermaid
+  chart={`flowchart TB
+    DataModel(Data Model)
+    
+    DataModel --> TokenEntities(Token Entities)
+    DataModel --> InvestorEntities(Investor Entities)
+    DataModel --> ComplianceEntities(Compliance Entities)
+    DataModel --> DALPEntities(DALP Entities)
+    
+    TokenEntities --> TokenDoc["entity-token.mdx"]
+    TokenDoc --> SubgraphSchema["kit/subgraph/schema.graphql<br/>Token, TokenBalance,<br/>Transfer, Mint, Burn"]
+    
+    InvestorEntities --> InvestorDoc["entity-investor.mdx"]
+    InvestorDoc --> AuthSchema["kit/dapp/src/lib/db/schemas/auth.ts<br/>User, Session"]
+    InvestorDoc --> KYCSchema["kit/dapp/src/lib/db/schemas/kyc.ts<br/>Investor, KYCDocument"]
+    InvestorDoc --> IdentitySchema["kit/subgraph/schema.graphql<br/>Identity, RegisteredIdentity"]
+    
+    ComplianceEntities --> ComplianceDoc["entity-compliance.mdx"]
+    ComplianceDoc --> ComplianceSchema["kit/subgraph/schema.graphql<br/>Compliance, ComplianceModule,<br/>IdentityClaim, AccessControl"]
+    
+    DALPEntities --> DALPDoc["DALP Lifecycle Entities"]
+    DALPDoc --> VaultSchema["kit/subgraph/schema.graphql<br/>Vault operations &amp; custody"]
+    DALPDoc --> YieldSchema["kit/subgraph/schema.graphql<br/>DividendDistribution,<br/>DividendClaim"]
+    DALPDoc --> SettlementSchema["kit/subgraph/schema.graphql<br/>DvP settlement events"]
+    
+    classDef primaryStyle fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondaryStyle fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiaryStyle fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternaryStyle fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    
+    class DataModel primaryStyle
+    class TokenEntities,InvestorEntities,ComplianceEntities,DALPEntities secondaryStyle
+    class TokenDoc,InvestorDoc,ComplianceDoc,DALPDoc tertiaryStyle
+    class SubgraphSchema,AuthSchema,KYCSchema,IdentitySchema,ComplianceSchema,VaultSchema,YieldSchema,SettlementSchema quaternaryStyle
+`}
+/>
+
+This organization allows developers to quickly navigate from conceptual
+understanding (documentation) to implementation (schema files). Each entity
+guide provides detailed field descriptions, relationships, and query examples,
+while the schema files contain the authoritative type definitions and indexes.
+
 ## Data flow patterns and integration points
 
 Understanding how data moves through the system is critical for building

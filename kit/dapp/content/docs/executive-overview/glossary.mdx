@@ -9,6 +9,63 @@ pageTitle: Glossary of tokenization and DALP terminology
 tags: [glossary, reference, definitions, terminology]
 ---
 
+## Concept network
+
+The diagram below shows how key DALP concepts interconnect to enable compliant,
+automated digital asset operations:
+
+<Mermaid
+  chart={`flowchart TB
+    DALP(DALP<br/>Digital Asset Lifecycle Platform)
+    DvP(DvP<br/>Delivery vs Payment)
+    Vault(Vault<br/>Secure Custody)
+    Yield(Yield Management<br/>Automated Distribution)
+    OnchainID(OnchainID<br/>Decentralized Identity)
+    ERC3643(ERC-3643<br/>Security Token Standard)
+    Compliance(Compliance Modules<br/>Rule Enforcement)
+    
+    DALP --> DvP
+    DALP --> Vault
+    DALP --> Yield
+    DALP --> ERC3643
+    
+    DvP --> Vault
+    Vault --> DvP
+    
+    ERC3643 --> OnchainID
+    ERC3643 --> Compliance
+    
+    OnchainID --> Compliance
+    
+    Compliance --> ERC3643
+    
+    Yield --> Vault
+    
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    
+    class DALP primary
+    class DvP,Vault secondary
+    class Yield,ERC3643 tertiary
+    class OnchainID,Compliance quaternary
+`}
+/>
+
+**Key relationships:**
+
+- **DALP integrates** lifecycle capabilities (DvP settlement, vault custody,
+  yield distribution) with compliance infrastructure (ERC-3643 standard)
+- **DvP uses Vault** for atomic settlement—both asset and payment custody
+  ensures simultaneous exchange without counterparty risk
+- **ERC-3643 requires OnchainID** to link wallet addresses to verified
+  identities, enabling compliance checks before every transfer
+- **OnchainID enables Compliance Modules** by providing verified claims (KYC
+  status, accreditation, jurisdiction) that feed rule evaluation
+- **Yield Management leverages Vault** for secure distribution of coupon
+  payments, dividends, and returns to token holders
+
 ## Core tokenization concepts
 
 The foundation of digital asset platforms rests on a few key innovations that

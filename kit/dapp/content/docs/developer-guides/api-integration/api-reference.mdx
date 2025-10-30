@@ -100,6 +100,40 @@ Failed authentication returns `UNAUTHORIZED` (401). Insufficient permissions
 return `FORBIDDEN` (403). Track authentication failures via the
 `orpc_auth_failures_total` metric in your observability dashboards.
 
+### API namespace authentication matrix
+
+The following diagram maps each API namespace to its authentication scope,
+organized by security level:
+
+<Mermaid
+  chart={`flowchart TB
+    subgraph Public["🌐 Public Access"]
+        System(system)
+        ExchangeRates(exchangeRates)
+    end
+    
+    subgraph Authenticated["🔐 Authenticated"]
+        User(user)
+        Account(account)
+        Settings(settings)
+    end
+    
+    subgraph TokenScoped["🎫 Token-Scoped"]
+        Token(token)
+        Actions(actions)
+        YieldSchedule(fixedYieldSchedule)
+    end
+    
+    classDef publicStyle fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef authStyle fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef tokenStyle fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    
+    class System,ExchangeRates publicStyle
+    class User,Account,Settings authStyle
+    class Token,Actions,YieldSchedule tokenStyle
+`}
+/>
+
 ## Error handling patterns
 
 All procedures return standardized error responses with typed error codes:

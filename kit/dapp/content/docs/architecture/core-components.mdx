@@ -124,6 +124,75 @@ layer's observability stack monitors these cross-layer operations, providing
 dashboards that surface settlement times, vault operation counts, and yield
 distribution success rates.
 
+### Request flow: Cross-layer interactions
+
+Understanding how a typical user request travels through the layers reveals the
+architecture's integration patterns. Consider a token balance query—a common
+operation that demonstrates data flow, caching, and observability.
+
+<Mermaid
+  chart={`sequenceDiagram
+    participant User as User<br/>(Browser)
+    participant Frontend as Frontend Layer<br/>(TanStack Start)
+    participant API as API Layer<br/>(ORPC)
+    participant Cache as Cache<br/>(Redis)
+    participant DB as Data Layer<br/>(PostgreSQL)
+    participant Chain as Blockchain<br/>(Contracts)
+    participant Graph as TheGraph<br/>(Indexer)
+    participant Obs as Observability<br/>(Metrics)
+    
+    User->>Frontend: Request token balance
+    Frontend->>API: ORPC call: getTokenBalance(address)
+    API->>Obs: Log request start + trace ID
+    API->>Cache: Check cache key
+    
+    alt Cache Hit
+        Cache-->>API: Return cached balance
+        API->>Obs: Record cache hit metric
+    else Cache Miss
+        Cache-->>API: Cache miss
+        API->>Obs: Record cache miss metric
+        API->>DB: Query indexed balance
+        alt Data Available
+            DB-->>API: Return balance from PostgreSQL
+            API->>Cache: Store in cache (TTL: 5s)
+        else Data Stale
+            DB-->>API: No recent data
+            API->>Graph: Query latest indexed state
+            Graph->>Chain: Read contract balanceOf(address)
+            Chain-->>Graph: Return on-chain balance
+            Graph-->>API: Return balance + block number
+            API->>DB: Update PostgreSQL with latest
+            API->>Cache: Store in cache (TTL: 5s)
+        end
+    end
+    
+    API->>Obs: Log response time + trace completion
+    API-->>Frontend: Return balance + metadata
+    Frontend-->>User: Display balance in UI
+    
+    Note over User,Obs: Observability tracks: request latency,<br/>cache hit rate, data freshness, error rate`}
+/>
+
+This request flow illustrates several architectural patterns. **The API layer
+acts as orchestrator**, coordinating between cache, database, and blockchain
+data sources. **Redis provides the first line of defense** against repeated
+queries, caching balances for 5 seconds to reduce database load. **PostgreSQL
+serves as indexed storage** for structured queries across multiple tokens and
+addresses—significantly faster than querying blockchain state directly.
+**TheGraph bridges on-chain and off-chain**, indexing blockchain events into
+queryable GraphQL endpoints. **Observability tracks every hop**, recording cache
+hit rates, query latencies, and data staleness metrics that feed operational
+dashboards.
+
+The return path demonstrates **graceful degradation**: if the cache misses, the
+system falls back to PostgreSQL; if PostgreSQL data is stale, it queries
+TheGraph; if indexing lags, TheGraph reads directly from smart contracts. Each
+fallback adds latency but ensures users always receive current data. The
+observability layer captures these degradation events, alerting operators when
+fallback rates indicate infrastructure problems—perhaps Redis memory pressure or
+indexer lag.
+
 ## Frontend layer: User interfaces and presentation logic
 
 The frontend layer delivers user-facing interfaces built with TanStack Start,

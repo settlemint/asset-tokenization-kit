@@ -30,6 +30,56 @@ and fee configuration
 - Familiarity with fund regulations (1940 Act, UCITS, AIFMD, etc.)
 - Fund administration operations
 
+## Fund launch workflow
+
+The fund launch process involves coordination across three key roles, with
+parallel activities and clear handoff points. The diagram below shows how
+Product Owners define the fund strategy, Compliance Officers establish
+regulatory controls, and Operations teams deploy and activate the fund
+infrastructure.
+
+<Mermaid
+  chart={`graph TB
+    subgraph ProductOwner["Product Owner"]
+        DefineStrategy(Define fund strategy<br/>& investment terms)
+        SetFees(Configure management<br/>& performance fees)
+        ReviewDeploy(Review deployment<br/>summary)
+    end
+    
+    subgraph ComplianceOfficer["Compliance Officer"]
+        ConfigRules(Configure compliance<br/>modules & rules)
+        ApproveJurisdictions(Approve geographic<br/>restrictions)
+        VerifyCompliance(Verify regulatory<br/>framework)
+    end
+    
+    subgraph Operations["Operations"]
+        DeployContracts(Deploy fund token<br/>contracts)
+        FundVault(Fund DALP vault<br/>with liquidity)
+        EnableTrading(Enable subscriptions<br/>& redemptions)
+    end
+    
+    DefineStrategy --> SetFees
+    SetFees --> ConfigRules
+    ConfigRules --> ApproveJurisdictions
+    ConfigRules --> DeployContracts
+    ApproveJurisdictions --> VerifyCompliance
+    DeployContracts --> FundVault
+    ReviewDeploy --> DeployContracts
+    VerifyCompliance --> ReviewDeploy
+    FundVault --> EnableTrading
+    
+    style DefineStrategy fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style SetFees fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style ReviewDeploy fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style ConfigRules fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style ApproveJurisdictions fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style VerifyCompliance fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style DeployContracts fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style FundVault fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style EnableTrading fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+`}
+/>
+
 ## Steps
 
 <Steps>

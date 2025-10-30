@@ -14,6 +14,84 @@ TheGraph indexing node, and the TanStack Start web application. Understanding
 this architecture helps you diagnose issues, extend functionality, and leverage
 the built-in observability stack effectively.
 
+## Developer onboarding flow
+
+The following flowchart visualizes the complete setup process with key decision
+points for troubleshooting:
+
+<Mermaid chart={`flowchart TB
+    Start(Start Setup)
+    CheckPrereqs(Check Prerequisites:<br/>Node 22+, Bun 1.2.19, Docker 20.10+)
+    PrereqsFail{All prerequisites<br/>installed?}
+    InstallPrereqs(Install missing tools:<br/>Bun, Docker, Node)
+    Clone(Clone repository:<br/>git clone asset-tokenization-kit)
+    BunInstall(Install dependencies:<br/>bun install)
+    InstallFail{Installation<br/>successful?}
+    FixDeps(Fix: Verify Bun version,<br/>rm bun.lock && bun install)
+    EnvSetup(Environment setup:<br/>Create .env.local if needed)
+    DockerCheck{Docker<br/>running?}
+    StartDocker(Start Docker Desktop,<br/>allocate 8+ GB RAM)
+    DevUp(Start Docker services:<br/>bun run dev:up)
+    ServicesHealthy{All services<br/>healthy?}
+    DiagnoseServices(Check logs:<br/>docker compose logs,<br/>fix port conflicts/memory)
+    Artifacts(Generate artifacts:<br/>bun run artifacts)
+    ArtifactsFail{Artifacts<br/>generated?}
+    FixArtifacts(Fix: Check compilation errors,<br/>clear .turbo cache)
+    RunDapp(Start dApp:<br/>cd kit/dapp && bun run dev)
+    DappRunning{dApp accessible<br/>at localhost:3000?}
+    TroubleshootDapp(Fix: Restart services,<br/>check PostgreSQL connection,<br/>clear Vite cache)
+    RunTests(Run verification:<br/>bun run test)
+    TestsPass{Tests passing?}
+    FixTests(Fix reported errors,<br/>re-run quality checks)
+    Success(Setup Complete!<br/>Ready for development)
+
+    Start --> CheckPrereqs
+    CheckPrereqs --> PrereqsFail
+    PrereqsFail -->|No| InstallPrereqs
+    InstallPrereqs --> CheckPrereqs
+    PrereqsFail -->|Yes| Clone
+    Clone --> BunInstall
+    BunInstall --> InstallFail
+    InstallFail -->|No| FixDeps
+    FixDeps --> BunInstall
+    InstallFail -->|Yes| EnvSetup
+    EnvSetup --> DockerCheck
+    DockerCheck -->|No| StartDocker
+    StartDocker --> DockerCheck
+    DockerCheck -->|Yes| DevUp
+    DevUp --> ServicesHealthy
+    ServicesHealthy -->|No| DiagnoseServices
+    DiagnoseServices --> DevUp
+    ServicesHealthy -->|Yes| Artifacts
+    Artifacts --> ArtifactsFail
+    ArtifactsFail -->|No| FixArtifacts
+    FixArtifacts --> Artifacts
+    ArtifactsFail -->|Yes| RunDapp
+    RunDapp --> DappRunning
+    DappRunning -->|No| TroubleshootDapp
+    TroubleshootDapp --> RunDapp
+    DappRunning -->|Yes| RunTests
+    RunTests --> TestsPass
+    TestsPass -->|No| FixTests
+    FixTests --> RunTests
+    TestsPass -->|Yes| Success
+
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+
+    class Start,Clone,BunInstall,EnvSetup,DevUp,Artifacts,RunDapp,RunTests,Success primary
+    class CheckPrereqs,DockerCheck secondary
+    class PrereqsFail,InstallFail,ServicesHealthy,ArtifactsFail,DappRunning,TestsPass tertiary
+    class InstallPrereqs,FixDeps,StartDocker,DiagnoseServices,FixArtifacts,TroubleshootDapp,FixTests quaternary
+
+`} />
+
+This diagram shows the complete onboarding path from prerequisites through
+verification. Each decision point includes troubleshooting guidance to help
+resolve common setup issues quickly.
+
 ## Understanding the local architecture
 
 Your development environment mirrors production deployments at a smaller scale.

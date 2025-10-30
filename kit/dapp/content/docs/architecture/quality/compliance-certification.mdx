@@ -108,6 +108,38 @@ before redemption. Traditional systems rarely catch this drift. ATK's
 claims-based model detects expiration or revocation automatically and blocks
 operations until re-verification completes.
 
+<Mermaid chart={`flowchart TB
+  Start(Investor submits KYC/AML docs)
+  Review(Compliance officer reviews)
+  Issuance(Claims issued to OnchainID)
+  Active(Active use: claims validated on transfers)
+  Monitor(Continuous monitoring)
+  Approaching(Approaching expiration &lt;30 days)
+  Alert(Investor receives renewal alert)
+  Expired(Claims expired)
+  Blocked(Transfers blocked)
+  Circumstances(Circumstances change?)
+  Revoked(Claims revoked immediately)
+  Resubmit(Investor resubmits documentation)
+  Success(Re-verification successful)
+
+Start --> Review Review --> Issuance Issuance --> Active Active --> Monitor
+Monitor --> Approaching Approaching --> Alert Alert --> Resubmit Monitor -->
+Expired Expired --> Blocked Blocked --> Resubmit Monitor --> Circumstances
+Circumstances -->|Yes| Revoked Circumstances -->|No| Monitor Revoked --> Blocked
+Resubmit --> Review Review --> Success Success --> Active
+
+classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+classDef warning fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#fff
+classDef error fill:#ef4444,stroke:#dc2626,stroke-width:2px,color:#fff
+
+class Start,Review,Success primary class Issuance,Active,Monitor secondary class
+Approaching,Alert,Resubmit tertiary class Expired,Revoked,Blocked,Circumstances
+error `} />
+
 ### Observability integration for proactive monitoring
 
 ATK's observability stack surfaces identity status across the platform. The

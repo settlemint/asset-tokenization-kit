@@ -24,6 +24,12 @@ distributions—with built-in observability and vault-based settlement.
 
 <Mermaid
   chart={
+    "flowchart TB\n    ActionType(Select Action Type)\n    StockSplit(Stock Split)\n    Dividend(Dividend)\n    Redemption(Redemption)\n    RightsIssue(Rights Issue)\n    Merger(Merger)\n    \n    BoardApproval(Board Approval)\n    ComplianceApproval(Compliance Review)\n    GovernanceVote(Governance Vote)\n    \n    MintTx(Mint Transaction)\n    TransferTx(Transfer Transaction)\n    BurnTx(Burn Transaction)\n    SnapshotTx(Snapshot Balances)\n    \n    ActionType --> StockSplit\n    ActionType --> Dividend\n    ActionType --> Redemption\n    ActionType --> RightsIssue\n    ActionType --> Merger\n    \n    StockSplit --> BoardApproval\n    BoardApproval --> SnapshotTx\n    SnapshotTx --> MintTx\n    \n    Dividend --> BoardApproval\n    Dividend --> ComplianceApproval\n    ComplianceApproval --> SnapshotTx\n    SnapshotTx --> TransferTx\n    \n    Redemption --> ComplianceApproval\n    ComplianceApproval --> BurnTx\n    BurnTx --> TransferTx\n    \n    RightsIssue --> BoardApproval\n    RightsIssue --> GovernanceVote\n    GovernanceVote --> SnapshotTx\n    SnapshotTx --> MintTx\n    \n    Merger --> BoardApproval\n    Merger --> GovernanceVote\n    GovernanceVote --> SnapshotTx\n    SnapshotTx --> BurnTx\n    BurnTx --> MintTx\n    \n    classDef actionStyle fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff\n    classDef approvalStyle fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff\n    classDef txStyle fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff\n    \n    class ActionType,StockSplit,Dividend,Redemption,RightsIssue,Merger actionStyle\n    class BoardApproval,ComplianceApproval,GovernanceVote approvalStyle\n    class MintTx,TransferTx,BurnTx,SnapshotTx txStyle"
+  }
+/>
+
+<Mermaid
+  chart={
     "sequenceDiagram\n    participant Issuer\n    participant Platform\n    participant Vault\n    participant Registry\n    participant Holders\n    Issuer->>Platform: Configure action (dates, rates)\n    Platform->>Registry: Schedule snapshot\n    Issuer->>Vault: Fund distribution wallet\n    Note over Vault: Verify reserves\n    Platform->>Registry: Snapshot holders at record date\n    Registry-->>Platform: Return holder balances\n    Platform->>Platform: Calculate entitlements\n    Platform->>Vault: Execute distribution\n    Vault->>Holders: Transfer payments\n    Platform->>Issuer: Report completion + metrics\n    Note over Platform: Audit trail recorded"
   }
 />

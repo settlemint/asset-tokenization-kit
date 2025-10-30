@@ -200,6 +200,42 @@ hit 95% CPU. At T+30s, Kubernetes spawns 15 additional API pods. By T+90s,
 latency returns to baseline (210ms) as new instances stabilize. The auto-scaling
 timeline panel visualizes this recovery.
 
+<Mermaid
+  chart={`sequenceDiagram
+    participant LoadSpike as Load Spike<br/>(10k users)
+    participant HPA as Kubernetes HPA<br/>(Horizontal Pod Autoscaler)
+    participant Pods as API Pods<br/>(ORPC instances)
+    participant PgBouncer as PgBouncer<br/>(Connection pooler)
+    participant Replicas as Read Replicas<br/>(PostgreSQL)
+    
+    Note over LoadSpike,Replicas: T+0s: Spike begins
+    LoadSpike->>Pods: Traffic spike<br/>(1k→10k req/s)
+    Pods->>Pods: CPU utilization<br/>jumps to 95%
+    Note over Pods: P95 latency<br/>spikes to 850ms
+    
+    Note over LoadSpike,Replicas: T+30s: Auto-scaling triggers
+    Pods->>HPA: CPU threshold<br/>exceeded (&gt;70%)
+    HPA->>HPA: Calculate desired<br/>replica count
+    HPA->>Pods: Scale to 25 pods<br/>(+15 instances)
+    
+    Note over LoadSpike,Replicas: T+45s: New capacity online
+    Pods->>PgBouncer: New connection<br/>pools created
+    PgBouncer->>PgBouncer: Multiplex 500 app<br/>connections→20 DB
+    PgBouncer->>Replicas: Distribute read<br/>queries across replicas
+    
+    Note over LoadSpike,Replicas: T+90s: System stabilized
+    Note over Pods: CPU stabilizes<br/>at 65%
+    Note over Pods: P95 latency<br/>returns to 210ms
+    Replicas-->>Pods: Replication lag<br/>&lt;500ms maintained
+    
+    style LoadSpike fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style HPA fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Pods fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style PgBouncer fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Replicas fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+`}
+/>
+
 During spike tests, the platform implements graceful degradation:
 
 1. **Cache TTLs extend from 5 minutes to 15 minutes**, serving slightly stale
