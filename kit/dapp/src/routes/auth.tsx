@@ -107,7 +107,26 @@ function LayoutComponent() {
       <div className="absolute top-8 left-8 flex flex-col items-end gap-0 z-10">
         <div className={cn("flex w-full items-center gap-3")}>
           <div className="flex h-12 w-48 items-center justify-center overflow-hidden rounded-lg text-sidebar-primary-foreground">
-            <Logo forcedColorMode="dark" className="h-12 w-48" />
+            {images.authLightUrl || images.authDarkUrl ? (
+              <>
+                {images.authLightUrl ? (
+                  <img
+                    src={images.authLightUrl}
+                    alt="Authentication"
+                    className="block dark:hidden h-12 w-auto object-contain"
+                  />
+                ) : null}
+                {images.authDarkUrl ? (
+                  <img
+                    src={images.authDarkUrl}
+                    alt="Authentication"
+                    className="hidden dark:block h-12 w-auto object-contain"
+                  />
+                ) : null}
+              </>
+            ) : (
+              <Logo forcedColorMode="dark" className="h-12 w-48" />
+            )}
           </div>
         </div>
       </div>

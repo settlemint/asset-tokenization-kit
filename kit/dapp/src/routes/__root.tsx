@@ -134,9 +134,13 @@ export const Route = createRootRouteWithContext<{
       ...seo({}),
     ];
 
-    // Use custom favicon from theme if available, otherwise use defaults
-    const faviconUrl = loaderData?.theme?.images?.faviconUrl ?? "/favicon.ico";
-    const useCustomFavicon = loaderData?.theme?.images?.faviconUrl !== undefined;
+    // Use custom icons from theme if available, otherwise use defaults
+    const images = loaderData?.theme?.images;
+    const appleTouchIconUrl =
+      images?.appleTouchIconUrl ?? "/apple-touch-icon.png";
+    const faviconUrl = images?.faviconUrl ?? "/favicon.ico";
+    const favicon96Url = images?.favicon96Url ?? "/favicon-96x96.png";
+    const faviconSvgUrl = images?.faviconSvgUrl ?? "/favicon.svg";
 
     const baseLinks = [
       {
@@ -146,31 +150,20 @@ export const Route = createRootRouteWithContext<{
       {
         rel: "apple-touch-icon",
         sizes: "180x180",
-        href: "/apple-touch-icon.png",
+        href: appleTouchIconUrl,
       },
-      // Use custom favicon if configured, otherwise use default multi-format favicons
-      ...(useCustomFavicon
-        ? [
-            {
-              rel: "icon" as const,
-              href: faviconUrl,
-            },
-            { rel: "shortcut icon" as const, href: faviconUrl },
-          ]
-        : [
-            {
-              rel: "icon" as const,
-              type: "image/png",
-              sizes: "96x96",
-              href: "/favicon-96x96.png",
-            },
-            {
-              rel: "icon" as const,
-              type: "image/svg+xml",
-              href: "/favicon.svg",
-            },
-            { rel: "shortcut icon" as const, href: "/favicon.ico" },
-          ]),
+      {
+        rel: "icon" as const,
+        type: "image/png",
+        sizes: "96x96",
+        href: favicon96Url,
+      },
+      {
+        rel: "icon" as const,
+        type: "image/svg+xml",
+        href: faviconSvgUrl,
+      },
+      { rel: "shortcut icon" as const, href: faviconUrl },
       { rel: "manifest", href: "/site.webmanifest", color: "#ffffff" },
     ];
 
@@ -321,7 +314,7 @@ function RootDocument({
           fontVariables={fontVariables}
         >
           {children}
-          <Toaster richColors />
+          <Toaster richColors position="top-center" />
           <TanStackDevtools
             plugins={[
               {

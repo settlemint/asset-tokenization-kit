@@ -3,6 +3,7 @@ import { z } from "zod";
 const ALLOWED_CONTENT_TYPES = [
   "image/svg+xml",
   "image/png",
+  "image/jpeg",
   "image/webp",
 ] as const;
 
@@ -16,6 +17,9 @@ const LOGO_MODES = [
   "backgroundLight",
   "backgroundDark",
   "favicon",
+  "appleTouchIcon",
+  "favicon96",
+  "faviconSvg",
 ] as const;
 
 export const ThemeLogoUploadSchema = z.object({

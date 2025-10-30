@@ -62,6 +62,8 @@ export function LogoSettingsCard({
         return "lightIconUrl";
       case "darkIcon":
         return "darkIconUrl";
+      default:
+        return "lightUrl";
     }
   };
 

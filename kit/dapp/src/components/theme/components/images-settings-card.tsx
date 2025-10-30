@@ -1,10 +1,3 @@
-import {
-  FormControl,
-  FormDescription,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/form/tanstack-form";
 import type { ThemeConfig } from "../lib/schema";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +33,6 @@ type ImagesSettingsCardProps = {
 export function ImagesSettingsCard({
   sectionId,
   form,
-  draft,
   baseTheme,
   onPickFile,
   onFileSelected,
@@ -161,7 +153,7 @@ export function ImagesSettingsCard({
                         ? currentUrl
                         : defaultUrl.length > 0
                           ? defaultUrl
-                          : fallback ?? "";
+                          : (fallback ?? "");
                     return (
                       <div className="space-y-3 rounded-lg border p-4">
                         <div className="space-y-1.5">

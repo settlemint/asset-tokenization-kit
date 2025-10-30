@@ -8,11 +8,6 @@ import {
   type ThemeConfigPartial,
 } from "./schema";
 import { and, eq, sql } from "drizzle-orm";
-import {
-  recordThemeReadMetric,
-  recordThemeUpdateMetric,
-  startThemeMetricTimer,
-} from "@/lib/observability/theme.metrics";
 
 const THEME_KEY = "THEME";
 
@@ -28,7 +23,6 @@ export class ThemeVersionConflictError extends Error {
  * Falls back to DEFAULT_THEME if not found or invalid
  */
 export async function getTheme(): Promise<ThemeConfig> {
-  const stopTimer = startThemeMetricTimer();
   const result = await db
     .select()
     .from(settings)
@@ -36,29 +30,14 @@ export async function getTheme(): Promise<ThemeConfig> {
     .limit(1);
 
   if (!result[0]?.value) {
-    recordThemeReadMetric({
-      outcome: "fallback-empty",
-      durationMs: stopTimer(),
-      rowCount: result.length,
-    });
     return DEFAULT_THEME;
   }
 
   try {
     const parsed = JSON.parse(result[0].value);
     const theme = themeConfigSchema.parse(parsed);
-    recordThemeReadMetric({
-      outcome: "db-hit",
-      durationMs: stopTimer(),
-      rowCount: result.length,
-    });
     return theme;
   } catch {
-    recordThemeReadMetric({
-      outcome: "fallback-invalid",
-      durationMs: stopTimer(),
-      rowCount: result.length,
-    });
     return DEFAULT_THEME;
   }
 }
@@ -71,7 +50,6 @@ export async function updateTheme(
   theme: ThemeConfig,
   updatedBy: string
 ): Promise<ThemeConfig> {
-  const stopTimer = startThemeMetricTimer();
   const updatedAt = new Date().toISOString();
   const previousVersion = theme.metadata.version;
   const newTheme: ThemeConfig = {
@@ -86,50 +64,37 @@ export async function updateTheme(
   const serializedTheme = JSON.stringify(newTheme);
   const timestamp = new Date();
 
-  try {
-    const updated = await db
-      .update(settings)
-      .set({
+  const updated = await db
+    .update(settings)
+    .set({
+      value: serializedTheme,
+      lastUpdated: timestamp,
+    })
+    .where(
+      and(
+        eq(settings.key, THEME_KEY),
+        sql`((${settings.value})::jsonb -> 'metadata' ->> 'version')::int = ${previousVersion}`
+      )
+    )
+    .returning({ key: settings.key });
+
+  if (updated.length === 0) {
+    const inserted = await db
+      .insert(settings)
+      .values({
+        key: THEME_KEY,
         value: serializedTheme,
         lastUpdated: timestamp,
       })
-      .where(
-        and(
-          eq(settings.key, THEME_KEY),
-          sql`((${settings.value})::jsonb -> 'metadata' ->> 'version')::int = ${previousVersion}`
-        )
-      )
+      .onConflictDoNothing()
       .returning({ key: settings.key });
 
-    if (updated.length === 0) {
-      const inserted = await db
-        .insert(settings)
-        .values({
-          key: THEME_KEY,
-          value: serializedTheme,
-          lastUpdated: timestamp,
-        })
-        .onConflictDoNothing()
-        .returning({ key: settings.key });
-
-      if (inserted.length === 0) {
-        throw new ThemeVersionConflictError();
-      }
+    if (inserted.length === 0) {
+      throw new ThemeVersionConflictError();
     }
-
-    recordThemeUpdateMetric({
-      durationMs: stopTimer(),
-      success: true,
-    });
-
-    return newTheme;
-  } catch (error) {
-    recordThemeUpdateMetric({
-      durationMs: stopTimer(),
-      success: false,
-    });
-    throw error;
   }
+
+  return newTheme;
 }
 
 export function mergeTheme(
@@ -138,6 +103,7 @@ export function mergeTheme(
 ): ThemeConfig {
   const merged: ThemeConfig = {
     logo: { ...base.logo, ...partial.logo },
+    images: { ...base.images, ...partial.images },
     fonts: {
       sans: { ...base.fonts.sans, ...partial.fonts?.sans },
       mono: { ...base.fonts.mono, ...partial.fonts?.mono },

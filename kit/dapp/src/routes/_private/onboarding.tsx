@@ -49,7 +49,10 @@ function OnboardingLayout() {
   );
 
   return (
-    <div className="h-screen w-screen bg-no-repeat bg-cover" style={inlineStyle}>
+    <div
+      className="h-screen w-screen bg-no-repeat bg-cover"
+      style={inlineStyle}
+    >
       <style dangerouslySetInnerHTML={{ __html: backgroundStyles }} />
       <DialogCardLayout
         header={

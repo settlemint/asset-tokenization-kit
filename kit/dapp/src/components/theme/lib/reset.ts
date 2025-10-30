@@ -1,10 +1,9 @@
 import { client as defaultMinioClient } from "@/lib/settlemint/minio";
 import { deleteFile } from "@settlemint/sdk-minio";
+import { env } from "@atk/config/env";
 import { compileThemeCSS } from "./compile-css";
 import { DEFAULT_THEME, type ThemeConfig } from "./schema";
 import { getTheme, resetTheme as deleteThemeRow } from "./repository";
-
-export const DEFAULT_BUCKET = process.env.SETTLEMINT_MINIO_BUCKET ?? "atk";
 
 interface ResetThemeOptions {
   minioClient?: Parameters<typeof deleteFile>[0];
@@ -22,7 +21,7 @@ export async function resetThemeToDefaults(
 ): Promise<ThemeResetResult> {
   const currentTheme = await getTheme();
   const minioClient = options.minioClient ?? defaultMinioClient;
-  const bucket = options.bucket ?? DEFAULT_BUCKET;
+  const bucket = options.bucket ?? env.SETTLEMINT_MINIO_BUCKET;
 
   const removedObjects: string[] = [];
 

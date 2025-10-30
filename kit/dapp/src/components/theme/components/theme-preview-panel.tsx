@@ -82,14 +82,14 @@ export function ThemePreviewPanel({ draft, t }: ThemePreviewPanelProps) {
   ];
 
   return (
-    <aside className="mt-6 space-y-4 lg:mt-0 lg:space-y-6">
-      <Card className="lg:sticky lg:top-6">
+    <aside className="mt-6 space-y-4 xl:mt-0 xl:space-y-6 order-2">
+      <Card className="xl:sticky xl:top-6">
         <CardHeader>
           <CardTitle>{t("previewTitle")}</CardTitle>
           <CardDescription>{t("previewDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="light" className="space-y-4">
+          <Tabs defaultValue="light" className="space-y-6">
             <TabsList>
               {tabs.map(({ mode, title }) => (
                 <TabsTrigger key={mode} value={mode}>
@@ -203,6 +203,76 @@ export function ThemePreviewPanel({ draft, t }: ThemePreviewPanelProps) {
                       />
                     </div>
                   </div>
+
+                  {/* Authentication Page Preview */}
+                  <div className="mt-6">
+                    <div
+                      className={cn(
+                        "relative min-h-[480px] rounded-xl border overflow-hidden",
+                        mode === "dark" && "dark"
+                      )}
+                      data-mode={mode}
+                      data-theme={mode}
+                      style={{
+                        ...containerStyle,
+                        backgroundImage: resolveBackgroundImage(draft, mode),
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    >
+                      {/* Auth Logo */}
+                      <div className="absolute top-6 left-6 z-10">
+                        <img
+                          src={resolveAuthLogoSrc(draft, mode)}
+                          alt={draft.logo.alt ?? "Logo"}
+                          className="h-10 w-auto object-contain drop-shadow-sm"
+                        />
+                      </div>
+
+                      {/* Login Card */}
+                      <div className="flex items-center justify-center min-h-[480px] p-6 pt-20">
+                        <div
+                          className="w-full max-w-sm rounded-lg border bg-card/95 backdrop-blur-sm shadow-lg p-6 space-y-4"
+                          style={containerStyle}
+                        >
+                          <div className="space-y-2">
+                            <h3 className="text-lg font-semibold">
+                              Welcome back
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              Sign in to your account
+                            </p>
+                          </div>
+                          <div className="space-y-3">
+                            <div className="space-y-2">
+                              <Label className="text-xs">Email</Label>
+                              <Input
+                                placeholder="name@example.com"
+                                style={controlStyle}
+                                disabled
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-xs">Password</Label>
+                              <Input
+                                type="password"
+                                placeholder="••••••••"
+                                style={controlStyle}
+                                disabled
+                              />
+                            </div>
+                            <Button
+                              className="w-full"
+                              style={primaryButtonStyle}
+                              disabled
+                            >
+                              Sign in
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </TabsContent>
               );
             })}
@@ -255,4 +325,46 @@ function resolvePreviewLogoSrc(theme: ThemeConfig, mode: ThemeMode): string {
   }
 
   return fallback;
+}
+
+function resolveAuthLogoSrc(theme: ThemeConfig, mode: ThemeMode): string {
+  const authKey = mode === "light" ? "authLightUrl" : "authDarkUrl";
+  const logoKey = mode === "light" ? "lightUrl" : "darkUrl";
+  const fallback =
+    mode === "light"
+      ? "/logos/settlemint-logo-h-lm.svg"
+      : "/logos/settlemint-logo-h-dm.svg";
+
+  // Try auth logo first
+  const authValue = theme.images[authKey];
+  const trimmedAuth = typeof authValue === "string" ? authValue.trim() : "";
+  if (trimmedAuth.length > 0) {
+    return trimmedAuth;
+  }
+
+  // Fall back to application logo
+  const logoValue = theme.logo[logoKey];
+  const trimmedLogo = typeof logoValue === "string" ? logoValue.trim() : "";
+  if (trimmedLogo.length > 0) {
+    return trimmedLogo;
+  }
+
+  return fallback;
+}
+
+function resolveBackgroundImage(theme: ThemeConfig, mode: ThemeMode): string {
+  const key = mode === "light" ? "backgroundLightUrl" : "backgroundDarkUrl";
+  const fallback =
+    mode === "light"
+      ? "/backgrounds/background-lm.svg"
+      : "/backgrounds/background-dm.svg";
+
+  const rawValue = theme.images[key];
+  const trimmedValue = typeof rawValue === "string" ? rawValue.trim() : "";
+
+  if (trimmedValue.length > 0) {
+    return `url(${trimmedValue})`;
+  }
+
+  return `url(${fallback})`;
 }

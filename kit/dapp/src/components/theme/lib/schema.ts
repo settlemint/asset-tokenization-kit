@@ -3,14 +3,27 @@ import { httpURL } from "@atk/zod/http-url";
 import { isoDateTime } from "@atk/zod/iso-datetime";
 import { z } from "zod";
 
-// Allows theme assets to reference remote URLs or app-hosted paths
+// Theme asset URLs - supports presigned MinIO URLs (http/https) and app-hosted paths (/)
 const themeAssetURL = z
   .string()
   .max(2048, "URL must be at most 2048 characters")
   .refine(
-    (value) => value.startsWith("/") || httpURL.safeParse(value).success,
+    (value) => {
+      // Allow app-hosted paths starting with /
+      if (value.startsWith("/")) {
+        return true;
+      }
+      // Otherwise require valid HTTP/HTTPS URL
+      try {
+        const url = new URL(value);
+        return url.protocol === "http:" || url.protocol === "https:";
+      } catch {
+        return false;
+      }
+    },
     {
-      message: "Must be an HTTP(S) URL or absolute path",
+      message:
+        "Must be an absolute path starting with / or a valid HTTP/HTTPS URL",
     }
   );
 
@@ -108,6 +121,9 @@ const imagesSchema = z.object({
   backgroundLightUrl: themeAssetURL.optional(),
   backgroundDarkUrl: themeAssetURL.optional(),
   faviconUrl: themeAssetURL.optional(),
+  appleTouchIconUrl: themeAssetURL.optional(),
+  favicon96Url: themeAssetURL.optional(),
+  faviconSvgUrl: themeAssetURL.optional(),
   etag: z.string().optional(),
   updatedAt: isoDateTime.optional(),
 });
@@ -240,6 +256,9 @@ export const DEFAULT_THEME: ThemeConfig = {
     backgroundLightUrl: "/backgrounds/background-lm.svg",
     backgroundDarkUrl: "/backgrounds/background-dm.svg",
     faviconUrl: "/favicon.ico",
+    appleTouchIconUrl: "/apple-touch-icon.png",
+    favicon96Url: "/favicon-96x96.png",
+    faviconSvgUrl: "/favicon.svg",
   },
   fonts: {
     sans: {

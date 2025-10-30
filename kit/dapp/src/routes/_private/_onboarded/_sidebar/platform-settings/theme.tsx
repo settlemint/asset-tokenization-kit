@@ -1,8 +1,7 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { FontSettingsCard } from "@/components/theme/components/font-settings-card";
-import { ImagesSettingsCard } from "@/components/theme/components/images-settings-card";
-import { LogoSettingsCard } from "@/components/theme/components/logo-settings-card";
+import { UnifiedImagesCard } from "@/components/theme/components/unified-images-card";
 import { PaletteCard } from "@/components/theme/components/palette-card";
 import { StatusBanner } from "@/components/theme/components/status-banner";
 import { ThemePreviewPanel } from "@/components/theme/components/theme-preview-panel";
@@ -175,6 +174,9 @@ function ThemeSettingsPage() {
     backgroundLight: false,
     backgroundDark: false,
     favicon: false,
+    appleTouchIcon: false,
+    favicon96: false,
+    faviconSvg: false,
   });
 
   const logoObjectUrls = useRef<Partial<Record<ThemeLogoMode, string>>>({});
@@ -187,6 +189,9 @@ function ThemeSettingsPage() {
   const backgroundLightInputRef = useRef<HTMLInputElement | null>(null);
   const backgroundDarkInputRef = useRef<HTMLInputElement | null>(null);
   const faviconInputRef = useRef<HTMLInputElement | null>(null);
+  const appleTouchIconInputRef = useRef<HTMLInputElement | null>(null);
+  const favicon96InputRef = useRef<HTMLInputElement | null>(null);
+  const faviconSvgInputRef = useRef<HTMLInputElement | null>(null);
   const lastSavedDraftRef = useRef<string | null>(null);
   const previewStyleElementRef = useRef<HTMLStyleElement | null>(null);
 
@@ -292,6 +297,9 @@ function ThemeSettingsPage() {
       backgroundLight: false,
       backgroundDark: false,
       favicon: false,
+      appleTouchIcon: false,
+      favicon96: false,
+      faviconSvg: false,
     });
     clearLogoObjectUrls();
   };
@@ -484,7 +492,10 @@ function ThemeSettingsPage() {
     | "authDarkUrl"
     | "backgroundLightUrl"
     | "backgroundDarkUrl"
-    | "faviconUrl" => {
+    | "faviconUrl"
+    | "appleTouchIconUrl"
+    | "favicon96Url"
+    | "faviconSvgUrl" => {
     switch (mode) {
       case "light":
         return "lightUrl";
@@ -504,6 +515,12 @@ function ThemeSettingsPage() {
         return "backgroundDarkUrl";
       case "favicon":
         return "faviconUrl";
+      case "appleTouchIcon":
+        return "appleTouchIconUrl";
+      case "favicon96":
+        return "favicon96Url";
+      case "faviconSvg":
+        return "faviconSvgUrl";
     }
   };
 
@@ -527,6 +544,12 @@ function ThemeSettingsPage() {
         return "/backgrounds/background-dm.svg";
       case "favicon":
         return "/favicon.ico";
+      case "appleTouchIcon":
+        return "/apple-touch-icon.png";
+      case "favicon96":
+        return "/favicon-96x96.png";
+      case "faviconSvg":
+        return "/favicon.svg";
     }
   };
 
@@ -541,15 +564,16 @@ function ThemeSettingsPage() {
       mode === "authDark" ||
       mode === "backgroundLight" ||
       mode === "backgroundDark" ||
-      mode === "favicon";
+      mode === "favicon" ||
+      mode === "appleTouchIcon" ||
+      mode === "favicon96" ||
+      mode === "faviconSvg";
     const fieldPath = isImageField
       ? (`images.${fieldKey}` as const)
       : (`logo.${fieldKey}` as const);
     const currentValues = form.state.values as ThemeConfig;
     const previousValue = isImageField
-      ? currentValues.images[
-          fieldKey as keyof typeof currentValues.images
-        ]
+      ? currentValues.images[fieldKey as keyof typeof currentValues.images]
       : currentValues.logo[fieldKey as keyof typeof currentValues.logo];
 
     const previousObjectUrl = logoObjectUrls.current[mode];
@@ -563,12 +587,9 @@ function ThemeSettingsPage() {
 
     const optimisticDraft = cloneThemeConfig(draft);
     if (isImageField) {
-      optimisticDraft.images[
-        fieldKey as keyof typeof optimisticDraft.images
-      ] = objectUrl;
+      (optimisticDraft.images as Record<string, unknown>)[fieldKey] = objectUrl;
     } else {
-      optimisticDraft.logo[fieldKey as keyof typeof optimisticDraft.logo] =
-        objectUrl;
+      (optimisticDraft.logo as Record<string, unknown>)[fieldKey] = objectUrl;
     }
     updatePreviewDraft(optimisticDraft);
 
@@ -583,15 +604,16 @@ function ThemeSettingsPage() {
         ? previousValue
         : (() => {
             const baseUrl = isImageField
-              ? baseTheme.images[
-                  fieldKey as keyof typeof baseTheme.images
-                ] ?? ""
-              : baseTheme.logo[fieldKey as keyof typeof baseTheme.logo] ?? "";
-            if (baseUrl.length > 0) {
+              ? (baseTheme.images[fieldKey as keyof typeof baseTheme.images] ??
+                "")
+              : (baseTheme.logo[fieldKey as keyof typeof baseTheme.logo] ?? "");
+            if (typeof baseUrl === "string" && baseUrl.length > 0) {
               return baseUrl;
             }
             return resolveFallbackLogo(mode);
-          })()) ?? resolveFallbackLogo(mode) ?? "";
+          })()) ??
+      resolveFallbackLogo(mode) ??
+      "";
 
     const contentType = file.type as ThemeLogoUploadInput["contentType"];
 
@@ -630,16 +652,17 @@ function ThemeSettingsPage() {
       .then(({ result, etag, uploadedAt }) => {
         const nextDraft = getDraftSnapshot();
         if (isImageField) {
-          nextDraft.images[fieldKey as keyof typeof nextDraft.images] =
+          (nextDraft.images as Record<string, unknown>)[fieldKey] =
             result.publicUrl;
-          nextDraft.images.etag = etag.length > 0 ? etag : nextDraft.images.etag;
+          nextDraft.images.etag =
+            etag.length > 0 ? etag : nextDraft.images.etag;
           nextDraft.images.updatedAt = uploadedAt;
           if (etag.length > 0) {
             form.setFieldValue("images.etag", etag);
           }
           form.setFieldValue("images.updatedAt", uploadedAt);
         } else {
-          nextDraft.logo[fieldKey as keyof typeof nextDraft.logo] =
+          (nextDraft.logo as Record<string, unknown>)[fieldKey] =
             result.publicUrl;
           nextDraft.logo.etag = etag.length > 0 ? etag : nextDraft.logo.etag;
           nextDraft.logo.updatedAt = uploadedAt;
@@ -655,10 +678,10 @@ function ThemeSettingsPage() {
       .catch((error: unknown) => {
         const fallbackDraft = getDraftSnapshot();
         if (isImageField) {
-          fallbackDraft.images[fieldKey as keyof typeof fallbackDraft.images] =
+          (fallbackDraft.images as Record<string, unknown>)[fieldKey] =
             fallbackUrl;
         } else {
-          fallbackDraft.logo[fieldKey as keyof typeof fallbackDraft.logo] =
+          (fallbackDraft.logo as Record<string, unknown>)[fieldKey] =
             fallbackUrl;
         }
         updatePreviewDraft(fallbackDraft);
@@ -905,11 +928,6 @@ function ThemeSettingsPage() {
   const editorTabs = useMemo(() => {
     const tabs: Array<{ value: string; label: string; description: string }> = [
       {
-        value: "logos",
-        label: tTheme("logoSectionTitle"),
-        description: tTheme("logoSectionDescription"),
-      },
-      {
         value: "images",
         label: tTheme("imagesSectionTitle"),
         description: tTheme("imagesSectionDescription"),
@@ -989,10 +1007,10 @@ function ThemeSettingsPage() {
         t={tTheme}
       />
       <form.AppForm>
-        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] lg:gap-6">
-          <div className="space-y-6">
+        <div className="flex flex-col xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] xl:gap-6 gap-6">
+          <div className="space-y-6 order-1">
             <Tabs
-              defaultValue={editorTabs[0]?.value ?? "logos"}
+              defaultValue={editorTabs[0]?.value ?? "images"}
               className="space-y-6"
             >
               <div className="overflow-x-auto">
@@ -1010,9 +1028,9 @@ function ThemeSettingsPage() {
                 </TabsList>
               </div>
 
-              <TabsContent value="logos" className="space-y-4">
-                <LogoSettingsCard
-                  sectionId="theme-logo"
+              <TabsContent value="images" className="space-y-4">
+                <UnifiedImagesCard
+                  sectionId="theme-images"
                   form={form}
                   draft={draft}
                   baseTheme={baseTheme}
@@ -1022,24 +1040,14 @@ function ThemeSettingsPage() {
                   darkInputRef={darkLogoInputRef}
                   lightIconInputRef={lightIconLogoInputRef}
                   darkIconInputRef={darkIconLogoInputRef}
-                  uploadStatus={logoUploadStatus}
-                  t={tTheme}
-                />
-              </TabsContent>
-
-              <TabsContent value="images" className="space-y-4">
-                <ImagesSettingsCard
-                  sectionId="theme-images"
-                  form={form}
-                  draft={draft}
-                  baseTheme={baseTheme}
-                  onPickFile={openLogoFileDialog}
-                  onFileSelected={handleLogoFile}
                   authLightInputRef={authLightInputRef}
                   authDarkInputRef={authDarkInputRef}
                   backgroundLightInputRef={backgroundLightInputRef}
                   backgroundDarkInputRef={backgroundDarkInputRef}
                   faviconInputRef={faviconInputRef}
+                  appleTouchIconInputRef={appleTouchIconInputRef}
+                  favicon96InputRef={favicon96InputRef}
+                  faviconSvgInputRef={faviconSvgInputRef}
                   uploadStatus={logoUploadStatus}
                   t={tTheme}
                 />
