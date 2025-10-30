@@ -95,6 +95,12 @@ settlement contracts read total supply when calculating pro-rata distributions.
 Vault custody systems reference the compliance module to validate deposit
 eligibility.
 
+**Creator permissions**: Upon creation the deploying wallet is granted the token
+`governance` role so it can issue identity claims and configure governance-gated
+flows immediately after deployment. This enables claim submission, but the
+issuer still needs the relevant trusted-issuer topic permissions before those
+claims are recognized on-chain.
+
 ### Fields
 
 ```graphql
