@@ -1,27 +1,15 @@
 ---
 title: Issue a fund token
 description:
-  Guide to creating a fund token and managing fund-specific operations like NAV
-  updates and fees
+  Fund tokens represent shares in investment vehicles with automated NAV
+  calculations, yield distribution, and portfolio management. This guide walks
+  you through deploying open-end, closed-end, or interval fund tokens with
+  subscription/redemption workflows, management fee automation, and performance
+  tracking. DALP vaults secure fund assets while yield management automates fee
+  distributions.
 pageTitle: How to issue a fund token (Investment fund units)
 tags: [how-to, fund, NAV, fees, fund-management]
 ---
-
-## Overview
-
-Deploy compliant fund tokens representing ownership units in investment funds
-with net asset value (NAV) tracking, management fees, and
-subscription/redemption workflows. Manage open-end, closed-end, or interval
-funds through the platform.
-
-**Primary audience:** Fund administrators, asset managers  
-**Secondary audience:** Investment operations teams, financial product managers
-
-<Mermaid
-  chart={
-    "graph TB\n    A(Configure Fund<br/>Parameters) --> B(Set NAV<br/>Tracking)\n    B --> C(Configure Subscription<br/>Redemption)\n    C --> D(Set Compliance<br/>Rules)\n    D --> E(Assign Operational<br/>Roles)\n    E --> F(Deploy Fund<br/>Contract)\n    F --> G(Post Initial<br/>NAV)\n    G --> H(Enable<br/>Subscriptions)\n    H --> I(Process Subscription<br/>Requests)\n    I --> J(Update NAV<br/>Regularly)\n    J --> K(Process Redemption<br/>Requests)\n    K --> L(Collect Management<br/>Fees)\n    L --> M(Monitor Fund<br/>Operations)\n    M --> J\n    style A fill:#0EA5E9\n    style F fill:#0EA5E9\n    style G fill:#0EA5E9\n    style I fill:#10B981\n    style J fill:#10B981\n    style K fill:#10B981\n    style L fill:#6366F1"
-  }
-/>
 
 ## Before you start
 
@@ -42,6 +30,56 @@ and fee configuration
 - Familiarity with fund regulations (1940 Act, UCITS, AIFMD, etc.)
 - Fund administration operations
 
+## Fund launch workflow
+
+The fund launch process involves coordination across three key roles, with
+parallel activities and clear handoff points. The diagram below shows how
+Product Owners define the fund strategy, Compliance Officers establish
+regulatory controls, and Operations teams deploy and activate the fund
+infrastructure.
+
+<Mermaid
+  chart={`graph TB
+    subgraph ProductOwner["Product Owner"]
+        DefineStrategy(Define fund strategy<br/>& investment terms)
+        SetFees(Configure management<br/>& performance fees)
+        ReviewDeploy(Review deployment<br/>summary)
+    end
+    
+    subgraph ComplianceOfficer["Compliance Officer"]
+        ConfigRules(Configure compliance<br/>modules & rules)
+        ApproveJurisdictions(Approve geographic<br/>restrictions)
+        VerifyCompliance(Verify regulatory<br/>framework)
+    end
+    
+    subgraph Operations["Operations"]
+        DeployContracts(Deploy fund token<br/>contracts)
+        FundVault(Fund DALP vault<br/>with liquidity)
+        EnableTrading(Enable subscriptions<br/>& redemptions)
+    end
+    
+    DefineStrategy --> SetFees
+    SetFees --> ConfigRules
+    ConfigRules --> ApproveJurisdictions
+    ConfigRules --> DeployContracts
+    ApproveJurisdictions --> VerifyCompliance
+    DeployContracts --> FundVault
+    ReviewDeploy --> DeployContracts
+    VerifyCompliance --> ReviewDeploy
+    FundVault --> EnableTrading
+    
+    style DefineStrategy fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style SetFees fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style ReviewDeploy fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style ConfigRules fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style ApproveJurisdictions fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style VerifyCompliance fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style DeployContracts fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style FundVault fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style EnableTrading fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+`}
+/>
+
 ## Steps
 
 <Steps>
@@ -50,11 +88,12 @@ and fee configuration
 
 ### 1. Navigate to fund creation
 
-From your dashboard:
-
-1. Click **Asset Management** in the left sidebar
-2. Select **Funds** from the asset type list
-3. Click **Create New Fund Token**
+Begin by accessing the fund creation interface through your dashboard's asset
+management section. Click **Asset Management** in the left sidebar, then select
+**Funds** from the asset type list to view your existing fund tokens and
+deployment history. The **Create New Fund Token** button at the top right
+initiates the deployment wizard that will guide you through configuring your
+investment vehicle's parameters.
 
 ![Fund creation navigation](/images/screenshots/placeholder.svg) _Screenshot:
 Asset Management section showing Funds category with existing funds list and
@@ -68,75 +107,119 @@ Create New Fund Token button_
 
 #### Basic token information
 
-Enter your token details:
+Your fund token's identity is established through four essential parameters that
+define how units are represented on-chain. The **token name** should match your
+prospectus exactly, including the full legal name and share class
+designation—for example, "Global Growth Fund Class A Shares" ensures clear
+identification in investor portfolios and regulatory filings. Choose a **token
+symbol** that's concise yet meaningful, typically 3-5 characters like "GGFA" for
+Global Growth Fund Class A.
 
-- **Token name** - Full legal name (e.g., "Global Growth Fund Class A Shares")
-- **Token symbol** - Trading symbol (e.g., "GGFA")
-- **Decimals** - Token divisibility (18 for fractional units, 0 for whole units)
-- **Initial supply** - Number of units to mint at deployment (typically 0 for
-  funds)
+The **decimals** field determines how finely fund units can be divided, which
+affects minimum investment amounts and redemption flexibility. Setting decimals
+to 18 enables fractional ownership down to 0.000000000000000001 units, ideal for
+high-NAV funds or retail accessibility. For institutional-only funds where whole
+units are standard, decimals can be set to 0, though this limits redemption
+flexibility. The **initial supply** typically starts at 0 for fund tokens since
+units are minted dynamically during subscription processing rather than
+pre-minting a fixed amount.
 
 ![Fund basic information](/images/screenshots/placeholder.svg) _Screenshot: Fund
 configuration form showing name, symbol, decimals, and initial supply fields
 with validation_
 
-**Naming tip:** Include fund name and share class (Class A/B/C,
-institutional/retail) for clear identification.
+<Callout type="info" title="Naming tip">
+  Include both the fund name and share class (Class A/B/C, institutional/retail)
+  in your token name. This prevents confusion when managing multiple share
+  classes of the same fund and ensures regulatory reporting clearly
+  distinguishes between different fee structures and investor types.
+</Callout>
 
 #### Fund-specific parameters
 
-Configure your investment fund properties:
-
 **Fund type**
 
-Select fund structure:
+The fund structure you select determines the subscription and redemption
+mechanics enforced by your smart contract. **Open-end funds** allow continuous
+subscription and redemption at NAV, making them suitable for mutual funds and
+daily liquidity vehicles—the contract automatically processes requests based on
+your configured cut-off times and settlement cycles. **Closed-end funds** have a
+fixed capitalization with units trading on secondary markets at prices that may
+differ from NAV, requiring transfer restriction modules rather than subscription
+workflows. **Interval funds** blend both approaches with periodic redemption
+windows (quarterly or semi-annually), enforcing redemption gates automatically
+through the contract's time-lock mechanisms.
 
-- **Open-end fund** - Continuous subscription and redemption (mutual funds)
-- **Closed-end fund** - Fixed capitalization with secondary market trading
-- **Interval fund** - Periodic redemption windows
+This structural choice impacts not only the smart contract's enabled functions
+but also integrates with the DALP vault system—open-end funds require dynamic
+vault balancing to maintain redemption reserves, while closed-end structures can
+optimize vault yields with locked liquidity.
 
 **Share class configuration**
 
-Define class characteristics:
+Fee structures are central to your fund's economics and are automated through
+the yield management addon. The **management fee** is entered in basis points
+(100 basis points equals 1%) and accrues daily based on the fund's AUM,
+calculated as (AUM × fee rate) / 365. For example, a 1.5% management fee (150
+basis points) on $10 million AUM accrues approximately $410 daily, which the
+yield module tracks continuously. The **performance fee** enables carried
+interest or incentive fee structures with high-water mark tracking built into
+the smart contract—this ensures performance fees are only collected on genuine
+outperformance and prevents double-charging after drawdowns.
 
-- **Management fee** - Annual fee percentage (entered as basis points)
-- **Performance fee** - Carried interest or incentive fee (if applicable)
-- **Minimum investment** - Minimum initial subscription amount
-- **Redemption notice period** - Days notice required for redemption requests
+Your **minimum investment** amounts enforce prospectus requirements on-chain,
+automatically rejecting subscription requests below thresholds without manual
+intervention. The **redemption notice period** integrates with the calendar
+module to enforce advance notice requirements—a 5-day notice period means
+redemption requests enter a queue and only become processable after the notice
+expires, protecting fund liquidity management.
 
 ![Fund type and class configuration](/images/screenshots/placeholder.svg)
 _Screenshot: Fund parameters showing fund type dropdown, management fee input,
 performance fee toggle, and minimum investment field_
 
-**Management fee examples:**
-
-- 1% annual = 100 basis points
-- 1.5% annual = 150 basis points
-- 2% annual = 200 basis points
-
 #### NAV tracking setup
-
-Configure your net asset value management:
 
 **NAV calculation**
 
-- **Initial NAV** - Starting NAV per unit (typically 100.00 or 1,000.00)
-- **NAV currency** - Denomination currency (USD, EUR, etc.)
-- **Valuation frequency** - Daily, weekly, or monthly NAV updates
+Net asset value management sits at the heart of fund operations, pricing both
+new subscriptions and outgoing redemptions. Your **initial NAV** establishes the
+starting price per unit, typically set to a round number like 100.00 or 1,000.00
+for psychological appeal and ease of percentage calculations—starting at 100
+means a NAV of 110 represents a 10% gain. The **NAV currency** determines the
+denomination for all calculations and should match your fund's functional
+currency in the prospectus (USD, EUR, etc.).
+
+Your **valuation frequency** defines how often NAV updates are required and
+impacts the observability metrics tracked by the platform. Daily NAV updates
+enable T+0 or T+1 settlement cycles and provide real-time performance monitoring
+through the fund metrics dashboard, where NAV history charts track performance
+against benchmarks. Weekly or monthly valuations reduce administrative overhead
+but extend settlement cycles and limit the responsiveness of the
+subscription/redemption queue processing.
 
 **NAV oracle**
 
-Link to price feed source:
+Three oracle integration patterns are supported, each with different trust and
+automation trade-offs. **Manual NAV updates** give your fund administrator full
+control, requiring them to post NAV values through the governance dashboard
+after calculating from portfolio holdings—this approach is tracked in the
+observability dashboard's "NAV posting latency" metric, which alerts if updates
+are delayed beyond your configured frequency. **Oracle integration** automates
+NAV posting from external data providers, using on-chain price feeds to
+calculate NAV from underlying portfolio positions—the dashboard monitors oracle
+health metrics including data freshness and deviation from expected ranges.
 
-1. **Manual NAV updates** - Administrator posts NAV values
-2. **Oracle integration** - Automated NAV from external data provider
-3. **Hybrid** - Oracle with administrator override capability
+The **hybrid** approach combines automated oracle feeds with administrator
+override capability, enabling you to accept oracle values during normal
+operations while retaining control during market disruptions or when portfolio
+holdings change. The observability dashboard tracks the override frequency
+metric to identify patterns where manual intervention becomes frequent,
+signaling potential oracle configuration issues.
 
 ![NAV configuration](/images/screenshots/placeholder.svg) _Screenshot: NAV
 settings showing initial NAV input, currency selector, valuation frequency
 dropdown, and oracle integration options_
-
-The system uses NAV for subscription/redemption pricing calculations.
 
 <Callout type="info" title="Business context">
   Traditional fund administration requires manual NAV calculation across
@@ -144,7 +227,9 @@ The system uses NAV for subscription/redemption pricing calculations.
   to multiple systems. This process typically takes 1-3 business days and costs
   $5,000-50,000 monthly depending on fund complexity. ATK's automated NAV
   posting enables same-day subscription/redemption processing and reduces
-  administrative overhead by 70-85%.
+  administrative overhead by 70-85%. The observability dashboard provides
+  real-time NAV calculation transparency that auditors and regulators can verify
+  independently, eliminating reconciliation disputes.
 </Callout>
 
 </Step>
@@ -153,26 +238,48 @@ The system uses NAV for subscription/redemption pricing calculations.
 
 ### 3. Configure subscription and redemption
 
-Fund units require special issuance and withdrawal workflows.
+Fund units require specialized issuance and withdrawal workflows that integrate
+with the DALP vault system for custody and settlement. These parameters directly
+affect your fund's liquidity management and the investor experience.
 
 #### Subscription settings
 
-Define how your investors purchase fund units:
-
 **Subscription process**
 
-- **Minimum initial investment** - First purchase minimum (e.g., $10,000)
-- **Minimum subsequent investment** - Additional purchase minimum (e.g., $1,000)
-- **Subscription settlement** - T+0, T+1, T+2, T+3 settlement cycle
-- **Cut-off time** - Daily deadline for subscription orders
+The subscription workflow governs how capital flows into your fund and mints new
+units. Your **minimum initial investment** and **minimum subsequent investment**
+thresholds are enforced automatically by the smart contract, rejecting
+transactions below these amounts before they consume gas or require manual
+review. Setting an initial minimum of $10,000 and subsequent minimum of $1,000
+is common for retail funds, while institutional share classes often require $1
+million or more.
+
+The **subscription settlement** cycle determines when investor capital moves
+from their wallet to the DALP vault and when fund units are minted to their
+address. T+0 settlement executes immediately upon NAV posting, ideal for liquid
+funds with daily valuations. T+1 or T+2 cycles provide time for compliance
+verification and payment confirmation, automatically queuing subscription
+requests until the settlement date. Your **cut-off time** (configured in your
+fund's timezone) establishes the daily deadline for same-day NAV
+pricing—requests received after the cut-off automatically roll to the next
+valuation date, eliminating manual NAV assignment and the pricing errors that
+plague traditional fund administration.
 
 **Payment methods**
 
-Configure accepted payment tokens:
+The DALP vault system requires configuration of accepted payment tokens for
+capital contributions. Adding stablecoin addresses (USDC, USDT, DAI) enables
+investors to subscribe using their preferred on-chain currency, with the vault
+automatically aggregating deposits for portfolio deployment. Payment token
+conversion rates to your NAV currency are maintained either manually or via
+oracle feeds, ensuring accurate unit calculation regardless of payment token
+choice.
 
-- Add stablecoin addresses (USDC, USDT, etc.)
-- Set payment token conversion rates to NAV currency
-- Enable multi-currency subscriptions (optional)
+Enabling multi-currency subscriptions provides investor flexibility but requires
+careful vault management—the liquidity dashboard tracks payment token
+composition and can alert when reserves become unbalanced. For example, if 80%
+of subscriptions arrive in USDC but redemptions require 60% USDT, the vault must
+rebalance to avoid settlement failures.
 
 ![Subscription configuration](/images/screenshots/placeholder.svg) _Screenshot:
 Subscription settings showing minimum investment amounts, settlement cycle
@@ -180,33 +287,59 @@ selector, cut-off time picker, and payment token list_
 
 #### Redemption settings
 
-Configure how your investors exit the fund:
-
 **Redemption process**
 
-- **Redemption notice period** - Days advance notice required (e.g., 5 business
-  days)
-- **Redemption frequency** - Daily, weekly, monthly, or quarterly redemptions
-- **Redemption fee** - Early redemption penalty (if applicable, in basis points)
-- **Redemption settlement** - T+1, T+3, T+5, T+7 settlement cycle
+Your redemption terms balance investor liquidity needs against fund management
+requirements. The **redemption notice period** gives your fund time to raise
+cash from portfolio holdings without forced selling at unfavorable prices—a
+5-day notice period means investors submit requests on Monday for processing the
+following Monday, assuming no weekends or holidays intervene. The smart
+contract's calendar integration tracks business days according to your
+configured market calendar, automatically extending notice periods when holidays
+occur.
+
+**Redemption frequency** can be more restrictive than subscription frequency,
+particularly for illiquid strategies. Setting daily redemptions provides maximum
+liquidity but requires maintaining higher cash reserves in the DALP vault,
+reducing yield on invested capital. Monthly or quarterly redemption windows are
+enforced by the contract's time-lock mechanism, automatically rejecting requests
+submitted outside the designated window and queuing valid requests for batch
+processing.
+
+An **early redemption fee** (entered in basis points) compensates remaining
+investors for the liquidity costs imposed by early exits, particularly during
+lock-up periods. The fee is automatically deducted from redemption proceeds and
+either burned (increasing NAV for remaining holders) or transferred to the
+management fee wallet. The **redemption settlement** cycle controls when capital
+flows from the DALP vault back to exiting investors, with T+3 to T+7 being
+common for funds with less liquid portfolios.
 
 **Redemption restrictions**
 
-Set withdrawal limits:
+Fine-grained withdrawal controls protect both the fund and remaining investors.
+Your **minimum redemption** amount prevents tiny redemptions that create
+administrative burden, while the **partial redemption minimum** ensures
+investors maintaining positions keep economically meaningful stakes—requiring at
+least $5,000 remain after partial redemptions prevents your investor base from
+fragmenting into many small, uneconomic accounts.
 
-- **Minimum redemption** - Minimum withdrawal amount
-- **Partial redemption minimum** - Minimum balance remaining after partial
-  redemption
-- **Gates** - Maximum percentage of fund redeemable per period (e.g., 25%
-  quarterly)
-- **Lock-up period** - Mandatory holding period before first redemption allowed
+**Gates** are your most powerful liquidity protection tool, automatically
+limiting aggregate redemptions to a percentage of total fund AUM per period.
+Setting a 25% quarterly gate means the contract will pro-rate all redemption
+requests if they exceed 25% of the fund's value, preventing a run scenario. The
+observability dashboard's "Redemption queue metrics" panel shows you pending
+redemption volume as a percentage of AUM, with alerts triggering when
+approaching gate thresholds.
+
+A **lock-up period** enforces a mandatory holding period from initial
+subscription before any redemption is permitted, common in hedge funds and
+private funds. Setting a 90-day lock-up means the contract automatically rejects
+redemption requests from any investor whose first subscription settled less than
+90 days ago, requiring no manual enforcement.
 
 ![Redemption configuration](/images/screenshots/placeholder.svg) _Screenshot:
 Redemption settings showing notice period, frequency, fees, settlement cycle,
 and restriction inputs_
-
-**Hedge fund example:** 90-day lock-up, quarterly redemptions with 45-day
-notice, 25% quarterly gate.
 
 </Step>
 
@@ -214,20 +347,32 @@ notice, 25% quarterly gate.
 
 ### 4. Set compliance rules
 
-Your fund token enforces investor eligibility and transfer restrictions.
+Your fund token's compliance layer enforces investor eligibility and transfer
+restrictions directly in the smart contract, automating what traditionally
+requires manual transfer agent review. These rules integrate with the OnchainID
+system to verify claims before permitting transactions.
 
 #### Regulatory framework selection
 
-Choose your applicable regulatory framework:
+Selecting your regulatory framework loads pre-configured compliance module
+templates that implement common regulatory patterns. Choosing **1940 Act**
+configures rules for US registered investment companies, including maximum
+shareholder count tracking and automated prospectus delivery flags. **Regulation
+D** templates enforce accredited investor status verification and beneficial
+ownership disclosure requirements for private funds.
 
-- **1940 Act** - US registered investment company
-- **Regulation D** - US private fund (accredited/qualified purchasers)
-- **UCITS** - European harmonized fund
-- **AIFMD** - Alternative investment fund (EU)
-- **Custom** - Jurisdiction-specific compliance
+**UCITS** and **AIFMD** frameworks implement European fund regulations with
+built-in rules for maximum issuer concentration, eligible asset verification,
+and distribution restrictions across EU member states. The **Custom** option
+starts with an empty compliance ruleset for jurisdiction-specific requirements
+not covered by standard frameworks.
 
-**Note:** Selecting a framework provides pre-configured compliance modules. You
-can customize individual modules after deployment.
+Your framework selection establishes the baseline ruleset, but every module can
+be customized post-deployment. This matters because regulatory requirements
+evolve—when new rules emerge, you can activate additional compliance modules
+without redeploying the entire fund contract. The compliance dashboard tracks
+which modules are active and logs every transaction that triggered a compliance
+check, providing an audit trail regulators can review.
 
 ![Compliance framework selection](/images/screenshots/placeholder.svg)
 _Screenshot: Regulatory framework cards showing 1940 Act, Reg D, UCITS, AIFMD,
@@ -235,43 +380,69 @@ and Custom options with investor eligibility summaries_
 
 #### Configure compliance modules
 
-Based on your selected framework, configure these modules:
-
 **Investor eligibility**
 
-Set OnchainID claim requirements:
+OnchainID claim requirements define who can acquire fund units, enforced
+automatically on every mint, transfer, and subscription. Requiring the
+**accredited investor** claim ensures only investors meeting SEC income or net
+worth thresholds can subscribe, with identity providers cryptographically
+attesting to this status on-chain. **Qualified purchaser** status (required for
+3(c)(7) funds) enforces higher wealth thresholds, automatically maintained by
+the identity provider's periodic re-verification.
 
-- **Accredited investor** status (Reg D private funds)
-- **Qualified purchaser** status (3(c)(7) funds)
-- **Professional investor** status (AIFMD)
-- **Suitability assessment** completion
-- **KYC/AML verification** level
+**Professional investor** status implements MiFID II classifications for
+European funds, while **suitability assessment** completion flags verify that
+investors passed a questionnaire confirming their understanding of fund risks
+and investment objectives. **KYC/AML verification** level requirements can be
+tiered—Level 1 for basic identification, Level 2 for enhanced due diligence on
+high-risk investors.
 
-Only addresses with all required claims can subscribe to fund units.
+The compliance dashboard's "Investor eligibility distribution" chart shows you
+the breakdown of your investor base by claim types, useful for regulatory
+reporting. The "Failed transaction log" captures subscription attempts from
+ineligible addresses, helping you identify and educate investors who attempt to
+invest before completing verification.
 
 **Transfer restrictions**
 
-Configure secondary transfer rules:
+Secondary market transfer rules govern whether fund units can move between
+addresses outside the subscription/redemption process. **Transferability** can
+be completely disabled for funds with no secondary market, ensuring all investor
+changes occur through the controlled subscription/redemption queues. Enabling
+transfers with **transfer approval** means every proposed transfer queues for
+fund manager review, useful for private funds requiring right-of-first-refusal
+enforcement.
 
-- **Transferability** - Enable/disable secondary market transfers
-- **Transfer approval** - Require fund manager approval for all transfers
-- **Lock-up enforcement** - Prevent transfers during lock-up period
-- **Maximum holders** - Cap total investor count (e.g., 99 for 3(c)(1) funds)
+**Lock-up enforcement** prevents any transfers (including redemptions) during an
+investor's lock-up period, automatically calculated from their first
+subscription date. **Maximum holders** caps total investor count, critical for
+maintaining 3(c)(1) exemption status—when approaching the 99-investor limit, the
+contract automatically rejects new subscriptions and only permits transfers
+between existing holders.
+
+These restrictions are monitored in real-time through the compliance metrics
+dashboard, which shows current investor count, transfers pending approval, and
+lock-up expiration schedule across your investor base.
 
 ![Compliance module configuration](/images/screenshots/placeholder.svg)
 _Screenshot: Compliance modules showing Investor Eligibility, Transfer
 Restrictions, and Lock-up Period panels with configuration options_
 
-**3(c)(1) vs 3(c)(7):** 3(c)(1) allows up to 99 investors (accredited required);
-3(c)(7) allows unlimited qualified purchasers.
-
 #### Geographic restrictions
 
-Limit fund access by jurisdiction:
+The Country Allow List module implements jurisdiction-based access controls by
+requiring investors' OnchainID to assert their country of residence or
+citizenship. Enabling this module and selecting permitted countries ensures
+automatic rejection of subscription requests from restricted jurisdictions,
+implementing FATF sanctions compliance and UCITS distribution rules without
+manual screening.
 
-1. Enable **Country Allow List** module
-2. Select permitted investor countries
-3. Configure distribution restrictions per UCITS/AIFMD passporting rules
+For EU funds under UCITS or AIFMD, the geographic restrictions integrate with
+passporting rules—you can enable distribution to all EU member states with a
+single configuration or limit to specific countries where you've notified
+regulators. The compliance dashboard tracks your investor base's geographic
+distribution, generating reports for regulatory filings that require
+country-level breakdowns.
 
 </Step>
 
@@ -279,60 +450,90 @@ Limit fund access by jurisdiction:
 
 ### 5. Assign operational roles
 
-Grant permissions for fund management.
-
-#### Role assignments
-
-Assign wallet addresses to these fund-specific roles:
+Operational permissions distribute control across your fund's management team
+through a role-based access control system. Each role maps to specific contract
+functions, and assigning these to appropriate wallets implements operational
+segregation of duties.
 
 **GOVERNANCE_ROLE**
 
-Manages fund compliance and operations:
+This role controls your fund's compliance configuration and investor management
+functions. Addresses with GOVERNANCE_ROLE can configure and modify compliance
+modules, ensuring investor eligibility rules stay current with regulatory
+changes. They approve or reject subscription requests from the queue, verify
+investor eligibility manually when automated checks are inconclusive, and
+configure redemption parameters including gate activation during market stress.
 
-- Configure compliance modules
-- Update investor eligibility requirements
-- Approve/reject subscription requests
-- Configure redemption parameters
-- Post NAV updates
-
-Typically assigned to: Fund administrator or compliance officer wallet
+The NAV posting function is also governed by this role—only GOVERNANCE_ROLE
+addresses can update NAV, preventing unauthorized price manipulation. This role
+typically goes to your fund administrator or compliance officer wallet, and best
+practice is using a multisig wallet requiring 2-of-3 or 3-of-5 approvals for
+critical actions. The governance activity log in the observability dashboard
+shows every parameter change, NAV update, and subscription approval with
+timestamps and signing addresses for complete auditability.
 
 **SUPPLY_MANAGEMENT_ROLE**
 
-Controls fund unit supply:
+Fund unit creation and destruction occurs exclusively through addresses holding
+SUPPLY_MANAGEMENT_ROLE. This role mints new units when processing approved
+subscriptions, calculating the unit quantity based on investment amount divided
+by current NAV. It burns units during redemption processing, removing units from
+circulation and calculating payout amounts.
 
-- Mint units (process subscriptions)
-- Burn units (process redemptions)
-- Execute NAV-based issuance calculations
-
-Typically assigned to: Fund operations or treasury wallet
+The supply management functions integrate deeply with the DALP vault—minting
+units typically follows vault receipt of subscription capital, while burning
+units precedes vault disbursement of redemption proceeds. The yield management
+addon's automated fee collection also uses this role to mint fee units to the
+management wallet at the configured intervals. This role typically goes to your
+fund operations or treasury wallet, with the transaction log in the fund metrics
+dashboard providing a complete audit trail of all issuance and redemption
+events.
 
 **CUSTODIAN_ROLE**
 
-Handles investor account operations:
+Account-level interventions fall under CUSTODIAN_ROLE authority, implementing
+the fund's fiduciary responsibilities to protect investors and comply with
+regulatory orders. This role can freeze individual investor accounts when
+compromise is suspected or reported, preventing further transactions until the
+issue is resolved. Forced transfers execute regulatory orders such as
+court-ordered asset seizures, divorce settlements, or estate transfers that
+override normal transfer restrictions.
 
-- Freeze compromised accounts
-- Execute forced transfers (regulatory orders)
-- Recover lost units
-
-Typically assigned to: Fund custodian or transfer agent wallet
+The unit recovery function addresses lost key scenarios—when an investor loses
+access to their wallet, CUSTODIAN_ROLE can transfer their units to a replacement
+address after proper verification. This role typically belongs to your fund
+custodian or transfer agent wallet, and the custodian activity dashboard logs
+every intervention with supporting documentation references for regulatory
+review.
 
 **EMERGENCY_ROLE**
 
-Emergency interventions:
+Market stress scenarios and security incidents require circuit-breaker
+capabilities. EMERGENCY_ROLE can pause all contract functions including
+subscriptions, redemptions, and transfers—useful when investigating suspicious
+activity or implementing emergency gates during extreme market volatility. The
+gate implementation function allows temporary reduction of redemption limits
+below configured thresholds when protecting remaining investors from forced
+liquidation of portfolio holdings.
 
-- Pause all transfers and subscriptions/redemptions
-- Implement fund gates during market stress
-- Unpause after incident resolution
-
-Typically assigned to: Fund manager wallet
+Unpausing restores normal operations after incident resolution, and best
+practice is requiring multisig approval from 3-of-5 or 4-of-7 signers to prevent
+unilateral emergency actions. This role typically goes to your fund manager
+wallet. The emergency actions log prominently displays pause/unpause events in
+the fund overview dashboard, and regulatory reporting modules flag all emergency
+interventions for disclosure in periodic filings.
 
 ![Role assignment interface](/images/screenshots/placeholder.svg) _Screenshot:
 Role assignment form showing four roles with address inputs, role descriptions,
 and permission lists_
 
-**Best practice:** Use multisig wallets for GOVERNANCE_ROLE and EMERGENCY_ROLE
-to prevent unilateral critical actions.
+<Callout type="warning" title="Security recommendation">
+  Use multisig wallets for GOVERNANCE_ROLE and EMERGENCY_ROLE to prevent
+  unilateral critical actions. A 2-of-3 multisig requiring approval from fund
+  administrator, compliance officer, and fund manager provides checks and
+  balances while maintaining operational efficiency. Hardware wallet signers add
+  an additional security layer for high-value funds.
+</Callout>
 
 </Step>
 
@@ -340,18 +541,36 @@ to prevent unilateral critical actions.
 
 ### 6. Review and deploy
 
-#### Pre-deployment checklist
+**Pre-deployment checklist**
 
-Verify your configuration:
+Before executing deployment, verify every configuration parameter against your
+fund's offering documents and regulatory filings. Confirm your **token name and
+symbol** match the prospectus exactly, as these become immutable once deployed
+and appear in investor wallets and regulatory filings. Verify the **fund type
+and share class** align with your intended structure, since deploying as
+open-end when you meant closed-end requires a complete redeployment.
 
-- [ ] Token name and symbol match prospectus
-- [ ] Fund type and share class correct
-- [ ] Management fee percentage matches offering documents
-- [ ] Initial NAV set correctly
-- [ ] Subscription minimums match prospectus
-- [ ] Redemption terms align with fund documents
-- [ ] Compliance framework matches regulatory filing
-- [ ] All operational roles assigned to secure wallets
+Double-check that **management fee percentage** entered in basis points matches
+your offering documents—entering 150 basis points when you meant 1.5% annual
+(which is 150 basis points) is correct, but entering 1.5 would result in a
+0.015% fee. Confirm your **initial NAV** is set correctly, as subscription
+pricing begins from this value. Review **subscription minimums** against
+prospectus terms to ensure on-chain enforcement matches disclosed investor
+requirements.
+
+Verify **redemption terms** including notice periods, frequencies, and lock-ups
+align with fund documents, since investors will expect these terms to match
+their subscription agreements. Confirm your **compliance framework** matches
+your regulatory filing—deploying with Regulation D modules when you filed under
+the 1940 Act creates immediate compliance gaps. Finally, ensure **all
+operational roles** are assigned to secure wallets with correct addresses, as
+role reassignment post-deployment requires governance action and can't rescue
+funds from mistyped addresses.
+
+The deployment summary screen organizes all parameters into sections matching
+your prospectus structure, making this final review efficient. The observability
+dashboard will track deployment success metrics including contract
+initialization time and initial configuration accuracy.
 
 ![Deployment summary review](/images/screenshots/placeholder.svg) _Screenshot:
 Pre-deployment summary showing fund parameters, fees, NAV settings,
@@ -359,22 +578,33 @@ subscription/redemption terms, compliance, and roles in organized sections_
 
 #### Deploy fund contract
 
-Execute your deployment:
+Executing deployment initiates a sequence of blockchain transactions that
+establish your fund token and configure all subsystems. Click **Deploy Fund
+Token** to begin the process, then review the transaction details showing
+estimated gas costs and the deployment wallet that will sign the transactions.
+Enter your PIN or OTP to authenticate your identity, ensuring only authorized
+personnel can deploy fund contracts.
 
-1. Click **Deploy Fund Token**
-2. Review the transaction details
-3. Enter your PIN or OTP to authenticate
-4. Confirm the transaction
+The deployment process follows a deterministic sequence displayed in real-time
+on the progress modal. First, the fund proxy contract deploys, taking 15-20
+seconds depending on network congestion—this creates your unique fund contract
+address that remains permanent. Next, initialization occurs over approximately
+10 seconds, writing your configured parameters into contract storage. NAV
+tracking configuration takes another 5 seconds, establishing oracle connections
+or manual update permissions.
 
-Your deployment will:
+Role assignment processes each role sequentially, spending about 5 seconds per
+role to write permission grants into the access control registry. Finally,
+identity registry registration completes in 10 seconds, linking your fund token
+to the OnchainID compliance system. Total deployment time typically ranges from
+60-90 seconds, after which your fund contract is live and ready for NAV posting
+and subscription activation.
 
-1. Deploy the fund proxy contract (15-20 seconds)
-2. Initialize with your parameters (10 seconds)
-3. Configure NAV tracking (5 seconds)
-4. Assign roles to your specified addresses (5 seconds per role)
-5. Register with the identity registry (10 seconds)
-
-**Total deployment time:** 60-90 seconds
+The deployment completes with a confirmation showing your fund token's contract
+address. This address appears in the fund registry dashboard, the blockchain
+explorer, and should be recorded in your operational procedures for reference.
+All deployment transactions are logged in the contract deployment history with
+complete gas costs and transaction hashes for accounting and audit purposes.
 
 ![Deployment progress](/images/screenshots/placeholder.svg) _Screenshot:
 Deployment progress modal showing step-by-step deployment status with checkmarks
@@ -386,17 +616,32 @@ and timestamps_
 
 ### 7. Post-issuance actions
 
-After your successful deployment:
+Deployment creates your fund contract infrastructure, but several configuration
+steps must complete before accepting investor subscriptions. These post-issuance
+actions integrate your fund with the DALP lifecycle features and observability
+systems.
 
 #### Verify deployment
 
-1. Note the contract address
-2. Click **View Fund Token** to navigate to details page
-3. Verify configuration:
-   - Token information correct
-   - Management fee rate matches
-   - NAV tracking enabled
-   - Roles assigned correctly
+Begin by recording your fund contract's address from the deployment confirmation
+screen—this identifier is permanent and appears in all investor-facing
+materials, blockchain explorers, and regulatory filings. Click **View Fund
+Token** to navigate to your fund's detail page, where the system displays key
+metrics including current NAV, total AUM (initially zero), investor count, and
+fee schedule.
+
+Systematically verify each configuration section. Check that **token
+information** shows correct name, symbol, decimals, and total supply (should be
+zero if you configured initial supply as zero). Confirm the **management fee
+rate** displays your intended annual percentage, not the basis points you
+entered. Verify **NAV tracking** shows enabled status with your configured
+valuation frequency and oracle integration (if applicable).
+
+Review the **roles** section to ensure all four operational roles show the
+correct wallet addresses—incorrect addresses here require governance action to
+fix and delay your fund launch. The verification dashboard provides automated
+checks highlighting any configuration discrepancies or common deployment
+mistakes, with one-click fixes for correctable issues.
 
 ![Fund details overview](/images/screenshots/placeholder.svg) _Screenshot: Fund
 token details page showing key metrics, NAV information, fee schedule, AUM, and
@@ -404,41 +649,80 @@ investor count_
 
 #### Set initial NAV
 
-Post your first net asset value:
+NAV posting enables pricing for subscriptions and redemptions, making it
+essential to complete before opening for investments. Navigate to the **NAV**
+tab and click **Update NAV** to access the NAV posting interface. Enter your NAV
+per unit—this should match the **initial NAV** you configured during deployment
+for consistency, typically 100.00 or 1,000.00 for a newly launched fund.
 
-1. Navigate to **NAV** tab
-2. Click **Update NAV**
-3. Enter NAV per unit (typically your configured initial NAV)
-4. Enter effective date and time
-5. Confirm update
+Set the **effective date and time** to your fund's official launch date and
+time, which establishes when this NAV becomes valid for pricing subscriptions.
+For example, setting effective time to 4:00 PM on launch day means subscription
+requests received before 4:00 PM use this NAV for unit calculation. Confirm the
+update to write the NAV on-chain, which triggers the NAV history chart to
+display your first data point.
 
-The NAV appears on your fund details page and is used for
-subscription/redemption calculations.
+This initial NAV posting appears on your fund details page and activates the
+subscription queue processing logic—without a current NAV, subscription requests
+remain unpriceable and cannot be approved. The fund metrics dashboard begins
+tracking NAV volatility, update frequency, and pricing consistency metrics from
+this first posting forward.
 
 #### Configure fee collection
 
-Set up your management fee collection:
+Management fee automation through the yield management addon requires
+configuration of your fee collection wallet and schedule. Navigate to the
+**Fees** tab where the fee schedule displays your configured management fee
+percentage and any performance fee terms. The accrued fees amount shows zero
+immediately post-deployment but will begin accumulating daily based on your AUM.
 
-1. Navigate to **Fees** tab
-2. Review fee schedule showing management fee percentage
-3. Configure fee collection wallet address
-4. Set fee collection frequency (monthly, quarterly, annually)
-5. Enable automated fee collection (optional)
+Enter your **fee collection wallet address** where newly minted fee units will
+be deposited—this is typically a separate wallet from operational roles for
+accounting clarity. Set your **fee collection frequency** (monthly, quarterly,
+or annually) based on your fund's financial reporting cycle. Monthly collection
+creates more frequent small minting events, while annual collection results in
+one large fee issuance per year but delays management company cash flow.
 
-**Fee calculation:** Management fees accrue daily based on AUM and collect
-periodically by minting new units to fee wallet.
+The **automated fee collection** toggle enables the yield management addon to
+mint fee units automatically on your configured schedule without manual
+intervention. When enabled, the system calculates accrued fees daily as (AUM ×
+annual fee rate) / 365, then on collection dates, mints units equal to total
+accrued fees divided by current NAV. The fee collection history in the
+observability dashboard tracks every collection event with unit quantities, NAV
+used for calculation, and USD-equivalent values for accounting integration.
+
+Disabling automated collection requires manual fee collection execution through
+this same dashboard, useful for funds wanting to batch fee collection with other
+administrative actions or requiring additional approvals before fee realization.
 
 #### Enable subscriptions
 
-Open your fund for investor subscriptions:
+Opening your fund for investor capital requires explicitly enabling subscription
+processing. Navigate to the **Settings** tab and locate the **Accept
+Subscriptions** toggle currently showing disabled status. Before enabling,
+perform final verification of your subscription parameters—confirm minimum
+investment amounts, settlement cycle, cut-off time, and payment token addresses
+are all correct as configured during deployment.
 
-1. Navigate to **Settings** tab
-2. Toggle **Accept Subscriptions** to enabled
-3. Confirm subscription parameters correct
-4. Review payment token addresses
-5. Save changes
+Review the **payment token addresses** section showing all stablecoins and other
+tokens accepted for subscriptions. Verify each address matches the official
+token contract on your blockchain—incorrect payment token addresses could lead
+investors to send capital to the wrong contract where it becomes unrecoverable.
+The payment token configuration integrates with the DALP vault system, which
+must recognize these tokens to properly custody subscription proceeds.
 
-Your investors can now submit subscription requests.
+Toggle **Accept Subscriptions** to enabled and save changes, which activates the
+subscription queue and begins accepting investor requests. The fund overview
+dashboard updates to show "Open for subscriptions" status, and investor-facing
+interfaces display subscription forms for your fund. The subscription queue
+metrics panel tracks request volume, approval rate, and time-to-settlement for
+performance monitoring.
+
+Your fund is now live and operational. Investors with proper OnchainID claims
+can submit subscription requests that enter your queue for review and
+processing. The observability system begins tracking all key operational metrics
+including subscription flow, NAV update frequency, and compliance check pass
+rates across the complete fund lifecycle.
 
 </Step>
 
@@ -446,31 +730,53 @@ Your investors can now submit subscription requests.
 
 ### 8. Manage fund operations
 
+Daily fund operations center on processing investor transactions, maintaining
+accurate NAV, and collecting management fees. These workflows integrate with
+DALP's vault custody, yield distribution, and observability systems to automate
+traditional fund administration.
+
 #### Process subscription requests
 
-Handle your investor purchase orders:
+Subscription processing transforms investor capital into fund units through a
+multi-step workflow that integrates compliance verification, payment
+confirmation, and DALP vault custody. When investors submit subscription
+requests via the dApp, they enter their desired investment amount, select a
+payment token from your configured options (USDC, USDT, etc.), and transfer
+payment to the fund's subscription wallet address provided on-screen. This
+transfer triggers the request to appear in your **Subscriptions** queue awaiting
+administrative review.
 
-**Subscription workflow:**
+Navigate to **Subscriptions** &gt; **Pending** to view all unprocessed requests,
+organized by submission time. Each request displays the investor's identity and
+compliance status—green checkmarks confirm they hold all required OnchainID
+claims (accredited investor, KYC verification, etc.), while yellow warnings
+indicate pending verification or missing claims. The investment amount and
+payment token show the capital committed, with real-time vault confirmation
+showing whether payment has been received in the DALP vault.
 
-1. Investor submits subscription request via dApp:
-   - Enters investment amount
-   - Selects payment token
-   - Transfers payment to fund subscription wallet
-2. Request appears in **Subscriptions** queue
-3. Navigate to **Subscriptions** &gt; **Pending**
-4. Review request details:
-   - Investor identity and compliance status
-   - Investment amount and payment token
-   - Applicable NAV (based on cut-off time)
-   - Unit quantity calculation
-5. Click **Approve** or **Reject**
+The applicable NAV for pricing is automatically determined based on your cut-off
+time configuration—requests received before cut-off use the same-day NAV if
+available, while requests after cut-off automatically apply next-day NAV. This
+eliminates the pricing errors that plague traditional fund administration where
+manual NAV assignment creates disputes. The unit quantity calculation displays
+as investment amount divided by applicable NAV per unit, showing exactly how
+many fund units will be minted upon approval.
 
-**Approval actions:**
+Click **Approve** to process the subscription, which triggers several automated
+actions. The smart contract calculates the precise unit quantity accounting for
+decimals, mints those units to the investor's address, records the subscription
+in the fund ledger with full transaction details, and updates total AUM by
+adding the investment amount. The investor immediately sees fund units appear in
+their wallet, and the subscription event appears in the transaction history
+dashboard with complete audit trail including NAV used, units minted, and gas
+costs.
 
-- The system calculates units: investment amount / NAV per unit
-- Issues calculated units to investor address
-- Records subscription in fund ledger
-- Updates total AUM
+Clicking **Reject** returns the payment tokens from the DALP vault to the
+investor's address (minus gas costs) and logs the rejection reason you provide.
+Common rejection reasons include failed compliance checks (missing claims),
+payment amount below minimum threshold, or maximum investor count reached. The
+rejected subscription dashboard tracks rejection patterns to identify common
+investor onboarding issues requiring documentation improvement.
 
 <Callout type="info" title="Business context">
   Traditional subscription processing requires the fund administrator to
@@ -478,54 +784,74 @@ Handle your investor purchase orders:
   update the registry, reconcile with the custodian's records, and send
   confirmation notices. This workflow typically takes 3-5 business days (T+3 or
   T+5 settlement). ATK automates the entire process with T+0 or T+1 settlement,
-  reducing operational costs by 80-90%.
+  reducing operational costs by 80-90% while eliminating the calculation errors
+  and reconciliation breaks that occur in 15-20% of manual subscriptions. The
+  observability dashboard's "Subscription processing efficiency" panel tracks
+  approval time from request submission to unit minting, helping you identify
+  bottlenecks in your workflow and maintain competitive settlement speeds.
 </Callout>
 
 ![Subscription queue](/images/screenshots/placeholder.svg) _Screenshot:
 Subscription requests table showing pending orders with investor, amount,
 payment token, NAV, calculated units, and approve/reject buttons_
 
-**Cut-off time handling:** Requests received before cut-off use same-day NAV;
-requests after cut-off use next-day NAV. The system applies these rules
-automatically, eliminating manual NAV assignment errors.
-
 #### Update net asset value
 
-Maintain accurate fund pricing:
+NAV accuracy drives fair pricing for both incoming subscribers and exiting
+redeemers, making regular updates essential to fund operations. The calculation
+process determines your fund's per-unit value by summing all portfolio asset
+values (stocks, bonds, derivatives, etc.), subtracting liabilities (fees owed,
+operational expenses), and dividing by total outstanding units.
 
-**Manual NAV posting:**
+For **manual NAV posting**, navigate to **NAV** &gt; **Update NAV** and enter
+your calculated NAV per unit in the value field. Set the **effective date/time**
+to when this NAV becomes valid for pricing transactions—this is typically your
+fund's official valuation time such as 4:00 PM ET for US funds or 5:00 PM London
+time for European funds. The **calculation source/notes** field captures your
+methodology and data sources, creating an audit trail regulators can review if
+NAV calculations are questioned.
 
-1. Calculate fund NAV:
-   - Sum all portfolio asset values
-   - Subtract liabilities and accrued fees
-   - Divide by total outstanding units
-2. Navigate to **NAV** &gt; **Update NAV**
-3. Enter new NAV per unit
-4. Enter effective date/time
-5. Provide calculation source/notes
-6. Confirm update
+The NAV validation engine performs sanity checks before accepting updates,
+preventing data entry errors that could mispriced subscriptions or redemptions.
+If your new NAV deviates more than your configured threshold (commonly 10%) from
+the previous NAV, the system displays a confirmation prompt showing the
+percentage change and requiring explicit approval. This catches typos where
+105.50 was entered as 15.50 or decimal point errors.
 
-**NAV validation:** The system prevents NAV updates that deviate more than a
-configurable threshold (e.g., 10%) from the previous NAV without additional
-confirmation, protecting against data entry errors.
+Successful NAV posting updates the NAV history chart showing performance over
+time, triggers repricing of pending subscription and redemption requests in your
+queues, and logs the event in the NAV update dashboard with posting latency
+metrics. The observability system tracks time from valuation effective time to
+actual posting, alerting when delays exceed your configured threshold—for
+example, if your 4:00 PM NAV isn't posted until 6:00 PM, investors may perceive
+operational issues.
 
 <Callout type="default" title="For developers">
   See [Contract
   Reference](/docs/developer-guides/smart-contracts/contract-reference) for
-  technical details on NAV oracle integration and validation thresholds.
+  technical details on NAV oracle integration, validation threshold
+  configuration, and the event emission sequence that triggers observability
+  metric updates. The oracle integration pattern section explains how to
+  implement custom data providers for specialized asset classes requiring
+  non-standard pricing sources.
 </Callout>
 
-**Oracle integration:**
+For funds with **oracle integration**, NAV automation reduces posting to
+monitoring mode. Configure your oracle data feed by connecting to price
+providers for your portfolio's underlying assets—the system automatically
+fetches prices for each holding, applies your fund's position quantities, and
+calculates total portfolio value. Set your **update frequency** to match your
+valuation schedule (daily at 4:00 PM, weekly on Fridays, etc.), and enable
+**automated posting** to allow the system to write NAV on-chain without manual
+intervention.
 
-For automated NAV updates:
-
-1. Configure oracle data feed
-2. Set update frequency
-3. Enable automated posting
-4. Monitor oracle health on **NAV** tab
-
-The system posts NAV automatically based on oracle data, eliminating manual data
-entry and reducing the risk of pricing errors.
+Monitor oracle health through the **NAV** tab's oracle status panel, which
+displays data source connectivity, price feed freshness (time since last
+update), and deviation from expected price ranges. Alerts trigger when oracle
+feeds become stale (no update in 24+ hours), show extreme volatility (price
+changes exceeding thresholds), or lose connectivity entirely. The oracle
+override function allows manual NAV posting when automated systems fail,
+ensuring your fund can continue operations during provider outages.
 
 ![NAV update interface](/images/screenshots/placeholder.svg) _Screenshot: NAV
 update form showing NAV per unit input, effective date/time, calculation notes,
@@ -533,170 +859,148 @@ and historical NAV chart_
 
 #### Process redemption requests
 
-Handle your investor withdrawal orders:
+Redemption processing converts fund units back to capital while enforcing notice
+periods, gates, and liquidity management through DALP vault integration. When
+investors submit redemption requests via the dApp, they specify the unit
+quantity they want to redeem, select their desired payout token (USDC, USDT,
+etc.), and acknowledge the redemption notice period requirement. The request
+enters the **Redemptions** &gt; **Pending Notice** queue showing the notice
+period countdown.
 
-**Redemption workflow:**
+After the configured notice period expires (5 days, 10 days, etc., as you
+configured), requests automatically move to **Ready for Processing** status.
+Navigate to **Redemptions** &gt; **Ready** to view requests eligible for
+execution. Each request displays the investor address, unit quantity to be
+redeemed, the applicable NAV (typically the NAV effective on the settlement
+date), calculated redemption proceeds (units × NAV per unit), and requested
+payout token.
 
-1. Investor submits redemption request via dApp:
-   - Enters unit quantity to redeem
-   - Selects payout token
-   - Confirms redemption notice period
-2. Request enters **Redemptions** &gt; **Pending Notice** queue
-3. After notice period expires, request moves to **Ready for Processing**
-4. Navigate to **Redemptions** &gt; **Ready**
-5. Review request details:
-   - Investor address
-   - Unit quantity
-   - Applicable NAV
-   - Redemption proceeds calculation
-   - Payout token
-6. Ensure fund liquidity wallet has sufficient payout tokens
-7. Click **Process Redemption**
+Before processing, verify the DALP vault's liquidity wallet contains sufficient
+payout tokens to settle the redemption. The liquidity dashboard shows available
+balances for each token type, total redemption amount required for all pending
+requests, and the vault's overall liquidity ratio. If the vault is short on the
+requested payout token but holds alternatives, the vault rebalancing function
+can swap between stablecoins to meet redemption needs without rejecting investor
+requests.
 
-**Processing actions:**
+Click **Process Redemption** to execute settlement, which triggers an automated
+sequence. The smart contract calculates exact redemption proceeds accounting for
+any redemption fees or pro-rating due to gates, burns the redeemed units from
+the investor's address (permanently removing them from circulation), transfers
+payout tokens from the DALP liquidity vault to the investor's wallet, records
+the redemption event in the fund ledger with complete transaction details, and
+updates total AUM by subtracting the redemption proceeds.
 
-- The system calculates proceeds: units × NAV per unit
-- Burns redeemed units from investor address
-- Transfers payout tokens from fund liquidity wallet to investor
-- Records redemption in fund ledger
-- Updates total AUM
+The investor sees payout tokens arrive in their wallet within one block
+confirmation, and the transaction appears in the redemption history dashboard
+showing NAV used for pricing, units burned, proceeds paid, and gas costs. For
+redemptions that trigger gates or pro-rating, the dashboard shows the pro-rata
+percentage applied and queued amount carried forward to the next redemption
+window.
 
 <Callout type="info" title="Business context">
   Traditional redemption processing requires the fund administrator to manually
-  calculate redemption proceeds, coordinate with the custodian to release cash,
-  update unit holder records with the transfer agent, and reconcile all systems.
-  This process typically takes 3-7 business days and introduces reconciliation
-  errors in 10-15% of cases. ATK automates the entire workflow with T+1 or T+2
-  settlement and zero calculation errors.
+  calculate proceeds, coordinate with the custodian to release cash, update unit
+  holder records with the transfer agent, and reconcile all three systems. This
+  process typically takes 3-7 business days and introduces reconciliation errors
+  in 10-15% of cases due to timing mismatches or calculation differences. ATK's
+  integrated approach automates the entire workflow with T+1 or T+2 settlement
+  and achieves zero calculation errors through deterministic smart contract
+  math. The redemption metrics dashboard tracks processing time from notice
+  period expiration to capital disbursement, showing your operational efficiency
+  relative to disclosed settlement terms. Auditors review this dashboard to
+  verify compliance with fund documents.
 </Callout>
 
 ![Redemption queue](/images/screenshots/placeholder.svg) _Screenshot: Redemption
 requests showing notice period countdown, ready requests with investor, units,
 NAV, proceeds, and process button_
 
-**Gate enforcement:** If redemption requests exceed your quarterly gate (e.g.,
-25%), the system pro-rates all requests or queues excess for the next period,
-automatically implementing the gate policy defined in your fund documents.
-
 #### Collect management fees
 
-Execute fee collection:
+Management fee collection leverages the yield management addon to automate fee
+accrual and periodic realization through unit creation. The system calculates
+accrued fees daily using the formula (current AUM × annual fee rate) / 365,
+tracking the accumulated amount in the fee accrual balance. For a fund with $10
+million AUM and 1.5% annual fee (150 basis points), daily accrual is
+approximately $410, which compounds over the collection period.
 
-**Automated fee collection:**
+With **automated fee collection** enabled, the yield management addon executes
+collection on your configured schedule without manual intervention. On
+collection dates (monthly, quarterly, or annually as configured), the system
+calculates total accrued fees since the last collection, determines the current
+NAV per unit, and mints new units equal to accrued fees divided by NAV. These
+newly minted units transfer to your configured fee wallet address, diluting
+existing investors proportionally—this is the standard approach in fund
+accounting where management fees reduce NAV rather than requiring cash payments.
 
-If enabled, the system automatically:
+For example, if $5,000 in fees accrued over a month and current NAV is $102.50
+per unit, the system mints 48.78 units to your fee wallet. The fee collection
+event appears in the fund history dashboard showing accrual amount, NAV used for
+unit calculation, units minted, and percentage dilution to existing investors.
+The observability system tracks fee collection frequency and calculates
+effective fee rate by comparing total fees collected to average AUM over the
+period, alerting if the effective rate deviates from your configured
+rate—deviations suggest NAV posting issues or calculation errors.
 
-1. Calculates accrued fees daily: (AUM × fee rate) / 365
-2. On collection date, issues new units to your fee wallet
-3. Unit quantity: total accrued fees / current NAV
-4. Records fee event in fund history
+For **manual fee collection**, navigate to the **Fees** tab where the accrued
+fees amount displays the balance accumulated since last collection. Review the
+calculation details showing daily accrual amounts and total fees owed, then
+click **Collect Fees** to initiate the process. Confirm the fee calculation
+showing units that will be minted and expected dilution percentage, then execute
+the collection transaction.
 
-<Callout type="default" title="For developers">
-  See [Contract
-  Reference](/docs/developer-guides/smart-contracts/contract-reference) for
-  technical details on management fee calculation and accrual mechanisms.
-</Callout>
+**Performance fee calculation** for funds with incentive fee structures involves
+high-water mark tracking. The system maintains the highest NAV previously
+achieved by the fund, and performance fees only accrue when current NAV exceeds
+this benchmark. On performance fee collection dates (typically annually),
+calculate the gain above high-water mark, multiply by your performance fee rate
+(commonly 20%), and determine total performance fee amount. Mint units equal to
+this amount divided by current NAV to your manager fee wallet, then update the
+high-water mark to the current NAV for the next calculation period.
 
-**Manual fee collection:**
-
-1. Navigate to **Fees** tab
-2. Review accrued fees amount
-3. Click **Collect Fees**
-4. Confirm fee calculation
-5. Execute collection
-
-Fee collection dilutes existing investors proportionally.
-
-**Performance fee calculation:**
-
-For funds with performance fees:
-
-1. Calculate high water mark
-2. Determine fund performance above benchmark
-3. Calculate performance fee: outperformance × performance fee rate
-4. Mint units to manager fee wallet
-5. Update high water mark
+The performance fee dashboard tracks high-water mark history, performance above
+benchmark, and performance fees collected over time, providing transparency for
+investor reporting and regulatory filings that require performance fee
+disclosure.
 
 #### Manage fund liquidity
 
-Monitor your redemption reserve:
+Liquidity management ensures your fund can meet redemption obligations without
+forced selling of portfolio holdings at unfavorable prices. Navigate to the
+**Liquidity** tab to access comprehensive liquidity monitoring powered by the
+DALP vault system and observability dashboards.
 
-1. Navigate to **Liquidity** tab
-2. Review liquidity metrics:
-   - Total redemption requests pending
-   - Required liquidity for upcoming redemptions
-   - Current cash/stablecoin reserves
-   - Portfolio liquidity composition
-3. Ensure sufficient reserves before redemption settlement dates
+The liquidity overview displays total redemption requests pending across all
+queues—those in notice period, ready for processing, and queued due to gates.
+**Required liquidity for upcoming redemptions** shows the capital needed to
+settle all maturing redemption requests in the next 7 days, 30 days, and 90
+days, helping you plan vault rebalancing. **Current cash/stablecoin reserves**
+displays the DALP vault's liquid assets broken down by token type (USDC, USDT,
+DAI, etc.), showing immediately available settlement capacity.
 
-**Best practice:** Maintain liquidity buffer of 10-20% of AUM for redemption
-capacity.
+**Portfolio liquidity composition** analyzes your fund's invested assets by
+liquidity tier—tier 1 for daily liquid assets (major exchange-traded stocks,
+government bonds), tier 2 for weekly liquid assets (corporate bonds, small-cap
+stocks), and tier 3 for monthly or longer liquid assets (private placements,
+real estate). This composition drives your redemption reserve target—funds with
+80% tier 1 assets can safely operate with 5-10% cash reserves, while funds with
+50% tier 3 assets may need 20-30% reserves to avoid forced selling.
 
-### Common workflows
+The liquidity dashboard provides scenario analysis showing redemption capacity
+under stress scenarios—what happens if 10%, 20%, or 30% of AUM requests
+redemption simultaneously. These scenarios account for your configured gates,
+available vault liquidity, and estimated proceeds from liquidating tier 1 and
+tier 2 assets. Alerts trigger when projected liquidity coverage falls below your
+configured threshold, prompting rebalancing actions before redemption requests
+become unpayable.
 
-**Handle new investor onboarding:**
-
-Add a new fund investor:
-
-1. Investor completes KYC via platform or integrated provider
-2. Investor's OnchainID receives required claims (accredited status, suitability
-   assessment)
-3. Verify investor appears in **Eligible Investors** list
-4. Investor submits subscription request
-5. Process subscription per workflow above
-
-**Execute fund restructuring:**
-
-Merge share classes or convert fund:
-
-1. Obtain investor consent for restructuring
-2. Calculate conversion ratios based on NAV
-3. Navigate to **Actions** &gt; **Restructure**
-4. Configure conversion parameters
-5. Execute batch conversion
-6. Mint new class units and burn old class units
-7. Record restructuring in corporate actions
-
-**Implement redemption gate:**
-
-Limit redemptions during market stress:
-
-1. Navigate to **Settings** &gt; **Redemptions**
-2. Click **Activate Gate**
-3. Set gate parameters:
-   - Maximum redemption percentage per period
-   - Gate duration
-4. Confirm activation
-5. Platform pro-rates pending redemption requests
-6. Notify investors of gate implementation
-
-Requires EMERGENCY_ROLE permission.
-
-**Process dividend distribution:**
-
-Distribute fund income to your investors:
-
-**For funds with yield addon:**
-
-1. Calculate distribution amount (income/capital gains)
-2. Navigate to **Distributions** tab
-3. Click **Schedule Distribution**
-4. Configure:
-   - Distribution token (USDC, USDT, etc.)
-   - Amount per unit
-   - Ex-dividend date
-   - Payment date
-5. Fund distribution wallet with total amount
-6. Execute distribution on payment date
-
-**Reinvestment option:**
-
-Enable dividend reinvestment:
-
-1. Toggle **Allow Reinvestment** on distribution
-2. Investors opt into reinvestment via dApp
-3. Platform mints new units instead of transferring tokens
-4. Units minted at current NAV
+Best practice maintains a liquidity buffer of 10-20% of AUM for open-end funds
+with daily redemptions, higher for funds with illiquid portfolios or
+concentrated investor bases where large redemptions are more likely. The vault
+rebalancing tool allows you to transfer capital from portfolio management
+wallets back to the liquidity vault, or to swap between stablecoins to match
+redemption payout token preferences.
 
 </Step>
 
@@ -707,64 +1011,116 @@ Enable dividend reinvestment:
 After completing these steps, you will have:
 
 - A deployed fund token contract with your specified fund type and share class
-- Configured NAV tracking with manual or oracle-based updates
-- Set subscription and redemption workflows with your terms
-- Configured compliance rules matching your regulatory framework
-- Assigned operational roles to designated wallet addresses
-- Posted initial NAV and enabled investor subscriptions
-- Configured management fee collection
+- Configured NAV tracking with manual or oracle-based updates integrated with
+  observability dashboards
+- Established subscription and redemption workflows with automated cut-off time
+  enforcement and DALP vault custody
+- Configured compliance rules matching your regulatory framework with real-time
+  enforcement metrics
+- Assigned operational roles to designated wallet addresses with complete audit
+  logging
+- Posted initial NAV and enabled investor subscriptions with queue processing
+  active
+- Configured yield management addon for automated fee collection with dashboard
+  monitoring
 
-Your fund token is now live and can accept investor subscriptions. You'll
-process subscription/redemption requests through your admin dashboard, update
-NAV regularly, and collect management fees automatically or manually.
+Your fund token is now live and operational, accepting investor subscriptions
+through the compliance-verified workflow. Process subscription and redemption
+requests through your admin dashboard with automated NAV-based pricing, update
+NAV regularly through manual posting or oracle integration, and collect
+management fees automatically through the yield management system. The
+observability dashboards provide real-time metrics on all operational aspects
+including subscription flow, redemption queues, NAV update frequency, fee
+collection accuracy, and vault liquidity levels.
 
 ## Troubleshooting
 
 **Deployment fails with "Invalid management fee":**
 
-- Verify the fee is in basis points (not percentage)
-- Check the fee is within allowed range (typically 0-500 basis points)
-- Ensure the fee rate matches your configured maximum
+Management fees must be entered in basis points (not percentage) and fall within
+the contract's allowed range, typically 0-500 basis points. Verify you entered
+150 for a 1.5% fee, not 1.5, and check that your desired fee rate doesn't exceed
+the maximum configured in the fund factory contract. The deployment validation
+log shows the exact limit configured for your installation.
 
 **Subscription processing reverts:**
 
-- Verify the investor's OnchainID has all required claims
-- Check the payment token is configured for subscriptions
-- Ensure NAV is posted for the subscription settlement date
-- Confirm the investor is not exceeding maximum holder count
+Subscription failures typically stem from compliance verification issues,
+payment configuration problems, or NAV availability. Verify the investor's
+OnchainID contains all required claims shown in your eligibility module
+configuration—missing claims prevent minting even if payment is received. Check
+that the payment token address is correctly configured in your accepted payment
+tokens list and matches the official token contract on your blockchain. Ensure a
+current NAV exists with effective time covering the subscription settlement
+date—gaps in NAV history prevent pricing. Confirm you haven't reached the
+maximum holder count configured in your compliance modules, which auto-rejects
+new investors when the cap is hit.
 
 **NAV update fails:**
 
-- Verify NAV deviation is within the allowed threshold
-- Check your address has GOVERNANCE_ROLE
-- Ensure the NAV timestamp is after the previous NAV
-- Confirm the NAV value is positive and reasonable
+NAV posting can fail due to validation threshold exceedances, permission issues,
+or timing conflicts. If your new NAV deviates more than the configured threshold
+percentage from the previous NAV, you must explicitly acknowledge the large
+change through the confirmation dialog—this prevents typos but requires
+intentional approval for legitimate volatility. Verify your address holds
+GOVERNANCE_ROLE permission, which is required for NAV posting. Ensure the NAV
+timestamp you're setting is after the previous NAV's effective time, as the
+contract rejects backdated NAV updates. Confirm the NAV value is positive and
+reasonable (the contract rejects zero or negative NAVs as obviously erroneous).
+
+The NAV validation log in the governance dashboard shows detailed rejection
+reasons with suggested corrections for common errors.
 
 **Redemption processing reverts:**
 
-- Check the notice period has elapsed
-- Verify your fund liquidity wallet has sufficient payout tokens
-- Ensure the redemption is not exceeding gate limits
-- Confirm the investor holds sufficient units to redeem
+Redemption execution failures usually involve timing issues, vault liquidity
+shortfalls, or gate enforcement. Check that the notice period has fully
+elapsed—the contract calculates notice period in business days according to your
+market calendar configuration, so weekends and holidays extend the wait. Verify
+your DALP liquidity vault contains sufficient payout tokens of the requested
+type to settle the redemption—the liquidity dashboard shows current balances and
+required amounts. Ensure the redemption amount doesn't exceed your configured
+gate limits when combined with other pending redemptions in the same period.
+Confirm the investor actually holds sufficient units to redeem the requested
+quantity, accounting for any units locked in other pending redemptions.
+
+The redemption processing log captures detailed failure reasons and suggested
+resolutions for each reverted transaction.
 
 **Fee collection fails:**
 
-- Verify fee collection is enabled in settings
-- Check the accrued fee amount is non-zero
-- Ensure sufficient time has elapsed since last collection
-- Confirm NAV is current for fee unit calculation
+Fee collection requires non-zero accrued fees, current NAV, and proper
+configuration. Verify fee collection is enabled in your settings—newly deployed
+funds have collection disabled by default until you explicitly activate it.
+Check that the accrued fee amount is non-zero, which requires both time passage
+since last collection and positive AUM. Ensure sufficient time has elapsed since
+last collection based on your configured frequency—attempting monthly collection
+15 days after the last one will be rejected. Confirm a current NAV exists for
+unit calculation, as fee collection mints units equal to accrued fees divided by
+NAV.
+
+The fee accrual dashboard shows daily accrual amounts and next scheduled
+collection date for automated mode, or accumulated balance ready for collection
+in manual mode.
 
 For additional help, see [Troubleshooting](/docs/user-guides/troubleshooting) or
+contact support with your fund contract address and specific error messages from
+the transaction logs.
 
 ## Next steps
 
 - [Corporate actions](/docs/user-guides/asset-issuance/corporate-actions) -
-  Execute dividend distributions and other fund lifecycle events
+  Execute dividend distributions and other fund lifecycle events using yield
+  management addon
 - [Manage investors](/docs/user-guides/operations/manage-investors) - Onboard
-  new fund investors and verify identities
+  new fund investors and verify OnchainID claims required by compliance modules
 - [Admin settings](/docs/user-guides/operations/admin-settings) - Manage
-  compliance modules and operational roles
+  compliance modules and operational roles with complete change logging
 - [Identity and compliance](/docs/architecture/smart-contracts/identity-compliance) -
-  Understand the compliance module architecture
-- [Troubleshooting](/docs/user-guides/troubleshooting) - Resolve common fund
-  token issues
+  Understand the compliance module architecture and claim verification system
+- [DALP vaults](/docs/architecture/smart-contracts/addon-modules) - Learn how
+  vault custody secures fund assets and enables automated settlement
+- [Yield management](/docs/architecture/smart-contracts/addon-modules) - Deep
+  dive into automated fee collection and distribution mechanisms
+- [Observability dashboards](/docs/developer-guides/deployment-ops/observability-monitoring) -
+  Explore fund metrics, compliance tracking, and operational monitoring

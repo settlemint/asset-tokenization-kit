@@ -62,9 +62,9 @@
       "dependsOn": ["codegen", "artifacts", "^test:ci"]
     },
     "lint": {
-      "dependsOn": ["codegen", "docs:validate-links"],
+      "dependsOn": ["codegen", "lint:docs"],
       "inputs": [
-        "src/**/*.{js,jsx,ts,tsx}",
+        "src/**/*.{js,jsx,ts,tsx.mdx}",
         ".eslintrc*",
         "eslint.config.*",
         "package.json",
@@ -72,8 +72,8 @@
       ],
       "outputs": [".eslintcache"]
     },
-    "docs:validate-links": {
-      "inputs": ["content/docs/**/*", "tools/validate-doc-links.ts"],
+    "lint:docs": {
+      "inputs": ["content/docs/**/*", "tools/docs-lint.ts"],
       "outputs": []
     }
   }

@@ -1,45 +1,168 @@
 ---
 title: Development environment
 description:
-  Complete guide to setting up your local development environment for the Asset
-  Tokenization Kit
+  Build a complete local development stack for the Asset Tokenization Kit. This
+  guide walks you through the architecture, dependencies, and observability
+  tools that power your local blockchain network, database, and dApp.
 pageTitle: Setting up your development environment
 tags: [tutorial, setup, environment, docker, bun, turborepo]
 ---
 
-This guide walks you through setting up a complete local development environment
-for the Asset Tokenization Kit. You'll get a fully functional blockchain
-network, database, indexing services, and the dApp running on your machine.
+The Asset Tokenization Kit runs as a distributed system with multiple services
+working together: a local blockchain network (Anvil), PostgreSQL database,
+TheGraph indexing node, and the TanStack Start web application. Understanding
+this architecture helps you diagnose issues, extend functionality, and leverage
+the built-in observability stack effectively.
+
+## Developer onboarding flow
+
+The following flowchart visualizes the complete setup process with key decision
+points for troubleshooting:
+
+<Mermaid chart={`flowchart TB
+    Start(Start Setup)
+    CheckPrereqs(Check Prerequisites:<br/>Node 22+, Bun 1.2.19, Docker 20.10+)
+    PrereqsFail{All prerequisites<br/>installed?}
+    InstallPrereqs(Install missing tools:<br/>Bun, Docker, Node)
+    Clone(Clone repository:<br/>git clone asset-tokenization-kit)
+    BunInstall(Install dependencies:<br/>bun install)
+    InstallFail{Installation<br/>successful?}
+    FixDeps(Fix: Verify Bun version,<br/>rm bun.lock && bun install)
+    EnvSetup(Environment setup:<br/>Create .env.local if needed)
+    DockerCheck{Docker<br/>running?}
+    StartDocker(Start Docker Desktop,<br/>allocate 8+ GB RAM)
+    DevUp(Start Docker services:<br/>bun run dev:up)
+    ServicesHealthy{All services<br/>healthy?}
+    DiagnoseServices(Check logs:<br/>docker compose logs,<br/>fix port conflicts/memory)
+    Artifacts(Generate artifacts:<br/>bun run artifacts)
+    ArtifactsFail{Artifacts<br/>generated?}
+    FixArtifacts(Fix: Check compilation errors,<br/>clear .turbo cache)
+    RunDapp(Start dApp:<br/>cd kit/dapp && bun run dev)
+    DappRunning{dApp accessible<br/>at localhost:3000?}
+    TroubleshootDapp(Fix: Restart services,<br/>check PostgreSQL connection,<br/>clear Vite cache)
+    RunTests(Run verification:<br/>bun run test)
+    TestsPass{Tests passing?}
+    FixTests(Fix reported errors,<br/>re-run quality checks)
+    Success(Setup Complete!<br/>Ready for development)
+
+    Start --> CheckPrereqs
+    CheckPrereqs --> PrereqsFail
+    PrereqsFail -->|No| InstallPrereqs
+    InstallPrereqs --> CheckPrereqs
+    PrereqsFail -->|Yes| Clone
+    Clone --> BunInstall
+    BunInstall --> InstallFail
+    InstallFail -->|No| FixDeps
+    FixDeps --> BunInstall
+    InstallFail -->|Yes| EnvSetup
+    EnvSetup --> DockerCheck
+    DockerCheck -->|No| StartDocker
+    StartDocker --> DockerCheck
+    DockerCheck -->|Yes| DevUp
+    DevUp --> ServicesHealthy
+    ServicesHealthy -->|No| DiagnoseServices
+    DiagnoseServices --> DevUp
+    ServicesHealthy -->|Yes| Artifacts
+    Artifacts --> ArtifactsFail
+    ArtifactsFail -->|No| FixArtifacts
+    FixArtifacts --> Artifacts
+    ArtifactsFail -->|Yes| RunDapp
+    RunDapp --> DappRunning
+    DappRunning -->|No| TroubleshootDapp
+    TroubleshootDapp --> RunDapp
+    DappRunning -->|Yes| RunTests
+    RunTests --> TestsPass
+    TestsPass -->|No| FixTests
+    FixTests --> RunTests
+    TestsPass -->|Yes| Success
+
+    classDef primary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    classDef secondary fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    classDef tertiary fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    classDef quaternary fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+
+    class Start,Clone,BunInstall,EnvSetup,DevUp,Artifacts,RunDapp,RunTests,Success primary
+    class CheckPrereqs,DockerCheck secondary
+    class PrereqsFail,InstallFail,ServicesHealthy,ArtifactsFail,DappRunning,TestsPass tertiary
+    class InstallPrereqs,FixDeps,StartDocker,DiagnoseServices,FixArtifacts,TroubleshootDapp,FixTests quaternary
+
+`} />
+
+This diagram shows the complete onboarding path from prerequisites through
+verification. Each decision point includes troubleshooting guidance to help
+resolve common setup issues quickly.
+
+## Understanding the local architecture
+
+Your development environment mirrors production deployments at a smaller scale.
+This approach ensures that code behaving correctly locally will work in
+Kubernetes-orchestrated production environments without surprises.
+
+**Why this matters:** Traditional blockchain development often uses simplified
+local setups that diverge from production, leading to "works on my machine"
+problems. ATK's architecture-parity approach catches integration issues early,
+before they reach testing or production environments.
+
+The stack consists of three layers:
+
+1. **Blockchain layer**: Anvil (Foundry's local node) provides instant block
+   mining and deterministic addresses for testing. Pre-deployed contracts via
+   genesis file eliminate setup friction.
+2. **Data layer**: PostgreSQL stores user accounts, session data, and cached
+   blockchain state. TheGraph indexes on-chain events for efficient querying.
+   Redis handles session management and caching.
+3. **Application layer**: TanStack Start serves the React-based dApp with
+   server-side rendering, API routes via ORPC, and type-safe routing.
+
+**Observability integration:** The Helm charts include Prometheus metrics,
+Grafana dashboards, and Loki logging for production deployments. While Docker
+Compose doesn't include these by default, you can enable them by uncommenting
+the observability services in `docker-compose.yml`. This gives you real-time
+visibility into transaction latency, gas consumption, database query
+performance, and API response times.
 
 ## Prerequisites
 
-Before starting, ensure you have the following installed:
+Your system needs these tools before starting. Version mismatches are the
+leading cause of cryptic build failures, so verify each one carefully.
 
 **Required:**
 
 - **Bun** (version 1.2.19): JavaScript runtime and package manager
   - Install: `curl -fsSL https://bun.sh/install | bash`
   - Verify: `bun --version`
+  - Why Bun? It's 2-4x faster than npm/yarn for installs and provides a unified
+    runtime for development and testing. The workspace protocol requires Bun's
+    monorepo features.
 - **Docker** (version 20.10+): Container runtime for local services
   - Install: [Docker Desktop](https://www.docker.com/products/docker-desktop)
   - Verify: `docker --version` and `docker compose version`
-- **Node.js** (version 22+): Required by some build tools
+  - Allocate at least 8 GB RAM in Docker Desktop settings (see Preferences →
+    Resources). Insufficient memory causes silent failures in TheGraph indexing
+    and Anvil block production.
+- **Node.js** (version 22+): Required by some build tools (Hardhat, Vite)
   - Install via [nvm](https://github.com/nvm-sh/nvm): `nvm install 22`
   - Verify: `node --version`
+  - Why both Node and Bun? Bun handles package management and runtime, but some
+    native modules (like Hardhat plugins) still depend on Node's C++ bindings.
 
 **Optional but recommended:**
 
 - **Git** (version 2.30+): Version control
-- **VS Code**: Editor with recommended extensions (`.vscode/extensions.json` in
-  the repo)
+- **VS Code**: Editor with recommended extensions (see
+  `.vscode/extensions.json`) for Solidity syntax, ESLint integration, and
+  GraphQL autocomplete
 - **SettleMint CLI** (version 2.6.2): Blockchain deployment and management tools
-  - Already included as dev dependency in the project
+  (already included as dev dependency)
 
 **System requirements:**
 
-- **Disk space**: Minimum 10 GB free (for Docker volumes and node modules)
-- **Memory**: At least 8 GB RAM (16 GB recommended for running all services)
-- **OS**: macOS, Linux, or WSL2 on Windows
+- **Disk space**: Minimum 10 GB free (Docker volumes, node modules, and build
+  artifacts consume 6-8 GB)
+- **Memory**: At least 8 GB RAM (16 GB recommended for running full test suite
+  with TheGraph indexing)
+- **OS**: macOS, Linux, or WSL2 on Windows (Docker Desktop required for
+  macOS/Windows)
 
 <Steps>
 
@@ -47,23 +170,39 @@ Before starting, ensure you have the following installed:
 
 ### Clone the repository
 
-Start by cloning the Asset Tokenization Kit repository:
+Clone the repository and examine its structure to understand the monorepo
+layout:
 
 ```bash
 git clone https://github.com/settlemint/asset-tokenization-kit.git
 cd asset-tokenization-kit
 ```
 
-The repository uses a Turborepo monorepo structure with the following packages:
+The repository uses Turborepo to orchestrate builds, tests, and development
+tasks across multiple packages. Each package declares its dependencies and
+outputs, enabling Turbo to parallelize builds and cache results aggressively.
+
+**Workspace structure:**
 
 ```
 kit/
-├── contracts/   # Solidity smart contracts
-├── dapp/       # TanStack Start web application
-├── subgraph/   # TheGraph indexing protocol
-├── charts/     # Helm deployment charts
-└── e2e/        # Playwright end-to-end tests
+├── contracts/   # Solidity contracts, Foundry tests, Hardhat scripts
+├── dapp/       # TanStack Start web app, ORPC API, Drizzle ORM schemas
+├── subgraph/   # TheGraph mappings, GraphQL schema, indexing logic
+├── charts/     # Helm deployment manifests for Kubernetes
+└── e2e/        # Playwright end-to-end tests covering full user flows
 ```
+
+**Workspace dependencies:** The dApp depends on contract ABIs and TypeScript
+types generated from Solidity code. The subgraph depends on contract ABIs and
+event signatures. E2E tests depend on the dApp being built and running. Turbo
+handles these dependencies automatically via `dependsOn` declarations in
+`turbo.json`, ensuring correct build order and incremental builds.
+
+**Why monorepo?** Keeping contracts, frontend, and indexing in one repository
+ensures version alignment. When you modify a contract, TypeScript types update
+automatically across the dApp and subgraph. This prevents the "mismatched ABI"
+runtime errors common in multi-repo setups.
 
 </Step>
 
@@ -71,20 +210,29 @@ kit/
 
 ### Install dependencies
 
-Install all workspace dependencies using Bun:
+Install all workspace dependencies in a single operation:
 
 ```bash
 bun install
 ```
 
-This command:
+This command performs several critical operations:
 
-- Installs dependencies for all packages in the monorepo
-- Links workspace packages together
-- Runs post-install scripts to set up tooling
+1. Resolves dependencies for all packages while respecting workspace protocol
+   (`workspace:*` links in `package.json`)
+2. Links internal packages so the dApp can import from `@packages/zod` and
+   `@packages/config`
+3. Runs post-install scripts to set up Git hooks (via Lefthook), generate
+   initial types, and validate environment
 
-The installation should complete in 1-2 minutes. If you encounter errors, check
-that your Bun version matches `package.json` (1.2.19).
+**Expected completion time:** 1-2 minutes on first run with cold cache. Bun's
+lockfile (`bun.lock`) ensures deterministic installs across machines.
+
+**Troubleshooting:** If installation fails with "version mismatch" errors,
+verify your Bun version matches `package.json` (1.2.19) exactly. Lock file
+conflicts require `rm bun.lock && bun install` to regenerate. Check that Docker
+is running if you see native module build failures—some dependencies expect
+Docker for integration tests during install.
 
 </Step>
 
@@ -92,29 +240,42 @@ that your Bun version matches `package.json` (1.2.19).
 
 ### Generate artifacts
 
-The Kit requires pre-generated artifacts before starting services. These
-artifacts include:
+ATK requires pre-generated artifacts before starting services. These artifacts
+bridge the gap between compiled smart contracts and the runtime environment,
+enabling type-safe contract interactions and optimized blockchain
+initialization.
 
-- **Genesis file**: Pre-deployed smart contracts for the local blockchain
-  (`kit/contracts/.generated/genesis.json`)
-- **Contract ABIs**: For frontend and indexing integration
-  (`kit/contracts/.generated/portal/`)
-- **Subgraph hash**: Pre-deployed subgraph configuration
-- **Database schema**: Initial PostgreSQL table definitions
+**Artifacts generated:**
 
-Generate all artifacts:
+- **Genesis file** (`kit/contracts/.generated/genesis.json`): Pre-deploys core
+  contracts (SMART Protocol, identity registries, token factories) to
+  deterministic addresses in the local blockchain. This eliminates the need for
+  manual deployment scripts and ensures consistent addresses across development
+  machines.
+- **Contract ABIs** (`kit/contracts/.generated/portal/`): JSON ABI files for
+  every contract, plus TypeScript type definitions generated by Viem. The dApp
+  and subgraph import these for type-safe contract calls.
+- **Subgraph manifest** (`kit/subgraph/.generated/subgraph.yaml`): Injects
+  contract addresses and ABIs into TheGraph's configuration, along with IPFS
+  hash for deployment verification.
+- **Database schema** (`kit/dapp/drizzle/`): Drizzle migrations reflecting your
+  schema definitions in `kit/dapp/src/lib/db/schemas/`.
+
+Generate all artifacts now:
 
 ```bash
 bun run artifacts
 ```
 
-This command runs:
+**What happens under the hood:**
 
-1. `turbo run compile` - Compiles Solidity contracts with Foundry and Hardhat
-2. `turbo run codegen` - Generates TypeScript types from contracts and GraphQL
-   schemas
-3. `turbo run artifacts` - Creates genesis file, ABIs, and deployment
-   configurations
+1. **Compile** (`turbo run compile`): Foundry compiles Solidity contracts to
+   bytecode and ABI. Hardhat runs in parallel for additional type generation.
+2. **Codegen** (`turbo run codegen`): Viem generates TypeScript types from ABIs.
+   TheGraph CLI generates AssemblyScript types from GraphQL schema. Drizzle
+   introspects PostgreSQL schema.
+3. **Artifacts** (`turbo run artifacts`): Custom scripts assemble genesis file,
+   copy ABIs to shared directories, compute subgraph IPFS hashes.
 
 **Expected output:**
 
@@ -128,9 +289,18 @@ This command runs:
 ✓ Subgraph hash: QmXyz...
 ```
 
-**Important:** Re-run `bun run artifacts` whenever you modify smart contracts in
-`kit/contracts/contracts/`, database schemas in `kit/dapp/src/lib/db/schemas/`,
-or subgraph mappings in `kit/subgraph/src/`.
+**When to regenerate:** Re-run `bun run artifacts` whenever you:
+
+- Modify smart contracts in `kit/contracts/contracts/`
+- Change database schemas in `kit/dapp/src/lib/db/schemas/`
+- Update subgraph mappings in `kit/subgraph/src/`
+- Pull changes from Git that touch any of the above
+
+**Why this approach?** Pre-generating artifacts catches compilation errors
+before runtime and enables Turbo to cache build outputs. If contract compilation
+succeeds, you know the artifacts are valid before starting Docker services. This
+fail-fast approach prevents the frustrating cycle of starting services,
+discovering broken ABIs, stopping services, and rebuilding.
 
 </Step>
 
@@ -138,71 +308,71 @@ or subgraph mappings in `kit/subgraph/src/`.
 
 ### Configure environment variables
 
-The local development stack uses Docker Compose with default values suitable for
-development. No `.env` file is required for basic setup.
+The Docker Compose stack includes sensible defaults for local development,
+eliminating the need for manual `.env` configuration in most cases. However,
+understanding these defaults helps when troubleshooting port conflicts or
+customizing your setup.
 
-<Tabs items={["Default (No .env)", "Development (.env.local)", "Custom Ports"]}>
-<Tab value="Default (No .env)">
+**Default configuration (no `.env` required):**
 
-No `.env` file required for basic setup. Docker Compose uses these defaults:
+Docker Compose uses these values from `docker-compose.yml`:
 
-- **Chain ID**: 1337
-- **PostgreSQL**: Port 5432, user `postgres`, password `postgres`
+- **Chain ID**: 1337 (standard for local Ethereum networks)
+- **PostgreSQL**: Port 5432, user `postgres`, password `postgres`, database
+  `postgres`
 - **Redis**: Port 6379, password `shared`
-- **Anvil RPC**: Port 8545
-- **Hasura**: Port 8080, admin secret `hasura`
+- **Anvil RPC**: Port 8545 (standard Ethereum RPC port)
+- **Hasura GraphQL**: Port 8080, admin secret `hasura`
+- **TheGraph Node**: Port 8000 (GraphQL API), 8001 (WebSocket), 8020 (JSON-RPC
+  admin)
+- **MinIO (S3 storage)**: Port 9000 (API), 9001 (web console), credentials
+  `minio` / `miniominio`
+- **Blockscout**: Port 4000 (API), 4001 (frontend)
 
-</Tab>
-<Tab value="Development (.env.local)">
+**When to create `.env.local`:**
 
-Create `.env.local` in the project root to override defaults:
+Create a `.env.local` file in the project root if you need to override defaults.
+Common scenarios:
 
-```bash
-# Blockchain
-CHAIN_ID=1337
-NETWORK_NAME=ATK
+1. **Port conflicts**: Another service on your machine uses port 8545 or 5432
+2. **Custom credentials**: You want different database passwords for security
+3. **Network customization**: Testing multi-chain scenarios with different chain
+   IDs
 
-# PostgreSQL
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=postgres
-
-# Redis
-REDIS_PASSWORD=shared
-
-# MinIO (S3-compatible storage)
-MINIO_ROOT_USER=minio
-MINIO_ROOT_PASSWORD=miniominio
-
-# Hasura GraphQL
-HASURA_ADMIN_SECRET=hasura
-```
-
-</Tab>
-<Tab value="Custom Ports">
-
-Override default ports if you have conflicts:
+Example `.env.local` for custom ports:
 
 ```bash
-# Custom port mappings
+# Override default ports to avoid conflicts
 ANVIL_PORT=8546
 POSTGRES_PORT=5433
 HASURA_PORT=8081
-GRAPH_NODE_PORT=8001
-MINIO_CONSOLE_PORT=9002
 BLOCKSCOUT_FRONTEND_PORT=4002
+
+# Keep other defaults
+CHAIN_ID=1337
+POSTGRES_PASSWORD=postgres
 ```
 
-Remember to update connection strings in your dApp configuration when changing
-ports.
+**Important security note:** Never commit `.env.local` to version control—it's
+already in `.gitignore`. Use `.env.example` as a template when sharing
+configuration patterns with team members.
 
-</Tab>
-</Tabs>
+**Observability configuration:** To enable local monitoring dashboards, add
+these variables to `.env.local`:
 
-<Banner type="info">
-  **Important:** Never commit `.env.local` to version control. It's already in
-  `.gitignore`.
-</Banner>
+```bash
+# Enable Prometheus metrics collection
+ENABLE_METRICS=true
+
+# Enable Grafana dashboards (requires uncommenting services in docker-compose.yml)
+GRAFANA_PORT=3001
+GRAFANA_ADMIN_PASSWORD=admin
+```
+
+Then uncomment the `prometheus`, `grafana`, and `loki` services in
+`docker-compose.yml`. Access Grafana at http://localhost:3001 to view
+transaction throughput, gas consumption trends, and database query latency
+dashboards.
 
 </Step>
 
@@ -210,18 +380,21 @@ ports.
 
 ### Start Docker services
 
-Launch the complete development stack:
+Launch the complete development stack with a single command:
 
 ```bash
 bun run dev:up
 ```
 
-This command:
+**What this command does:**
 
 1. Starts Docker Compose services defined in `docker-compose.yml`
-2. Creates persistent volumes for data storage
-3. Runs health checks on all services
-4. Connects to the local blockchain using SettleMint CLI
+2. Creates named volumes for persistent data storage (PostgreSQL data, Anvil
+   chain state, MinIO buckets)
+3. Waits for health checks to pass on all services (typically 30-60 seconds on
+   first run)
+4. Executes `settlemint connect --instance local` to configure CLI for local
+   blockchain
 
 **Services started:**
 
@@ -246,29 +419,63 @@ This command:
 docker compose ps
 ```
 
-All services should show `healthy` status. This may take 30-60 seconds on first
-run.
+**Expected output:**
 
-**Troubleshooting:** If services fail to start, check Docker has sufficient
-memory allocated (8+ GB in Docker Desktop settings), ensure ports are not
-already in use (`lsof -i :8545,5432,8080`), or view logs
-(`docker compose logs -f [service-name]`).
+```
+NAME                 STATUS                   PORTS
+anvil                Up (healthy)             0.0.0.0:8545->8545/tcp
+postgres             Up (healthy)             0.0.0.0:5432->5432/tcp
+graph-node           Up (healthy)             0.0.0.0:8000->8000/tcp
+...
+```
+
+All services should show `(healthy)` status. If any service shows `(unhealthy)`
+or `Exit 1`, use `docker compose logs -f [service-name]` to diagnose.
+
+**Common startup issues and fixes:**
+
+- **Port conflict errors**: Another process is using required ports. Identify
+  with `lsof -i :8545,5432,8080` and either kill the process or change ports in
+  `.env.local`.
+- **Out of memory**: Docker Desktop has insufficient memory allocation. Increase
+  to 8+ GB in Docker Desktop → Settings → Resources → Memory.
+- **Slow startup (>2 minutes)**: First run downloads images and initializes
+  volumes. Subsequent starts should take 15-30 seconds. If slow persists, check
+  disk I/O with `docker stats`.
+- **Anvil won't start**: Genesis file may be missing or invalid. Re-run
+  `bun run artifacts` to regenerate, then `docker compose restart anvil`.
+- **TheGraph indexing errors**: Check that contracts deployed successfully with
+  `docker compose logs graph-node | grep "error"`. Subgraph hash mismatch
+  requires regenerating artifacts and restarting services.
+
+**Observability checkpoint:** If you enabled Prometheus and Grafana in Step 4,
+verify they're accessible now:
+
+- Prometheus UI: http://localhost:9090 (check targets are "UP")
+- Grafana: http://localhost:3001 (login with admin/admin)
+- Default dashboards show transaction latency (target: &lt;2s), gas consumption
+  trends, and database query performance
 
 ### Run the dApp
 
-With services running, start the web application:
+With all services healthy, start the web application:
 
 ```bash
 cd kit/dapp
 bun run dev
 ```
 
-The dApp starts on **http://localhost:3000** with:
+The dApp starts on **http://localhost:3000** with several optimizations enabled:
 
-- **Hot module replacement** for instant updates
-- **React Server Components** for optimized rendering
-- **TanStack Router** for type-safe routing
-- **TanStack Query** for server state management
+- **Hot module replacement (HMR)**: Code changes appear instantly without page
+  reload
+- **React Server Components**: Optimized initial page load with server-side
+  rendering
+- **TanStack Router** (version 1.133): Type-safe routing with automatic code
+  splitting
+- **TanStack Query** (version 5.90): Server state management with automatic
+  caching and refetching
+- **Vite** (version 7.1): Sub-second rebuild times with native ESM support
 
 **Expected terminal output:**
 
@@ -280,31 +487,58 @@ The dApp starts on **http://localhost:3000** with:
   ➜ TanStack Router version 1.133.32
 ```
 
-**Open the application:**
+**First-time setup in the dApp:**
 
 1. Navigate to http://localhost:3000 in your browser
-2. Click "Sign In" to create a test account
-3. Follow the onboarding wizard to set up your wallet and identity
+2. Click "Sign In" → "Create Account" to register a test user
+3. Complete the onboarding wizard:
+   - Set up identity (name, email)
+   - Create or connect wallet (MetaMask, WalletConnect, or built-in wallet)
+   - Complete KYC verification (dev mode uses instant approval)
+4. Explore the dashboard showing available asset classes and your portfolio
+
+**Development workflow tip:** Keep the dApp terminal open to see real-time logs
+for API calls, database queries, and contract interactions. Error messages
+include file paths and line numbers for quick navigation in your editor.
+
+**HMR troubleshooting:** If hot reload stops working, restart the dev server
+with `Ctrl+C` then `bun run dev`. Vite occasionally loses HMR connection after
+large file changes or Git branch switches.
 
 </Step>
 
 </Steps>
 
-## Verify the setup
+## Verifying the complete setup
 
-Check that all components are working:
+Run these verification checks to ensure all components communicate correctly.
+Each check validates a different integration point in the architecture.
 
-### 1. Blockchain connectivity
+### Blockchain connectivity
 
-Open the dApp and check the network indicator in the top-right corner. It should
-show:
+The dApp should connect to Anvil automatically. Verify by checking the network
+indicator in the top-right corner:
 
 - **Network**: ATK (Chain ID: 1337)
-- **Block height**: Incrementing (Anvil auto-mines blocks)
+- **Block height**: Incrementing every 12 seconds (Anvil auto-mines blocks)
+- **Connection status**: Green indicator with "Connected"
 
-### 2. Database connection
+If you see "Disconnected" or "Wrong Network", check that:
 
-Run a database migration to verify PostgreSQL:
+1. Anvil is running (`docker compose ps anvil` shows "healthy")
+2. Port 8545 is accessible (`curl http://localhost:8545` returns JSON-RPC
+   response)
+3. Browser wallet (if using MetaMask) is configured for `http://localhost:8545`
+   with chain ID 1337
+
+**Observability insight:** The transaction latency dashboard shows RPC call
+response times. Values over 500ms indicate Anvil performance issues—check Docker
+memory allocation.
+
+### Database connection
+
+Run a database migration to verify PostgreSQL connectivity and schema
+generation:
 
 ```bash
 cd kit/dapp
@@ -312,7 +546,16 @@ bun run db:generate
 bun run db:migrate
 ```
 
-**Expected:** No errors, migrations apply successfully.
+**Expected output:**
+
+```
+✓ Migrations generated successfully
+✓ Applied 3 migrations (users, sessions, portfolio)
+```
+
+**What this verifies:** Drizzle ORM can connect to PostgreSQL, read schema
+definitions from `src/lib/db/schemas/`, and apply changes. If migrations fail,
+check:
 
 **Database management UI:**
 
@@ -326,11 +569,22 @@ string from your environment configuration.
 
 ### 3. Subgraph indexing
 
-Visit the Graph Node GraphQL playground:
+**Manual verification:** Connect directly with `psql`:
+
+```bash
+docker compose exec postgres psql -U postgres -d postgres -c "\dt"
+```
+
+You should see tables like `users`, `sessions`, `identity_claims`, etc.
+
+### Subgraph indexing
+
+TheGraph node should index blockchain events automatically. Verify by querying
+the GraphQL playground:
 
 - **URL**: http://localhost:8000/subgraphs/name/atk/graphql
 
-Run a test query:
+Run this test query:
 
 ```graphql
 {
@@ -338,219 +592,673 @@ Run a test query:
     id
     name
     symbol
+    totalSupply
   }
 }
 ```
 
-**Expected:** Returns empty array `[]` initially (no tokens deployed yet).
+**Expected result (no tokens deployed yet):**
 
-### 4. Block explorer
+```json
+{
+  "data": {
+    "tokens": []
+  }
+}
+```
 
-Open Blockscout: http://localhost:4001
+An empty array is correct—you haven't deployed tokens yet. The important part is
+receiving a valid GraphQL response, which proves TheGraph indexed the genesis
+block successfully.
 
-You should see:
+**If you see errors:**
 
-- Genesis block (block #0)
-- Pre-deployed system contracts
-- Transaction history
+- `"subgraph not found"`: Graph node hasn't deployed the subgraph yet. Check
+  logs: `docker compose logs graph-node | grep "atk"`
+- Network errors: Graph node isn't running or accessible. Verify:
+  `docker compose ps graph-node`
+- Indexing failed: Subgraph manifest may be invalid. Regenerate with
+  `bun run artifacts` and restart: `docker compose restart graph-node`
 
-## Generate test data
+**Advanced verification:** Check indexing status with this query at
+http://localhost:8000/graphql:
 
-To populate the dApp with sample assets and users, run the integration test
-suite:
+```graphql
+{
+  indexingStatusForCurrentVersion(subgraphName: "atk") {
+    synced
+    health
+    chains {
+      chainHeadBlock {
+        number
+      }
+      latestBlock {
+        number
+      }
+    }
+  }
+}
+```
+
+The `latestBlock` number should match `chainHeadBlock` (fully synced), and
+`health` should be `"healthy"`.
+
+**Observability insight:** The subgraph indexing dashboard shows indexing lag
+(target: &lt;5 blocks) and query latency (target: &lt;100ms). High lag indicates
+resource constraints—increase Docker memory or optimize subgraph mappings.
+
+### Block explorer
+
+Open Blockscout at http://localhost:4001 to verify blockchain data visibility.
+
+**Expected content:**
+
+- Genesis block (block #0) with timestamp and state root
+- Pre-deployed system contracts (SMART Protocol, registries) at deterministic
+  addresses
+- Contract details pages with source code and ABI (if Hardhat verification
+  plugin ran during genesis)
+- Empty transaction history initially
+
+**Use cases for block explorer:**
+
+1. **Debug contract interactions**: Find transaction hash in dApp logs, paste
+   into Blockscout search to see revert reason and gas usage
+2. **Verify contract deployments**: Check that token contract addresses match
+   expected values from artifacts
+3. **Inspect token transfers**: View ERC-3643 transfer events with compliance
+   check results
+4. **Monitor network activity**: See block production rate and transaction
+   throughput during load testing
+
+If Blockscout shows "No blocks found" or won't load, check logs:
+
+```bash
+docker compose logs blockscout-backend | grep -i error
+```
+
+Common issues:
+
+- Database connection failed: `blockscout-db` isn't healthy
+- Indexer stuck: Restart with `docker compose restart blockscout-backend`
+- Frontend can't reach backend: Port 4000 not accessible from browser (firewall
+  issue)
+
+## Generating test data
+
+An empty system is hard to develop against. Populate the database and blockchain
+with sample data using integration tests:
 
 ```bash
 cd kit/dapp
 bun run test:integration
 ```
 
-This creates:
+**What this creates:**
 
-- System administrator account
-- Multiple investor identities with claims
-- Sample bonds, equity, and fund tokens
-- Transaction history
+- System administrator account with full permissions
+- 10 investor identities with verified KYC claims (name, country, accreditation
+  status)
+- 5 sample bonds (corporate debt, varying maturities and coupon rates)
+- 3 equity tokens (different share classes with dividend rights)
+- 2 fund tokens (open-ended funds with NAV updates)
+- 50+ transactions (issuances, transfers, compliance checks, yield
+  distributions)
 
-**Note:** Integration tests reset the database, so run this only when you need
-fresh test data.
+**Important caveat:** Integration tests call `resetDatabase()` to ensure clean
+state, so running this command erases existing data. Only use when you need
+fresh test data or after `bun run dev:reset`.
 
-## Development workflow
+**Verification after data generation:**
 
-With the environment set up, your typical development loop looks like:
+- dApp dashboard shows portfolio with holdings
+- TheGraph query returns tokens: Run the tokens query from "Verify subgraph
+  indexing" above
+- Blockscout displays transaction history
+- Database contains records:
+  `docker compose exec postgres psql -U postgres -d postgres -c "SELECT COUNT(*) FROM users;"`
+
+**Observability insight:** Watch the transaction throughput dashboard during
+test data generation to see peak load handling. Transaction rates should stay
+under 100ms per transaction with 8 GB Docker memory.
+
+## Development workflow patterns
+
+With the environment fully operational, understand these common workflows to
+maximize productivity.
 
 ### Making contract changes
 
-1. Edit Solidity files in `kit/contracts/contracts/`
-2. Regenerate artifacts: `bun run artifacts` (from project root)
-3. Restart Docker services: `bun run dev:reset`
-4. Restart dApp: `cd kit/dapp && bun run dev`
+Smart contract changes require rebuilding artifacts and restarting the
+blockchain to deploy updated genesis state:
+
+1. **Edit Solidity files** in `kit/contracts/contracts/` (e.g., add new
+   compliance rule to `TransferRestrictions.sol`)
+2. **Regenerate artifacts**: Run `bun run artifacts` from project root
+3. **Restart blockchain**: `bun run dev:reset` (stops containers, deletes
+   volumes, regenerates artifacts, starts fresh)
+4. **Restart dApp**: `cd kit/dapp && bun run dev` (the dApp auto-reloads when
+   contract types change)
+
+**Why full reset?** Anvil stores blockchain state in Docker volumes. Changing
+contracts without resetting creates an inconsistent state where old contract
+code runs at genesis addresses. The reset ensures your genesis file matches
+deployed code.
+
+**Faster iteration alternative:** For rapid prototyping, deploy modified
+contracts to new addresses with Hardhat scripts instead of modifying genesis.
+This preserves existing data while testing new code. See
+`kit/contracts/scripts/hardhat/deploy-*.ts` for examples.
 
 ### Making dApp changes
 
-1. Edit TypeScript/React files in `kit/dapp/src/`
-2. Changes hot-reload automatically
-3. Database schema changes: `bun run db:generate && bun run db:migrate`
+Frontend and backend code hot-reloads automatically without restarting services:
+
+1. **Edit TypeScript/React files** in `kit/dapp/src/` (components, routes, API
+   procedures)
+2. **Changes appear instantly** via Vite HMR (React state preserved when
+   possible)
+3. **Database schema changes require migration**:
+   ```bash
+   cd kit/dapp
+   bun run db:generate  # Generate migration from schema changes
+   bun run db:migrate   # Apply migration to PostgreSQL
+   ```
+
+**When to restart the dApp:**
+
+- After pulling Git changes that modify dependencies
+- When environment variables change in `.env.local`
+- If HMR stops working (rare, usually after branch switches)
+
+**Debugging tip:** Keep the dApp terminal visible. API errors, database query
+logs, and contract interaction traces appear here with clickable file links.
 
 ### Making subgraph changes
 
-1. Edit mappings in `kit/subgraph/src/`
-2. Regenerate artifacts: `bun run artifacts` (from project root)
-3. Restart Docker services: `bun run dev:reset`
+TheGraph mappings require regenerating artifacts and restarting the indexer:
 
-## Clean restart
+1. **Edit mappings** in `kit/subgraph/src/` (AssemblyScript event handlers)
+2. **Update GraphQL schema** in `kit/subgraph/schema.graphql` if adding new
+   entities
+3. **Regenerate artifacts**: `bun run artifacts` (regenerates subgraph manifest
+   with new IPFS hash)
+4. **Restart services**: `bun run dev:reset` (Graph node re-indexes from block 0
+   with new mappings)
 
-If you need to completely reset the development environment:
+**Incremental testing alternative:** Deploy updated subgraph to running Graph
+node without full reset:
+
+```bash
+cd kit/subgraph
+bun run deploy:local
+```
+
+This preserves dApp state while updating indexing logic. Use during development,
+then run full `dev:reset` before committing to verify clean-slate behavior.
+
+**Observability tip:** The subgraph indexing dashboard shows handler execution
+times. Slow handlers (&gt;500ms) cause indexing lag—optimize by reducing
+contract calls in mappings or pre-computing values in smart contracts.
+
+## Clean restart procedure
+
+When you need to completely reset the development environment (corrupted state,
+debugging strange issues, or starting a new feature branch):
 
 ```bash
 # From project root
 bun run dev:reset
 ```
 
-This command:
+**What this does:**
 
-1. Stops and removes all Docker containers
-2. Deletes Docker volumes (blockchain state, database, etc.)
-3. Regenerates artifacts
-4. Starts fresh services
+1. Stops all Docker containers gracefully
+2. Removes containers and deletes named volumes (destroys all data: blockchain
+   state, database records, MinIO files)
+3. Regenerates artifacts from current code (`bun run artifacts`)
+4. Starts fresh Docker services with health checks
+5. Waits for all services to report healthy
 
-**Warning:** This destroys all local data. Use when troubleshooting or starting
-a new feature.
+**Completion time:** 2-3 minutes (includes image pulls if Docker pruned cache,
+artifact generation, volume initialization)
 
-## Expected results
+**When to use this:**
 
-After completing this setup guide, you should have:
+- Blockchain state corrupted (Anvil won't start)
+- Database migrations failed and manual rollback is complex
+- Testing clean installation experience
+- Switching between feature branches with incompatible schema changes
+- After pulling major upstream changes that modify genesis or database schema
 
-**Running services:**
+**Warning:** This destroys all local data. If you have test accounts or deployed
+contracts you want to preserve, export them first:
 
-- Local Ethereum node (Anvil) producing blocks every 12 seconds
-- PostgreSQL database with initialized schema
-- TheGraph node indexing blockchain events
-- TanStack Start dApp serving on http://localhost:3000
-- Blockscout explorer showing genesis contracts
+```bash
+# Export database
+docker compose exec postgres pg_dump -U postgres postgres > backup.sql
 
-**Working development loop:**
+# Export contract addresses
+cat kit/contracts/.generated/genesis.json > genesis-backup.json
+```
 
-- Smart contract changes trigger automatic recompilation and artifact generation
-- Frontend code changes hot-reload instantly without manual refresh
-- Database migrations apply successfully via Drizzle ORM
-- GraphQL queries return indexed blockchain data from subgraph
+Restore after reset by importing the database dump and redeploying contracts
+with Hardhat scripts.
 
-**Verification checklist:**
+**Observability note:** After reset, observability dashboards reset to empty
+graphs. Generate test data (`bun run test:integration`) to populate metrics for
+dashboard development.
 
-- [ ] dApp loads at http://localhost:3000 without errors
-- [ ] Network indicator shows "ATK (Chain ID: 1337)" with incrementing block
-      height
-- [ ] Database migrations complete successfully
-- [ ] Graph Node GraphQL playground responds at http://localhost:8000
-- [ ] Blockscout explorer displays genesis block and system contracts
-- [ ] Browser console shows no critical errors (some dev warnings OK)
+## Expected results checklist
 
-If any verification step fails, refer to the troubleshooting section below.
+After completing this guide, verify these outcomes to confirm a working setup:
+
+**Running services (verify with `docker compose ps`):**
+
+- ✅ Anvil producing blocks every 12 seconds
+- ✅ PostgreSQL accepting connections on port 5432
+- ✅ TheGraph node indexed genesis block
+- ✅ TanStack Start dApp serving on http://localhost:3000
+- ✅ Blockscout explorer showing genesis contracts
+- ✅ All services report `(healthy)` status
+
+**Functional verification:**
+
+- ✅ dApp loads without console errors (warnings acceptable)
+- ✅ Network indicator shows "ATK (Chain ID: 1337)" with incrementing block
+  height
+- ✅ Database migrations apply successfully (`bun run db:migrate`)
+- ✅ TheGraph GraphQL playground responds at http://localhost:8000
+- ✅ Blockscout displays genesis block and pre-deployed contracts
+- ✅ Test data generation creates users and tokens (`bun run test:integration`)
+
+**Development capabilities:**
+
+- ✅ Contract changes trigger recompilation and type regeneration
+- ✅ Frontend code changes hot-reload without page refresh
+- ✅ Database schema changes apply via Drizzle migrations
+- ✅ Subgraph mappings update and re-index events
+- ✅ API procedures (ORPC routes) reload on file save
+
+**Observability (if enabled):**
+
+- ✅ Prometheus scrapes metrics from services
+- ✅ Grafana dashboards display transaction latency and gas consumption
+- ✅ Loki aggregates logs from Docker containers
+
+If any item fails, consult the troubleshooting section below or review the
+specific setup step. The most common issues are port conflicts, insufficient
+Docker memory, and version mismatches.
 
 ## Next steps
 
-Now that your environment is running:
+Now that your environment is operational, explore these paths:
 
-- **Deploy your first token**: Follow the
-  [Getting started](/docs/user-guides/getting-started) tutorial
-- **Explore the codebase**: See
-  [Code structure](/docs/developer-guides/architecture)
-- **Extend smart contracts**: Read
-  [Extending contracts](/docs/developer-guides/smart-contracts/extending-contracts)
-- **Build API integrations**: Learn the
-  [API reference](/docs/developer-guides/api-integration/api-reference)
-- **Run the test suite**: Execute `bun run test` to verify code quality
-- **Configure CI/CD**: Review
-  [Deployment guide](/docs/developer-guides/deployment-ops/installation-configuration)
-  for production setup
+**For developers:**
 
-## Common issues
+- [Code structure](/docs/developer-guides/architecture) — Understand the
+  monorepo layout and module boundaries
+- [Extending contracts](/docs/developer-guides/smart-contracts/extending-contracts)
+  — Add custom compliance rules or token features
+- [API integration](/docs/developer-guides/api-integration/api-reference) —
+  Build external integrations with ORPC procedures
+
+**For product managers/QA:**
+
+- [Getting started](/docs/user-guides/getting-started) — Deploy your first token
+  and complete a transaction
+- [Use cases](/docs/executive-overview/use-cases/corporate-bonds) — Explore
+  bond, equity, and fund workflows
+
+**For DevOps:**
+
+- [Deployment guide](/docs/developer-guides/deployment-ops/installation-configuration)
+  — Deploy to Kubernetes with Helm charts
+- [Observability setup](/docs/developer-guides/deployment-ops/observability-monitoring)
+  — Configure Prometheus, Grafana, and alerting rules
+
+**Testing:**
+
+- Run unit tests: `bun run test` (executes Vitest across all packages)
+- Run E2E tests: `cd kit/e2e && bun run test:e2e:ui` (Playwright browser tests)
+- Check code quality: `bun run ci` (format, lint, typecheck, build, test)
+
+## Troubleshooting common issues
 
 <Accordions type="multiple">
 
-<Accordion title="Port conflicts">
+<Accordion title="Port conflicts (port already allocated)">
 
-**Symptom:** Docker services fail with "port already allocated"
+**Symptom:** Docker services fail to start with "bind: address already in use"
+
+**Diagnosis:**
+
+```bash
+# Identify process using port 8545
+lsof -i :8545
+
+# Or check multiple ports at once
+lsof -i :8545,5432,8080
+```
 
 **Solutions:**
 
 1. **Kill the conflicting process:**
 
-```bash
-# Find process using port 8545
-lsof -i :8545
-# Kill the process
-kill -9 [PID]
-```
+   ```bash
+   kill -9 [PID]
+   ```
 
-2. **Change the port in `.env.local`:**
+2. **Change port in `.env.local`:**
 
-```bash
-ANVIL_PORT=8546
-```
+   ```bash
+   # Override Anvil RPC port
+   ANVIL_PORT=8546
+   ```
 
-</Accordion>
+   Then update your dApp's RPC configuration to match the new port.
 
-<Accordion title="Out of memory">
+3. **Stop all Docker containers using the port:**
+   ```bash
+   docker ps | grep 8545
+   docker stop [container_id]
+   ```
 
-**Symptom:** Services crash or become unresponsive
-
-**Solutions:**
-
-- Increase Docker Desktop memory limit to 8+ GB
-- Close other memory-intensive applications
-- Disable unused services in `docker-compose.yml`
+**Prevention:** Use non-standard ports in `.env.local` if you frequently run
+multiple blockchain nodes or databases on your machine.
 
 </Accordion>
 
-<Accordion title="Slow artifact generation">
+<Accordion title="Out of memory errors (services crash or hang)">
 
-**Symptom:** `bun run artifacts` takes &gt;5 minutes
+**Symptom:** Services show `(unhealthy)` status, logs contain "out of memory" or
+"killed", or Docker becomes unresponsive
+
+**Diagnosis:**
+
+```bash
+# Check current memory usage
+docker stats
+
+# Look for OOM (Out Of Memory) in logs
+docker compose logs | grep -i "out of memory\|oom\|killed"
+```
 
 **Solutions:**
 
-- Enable Turborepo remote caching: `bun turbo link`
-- Upgrade to SSD storage if using HDD
-- Run artifact generation for specific packages:
-  `turbo run artifacts --filter=contracts`
+1. **Increase Docker Desktop memory limit:**
+   - macOS/Windows: Docker Desktop → Settings → Resources → Memory → Set to 8+
+     GB
+   - Linux: Edit `/etc/docker/daemon.json` to set memory limits
+
+2. **Close memory-intensive applications:**
+   - Chrome with many tabs, IDEs with large projects, VMs
+
+3. **Disable unused services in `docker-compose.yml`:**
+
+   ```bash
+   # Comment out services you don't need
+   # services:
+   #   hasura:  # Not actively used
+   #   portal:  # Only needed for SettleMint CLI features
+   ```
+
+4. **Reduce TheGraph indexing parallelism:** Add to `docker-compose.yml` under
+   `graph-node` environment:
+   ```yaml
+   GRAPH_ETHEREUM_POLLING_INTERVAL: 1000 # Slower polling
+   ```
+
+**Prevention:** Monitor `docker stats` during development to identify
+memory-hungry services and optimize their configuration.
 
 </Accordion>
 
-<Accordion title="Subgraph not indexing">
+<Accordion title="Slow artifact generation (&gt;5 minutes)">
 
-**Symptom:** GraphQL queries return stale data
+**Symptom:** `bun run artifacts` hangs or takes over 5 minutes to complete
+
+**Diagnosis:**
+
+```bash
+# Run with verbose logging to see where it hangs
+bun run artifacts --verbose
+
+# Check disk I/O
+iostat -x 1
+```
 
 **Solutions:**
 
+1. **Enable Turborepo remote caching:**
+
+   ```bash
+   bun turbo link  # Connect to SettleMint's remote cache
+   ```
+
+   This caches build outputs across team members and CI, reducing rebuild time
+   from minutes to seconds.
+
+2. **Run artifact generation for specific packages:**
+
+   ```bash
+   # Only regenerate contract artifacts
+   turbo run artifacts --filter=contracts
+
+   # Skip tests during artifact generation
+   turbo run artifacts --no-deps
+   ```
+
+3. **Upgrade to SSD storage:**
+   - HDD storage causes 5-10x slower builds due to small file I/O during
+     compilation
+
+4. **Increase Foundry optimizer runs:** Edit `kit/contracts/foundry.toml`:
+
+   ```toml
+   optimizer_runs = 200  # Lower value = faster compilation, larger bytecode
+   ```
+
+5. **Clear Turbo cache if corrupted:**
+   ```bash
+   rm -rf .turbo
+   bun run artifacts
+   ```
+
+**Prevention:** Run `bun turbo link` once to enable remote caching. Subsequent
+artifact generation completes in 10-30 seconds by reusing cached outputs.
+
+</Accordion>
+
+<Accordion title="Subgraph not indexing (stale data in queries)">
+
+**Symptom:** GraphQL queries return outdated data or empty results despite
+transactions completing on Anvil
+
+**Diagnosis:**
+
 ```bash
-# Check Graph Node logs
-docker compose logs -f graph-node
+# Check Graph Node logs for indexing errors
+docker compose logs -f graph-node | grep -i "error\|warn"
 
-# Restart Graph Node
-docker compose restart graph-node
-
-# Full reset
-bun run dev:reset
+# Query indexing status
+curl -X POST http://localhost:8000/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query":"{ indexingStatusForCurrentVersion(subgraphName: \"atk\") { synced health fatalError { message } } }"}'
 ```
+
+**Solutions:**
+
+1. **Restart Graph Node:**
+
+   ```bash
+   docker compose restart graph-node
+   ```
+
+2. **Verify subgraph deployed correctly:**
+
+   ```bash
+   cd kit/subgraph
+   bun run deploy:local
+   ```
+
+3. **Check for subgraph manifest errors:**
+   - Ensure contract addresses in `subgraph.yaml` match genesis addresses
+   - Verify event signatures match contract ABIs
+   - Run `bun run artifacts` to regenerate manifest
+
+4. **Full reset if indexing stuck:**
+
+   ```bash
+   bun run dev:reset
+   ```
+
+   This deletes Graph Node's database and re-indexes from genesis.
+
+5. **Inspect Anvil for missing events:**
+
+   ```bash
+   docker compose exec anvil cast rpc eth_getLogs \
+     '[{"fromBlock":"0x0","toBlock":"latest"}]'
+   ```
+
+   If Anvil has no logs, contracts may not have emitted events. Check contract
+   code includes `emit` statements.
+
+**Prevention:** After contract changes, always run `bun run dev:reset` to ensure
+subgraph manifest and blockchain state stay synchronized.
 
 </Accordion>
 
 <Accordion title="TypeScript errors after pulling changes">
 
-**Symptom:** IDE shows type errors after `git pull`
+**Symptom:** IDE shows red squiggles and "Cannot find module" errors after
+`git pull`
+
+**Diagnosis:**
+
+```bash
+# Check if generated types are stale
+ls -la kit/contracts/.generated/portal/
+ls -la kit/dapp/src/lib/db/.generated/
+```
 
 **Solutions:**
 
+1. **Reinstall dependencies:**
+
+   ```bash
+   bun install
+   ```
+
+   This re-links workspace packages and runs post-install scripts.
+
+2. **Regenerate types:**
+
+   ```bash
+   bun run artifacts
+   ```
+
+   This creates fresh TypeScript types from contracts, GraphQL schema, and
+   database schema.
+
+3. **Restart TypeScript server in VS Code:**
+   - Press `Cmd+Shift+P` (macOS) or `Ctrl+Shift+P` (Windows/Linux)
+   - Type "TypeScript: Restart TS Server"
+   - Press Enter
+
+4. **Clear Turbo cache:**
+
+   ```bash
+   rm -rf .turbo node_modules
+   bun install
+   bun run artifacts
+   ```
+
+5. **Verify correct Node and Bun versions:**
+
+   ```bash
+   node --version  # Should be v22.x
+   bun --version   # Should be 1.2.19
+   ```
+
+   Use `nvm` to switch Node versions if mismatched.
+
+**Prevention:** After pulling changes, run `bun install && bun run artifacts` as
+a habit before resuming development. Add this to a post-merge Git hook:
+
 ```bash
-# Reinstall dependencies
+# .git/hooks/post-merge
+#!/bin/bash
 bun install
-
-# Regenerate types
 bun run artifacts
-
-# Restart TypeScript server in VS Code
-# Cmd+Shift+P → "TypeScript: Restart TS Server"
 ```
+
+</Accordion>
+
+<Accordion title="dApp won't load (blank page or 500 errors)">
+
+**Symptom:** Browser shows blank page, "Internal Server Error", or network
+failures when accessing http://localhost:3000
+
+**Diagnosis:**
+
+```bash
+# Check dApp terminal for errors
+cd kit/dapp
+bun run dev
+
+# Test if API is reachable
+curl http://localhost:3000/api/health
+```
+
+**Solutions:**
+
+1. **Verify all Docker services are healthy:**
+
+   ```bash
+   docker compose ps
+   ```
+
+   If any service is unhealthy, restart it:
+
+   ```bash
+   docker compose restart [service-name]
+   ```
+
+2. **Check database connection:**
+
+   ```bash
+   cd kit/dapp
+   bun run db:migrate
+   ```
+
+   If migrations fail, PostgreSQL may be unreachable or schema corrupted.
+
+3. **Clear Vite cache:**
+
+   ```bash
+   cd kit/dapp
+   rm -rf .vite node_modules/.vite
+   bun run dev
+   ```
+
+4. **Inspect browser console:**
+   - Open DevTools (F12)
+   - Check Console tab for JavaScript errors
+   - Check Network tab for failed API requests
+
+5. **Restart everything:**
+   ```bash
+   # Stop dApp (Ctrl+C)
+   # From project root:
+   bun run dev:reset
+   cd kit/dapp
+   bun run dev
+   ```
+
+**Prevention:** Keep the dApp terminal visible during development. Errors appear
+immediately with stack traces and file paths for quick debugging.
 
 </Accordion>
 

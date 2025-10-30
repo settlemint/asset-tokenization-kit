@@ -2,139 +2,436 @@
 title: Testing & monitoring
 description:
   Production performance requires continuous measurement, testing, and
-  optimization. This page documents the operational practices that keep ATK fast
-  and reliable under real-world load.
+  optimization. ATK enforces performance targets through automated testing
+  pipelines and comprehensive observability dashboards that monitor every
+  component from smart contract gas consumption to API response latency.
 pageTitle: Performance testing and monitoring
 tags: [architecture, performance, testing, monitoring, optimization]
 ---
 
 ## Performance testing and monitoring
 
-Automated performance testing runs in CI to catch regressions before deployment.
+Automated performance testing runs in continuous integration to catch
+regressions before deployment. The test suite validates that response times,
+throughput, and resource consumption remain within defined bounds as code
+evolves. Combined with production observability dashboards, this testing
+framework ensures ATK maintains predictable performance characteristics under
+real-world load patterns.
 
 ### Load testing
 
-**K6 scenarios** - Load tests simulate realistic user patterns: browsing assets,
-minting tokens, executing transfers. Tests ramp from 10 concurrent users to
-1,000 users over 10 minutes. Response times must stay below P95 targets
-throughout the ramp.
+K6 scenarios simulate realistic user patterns across the platform's core
+operations: browsing asset listings, minting tokens, executing DvP settlements,
+and querying vault balances. Tests ramp from 10 concurrent users to 1,000 users
+over a 10-minute period, measuring response times at each load level. The **API
+Performance dashboard** tracks these metrics in real time, displaying P50, P95,
+and P99 latency percentiles alongside throughput counters. Response times must
+stay below P95 targets (API endpoints &lt;500ms, DvP settlement initiation
+&lt;1s, vault balance queries &lt;200ms) throughout the entire ramp period.
 
-**Spike testing** - Spike tests validate behavior under sudden load increases
-(e.g., 10,000 users appear instantly). The system should degrade gracefully
-(slower responses) rather than failing catastrophically (timeouts, errors).
+Spike tests validate behavior under sudden load increases where traffic jumps
+from 100 users to 10,000 users instantaneously. The system should degrade
+gracefully—response times increase but remain bounded—rather than failing
+catastrophically with timeouts or HTTP 5xx errors. The **Error Rate panel** in
+the observability dashboard tracks this behavior, showing the ratio of
+successful requests to failures across different load conditions. Graceful
+degradation means error rates remain below 0.1% even as P95 latency climbs to
+2-3x baseline values during spike events.
 
-**Soak testing** - Soak tests run at moderate load (500 concurrent users) for 24
-hours. This detects memory leaks, connection pool exhaustion, and other issues
-that manifest only under sustained load.
+Soak tests run at moderate load (500 concurrent users) for 24 hours to detect
+resource leaks that manifest only under sustained operation. Database connection
+pool exhaustion, memory leaks in Node.js processes, and blockchain RPC
+connection staleness all surface during soak testing. The **Resource Utilization
+dashboard** monitors memory consumption, connection pool depth, and event loop
+lag throughout the test duration. Memory usage should remain flat or exhibit
+predictable sawtooth patterns from garbage collection, never climbing linearly
+toward out-of-memory conditions.
+
+<Mermaid
+  chart={`flowchart TB
+    K6[K6 Load Test Runner]
+    API(API Endpoints)
+    Metrics(Metrics Collection)
+    Dash(Observability Dashboard)
+    
+    K6 -->|HTTP requests| API
+    API -->|Response times<br/>Error rates<br/>Throughput| Metrics
+    Metrics -->|OpenTelemetry export| Dash
+    
+    Dash -->|Real-time monitoring| P95Panel(P95 Latency Panel<br/>Target: &lt;500ms API<br/>Target: &lt;1s DvP)
+    Dash -->|Error tracking| ErrPanel(Error Rate Panel<br/>Target: &lt;0.1%)
+    Dash -->|Resource monitoring| ResPanel(Resource Utilization<br/>Memory, connections, CPU)
+    
+    style K6 fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style API fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Metrics fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Dash fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style P95Panel fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style ErrPanel fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style ResPanel fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+`}
+/>
 
 ### Contract gas benchmarking
 
-**Foundry gas reports** - Every contract test measures gas consumption. CI
-compares gas reports against the previous commit. Increases greater than 5%
-block merging and require developer justification.
+Every smart contract test measures gas consumption using Foundry's built-in gas
+reporting. The test suite generates a gas report showing consumption for every
+function invocation: token minting, transfer validation, DvP settlement
+execution, vault deposit operations, and yield distribution calculations. CI
+compares each function's gas consumption against the previous commit's baseline.
+Increases greater than 5% block the pull request from merging and require
+developer justification documenting why the additional gas expenditure is
+necessary.
 
-**Regression tracking** - A dashboard tracks gas costs over time. Unexpected
-increases trigger investigations. Optimizations that reduce costs by more than
-10% are celebrated and documented.
+The **Gas Consumption Trends dashboard** tracks costs over time across all
+contract operations. This visualization reveals gradual regressions that might
+pass individual 5% checks but compound over multiple commits. Unexpected
+increases trigger investigations: was an optimization accidentally removed, did
+a dependency introduce inefficient code, or does a new feature require
+fundamentally more computation? Conversely, optimizations that reduce costs by
+more than 10% are documented as case studies, with the implementation approach
+shared across the development team to encourage similar improvements.
+
+DALP lifecycle operations receive particular scrutiny because they execute
+frequently and directly impact user costs. DvP settlement must complete in under
+200,000 gas to remain economically viable at scale. Vault deposit and withdrawal
+operations target under 150,000 gas. Yield distribution to token holders scales
+linearly with recipient count, targeting 50,000 gas plus 25,000 per recipient.
+The dashboard's **Lifecycle Operations Gas panel** displays current values
+against these targets, color-coding green when within budget and red when
+exceeding thresholds.
+
+<Mermaid
+  chart={`flowchart TB
+    Tests(Foundry Test Suite)
+    GasReport(Gas Report Generation)
+    CI(CI Pipeline)
+    Dashboard(Gas Consumption Dashboard)
+    
+    Tests -->|Execute contracts| GasReport
+    GasReport -->|Function-level metrics| CI
+    CI -->|Compare vs baseline| Check{Gas increase<br/>&gt;5%?}
+    
+    Check -->|Yes| Block(Block PR merge<br/>Require justification)
+    Check -->|No| Pass(Allow merge)
+    
+    GasReport -->|Historical data| Dashboard
+    Dashboard -->|Monitor trends| Lifecycle(Lifecycle Operations Panel<br/>DvP: &lt;200k gas<br/>Vault: &lt;150k gas<br/>Yield: 50k base)
+    Dashboard -->|Track regressions| Trends(Gas Trends Over Time)
+    
+    style Tests fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style GasReport fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style CI fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Dashboard fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Check fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Block fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Pass fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Lifecycle fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Trends fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+`}
+/>
 
 ### Production monitoring
 
-**Metrics collection** - OpenTelemetry instruments the API, collecting request
-latency, error rates, and throughput. Metrics export to Prometheus for
-aggregation and alerting.
+OpenTelemetry instruments every API endpoint, collecting request latency, error
+rates, and throughput metrics. These metrics export to Prometheus for
+aggregation and long-term storage, then surface in Grafana dashboards for
+real-time monitoring. The **API Latency dashboard** displays response time
+distributions for all endpoints, broken down by operation type: asset queries,
+token transfers, DvP settlement initiation, vault operations, and yield
+calculations. Operations engineers use these panels to identify performance
+degradations immediately—if vault balance queries suddenly jump from 150ms to
+800ms P95, the dashboard alerts the on-call team before users report issues.
 
-**Distributed tracing** - Complex operations (minting tokens with compliance
-checks) emit distributed traces. Traces reveal where latency accumulates: slow
-database queries, network round-trips, or blockchain confirmations.
+Distributed tracing captures the complete execution path for complex operations
+that span multiple services and external systems. When a user initiates a DvP
+settlement, the trace follows the request through API authorization, database
+queries to fetch settlement terms, blockchain transaction submission, and event
+processing when settlement completes. Traces reveal where latency accumulates:
+slow database queries, network round-trips to blockchain RPC nodes, or delays
+waiting for transaction confirmations. The **Distributed Traces panel** allows
+filtering by operation type and latency threshold, making it straightforward to
+find the slowest 1% of DvP settlements and diagnose their root causes.
 
-**Real User Monitoring (RUM)** - The frontend reports Core Web Vitals from real
-user sessions. This reveals performance issues specific to certain browsers,
-devices, or network conditions that synthetic tests miss.
+Real User Monitoring captures Core Web Vitals from actual browser sessions
+across diverse network conditions, device capabilities, and geographic
+locations. This data complements synthetic testing by revealing performance
+issues specific to mobile devices on cellular connections or users in regions
+distant from CDN edge locations. The **Real User Monitoring dashboard**
+aggregates Largest Contentful Paint (LCP), First Input Delay (FID), and
+Cumulative Layout Shift (CLS) metrics, segmented by device type, connection
+speed, and geographic region. These metrics feed into alerting rules: LCP
+exceeding 2.5 seconds for more than 10% of mobile users triggers an
+investigation, as does FID above 100ms for desktop users.
 
-**Performance monitoring for frontend** - The frontend measures Largest
-Contentful Paint (LCP), First Input Delay (FID), and Cumulative Layout Shift
-(CLS). These metrics feed into production monitoring dashboards and trigger
-alerts when thresholds degrade.
+Frontend performance monitoring specifically tracks the metrics that impact user
+experience during DALP lifecycle operations. The time to interactive for the DvP
+settlement screen must remain under 1.5 seconds, while vault dashboard loading
+targets under 2 seconds. The **Frontend Performance panel** displays these
+operation-specific metrics alongside general page load times, allowing the team
+to prioritize optimizations that directly improve the most critical user
+workflows.
 
-**Bundle size budgets** - CI enforces bundle size limits per chunk. The main
-bundle stays under 200KB gzipped. Vendor chunks target 150KB each. Oversized
-bundles block deployment until developers analyze and reduce them.
+<Mermaid
+  chart={`flowchart TB
+    API(API Endpoints)
+    OTel(OpenTelemetry Collection)
+    Prom(Prometheus Storage)
+    Grafana(Grafana Dashboards)
+    
+    API -->|Request metrics<br/>Response times<br/>Error rates| OTel
+    API -->|Distributed traces<br/>DvP settlement<br/>Vault operations| Traces(Trace Storage)
+    
+    OTel -->|Export metrics| Prom
+    Traces -->|Trace data| Grafana
+    Prom -->|Query metrics| Grafana
+    
+    Grafana -->|Monitor endpoints| LatencyDash(API Latency Dashboard<br/>P50/P95/P99<br/>Per operation type)
+    Grafana -->|Analyze bottlenecks| TraceDash(Distributed Traces<br/>Filter by latency<br/>Root cause analysis)
+    Grafana -->|Track user experience| RUMDash(Real User Monitoring<br/>LCP, FID, CLS<br/>Segmented by device)
+    Grafana -->|Measure workflows| FrontendDash(Frontend Performance<br/>DvP screen: &lt;1.5s<br/>Vault dashboard: &lt;2s)
+    
+    style API fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style OTel fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Prom fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Grafana fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Traces fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style LatencyDash fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style TraceDash fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style RUMDash fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style FrontendDash fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+`}
+/>
 
-**Lighthouse CI integration** - Automated Lighthouse audits run on every pull
-request. Regressions in performance, accessibility, or best practices scores
-block merging until resolved.
+Bundle size budgets enforce frontend performance constraints at build time. CI
+enforces limits per chunk: the main bundle stays under 200KB gzipped, while
+vendor chunks target 150KB each. Oversized bundles block deployment until
+developers analyze dependencies and reduce bundle size through code splitting,
+lazy loading, or dependency replacement. The **Bundle Size Trends dashboard**
+tracks chunk sizes over time, identifying which features or dependencies caused
+increases. This historical view helps teams make informed tradeoffs when
+evaluating new libraries or features that might impact bundle size.
+
+Lighthouse CI integration runs automated audits on every pull request, measuring
+performance, accessibility, best practices, and SEO scores. Regressions in any
+category block merging until resolved. The **Lighthouse Scores panel** displays
+historical trends for each metric, with particular attention to performance
+scores for pages used in DALP lifecycle operations. The DvP settlement page must
+maintain a performance score above 90, while the vault management interface
+targets 85 or higher. These thresholds ensure that optimizations elsewhere in
+the system don't degrade the user experience in critical workflows.
 
 ## Optimization workflow
 
 Performance optimization follows a disciplined process to ensure changes improve
-metrics without introducing regressions.
+metrics without introducing regressions or architectural fragility. This
+methodology applies equally to smart contract gas optimization, API latency
+reduction, and frontend rendering improvements.
 
 ### Measure first
 
-**Establish baseline** - Before optimizing, measure current performance under
-realistic load. Example: "Token holder list query takes 800ms at P95 with 10,000
-holders."
+Establishing a precise baseline precedes any optimization work. Measurements
+capture current performance under realistic load conditions using
+production-representative data volumes and access patterns. For example: "Token
+holder list query takes 800ms at P95 with 10,000 holders when filtering by
+registration date." This specificity—the exact metric (P95 latency), the load
+condition (10,000 holders), and the operation context (filtering by registration
+date)—creates an unambiguous target for improvement.
 
-**Identify bottlenecks** - Use profiling tools to find where time is spent.
-Database queries? Network latency? Rendering? Focus optimization efforts on the
-biggest contributor.
+Profiling tools identify where time and resources are consumed. Database query
+analyzers reveal slow queries and missing indexes. Application profilers show
+hot code paths consuming CPU cycles. Blockchain gas profilers identify expensive
+operations in smart contract execution. Focus optimization efforts on the
+biggest contributor rather than dispersing effort across minor improvements. The
+**Profiling dashboard** aggregates data from multiple sources: database slow
+query logs, APM transaction traces, and contract gas reports. This unified view
+prevents teams from optimizing already-fast operations while ignoring actual
+bottlenecks.
 
 ### Optimize targeted
 
-**Implement change** - Apply one optimization at a time. Example: "Add composite
-index on `(token_id, created_at)`."
+Implementing one optimization at a time maintains clarity about what changed and
+prevents conflating multiple improvements. For example: "Add composite index on
+`(token_id, created_at)` to accelerate holder list queries filtered by
+registration date." This focused approach makes it straightforward to attribute
+performance improvements to specific changes and simplifies rollback if an
+optimization introduces unexpected side effects.
 
-**Measure impact** - Re-run performance tests. Document the improvement: "Token
-holder list query now takes 120ms at P95, an 85% reduction."
+Measuring impact immediately after implementing changes quantifies the
+improvement and validates that the optimization achieved its goal. Re-run the
+same performance tests used to establish the baseline, ensuring load conditions
+and data volumes match exactly. Document the improvement with the same
+specificity as the baseline: "Token holder list query now takes 120ms at P95, an
+85% reduction from 800ms baseline." The **Optimization Impact dashboard** tracks
+before-and-after metrics for recent optimizations, creating a historical record
+of what improvements were achieved and which techniques proved most effective.
 
-**Compare cost vs benefit** - If the optimization added complexity (e.g.,
-maintaining a denormalized table), ensure the performance gain justifies the
-maintenance burden.
+Comparing cost versus benefit prevents optimization-induced complexity from
+degrading maintainability. If an optimization requires maintaining a
+denormalized table, running background synchronization jobs, or introducing
+caching layers with invalidation logic, ensure the performance gain justifies
+the maintenance burden. A 10% improvement rarely justifies doubling system
+complexity, while a 10x improvement might justify significant additional
+infrastructure. The decision framework considers both the magnitude of
+improvement and the criticality of the operation: optimizing DvP settlement
+latency receives higher priority than optimizing rarely-used administrative
+queries.
 
 ### Validate in production
 
-**Canary deployments** - Deploy optimizations to 10% of production traffic
-first. Monitor metrics for regressions (increased error rates, degraded
-latency). If metrics improve, roll out to 100%.
+Canary deployments roll out optimizations to a small percentage of production
+traffic first, validating that improvements measured in testing materialize in
+production environments with real user behavior patterns. Deploy to 10% of
+production traffic and monitor metrics for 24-48 hours. The **Canary Comparison
+dashboard** displays side-by-side metrics for canary and stable versions:
+request latency, error rates, resource consumption, and user-reported issues. If
+metrics improve or remain neutral, roll out to 100% of traffic. If metrics
+degrade—increased error rates, elevated latency, or higher resource
+consumption—roll back immediately and investigate the discrepancy between test
+and production results.
 
-**Rollback readiness** - Keep the previous version deployable. If an
-optimization degrades performance unexpectedly, roll back within minutes rather
-than scrambling to fix forward.
+Rollback readiness maintains the previous version in a deployable state
+throughout the canary period. If an optimization degrades performance
+unexpectedly, rolling back within minutes prevents user impact from
+accumulating. The deployment system maintains both versions simultaneously
+during canary rollout, allowing instantaneous traffic shifting back to the
+stable version. This capability requires that optimizations maintain backward
+compatibility with data formats and API contracts, ensuring that rolling back
+code doesn't leave data in incompatible states.
+
+<Mermaid
+  chart={`flowchart TB
+    Baseline(Step 1: Measure Baseline<br/>Profile system<br/>Identify bottleneck)
+    Optimize(Step 2: Implement Change<br/>Single optimization<br/>Targeted approach)
+    Measure(Step 3: Measure Impact<br/>Re-run tests<br/>Document improvement)
+    Cost(Step 4: Cost vs Benefit<br/>Complexity analysis<br/>Maintenance burden)
+    
+    Baseline --> Optimize
+    Optimize --> Measure
+    Measure --> Cost
+    
+    Cost -->|Justified| Canary(Step 5: Canary Deploy<br/>10% production traffic<br/>Monitor 24-48 hours)
+    Cost -->|Not justified| Revert(Revert change)
+    
+    Canary --> Compare(Canary Comparison Dashboard<br/>Latency, errors, resources)
+    Compare -->|Metrics improve| Rollout(Roll out to 100%)
+    Compare -->|Metrics degrade| Rollback(Immediate rollback)
+    
+    Rollout --> Record(Record in Optimization<br/>Impact Dashboard)
+    
+    style Baseline fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Optimize fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Measure fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style Cost fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Canary fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Compare fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style Rollout fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Rollback fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Revert fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
+    style Record fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+`}
+/>
 
 ## Common performance anti-patterns
 
-Avoid these mistakes that plague tokenization platforms:
+Recognizing and avoiding common mistakes prevents performance problems before
+they manifest in production. These anti-patterns appear repeatedly across
+tokenization platforms, often introduced by well-intentioned developers
+unfamiliar with blockchain-specific performance characteristics or distributed
+system scaling patterns.
 
-- **Polling instead of push** - Don't poll the blockchain for events; use
-  websockets or subgraph subscriptions for real-time updates
-- **N+1 queries** - Load related data in batch queries, not one query per item
-  in a loop
-- **Unbounded pagination** - Always paginate large result sets; never return
-  100,000 token holders in one response
-- **Missing indexes** - Every foreign key and frequently filtered column should
-  have an index
-- **Synchronous external calls** - Don't block API responses waiting for
-  third-party services; use background jobs with webhooks
-- **Over-fetching GraphQL** - Request only the fields you need, not entire
-  entity graphs
-- **Premature optimization** - Measure before optimizing; don't guess where the
-  bottleneck is
-- **Ignoring cache invalidation** - Stale data erodes user trust; ensure caches
-  invalidate promptly when state changes
+Polling for blockchain events wastes resources and introduces latency. Instead
+of repeatedly querying the blockchain for new events, use WebSocket
+subscriptions to blockchain nodes or query the subgraph's GraphQL subscriptions
+for real-time updates. Polling introduces unnecessary load on RPC nodes and
+delays event processing by the polling interval. The **Event Processing
+dashboard** tracks event latency from blockchain emission to application
+processing, revealing when polling-based systems lag behind subscription-based
+alternatives.
+
+N+1 queries devastate database performance when loading related data. Loading a
+list of 1,000 token holders then executing 1,000 individual queries to fetch
+each holder's KYC status creates unnecessary round-trips and overwhelms
+connection pools. Batch load related data in a single query using joins or IN
+clauses, reducing 1,000 queries to one or two. The **Database Query Analytics
+panel** identifies N+1 patterns by flagging endpoints that execute hundreds of
+similar queries per request, making these problems obvious in the observability
+data.
+
+Unbounded pagination allows users to request arbitrarily large result sets,
+consuming memory and processing time proportional to the result size. Returning
+100,000 token holders in a single API response exhausts memory and times out
+before completing. Always paginate large result sets with maximum page sizes
+(typically 100-1000 items) and cursor-based pagination for consistent
+performance regardless of result set depth. The **API Response Size panel**
+tracks the distribution of response payload sizes, alerting when oversized
+responses indicate missing pagination.
+
+Missing database indexes on foreign keys and frequently filtered columns force
+full table scans that grow increasingly expensive as data volume increases.
+Every foreign key column should have an index, as should columns used in WHERE
+clauses, JOIN conditions, and ORDER BY statements. The **Slow Query Log
+dashboard** surfaces queries consuming excessive time, with query plans showing
+when missing indexes cause table scans. Adding indexes often transforms 5-second
+queries into 50-millisecond queries, a 100x improvement requiring zero code
+changes.
+
+Synchronous external calls block API responses while waiting for third-party
+services to respond. If compliance verification calls a KYC provider's API
+synchronously during token transfer processing, every transfer waits for the
+external service's response time and is vulnerable to its outages. Use
+background jobs with webhook callbacks for external service integration,
+returning immediately to users and updating them asynchronously when processing
+completes. The **External Dependency Latency panel** tracks response times and
+error rates for external services, highlighting when they become bottlenecks.
+
+Over-fetching in GraphQL queries retrieves unnecessary data, wasting bandwidth
+and processing time. Requesting entire entity graphs when only a few fields are
+needed increases query complexity and response payload size. Request only the
+fields required for the current operation. The **GraphQL Query Complexity
+panel** tracks query depth and field count, identifying expensive queries that
+fetch excessive data. Optimizing these queries reduces both database load and
+network transfer costs.
+
+Premature optimization wastes effort on improving performance in areas that
+don't impact user experience or system scalability. Measure before optimizing to
+identify actual bottlenecks rather than guessing where performance problems
+might exist. The **Performance Budget dashboard** displays which operations
+consume the most resources in aggregate: slow but frequently executed operations
+often deliver more improvement than fast operations that execute rarely, even if
+the latter seems more obviously inefficient.
+
+Ignoring cache invalidation creates situations where users see stale data,
+eroding trust in the platform. Caches must invalidate promptly when underlying
+state changes: when a token transfer completes, cached balances must update
+immediately rather than persisting incorrect values until cache expiration. The
+**Cache Hit Rate dashboard** tracks cache effectiveness and staleness, measuring
+both the performance benefit from caching and the freshness of cached data.
+Effective caching improves performance without compromising data accuracy.
 
 ## Conclusion
 
-Performance is not a feature you add at the end; it's an architectural property
-you design in from the beginning. ATK's performance targets are not
-aspirational—they are enforced through automated testing and production
-monitoring. When response times drift outside acceptable bounds, alerts fire and
-teams respond.
+Performance is an architectural property designed into the system from the
+beginning, not a feature added during final optimization phases. ATK's
+performance targets are enforced through automated testing and production
+monitoring rather than treated as aspirational goals. When response times drift
+outside acceptable bounds, alerts fire and teams respond with root cause
+analysis and remediation.
 
-This discipline ensures that ATK remains fast and scalable as adoption grows.
-There are no hidden bottlenecks waiting to surface when you onboard your
-10,000th investor or issue your 100th token. The architecture scales
-horizontally, the database queries are optimized, and the smart contracts are
-gas-efficient. Performance is predictable, measurable, and reliable.
+This discipline ensures ATK remains fast and scalable as adoption grows. The
+architecture scales horizontally, database queries are optimized with
+appropriate indexes, and smart contracts are gas-efficient. The observability
+stack validates these properties continuously: the **System Health dashboard**
+provides a single-pane view of all performance metrics, highlighting when any
+component deviates from target thresholds. Operations teams use these dashboards
+daily to verify that DALP lifecycle operations—DvP settlements, vault
+transactions, and yield distributions—execute within their performance budgets.
+
+There are no hidden bottlenecks waiting to surface when onboarding the 10,000th
+investor or issuing the 100th token. Performance is predictable, measurable, and
+reliable because the testing framework and observability infrastructure expose
+problems immediately rather than allowing them to accumulate until they cause
+production incidents.
 
 ## See also
 

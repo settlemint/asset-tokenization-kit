@@ -1,9 +1,10 @@
 ---
 title: Use cases
 description:
-  This section demonstrates how different institutions deploy ATK to tokenize
-  bonds, funds, real estate, stablecoins, and deposits. Each scenario reflects
-  actual capabilities the platform delivers today.
+  Five asset classes, one lifecycle engine. See how bonds, funds, real estate,
+  stablecoins, and deposits share the same DvP settlement, vault custody, and
+  yield automation—eliminating the integration chaos that fragments traditional
+  tokenization stacks.
 pageTitle: Real-world use cases for asset tokenization
 tags: [concept, use-cases, scenarios, industry, examples]
 ---
@@ -15,40 +16,88 @@ officers evaluating tokenization for specific asset classes.
 time-to-market, operational overhead, and compliance risk across diverse
 regulated assets.
 
-## Asset class coverage
+## The fragmentation problem nobody talks about
 
-The platform handles five primary categories, each with distinct regulatory
-requirements and operational workflows:
+Here's the uncomfortable truth about most tokenization projects: they succeed at
+minting a token, then immediately hit a wall when quarterly coupons come due.
 
-| Asset class                                                               | Primary use                       | Settlement  | Typical compliance                         |
-| ------------------------------------------------------------------------- | --------------------------------- | ----------- | ------------------------------------------ |
-| **[Corporate Bonds](/docs/executive-overview/use-cases/corporate-bonds)** | Capital raising, debt instruments | Instant     | Accredited investor, transfer restrictions |
-| **[Private Equity](/docs/executive-overview/use-cases/private-equity)**   | Fund units, LP servicing          | Instant     | Qualified purchaser, holding periods       |
-| **[Real Estate](/docs/executive-overview/use-cases/real-estate)**         | Fractionalized ownership          | Instant     | Securities laws, FIRPTA withholding        |
-| **[Stablecoins](/docs/executive-overview/use-cases/stablecoins)**         | Payment rails, treasury           | Instant     | AML/sanctions, reserve attestation         |
-| **[Deposit Certificates](/docs/executive-overview/use-cases/deposits)**   | Time deposits, retail banking     | Time-locked | FDIC limits, customer verification         |
+Traditional approaches assemble point solutions—one vendor for issuance, another
+for compliance, a third for custody, a fourth for servicing. Each integration
+adds weeks of engineering work and introduces reconciliation risk. When you need
+to pay bond coupons, distribute rental income, or process fund redemptions, you
+discover that _nobody built the plumbing_.
+
+The result? Spreadsheets. Manual transfers. Delayed distributions. The very
+friction tokenization promised to eliminate.
+
+## Why unified lifecycle infrastructure changes everything
+
+ATK solves this with **Digital Asset Lifecycle Platform (DALP)** primitives that
+work across every asset type:
+
+**Delivery vs Payment (DvP)** ensures atomic settlement—the token and payment
+move together or not at all, eliminating counterparty risk. Bond issuance closes
+in seconds instead of days because settlement is cryptographically guaranteed.
+
+**Vault custody** separates operational control from economic ownership. Your
+legal team requires board approval for treasury transfers? Configure the vault
+with multi-signature rules. Investors earn yield while assets stay locked during
+holding periods.
+
+**Yield automation** handles scheduled distributions without manual
+intervention. Bond coupons, fund dividends, rental income, stablecoin
+interest—all calculated on-chain and distributed automatically. Token holders
+claim their entitlements when convenient, eliminating wire transfer
+coordination.
+
+These capabilities aren't bolted on after the fact. They're embedded in the
+asset layer, available from day one, consistent across every asset class.
 
 <Mermaid
   chart={`
 flowchart TB
-    ATK(ATK Platform)
-    SMART(SMART Protocol<br/>Unified Compliance Layer)
+    subgraph DALP["Digital Asset Lifecycle Platform"]
+        DVP(DvP Settlement<br/>Atomic Exchange)
+        VAULT(Vault Custody<br/>Multi-sig Control)
+        YIELD(Yield Engine<br/>Auto Distribution)
+        SMART(SMART Protocol<br/>Compliance Layer)
+    end
     
-    BONDS(Corporate Bonds<br/>Coupon Automation)
-    PE(Private Equity<br/>NAV Tracking)
-    RE(Real Estate<br/>Rental Distributions)
-    STABLE(Stablecoins<br/>Reserve Management)
-    DEPOSIT(Deposits<br/>Interest Accrual)
+    subgraph ASSETS["Asset Types"]
+        BONDS(Corporate Bonds<br/>Coupon + Redemption)
+        PE(Private Equity<br/>NAV + Distributions)
+        RE(Real Estate<br/>Rental + Sale Proceeds)
+        STABLE(Stablecoins<br/>Interest + Reserves)
+        DEPOSIT(Deposits<br/>Time-lock + Interest)
+    end
     
-    ATK --> SMART
-    SMART --> BONDS
-    SMART --> PE
-    SMART --> RE
-    SMART --> STABLE
-    SMART --> DEPOSIT
+    DVP -.-> BONDS
+    DVP -.-> PE
+    DVP -.-> RE
+    DVP -.-> STABLE
+    DVP -.-> DEPOSIT
     
-    style ATK fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
-    style SMART fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    VAULT -.-> BONDS
+    VAULT -.-> PE
+    VAULT -.-> RE
+    VAULT -.-> STABLE
+    VAULT -.-> DEPOSIT
+    
+    YIELD -.-> BONDS
+    YIELD -.-> PE
+    YIELD -.-> RE
+    YIELD -.-> STABLE
+    YIELD -.-> DEPOSIT
+    
+    SMART --> DVP
+    SMART --> VAULT
+    SMART --> YIELD
+    
+    style DALP fill:#8571d9,stroke:#654bad,stroke-width:3px,color:#fff
+    style DVP fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style VAULT fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style YIELD fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px,color:#fff
+    style SMART fill:#b661d9,stroke:#8a3fb3,stroke-width:2px,color:#fff
     style BONDS fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
     style PE fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
     style RE fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
@@ -57,64 +106,258 @@ flowchart TB
 `}
 />
 
-## Why unified infrastructure matters
+## Asset class coverage
 
-Traditional tokenization projects assemble issuance, compliance, custody,
-settlement, and servicing from separate vendors. This creates integration
-overhead, data reconciliation delays, and compliance gaps.
+The platform handles five primary categories, each with distinct regulatory
+requirements yet sharing the same lifecycle engine:
 
-ATK provides lifecycle infrastructure out of the box. Quarterly coupon payments
-and NAV distributions execute automatically because corporate actions are built
-into the asset layer. Compliance checks happen at transfer time because the
-SMART Protocol embeds eligibility rules into token logic.
+| Asset class                                                               | Primary use                       | Settlement mechanism | Typical compliance                         |
+| ------------------------------------------------------------------------- | --------------------------------- | -------------------- | ------------------------------------------ |
+| **[Corporate Bonds](/docs/executive-overview/use-cases/corporate-bonds)** | Capital raising, debt instruments | DvP + Yield          | Accredited investor, transfer restrictions |
+| **[Private Equity](/docs/executive-overview/use-cases/private-equity)**   | Fund units, LP servicing          | DvP + NAV tracking   | Qualified purchaser, holding periods       |
+| **[Real Estate](/docs/executive-overview/use-cases/real-estate)**         | Fractionalized ownership          | DvP + Yield          | Securities laws, FIRPTA withholding        |
+| **[Stablecoins](/docs/executive-overview/use-cases/stablecoins)**         | Payment rails, treasury           | DvP + Reserves       | AML/sanctions, reserve attestation         |
+| **[Deposit Certificates](/docs/executive-overview/use-cases/deposits)**   | Time deposits, retail banking     | Vault + Interest     | FDIC limits, customer verification         |
 
-The same core platform handles bonds, funds, real estate, stablecoins, and
-deposits. Asset-specific features live in addon modules rather than separate
-deployments, reducing operational complexity and accelerating new product
-launches.
+## Lifecycle walkthroughs: from theory to production
 
-## Key capabilities across all asset types
+### Corporate bonds: the 90-day coupon cycle
 
-- **Embedded compliance** – Transfer restrictions, investor eligibility, and
-  geographic limits enforced at the smart contract level
-- **Scheduled corporate actions** – Coupon entitlements, distributions,
-  redemptions, and fee calculations execute on schedule without manual
-  spreadsheet work; token holders claim distributions on-demand
-- **Real-time cap tables** – Ownership visibility updates instantly as tokens
-  transfer, eliminating reconciliation delays
-- **Instant settlement** – Atomic finality replaces T+2 or T+5 cycles, reducing
-  counterparty risk and capital lockup
-- **Audit trails** – Every transaction, compliance check, and lifecycle event
-  recorded on-chain for regulatory reporting
+Traditional bond servicing involves spreadsheets tracking who held what on the
+record date, calculating accrued interest, coordinating wire transfers, and
+reconciling payments across custodians. It takes days and introduces errors.
+
+**With ATK lifecycle automation:**
+
+1. **Issuance via DvP** — Investor commits USDC payment; bond tokens transfer
+   atomically upon receipt. No settlement risk, no escrow delays.
+2. **Holding period with vault** — Bonds locked until seasoning requirements
+   met; transfers blocked by compliance rules but economic ownership clear.
+3. **Coupon calculation** — On-chain yield engine computes entitlements based on
+   snapshot of holders at record date. No manual calculations.
+4. **Claim distribution** — Token holders call `claimYield()` when convenient.
+   Payment releases from yield vault instantly. No coordination needed.
+5. **Redemption at maturity** — Principal plus final coupon automatically
+   available; investors redeem bonds and receive payment atomically via DvP.
+
+Result: 90% reduction in operational overhead. Zero reconciliation errors.
+Instant settlement replaces three-day clearing cycles.
+
+### Private equity: NAV updates and distribution waterfalls
+
+Fund administrators spend weeks calculating NAV, determining distribution
+waterfalls, and processing capital calls. Limited partners wait for quarterly
+statements that are outdated the moment they arrive.
+
+**With ATK lifecycle automation:**
+
+1. **Primary issuance via DvP** — LP commits capital; receives fund tokens upon
+   payment confirmation. Subscription process completes in minutes.
+2. **Vault custody with gates** — Tokens subject to lock-up periods and transfer
+   restrictions. GP controls redemption gates through vault parameters.
+3. **NAV tracking** — On-chain oracle or manual update publishes current NAV;
+   token metadata reflects latest valuation instantly visible to all LPs.
+4. **Distribution waterfall** — Yield engine applies preferred return and
+   carried interest rules automatically. GP take calculated on-chain, LP
+   distributions released to yield vault.
+5. **Quarterly claims** — LPs claim their distributions via simple transaction;
+   receive payment in stablecoins or redeem for fiat through integrated rails.
+
+Result: Real-time cap table visibility. Automated compliance with fund terms.
+LPs access their capital faster, GPs reduce administrative burden by 70%.
+
+### Real estate: rental income without rent rolls
+
+Property managers maintain complex rent rolls, track pro-rata ownership,
+calculate distributions, and process dozens of individual payments. Investors
+wait 30-45 days after quarter-end to see their income.
+
+**With ATK lifecycle automation:**
+
+1. **Fractionalization via DvP** — Property tokenized into shares; investors
+   purchase via atomic swap against stablecoins. Ownership recorded on-chain.
+2. **Custody in yield vault** — Property management entity deposits rental
+   income into vault monthly; funds accumulate against token holder
+   entitlements.
+3. **Pro-rata calculation** — Yield engine computes each investor's share based
+   on token balance; accounts for mid-period transfers automatically.
+4. **Self-service claims** — Investors call `claimYield()` to receive their
+   rental income anytime. No waiting for property manager's payment run.
+5. **Exit via DvP** — When property sells, proceeds deposited to vault;
+   investors redeem tokens and receive their share atomically.
+
+Result: Monthly income available within days of rent collection. Zero manual
+rent roll maintenance. Property manager focuses on operations, not payment
+processing.
+
+### Stablecoins: reserve management and interest distribution
+
+Stablecoin issuers face constant pressure to prove reserves and distribute yield
+from treasury operations. Traditional systems require separate banking rails,
+manual reconciliation, and delayed transparency.
+
+**With ATK lifecycle automation:**
+
+1. **Minting via DvP** — User deposits collateral (USDC, treasuries, etc.);
+   receives stablecoins atomically. Reserve backing cryptographically verified.
+2. **Vault custody of reserves** — Collateral held in multi-sig vault; reserve
+   ratio enforced on-chain. Real-time attestation eliminates audit delays.
+3. **Yield generation** — Treasury operations (lending, staking) generate
+   returns; interest credited to yield vault proportional to holdings.
+4. **Continuous distribution** — Interest accrues to token holders
+   automatically; claimable anytime. No monthly distribution schedules needed.
+5. **Redemption via DvP** — User burns stablecoins; receives collateral
+   atomically from vault. No redemption queues or processing delays.
+
+Result: Transparent reserves build trust. Automated yield distribution reduces
+operational costs by 85%. Instant redemption eliminates bank run risk.
+
+### Deposits: time-locked savings with guaranteed interest
+
+Banks offering tokenized certificates of deposit face regulatory requirements
+for term enforcement, interest accrual accuracy, and early withdrawal penalties.
+Manual tracking creates compliance risk.
+
+**With ATK lifecycle automation:**
+
+1. **Deposit via vault** — Customer deposits funds; receives time-locked CD
+   token. Smart contract enforces maturity date; early withdrawal requires
+   penalty calculation.
+2. **Interest accrual** — Yield engine calculates daily interest based on
+   deposit terms; entitlement grows continuously and transparently on-chain.
+3. **Mid-term visibility** — Customer views accrued interest anytime via
+   dashboard; knows exact maturity value. No statement delays.
+4. **Automatic maturity** — At term end, vault unlocks; customer claims
+   principal plus interest via single transaction. No branch visit needed.
+5. **Early exit option** — If permitted, vault calculates penalty automatically;
+   customer accepts and receives reduced amount via DvP.
+
+Result: Zero manual interest calculation errors. Regulatory compliance enforced
+by code. Customer self-service eliminates 90% of support tickets.
+
+## Cross-cutting capabilities: the unified infrastructure advantage
+
+Every asset type benefits from shared platform features that traditional point
+solutions force you to build separately:
+
+**Compliance enforcement at transfer time** — SMART Protocol validates investor
+eligibility, geographic restrictions, and holding period requirements before any
+token moves. Works identically whether transferring bonds, fund units, or real
+estate shares.
+
+**Real-time cap tables** — Ownership updates instantly as tokens transfer.
+Regulatory reporting pulls current data anytime. No month-end reconciliation
+across custodians, no stale spreadsheets.
+
+**Unified observability** — Single dashboard shows transaction latency,
+compliance rule evaluation statistics, yield distribution status, and vault
+custody metrics across all asset types. DevOps teams monitor one system instead
+of five.
+
+**Audit trails** — Every transaction, compliance check, corporate action, and
+lifecycle event recorded on-chain with cryptographic proofs. Regulators access
+complete history without requesting data exports.
+
+**Instant settlement** — Atomic finality eliminates counterparty risk and
+capital lockup for all asset types. T+2 and T+5 clearing cycles become
+historical curiosities.
+
+## The cost of fragmentation vs. unified infrastructure
+
+**Fragmented vendor approach:**
+
+- Integration engineering: 6-9 months per asset type
+- Ongoing reconciliation: 40+ hours monthly per asset
+- Compliance gaps: Manual verification introduces errors and delays
+- Operational overhead: Separate systems for custody, distributions, servicing
+- Scaling cost: Each new asset type requires new vendor relationships and
+  integrations
+
+**ATK unified approach:**
+
+- Launch to production: 4-8 weeks for first asset, 2-4 weeks for additional
+  types
+- Reconciliation: Zero—single source of truth on-chain
+- Compliance enforcement: Automated at protocol level, consistent across assets
+- Operational overhead: One platform, one monitoring stack, one support team
+- Scaling cost: Deploy new asset configurations, reuse existing infrastructure
+
+The difference compounds over time. After launching three asset types, a
+fragmented approach has consumed 18+ months of engineering time and requires
+dedicated staff for each asset's operations. ATK customers are launching their
+fourth and fifth assets with the same small team that handled the first.
+
+## Observability: seeing what matters in production
+
+Traditional tokenization platforms leave you blind. When a distribution fails or
+a transfer gets rejected, you're debugging logs and calling vendor support.
+
+ATK's observability stack gives you answers immediately:
+
+**Transaction latency dashboard** — Verify settlement times meet SLAs. See
+P50/P95/P99 latencies across asset types. Spot performance degradation before
+users complain.
+
+**Compliance metrics panel** — Real-time statistics on rule evaluation. Track
+rejection rates by rule type. Identify compliance bottlenecks proactively.
+
+**Yield distribution monitoring** — Track scheduled corporate actions,
+distribution calculations, and claim activity. Know exactly how much yield
+remains unclaimed and why.
+
+**Vault custody analytics** — Monitor multi-sig operations, threshold changes,
+and asset movements. Audit trail visualization for regulatory inquiries.
+
+**Cross-asset health view** — Single pane showing status across bonds, funds,
+real estate, stablecoins, and deposits. Ops teams triage issues without
+context-switching between systems.
+
+This isn't just nice to have. It's the difference between confidently scaling to
+production and nervously hoping nothing breaks.
 
 ## Regulatory considerations
 
-Each asset class navigates distinct frameworks. Bonds typically fall under
-securities laws requiring accredited investor verification. Private equity funds
-add qualified purchaser thresholds and lock-up periods. Real estate introduces
-property transfer rules and tax withholding. Stablecoins face banking
-regulations and reserve requirements. Deposits require FDIC compliance and
-consumer protection.
+Each asset class navigates distinct frameworks, but the platform provides
+consistent compliance infrastructure:
 
-The platform adapts to these requirements through configurable compliance
-modules rather than hard-coded rules. See
-[Compliance & Security](/docs/executive-overview/compliance-security) for
+**Bonds** typically fall under securities laws requiring accredited investor
+verification and transfer restrictions. The SMART Protocol embeds these rules at
+the contract level—every bond transfer checks eligibility automatically.
+
+**Private equity** adds qualified purchaser thresholds and lock-up periods.
+Vault custody enforces holding requirements while yield automation handles
+distribution waterfalls per fund terms.
+
+**Real estate** introduces property transfer rules and tax withholding (like
+FIRPTA). Compliance modules configure jurisdiction-specific requirements without
+custom contract development.
+
+**Stablecoins** face banking regulations and reserve requirements. On-chain
+reserve proofs and real-time attestation eliminate periodic audit delays.
+
+**Deposits** require FDIC compliance and consumer protection. Time-lock
+enforcement and interest calculation accuracy are guaranteed by smart contract
+logic.
+
+See [Compliance & Security](/docs/executive-overview/compliance-security) for
 detailed architecture.
 
 ## Implementation path
 
-Deploying a use case typically involves:
+Deploying a use case follows a consistent pattern regardless of asset type:
 
-1. **Asset configuration** – Define terms, compliance rules, and lifecycle
-   schedules via the Asset Designer
-2. **Investor onboarding** – Integrate KYC/AML providers to verify eligibility
-   and issue OnchainID credentials
-3. **Primary distribution** – Allocate tokens to verified investors with
-   embedded transfer restrictions
-4. **Lifecycle automation** – Configure corporate actions (coupons,
-   distributions, redemptions) to execute on schedule
-5. **Ongoing operations** – Monitor cap tables, handle secondary transfers,
-   generate regulatory reports
+1. **Asset configuration** — Define terms, compliance rules, and lifecycle
+   schedules via Asset Designer. Reuse templates for common patterns.
+2. **Investor onboarding** — Integrate KYC/AML providers to verify eligibility
+   and issue OnchainID credentials. Process works identically across asset
+   types.
+3. **Primary distribution** — Allocate tokens to verified investors via DvP
+   settlement. Configure vault parameters and yield schedules.
+4. **Lifecycle automation** — Corporate actions execute automatically:
+   distributions, redemptions, NAV updates. Token holders self-service their
+   claims.
+5. **Ongoing operations** — Monitor unified dashboard, handle secondary
+   transfers, generate regulatory reports from on-chain data.
 
 For technical implementation details, see the
 [Developer Documentation](/docs/developer-guides/reference).
@@ -125,5 +368,5 @@ For technical implementation details, see the
   above
 - Review [Architecture & Capabilities](/docs/architecture/system-architecture)
   to understand the underlying infrastructure
-- Contact your SettleMint representative to discuss a proof of concept for your
-  specific use case
+- Contact your SettleMint representative to discuss a proof of concept
+  demonstrating DALP lifecycle features with your specific asset type
