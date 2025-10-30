@@ -46,7 +46,7 @@
     "version": "bun run tools/version.ts",
     "clean": "bash tools/clean.sh",
     "predev": "bunx settlemint connect --instance local",
-    "dev": "turbo dev watch db:studio ",
+    "dev": "turbo dev watch ",
     "start": "turbo start",
     "lint": "turbo lint ",
     "format": "turbo format ",
@@ -63,7 +63,6 @@
     "postdev:reset": "bun run dev:up",
     "artifacts": "turbo run artifacts ",
     "extract-env": "bun run tools/extract-env.ts",
-    "db:studio": "turbo run db:studio",
     "verify-translations": "turbo run verify-translations"
   },
   "dependencies": {
