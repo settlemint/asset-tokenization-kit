@@ -9,14 +9,10 @@ export default defineConfig({
     globals: true,
     passWithNoTests: true,
     pool: "forks",
-    poolOptions: {
-      forks: {
-        // Limit the number of parallel test workers to avoid exceeding the PostgreSQL
-        // connection limit. Integration tests spin up services that connect to the
-        // database, and running too many in parallel can exhaust the connection pool.
-        maxForks: process.env.CI ? 25 : undefined,
-      },
-    },
+    // Limit the number of parallel test workers to avoid exceeding the PostgreSQL
+    // connection limit. Integration tests spin up services that connect to the
+    // database, and running too many in parallel can exhaust the connection pool.
+    maxWorkers: process.env.CI ? 25 : undefined,
     reporters: process.env.CLAUDECODE
       ? ["dot"]
       : process.env.CI
@@ -25,7 +21,6 @@ export default defineConfig({
     onConsoleLog: process.env.CLAUDECODE ? () => false : undefined,
     silent: process.env.CLAUDECODE ? "passed-only" : undefined,
     coverage: {
-      all: true,
       provider: "v8",
       reporter: ["text-summary", "json", "json-summary", "lcov"],
       reportOnFailure: true,
