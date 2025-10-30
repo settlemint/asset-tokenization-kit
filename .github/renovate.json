@@ -43,6 +43,11 @@
       "matchPackageNames": ["/^@better-auth//", "better-auth"]
     },
     {
+      "groupName": "Fumadocs",
+      "groupSlug": "fumadocs",
+      "matchPackageNames": ["/^fumadocs-//", "/^@fumadocs//"]
+    },
+    {
       "groupName": "Nomic Foundation",
       "groupSlug": "nomicfoundation",
       "matchPackageNames": ["/^@nomicfoundation//", "hardhat"]
