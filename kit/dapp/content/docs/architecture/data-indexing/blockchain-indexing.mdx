@@ -292,8 +292,7 @@ dataSources:
         - System
         - Event
       eventHandlers:
-        - event:
-            ATKSystemCreated(indexed address,indexed address,indexed address)
+        - event: ATKSystemCreated(indexed address,indexed address,indexed address)
           handler: handleATKSystemCreated
       file: ./src/system-factory/system-factory.ts
 
@@ -305,8 +304,7 @@ templates:
       abi: Token
     mapping:
       eventHandlers:
-        - event:
-            TransferCompleted(indexed address,indexed address,indexed
+        - event: TransferCompleted(indexed address,indexed address,indexed
             address,uint256)
           handler: handleTransferCompleted
         - event: MintCompleted(indexed address,indexed address,indexed uint256)

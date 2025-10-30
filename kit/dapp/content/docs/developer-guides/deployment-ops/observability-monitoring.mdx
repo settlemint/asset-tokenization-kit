@@ -1,9 +1,7 @@
 ---
 title: Observability & monitoring
-description:
-  Production observability stack, dashboards, metrics, and troubleshooting
-pageTitle:
-  How to monitor and troubleshoot ATK deployments using observability tools
+description: Production observability stack, dashboards, metrics, and troubleshooting
+pageTitle: How to monitor and troubleshoot ATK deployments using observability tools
 tags: [how-to, observability, monitoring, dashboards, metrics, grafana]
 ---
 
@@ -1265,8 +1263,7 @@ passing through sustained signals while rejecting temporary noise.
 ```yaml
 Alert name: High API Error Rate
 Condition: Rate of 5xx responses exceeds 1% for 5 minutes
-PromQL query:
-  ( sum(rate(http_requests_total{code=~"5.."}[1m])) /
+PromQL query: ( sum(rate(http_requests_total{code=~"5.."}[1m])) /
   sum(rate(http_requests_total[1m])) ) > 0.01
 For: 5m
 Severity: critical
@@ -1300,8 +1297,7 @@ Labels:
   component: postgresql
   layer: storage
 Annotations:
-  summary:
-    "Database connection pool at {{$value | humanizePercentage}} capacity"
+  summary: "Database connection pool at {{$value | humanizePercentage}} capacity"
   runbook: "https://wiki.example.com/runbooks/connection-exhaustion"
 Notification: Slack #database-alerts
 ```
@@ -1862,8 +1858,7 @@ observability:
         token_url: https://github.com/login/oauth/access_token
         api_url: https://api.github.com/user
         allowed_organizations: "your-org"
-        role_attribute_path:
-          "contains(groups[*], 'your-org:admins') && 'Admin' || 'Viewer'"
+        role_attribute_path: "contains(groups[*], 'your-org:admins') && 'Admin' || 'Viewer'"
 ```
 
 This configuration allows any member of `your-org` GitHub organization to

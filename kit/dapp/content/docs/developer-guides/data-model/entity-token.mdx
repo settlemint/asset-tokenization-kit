@@ -829,8 +829,7 @@ operational insights.
 
 # Alert if transfer count spikes (potential bot activity)
 - alert: TransferSpike
-  expr:
-    rate(token_transfer_count[5m]) > avg_over_time(token_transfer_count[1h]) * 3
+  expr: rate(token_transfer_count[5m]) > avg_over_time(token_transfer_count[1h]) * 3
   annotations:
     summary: "Transfer volume spike on {{ $labels.token_symbol }}"
 ```
