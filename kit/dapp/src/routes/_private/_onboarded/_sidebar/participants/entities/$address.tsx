@@ -34,7 +34,8 @@ export const Route = createFileRoute(
 
     if (!canViewEntities) {
       throw redirect({
-        to: "/",
+        to: "/participants/entities",
+        replace: true,
       });
     }
 

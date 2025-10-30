@@ -1,12 +1,11 @@
+import { BaseActionSheet } from "@/components/manage-dropdown/core/base-action-sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { BaseActionSheet } from "@/components/manage-dropdown/core/base-action-sheet";
-import { useSession } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth/auth.client";
 import { client, orpc } from "@/orpc/orpc-client";
 import type { UserReadOutput } from "@/orpc/routes/user/routes/user.read.schema";
-import type { AccessControlRoles } from "@atk/zod/access-control-roles";
+import { ORPCError } from "@orpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   useCallback,
@@ -18,7 +17,6 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { ORPCError } from "@orpc/client";
 
 interface BasicInfoFormState {
   firstName: string;
@@ -31,8 +29,7 @@ interface EditBasicInfoSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit?: (values: BasicInfoFormState) => void;
-  canEdit: boolean;
-  systemRoles?: Partial<Record<AccessControlRoles, boolean>>;
+  canEdit?: boolean;
 }
 
 const FORM_ID = "edit-basic-info-form";
@@ -45,25 +42,10 @@ export function EditBasicInfoSheet({
   open,
   onOpenChange,
   onSubmit,
-  canEdit,
-  systemRoles,
+  canEdit = true,
 }: EditBasicInfoSheetProps) {
   const { t } = useTranslation(["user", "common"]);
-  const { data: session } = useSession();
   const queryClient = useQueryClient();
-
-  const sessionCanEdit =
-    session?.user?.role === "admin" ||
-    Boolean(session?.user?.isAdmin) ||
-    Boolean(session?.user?.roles?.admin) ||
-    Boolean(session?.user?.roles?.systemManager) ||
-    Boolean(systemRoles?.admin) ||
-    Boolean(systemRoles?.systemManager);
-  const allowEdit = canEdit && sessionCanEdit;
-
-  if (!allowEdit) {
-    return null;
-  }
 
   const initialFormState = useMemo<BasicInfoFormState>(
     () => ({
@@ -189,6 +171,9 @@ export function EditBasicInfoSheet({
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      if (!canEdit) {
+        return;
+      }
       const submission = persistBasicInfo(formState);
 
       toast.promise(submission, {
@@ -206,7 +191,7 @@ export function EditBasicInfoSheet({
         })
         .catch(() => undefined);
     },
-    [formState, onOpenChange, persistBasicInfo, t]
+    [canEdit, formState, onOpenChange, persistBasicInfo, t]
   );
 
   return (
@@ -216,7 +201,7 @@ export function EditBasicInfoSheet({
       title={t("user:details.basicInfo.editTitle")}
       description={t("user:details.basicInfo.editDescription")}
       submit={
-        <Button type="submit" form={FORM_ID} disabled={isSaving}>
+        <Button type="submit" form={FORM_ID} disabled={!canEdit || isSaving}>
           {t("common:actions.save")}
         </Button>
       }

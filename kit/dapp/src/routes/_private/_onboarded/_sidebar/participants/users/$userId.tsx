@@ -44,38 +44,27 @@ export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/participants/users/$userId"
 )({
   parseParams: (params) => routeParamsSchema.parse(params),
-  beforeLoad: async ({ context: { queryClient, orpc } }) => {
-    const [currentUser, system] = await Promise.all([
-      queryClient.ensureQueryData(orpc.user.me.queryOptions()),
-      queryClient.ensureQueryData(
-        orpc.system.read.queryOptions({
-          input: { id: "default" },
-        })
-      ),
-    ]);
+  /**
+   * Loader function to prepare user data
+   * Fetches user information using the ORPC user.read endpoint
+   */
+  loader: async ({ params: { userId }, context: { queryClient, orpc } }) => {
+    const system = await queryClient.ensureQueryData(
+      orpc.system.read.queryOptions({
+        input: { id: "default" },
+      })
+    );
 
-    const systemRoles = (system.userPermissions?.roles ?? {}) as Partial<
-      Record<AccessControlRoles, boolean>
-    >;
-    const hasAdminAccess =
-      currentUser.role === "admin" ||
-      Boolean(systemRoles.admin) ||
-      Boolean(systemRoles.systemManager);
+    const roles = system.userPermissions?.roles;
+    const canViewUsers = Boolean(roles?.identityManager || roles?.claimIssuer);
 
-    if (!hasAdminAccess) {
+    if (!canViewUsers) {
       throw redirect({
         to: "/participants/users",
         replace: true,
       });
     }
 
-    return { currentUser, systemRoles } as const;
-  },
-  /**
-   * Loader function to prepare user data
-   * Fetches user information using the ORPC user.read endpoint
-   */
-  loader: async ({ params: { userId }, context: { queryClient, orpc } }) => {
     const user = await queryClient.ensureQueryData(
       orpc.user.read.queryOptions({ input: { userId } })
     );
@@ -136,17 +125,6 @@ function RouteComponent() {
   };
 
   const detailedUser = user as ExtendedUser;
-  const currentUserDetail = routeContext.currentUser as
-    | ExtendedUser
-    | undefined;
-  const systemRoles =
-    (routeContext.systemRoles as
-      | Partial<Record<AccessControlRoles, boolean>>
-      | undefined) ?? ({} as Partial<Record<AccessControlRoles, boolean>>);
-  const canEdit =
-    (currentUserDetail?.role ?? "user") === "admin" ||
-    Boolean(systemRoles.admin) ||
-    Boolean(systemRoles.systemManager);
   const displayName = getUserDisplayName(detailedUser);
   const { t } = useTranslation("user");
   const isAdminType =
@@ -226,14 +204,8 @@ function RouteComponent() {
         </div>
       </div>
       <div className="grid auto-rows-fr items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <BasicInfoTile
-          user={user}
-          canEdit={canEdit}
-          systemRoles={systemRoles}
-        />
+        <BasicInfoTile user={user} />
       </div>
-
-      {/* Nested Sub Routes */}
       <Outlet />
     </div>
   );

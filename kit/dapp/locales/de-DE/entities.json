@@ -9,9 +9,7 @@
   },
   "status": {
     "registered": "Aktiv",
-    "pending": "Inaktiv",
-    "active": "Aktiv",
-    "inactive": "Inaktiv"
+    "pending": "Inaktiv"
   },
   "details": {
     "basicInfo": {

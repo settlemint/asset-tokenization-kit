@@ -9,9 +9,7 @@
   },
   "status": {
     "registered": "有効",
-    "pending": "無効",
-    "active": "有効",
-    "inactive": "無効"
+    "pending": "無効"
   },
   "details": {
     "basicInfo": {

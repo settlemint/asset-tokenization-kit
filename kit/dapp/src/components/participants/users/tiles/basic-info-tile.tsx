@@ -6,49 +6,37 @@ import {
   TileHeader,
   TileTitle,
 } from "@/components/tile/tile";
-import { useSession } from "@/hooks/use-auth";
 import { formatDate } from "@/lib/utils/date";
 import { getUserDisplayName } from "@/lib/utils/user-display-name";
+import { orpc } from "@/orpc/orpc-client";
 import type { UserReadOutput } from "@/orpc/routes/user/routes/user.read.schema";
-import type { AccessControlRoles } from "@atk/zod/access-control-roles";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { UserRound } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditBasicInfoSheet } from "../actions/edit-basic-info-sheet";
 
 export interface BasicInfoTileProps {
   user: UserReadOutput;
-  canEdit?: boolean;
-  systemRoles?: Partial<Record<AccessControlRoles, boolean>>;
 }
 
 /**
  * Overview tile summarizing core user details with inline edit entry point.
+ * Automatically restricts editing controls to identity managers using live system permissions.
  */
-export function BasicInfoTile({
-  user,
-  canEdit = false,
-  systemRoles,
-}: BasicInfoTileProps) {
+export function BasicInfoTile({ user }: BasicInfoTileProps) {
   const { t, i18n } = useTranslation(["user", "common"]);
-  const { data: session } = useSession();
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const { data: system } = useSuspenseQuery(
+    orpc.system.read.queryOptions({
+      input: { id: "default" },
+    })
+  );
+
+  const canEdit = Boolean(system.userPermissions?.roles.identityManager);
 
   const editLabel = t("common:actions.edit");
-  const sessionCanEdit =
-    session?.user?.role === "admin" ||
-    Boolean(session?.user?.isAdmin) ||
-    Boolean(session?.user?.roles?.admin) ||
-    Boolean(session?.user?.roles?.systemManager) ||
-    Boolean(systemRoles?.admin) ||
-    Boolean(systemRoles?.systemManager);
-  const allowEdit = canEdit && sessionCanEdit;
-
-  useEffect(() => {
-    if (!allowEdit && isEditSheetOpen) {
-      setIsEditSheetOpen(false);
-    }
-  }, [allowEdit, isEditSheetOpen]);
+  const detailLabel = canEdit ? editLabel : undefined;
 
   const displayName = useMemo(() => getUserDisplayName(user), [user]);
 
@@ -88,9 +76,9 @@ export function BasicInfoTile({
   return (
     <>
       <Tile
-        detailLabel={allowEdit ? editLabel : undefined}
+        detailLabel={detailLabel}
         onOpenDetail={
-          allowEdit
+          canEdit
             ? () => {
                 setIsEditSheetOpen(true);
               }
@@ -121,7 +109,7 @@ export function BasicInfoTile({
             ))}
           </dl>
         </TileContent>
-        {allowEdit ? (
+        {canEdit ? (
           <TileFooter className="justify-center">
             <TileFooterAction
               variant="outline"
@@ -132,13 +120,12 @@ export function BasicInfoTile({
           </TileFooter>
         ) : null}
       </Tile>
-      {allowEdit ? (
+      {canEdit ? (
         <EditBasicInfoSheet
           user={user}
           open={isEditSheetOpen}
           onOpenChange={setIsEditSheetOpen}
-          canEdit={allowEdit}
-          systemRoles={systemRoles}
+          canEdit
         />
       ) : null}
     </>

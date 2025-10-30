@@ -9,9 +9,7 @@
   },
   "status": {
     "registered": "نشط",
-    "pending": "غير نشط",
-    "active": "نشط",
-    "inactive": "غير نشط"
+    "pending": "غير نشط"
   },
   "details": {
     "basicInfo": {

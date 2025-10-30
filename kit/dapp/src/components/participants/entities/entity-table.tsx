@@ -5,6 +5,11 @@ import { createStrictColumnHelper } from "@/components/data-table/utils/typed-co
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { orpc } from "@/orpc/orpc-client";
 import type { EntityListOutput } from "@/orpc/routes/system/entity/routes/entity.list.schema";
 import { entityTypes } from "@atk/zod/entity-types";
@@ -125,6 +130,27 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
           displayName: t("entityTable.columns.name"),
           type: "text",
           emptyValue: t("entityTable.fallback.noName"),
+          renderCell: (context) => {
+            const value = context.getValue();
+            const fallback = context.column.columnDef.meta?.emptyValue ?? "";
+
+            if (!value) {
+              return fallback;
+            }
+
+            const text = typeof value === "string" ? value : String(value);
+
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="block min-w-0 max-w-[240px] truncate text-left">
+                    {text}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>{text}</TooltipContent>
+              </Tooltip>
+            );
+          },
         },
       }),
       columnHelper.accessor("contractAddress", {

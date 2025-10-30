@@ -8,10 +8,8 @@
     "description": "You do not have permission to manage entities. Contact an administrator for additional access."
   },
   "status": {
-    "registered": "Active",
-    "pending": "Inactive",
-    "active": "Active",
-    "inactive": "Inactive"
+    "registered": "Registered",
+    "pending": "Pending registration"
   },
   "details": {
     "basicInfo": {
