@@ -220,7 +220,7 @@ The following table lists the configurable parameters of this chart and their de
 |image.pullSecrets|list|-|eRPC image pull secrets|
 |image.registry|string|`"ghcr.io"`|eRPC image registry|
 |image.repository|string|`"erpc/erpc"`|eRPC image repository|
-|image.tag|string|`"0.0.58"`|eRPC image tag (immutable tags are recommended)|
+|image.tag|string|`"0.0.57"`|eRPC image tag (immutable tags are recommended)|
 |ingress|object|-|Ingress parameters|
 |ingress.annotations|object|-|Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.|
 |ingress.apiVersion|string|`""`|Force Ingress API version (automatically detected if not set)|
