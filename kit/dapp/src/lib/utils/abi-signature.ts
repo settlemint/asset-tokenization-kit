@@ -3,8 +3,8 @@ import { regex } from "arkregex";
 /**
  * Type-safe regex patterns for ABI signature validation
  */
-export const WHITESPACE_PATTERN = regex(String.raw`\s+`, "g");
-export const FUNCTION_STYLE_PATTERN = regex(String.raw`^\w+\(`);
+export const WHITESPACE_PATTERN = regex(`\\s+`, "g");
+export const FUNCTION_STYLE_PATTERN = regex(`^\\w+\\(`);
 
 /**
  * Normalizes ABI type signature by trimming spaces around commas and collapsing multiple spaces

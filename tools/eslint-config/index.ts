@@ -220,6 +220,7 @@ export default [
       "unicorn/switch-case-braces": ["error", "avoid"], // Cleaner switch statements
       "unicorn/no-useless-undefined": "off",
       "unicorn/number-literal-case": "off",
+      "unicorn/prefer-string-raw": "off", // arkregex requires direct string literals
     },
   },
 
