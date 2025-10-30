@@ -43,7 +43,7 @@ export function AssetTypeCard({
             </p>
           </div>
         </div>
-        {showExtensions && extensions.length > 0 ? (
+        {showExtensions ? (
           <AssetExtensionsList extensions={extensions} className="mt-3" />
         ) : null}
       </div>
