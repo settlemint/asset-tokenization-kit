@@ -190,7 +190,7 @@ The following table lists the configurable parameters of this chart and their de
 |ipfs.image.pullPolicy|string|`"IfNotPresent"`|IPFS image pull policy|
 |ipfs.image.registry|string|`"docker.io"`|IPFS image registry|
 |ipfs.image.repository|string|`"ipfs/kubo"`|IPFS image repository|
-|ipfs.image.tag|string|`"v0.38.1"`|IPFS image tag|
+|ipfs.image.tag|string|`"v0.38.2"`|IPFS image tag|
 |ipfs.initContainers|list|-|Additional init containers|
 |ipfs.initScripts|map|-|Init scripts injected via ConfigMap (filename => script contents). Keys must match ^[A-Za-z0-9_.-]+$|
 |ipfs.nodeSelector|object|-|Node selector|
