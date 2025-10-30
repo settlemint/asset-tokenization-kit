@@ -29,6 +29,7 @@ import { kycProfiles } from "@/lib/db/schema";
 import * as authSchema from "@/lib/db/schemas/auth";
 import { env } from "@atk/config/env";
 import { metadata } from "@atk/config/metadata";
+import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import type { EthereumAddress } from "@atk/zod/ethereum-address";
 import type { UserRole } from "@atk/zod/user-roles";
 import { createServerOnlyFn } from "@tanstack/react-start";
@@ -402,4 +403,6 @@ export type Session = typeof auth.$Infer.Session;
 export interface SessionUser extends InferUser<typeof options> {
   wallet: EthereumAddress;
   role: UserRole;
+  isAdmin?: boolean | null;
+  roles?: Partial<Record<AccessControlRoles, boolean>>;
 }

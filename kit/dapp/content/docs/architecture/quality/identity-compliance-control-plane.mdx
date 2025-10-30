@@ -44,6 +44,9 @@ ATK's identity and compliance control plane unifies these concerns through:
   module rules before allowing transfers
 - **ORPC enforcement**: API middleware that pre-validates transactions against
   the same rules before submission
+- **Registration states**: The dApp surfaces `Registered` and
+  `Pending registration` badges to mirror on-chain registration progress for
+  each identity
 
 ## Architecture layers
 
@@ -399,6 +402,11 @@ API procedures that modify identity or compliance state require specific roles:
 - `GOVERNANCE_ROLE`: Add/remove compliance modules, change identity registry
 - `COMPLIANCE_OFFICER_ROLE`: Approve/reject KYC applications, issue claims
 - `EMERGENCY_ROLE`: Freeze addresses, pause token operations
+
+Identity operators without a connected wallet can still review entity
+identities; the dApp skips privileged token lookups when authentication falls
+back to identity permissions or when the identity record lacks an associated
+account.
 
 Middleware validates roles before executing procedures, preventing unauthorized
 compliance changes.

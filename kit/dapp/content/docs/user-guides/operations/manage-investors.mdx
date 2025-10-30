@@ -72,7 +72,27 @@ observability stack surfaces these enforcement actions in real time through the
 compliance metrics panel, showing you exactly which rules blocked which
 transactions and why.
 
+### Entity list status reference
+
+- **Registered** - Identity successfully registered on-chain and ready for use
+  in workflows.
+- **Pending registration** - Identity invited or created but awaiting
+  registration to complete onboarding.
+
 ## Step 1: investor registration
+
+Initiate the onboarding process by sending an invitation or providing a
+registration URL. The investor creates an account through the self-registration
+portal, verifies their email address, and accepts terms and conditions before
+proceeding to KYC verification. This multi-step flow prevents fraudulent
+registrations while maintaining a smooth user experience.
+
+Navigate to **Participants** &gt; **Entities** in the left sidebar and click
+**Invite Investor**. Choose between email invitation (send invite link to
+investor email) or direct registration (provide investor with registration URL).
+The investor receives the invitation, clicks the registration link, creates an
+account with email/password, verifies their email address, accepts terms and
+conditions, and lands on the KYC verification portal.
 
 Initiate the onboarding process by sending an invitation or providing a
 registration URL. The investor creates an account through the self-registration
@@ -114,6 +134,12 @@ of incorporation, certificates), tax identification, and financial statements
 for qualified purchaser determination.
 
 ### Verification processing
+
+**DOB validation:** The participant edit workflow only stores dates of birth
+that parse to a valid calendar date, so malformed inputs are ignored until
+corrected.
+
+**Institutional investors:**
 
 If you have integrated a KYC provider (Onfido, Jumio, Trulioo), the platform
 automatically submits collected data and receives verification results. The
@@ -160,13 +186,8 @@ compliance rules configuration.
   Basic --> Approved(Approved Status)
   Enhanced --> Approved
   EDD --> Approved
-
-style Route fill:#b661d9,stroke:#8a3fb3,stroke-width:2px
-style Provider fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px
-style Manual fill:#6ba4d4,stroke:#4a7ba8,stroke-width:2px
-style Level fill:#b661d9,stroke:#8a3fb3,stroke-width:2px
-style Approved fill:#8571d9,stroke:#654bad,stroke-width:2px
-`} />
+`}
+/>
 
 ## Step 3: OnchainID deployment
 
@@ -216,13 +237,15 @@ for eligibility.
 | Stablecoins        | KYC_VERIFIED, JURISDICTION                             | No expiration      |
 | Real estate tokens | KYC_VERIFIED, ACCREDITED_INVESTOR, QUALIFIED_PURCHASER | 1 year             |
 
-The most common claim types include **KYC_VERIFIED** (basic identity
-verification completed), **ACCREDITED_INVESTOR** (accredited investor status
-under Reg D), **QUALIFIED_PURCHASER** (qualified purchaser status for 3(c)(7)
-funds), **JURISDICTION** (country of residence), **INVESTOR_TYPE** (individual,
-institutional, professional), **SOPHISTICATED_INVESTOR** (EU sophisticated
-investor status), and **PEP_STATUS** (politically exposed person
-classification).
+**Common claim types:**
+
+- **KYC_VERIFIED** - Basic identity verification completed
+- **ACCREDITED_INVESTOR** - Accredited investor status (Reg D)
+- **QUALIFIED_PURCHASER** - Qualified purchaser status (3(c)(7) funds)
+- **JURISDICTION** - Country of residence
+- **INVESTOR_TYPE** - Individual, institutional, professional
+- **SOPHISTICATED_INVESTOR** - EU sophisticated investor status
+- **PEP_STATUS** - Politically exposed person classification
 
 ### Claim issuance process
 
@@ -240,14 +263,52 @@ investor's claims list immediately. **The platform is registered as a trusted
 claim issuer** in the system—only trusted issuers can issue claims accepted by
 compliance modules.
 
-For batch issuance to multiple investors, navigate to **Participants** &gt;
-**Entities**, select multiple investors via checkboxes, and click **Batch
-Actions** &gt; **Issue Claim**. Select the claim type, configure expiration
-(applies to all selected), and click **Issue to All Selected**. The platform
-processes the batch issuance and displays results showing successful and failed
-claim issuances. This workflow is particularly useful after quarterly
-accreditation verification, allowing you to batch-issue renewed
-ACCREDITED_INVESTOR claims to all qualifying investors.
+**Use case:** Investor may have hot wallet for trading and cold wallet for
+long-term holding, both linked to same OnchainID.
+
+### Issue individual claims
+
+Add claims to investor OnchainID:
+
+1. Navigate to **Participants** &gt; **Entities** &gt; [Investor Name]
+2. Scroll to **Claims** section
+3. Click **Issue Claim**
+4. Select claim type from dropdown (for example, ACCREDITED_INVESTOR)
+5. Enter claim data:
+   - **Claim topic** - Automatically filled based on type
+   - **Claim data** - Encoded investor information (auto-generated)
+   - **Expiration date** - When claim expires (optional, for example, 1 year for
+     accredited status)
+   - **URI** - Link to supporting documentation (optional)
+6. Click **Sign and Issue Claim**
+7. Platform:
+   - Signs claim with platform claim issuer key
+   - Adds claim to investor's OnchainID contract
+   - Records claim in compliance database
+8. Claim appears in investor's claims list
+
+**Contract linkage:** Non-contract identities skip token prefetch until an
+account contract exists, so token tiles stay blank until linkage is provisioned.
+
+**Claim issuer:** Platform is registered as trusted claim issuer in the system.
+Only trusted issuers can issue claims accepted by compliance modules.
+
+### Batch claim issuance
+
+Issue claims to multiple investors:
+
+For common claims needed by many investors:
+
+1. Navigate to **Participants** &gt; **Entities**
+2. Select multiple investors via checkboxes
+3. Click **Batch Actions** &gt; **Issue Claim**
+4. Select claim type
+5. Configure expiration (applies to all selected)
+6. Click **Issue to All Selected**
+7. Platform processes batch issuance
+8. Review results showing successful/failed claim issuances
+
+**Use case:** After quarterly accreditation verification, batch-issue renewed ACCREDITED_INVESTOR claims to all qualifying investors.
 
 ### Verification requirements by jurisdiction
 
@@ -391,16 +452,6 @@ organization's standard communication channels to send notifications. Common
 message types include claim expiration reminders (send 30 days before
 expiration), compliance updates (notify of new requirements), and document
 requests (request updated documents).
-
-When investors submit information updates, review supporting documentation
-before approving changes. For address changes, review the utility bill or other
-address verification documents, approve or reject the update in the investor
-profile, and re-issue the JURISDICTION claim if the country changed. For
-accreditation renewal, review updated financial documentation (submitted
-annually), verify income or net worth still meets accredited status thresholds,
-and re-issue the ACCREDITED_INVESTOR claim with new expiration. If the investor
-no longer qualifies, deny renewal—they will lose access to Reg D offerings until
-they requalify.
 
 ## Common workflows
 

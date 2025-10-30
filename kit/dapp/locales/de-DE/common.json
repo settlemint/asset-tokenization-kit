@@ -2,7 +2,10 @@
   "actions": {
     "add": "Hinzufügen",
     "cancel": "Abbrechen",
-    "skip": "Überspringen"
+    "skip": "Überspringen",
+    "edit": "Bearbeiten",
+    "save": "Änderungen speichern",
+    "saving": "Wird gespeichert..."
   },
   "appDescription": "In Minuten bereitstellen, einfach anpassen",
   "appName": "Asset-Tokenisierungs-Kit",
