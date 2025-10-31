@@ -52,7 +52,7 @@ function Profile() {
           {authPublicConfig.changeEmailEnabled ? (
             <ChangeEmailCard className="h-full" />
           ) : (
-            <Card className="flex h-full flex-col">
+            <Card className={CARD_CLASS_NAMES.base}>
               <CardHeader>
                 <CardTitle>{t("fields.email")}</CardTitle>
                 <CardDescription>
