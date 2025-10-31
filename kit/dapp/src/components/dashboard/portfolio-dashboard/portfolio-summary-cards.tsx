@@ -9,6 +9,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { Briefcase, Shield } from "lucide-react";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
+import { AssetTypeBreakdown } from "./asset-type-breakdown";
 
 /**
  * Total Value Card - Displays combined portfolio value with percentage change
@@ -82,10 +83,14 @@ function TotalValueCard() {
 }
 
 /**
- * Total Assets Card - Displays number of token factories
+ * Total Assets Card - Displays number of assets with breakdown by type
  *
- * Fetches portfolio data for factory count. Shows a briefcase icon as a visual
- * indicator to represent assets/portfolio management.
+ * Fetches portfolio data for asset counts and factory breakdown.
+ * Shows a briefcase icon as a visual indicator to represent assets/portfolio management.
+ *
+ * Why display both total assets and breakdown: Provides two levels of detail -
+ * the headline number (total assets held) and the composition (breakdown by type)
+ * helping users quickly understand their portfolio structure.
  */
 function TotalAssetsCard() {
   const { t } = useTranslation("dashboard");
@@ -98,10 +103,12 @@ function TotalAssetsCard() {
       title={t("portfolioDashboard.cards.totalAssets.title")}
       value={
         <div className="space-y-1">
-          <div>{portfolioData.totalTokenFactories}</div>
+          <div>{portfolioData.totalAssetsHeld}</div>
         </div>
       }
-      description={t("portfolioDashboard.cards.totalAssets.description")}
+      description={
+        <AssetTypeBreakdown breakdown={portfolioData.tokenFactoryBreakdown} />
+      }
       indicator={<Briefcase className="h-4 w-4 text-muted-foreground" />}
     />
   );

@@ -172,6 +172,13 @@
   "portfolioDashboard": {
     "welcome": "Welcome back, {{name}}",
     "subtitle": "Here's an overview of your portfolio and assets",
+    "portfolioHeader": {
+      "title": "My Portfolio",
+      "assetsCount_one": "{{count}} asset",
+      "assetsCount_other": "{{count}} assets",
+      "noAssets": "No assets yet",
+      "viewHoldings": "View Your Assets"
+    },
     "cards": {
       "totalValue": {
         "title": "Total value",

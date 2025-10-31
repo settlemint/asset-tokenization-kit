@@ -16,7 +16,7 @@ import {
  * Portfolio Dashboard Component
  *
  * Main dashboard view displaying comprehensive portfolio information:
- * - Personalized welcome message with user name
+ * - Portfolio header with total value, percentage change, and asset breakdown
  * - Three summary cards (Total value, Total assets, Identity status)
  * - Asset allocation pie chart
  * - Portfolio performance line chart
@@ -59,7 +59,9 @@ const PortfolioDashboardContent = withErrorBoundary(
         </div>
 
         {/* Summary Cards */}
-        <PortfolioSummaryCards />
+        <div className="mt-6">
+          <PortfolioSummaryCards />
+        </div>
 
         {/* Charts Section */}
         {hasAssets && (

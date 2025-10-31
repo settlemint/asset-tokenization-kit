@@ -27,7 +27,7 @@ interface StatCardProps {
    * "Combined value of all assets" or "2 bonds, 1 deposit" to help users
    * understand what the metric represents.
    */
-  description?: string;
+  description?: React.ReactNode;
   /**
    * Optional indicator element displayed in top-right corner
    *
