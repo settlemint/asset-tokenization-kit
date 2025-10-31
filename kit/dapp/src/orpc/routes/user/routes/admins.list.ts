@@ -5,6 +5,7 @@ import { getAccountsWithRoles } from "@/orpc/helpers/access-control-helpers";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
   buildUserWithIdentity,
   buildUserWithoutWallet,
@@ -12,7 +13,6 @@ import {
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
-import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 
 // GraphQL query to fetch multiple identities by wallet addresses
 const READ_IDENTITIES_QUERY = theGraphGraphql(`
