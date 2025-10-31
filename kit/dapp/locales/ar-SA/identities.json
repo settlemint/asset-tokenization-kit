@@ -151,6 +151,18 @@
     "linkedEntity": "الكيان المرتبط",
     "linkedEntityInfo": "الكيان المرتبط بهذه الهوية"
   },
+  "claimsTile": {
+    "title": "الهوية والتحققات",
+    "subtitle": "الهوية والمطالبات على السلسلة",
+    "activeVerifications": "عمليات تحقق نشطة",
+    "totalClaims": "{{count}} مطالبة إجمالية",
+    "totalClaims_plural": "{{count}} مطالبات إجمالية",
+    "revokedClaims": "{{count}} ملغاة",
+    "revokedClaims_plural": "{{count}} ملغاة",
+    "untrustedClaimsWarning": "تم اكتشاف مطالبة غير موثوقة {{count}}",
+    "untrustedClaimsWarning_plural": "تم اكتشاف {{count}} مطالبات غير موثوقة",
+    "manageVerifications": "إدارة عمليات التحقق"
+  },
   "claimsTable": {
     "columns": {
       "claimName": "اسم المطالبة",
