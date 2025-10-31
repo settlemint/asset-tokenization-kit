@@ -2,11 +2,11 @@
 title: API based cross border FX
 description:
   Execute cross-border foreign exchange settlements and bond investments using
-  API-driven workflows. This runbook demonstrates how to orchestrate stablecoin
+  REST API calls with curl. This runbook demonstrates how to orchestrate stablecoin
   minting, XvP settlement swaps, and bond coupon distributions with automated
   offchain FX transaction reconciliation via blockchain event monitoring.
 pageTitle: API-based cross-border FX settlement runbook
-tags: [runbook, api, fx, cross-border, settlement, xvp, stablecoin, bonds]
+tags: [runbook, api, fx, cross-border, settlement, xvp, stablecoin, bonds, curl, rest]
 ---
 
 **Primary audience:** Integration developers, treasury operations engineers  
@@ -64,7 +64,8 @@ converting bond yields from EUR to SGD using FX swaps.
 
 - Platform deployed with XvP settlement addon enabled
 - Admin access to create asset types, users, and wallets
-- API credentials with authentication configured
+- API base URL configured (default: `http://localhost:3000/api/rpc`)
+- Session authentication cookie for API requests
 - Access to observability dashboards for event monitoring
 - Banking integration for offchain FX transaction execution
 
@@ -73,10 +74,34 @@ transaction volume
 
 **Required knowledge:**
 
-- ORPC API client usage and authentication patterns
+- REST API usage with curl or HTTP clients
+- Session-based authentication and cookie management
 - Blockchain event listening and WebSocket subscriptions
 - Cross-border settlement operations
 - Treasury operations and FX transaction processing
+
+## API authentication
+
+All API requests require session authentication via cookies. First, authenticate
+through the web interface or login endpoint to obtain a session cookie.
+
+**Base URL:** `http://localhost:3000/api/rpc` (development)  
+**Production:** Configure via your deployment's API base URL
+
+**Session cookie:** After logging in through the web interface, extract the
+session cookie from your browser's developer tools and include it in curl
+requests:
+
+```bash
+# Set your session cookie (replace with actual cookie value)
+export SESSION_COOKIE="your-session-cookie-value"
+
+# Use in curl requests
+curl -X POST http://localhost:3000/api/rpc/token.list \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{"input": {"typeId": "stablecoin", "limit": 20}}'
+```
 
 ## Setup phase: Create infrastructure
 
@@ -88,32 +113,67 @@ infrastructure: stablecoins, test users, bond assets, and entity wallets.
 Create EUR and SGD stablecoins to represent liabilities from GM Malaysia and GM
 Singapore entities. These stablecoins will participate in XvP settlement swaps.
 
-**Using the API:**
+**Create EUR stablecoin:**
 
-```typescript
-import { orpc } from "@/lib/orpc/client";
+```bash
+curl -X POST http://localhost:3000/api/rpc/token.create \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "name": "EUR Stablecoin",
+      "symbol": "EURST",
+      "typeId": "stablecoin",
+      "decimals": 18,
+      "initialSupply": "0"
+    }
+  }'
+```
 
-// Create EUR stablecoin
-const eurStablecoin = await orpc.token.create.mutate({
-  input: {
-    name: "EUR Stablecoin",
-    symbol: "EURST",
-    typeId: "stablecoin",
-    decimals: 18,
-    initialSupply: "0", // Start with zero supply
-  },
-});
+**Response:**
 
-// Create SGD stablecoin
-const sgdStablecoin = await orpc.token.create.mutate({
-  input: {
-    name: "SGD Stablecoin",
-    symbol: "SGDST",
-    typeId: "stablecoin",
-    decimals: 18,
-    initialSupply: "0",
-  },
-});
+```json
+{
+  "transactionHash": "0x1234...",
+  "address": "0xEUR_STABLECOIN_ADDRESS",
+  "name": "EUR Stablecoin",
+  "symbol": "EURST"
+}
+```
+
+**Create SGD stablecoin:**
+
+```bash
+curl -X POST http://localhost:3000/api/rpc/token.create \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "name": "SGD Stablecoin",
+      "symbol": "SGDST",
+      "typeId": "stablecoin",
+      "decimals": 18,
+      "initialSupply": "0"
+    }
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "transactionHash": "0x5678...",
+  "address": "0xSGD_STABLECOIN_ADDRESS",
+  "name": "SGD Stablecoin",
+  "symbol": "SGDST"
+}
+```
+
+**Save addresses for later use:**
+
+```bash
+export EUR_STABLECOIN="0xEUR_STABLECOIN_ADDRESS"
+export SGD_STABLECOIN="0xSGD_STABLECOIN_ADDRESS"
 ```
 
 **Offchain accounting:** Each stablecoin represents a liability from the
@@ -126,24 +186,32 @@ liability on-chain.
 Create User A and User B to represent Maybank customers in different
 jurisdictions.
 
-```typescript
-// Create User A (Malaysia)
-const userA = await orpc.user.create.mutate({
-  input: {
-    email: "user-a@example.com",
-    name: "User A",
-    // Additional user fields...
-  },
-});
+**Create User A (Malaysia):**
 
-// Create User B (Singapore)
-const userB = await orpc.user.create.mutate({
-  input: {
-    email: "user-b@example.com",
-    name: "User B",
-    // Additional user fields...
-  },
-});
+```bash
+curl -X POST http://localhost:3000/api/rpc/user.create \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "email": "user-a@example.com",
+      "name": "User A"
+    }
+  }'
+```
+
+**Create User B (Singapore):**
+
+```bash
+curl -X POST http://localhost:3000/api/rpc/user.create \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "email": "user-b@example.com",
+      "name": "User B"
+    }
+  }'
 ```
 
 **Note:** Ensure both users complete KYC verification before executing
@@ -155,20 +223,39 @@ level during XvP swaps.
 Create a bond token that will be exchanged for SGD stablecoin in the investment
 workflow.
 
-```typescript
-const bondToken = await orpc.token.create.mutate({
-  input: {
-    name: "Corporate Bond 2025",
-    symbol: "BOND25",
-    typeId: "bond",
-    decimals: 18,
-    initialSupply: "0",
-    // Bond-specific configuration
-    maturityDate: "2025-12-31",
-    couponRate: "5.0", // 5% annual coupon
-    denominationAsset: eurStablecoin.address, // Coupons paid in EUR
-  },
-});
+```bash
+curl -X POST http://localhost:3000/api/rpc/token.create \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "name": "Corporate Bond 2025",
+      "symbol": "BOND25",
+      "typeId": "bond",
+      "decimals": 18,
+      "initialSupply": "0",
+      "maturityDate": "2025-12-31",
+      "couponRate": "5.0",
+      "denominationAsset": "'${EUR_STABLECOIN}'"
+    }
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "transactionHash": "0xABCD...",
+  "address": "0xBOND_TOKEN_ADDRESS",
+  "name": "Corporate Bond 2025",
+  "symbol": "BOND25"
+}
+```
+
+**Save bond address:**
+
+```bash
+export BOND_TOKEN="0xBOND_TOKEN_ADDRESS"
 ```
 
 ### Step 4: Create entity wallets
@@ -177,22 +264,51 @@ Create wallets representing GM Malaysia Entity and GM Singapore Entity. These
 wallets hold assets and execute XvP settlements on behalf of their respective
 entities.
 
-```typescript
-// Create GM Malaysia Entity wallet
-const gmMalaysiaWallet = await orpc.user.createWallet.mutate({
-  input: {
-    userId: gmMalaysiaEntityUserId,
-    name: "GM Malaysia Entity Wallet",
-  },
-});
+**Get user IDs first (if needed):**
 
-// Create GM Singapore Entity wallet
-const gmSingaporeWallet = await orpc.user.createWallet.mutate({
-  input: {
-    userId: gmSingaporeEntityUserId,
-    name: "GM Singapore Entity Wallet",
-  },
-});
+```bash
+# List users to find entity user IDs
+curl -X POST http://localhost:3000/api/rpc/user.list \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{"input": {"limit": 100}}'
+```
+
+**Create GM Malaysia Entity wallet:**
+
+```bash
+curl -X POST http://localhost:3000/api/rpc/user.createWallet \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "userId": "GM_MALAYSIA_USER_ID",
+      "name": "GM Malaysia Entity Wallet"
+    }
+  }'
+```
+
+**Create GM Singapore Entity wallet:**
+
+```bash
+curl -X POST http://localhost:3000/api/rpc/user.createWallet \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "userId": "GM_SINGAPORE_USER_ID",
+      "name": "GM Singapore Entity Wallet"
+    }
+  }'
+```
+
+**Save wallet addresses:**
+
+```bash
+export GM_MALAYSIA_WALLET="0xGM_MALAYSIA_WALLET_ADDRESS"
+export GM_SINGAPORE_WALLET="0xGM_SINGAPORE_WALLET_ADDRESS"
+export USER_A_WALLET="0xUSER_A_WALLET_ADDRESS"
+export USER_B_WALLET="0xUSER_B_WALLET_ADDRESS"
 ```
 
 **Offchain accounting:** These wallets represent the on-chain presence of GM
@@ -212,19 +328,38 @@ represents GM Malaysia Entity's liability to User A.
 
 **API call:**
 
-```typescript
-// Mint EUR stablecoin to User A
-const mintResult = await orpc.token.mint.mutate({
-  input: {
-    address: eurStablecoin.address,
-    recipients: [
-      {
-        to: userA.walletAddress,
-        amount: "1000000000000000000000", // 1000 EUR stablecoin (18 decimals)
-      },
-    ],
-  },
-});
+```bash
+curl -X POST http://localhost:3000/api/rpc/token.mint \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "address": "'${EUR_STABLECOIN}'",
+      "recipients": [
+        {
+          "to": "'${USER_A_WALLET}'",
+          "amount": "1000000000000000000000"
+        }
+      ]
+    }
+  }'
+```
+
+**Amount explanation:** `1000000000000000000000` represents 1000 EUR stablecoin
+(18 decimals: 1000 ? 10^18).
+
+**Response:**
+
+```json
+{
+  "transactionHash": "0xMINT_TX_HASH",
+  "recipients": [
+    {
+      "to": "0xUSER_A_WALLET_ADDRESS",
+      "amount": "1000000000000000000000"
+    }
+  ]
+}
 ```
 
 **Offchain reconciliation:**
@@ -234,17 +369,8 @@ const mintResult = await orpc.token.mint.mutate({
 - The stablecoin balance on-chain represents this liability
 
 **Event monitoring:** Listen for `Transfer` events from the zero address to
-confirm minting:
-
-```typescript
-// Example event listener (pseudocode)
-contract.on("Transfer", (from, to, amount) => {
-  if (from === ZERO_ADDRESS && to === userA.walletAddress) {
-    // Mint confirmed, trigger offchain MYR transfer
-    executeOffchainMYRTransfer(userA, amount);
-  }
-});
-```
+confirm minting. See the [Event listening architecture](#event-listening-architecture)
+section for implementation details.
 
 ### Step 2: Create XvP swap contract
 
@@ -256,29 +382,45 @@ stablecoin to User B using the current FX rate.
 
 **API call (XvP settlement creation):**
 
-```typescript
-// Note: XvP API endpoints will be available when fully integrated
-// This is the expected structure
-const swapContract = await orpc.xvp.createSettlement.mutate({
-  input: {
-    participants: [
-      {
-        address: userA.walletAddress,
-        token: eurStablecoin.address,
-        amount: "1000000000000000000000", // 1000 EUR
-        action: "burn", // User A burns EUR
-      },
-      {
-        address: userB.walletAddress,
-        token: sgdStablecoin.address,
-        amount: "1500000000000000000000", // 1500 SGD (1.5x rate)
-        action: "mint", // User B receives SGD
-      },
-    ],
-    fxRate: "1.5", // EUR to SGD
-    expiresAt: Date.now() + 3600000, // 1 hour expiry
-  },
-});
+```bash
+# Note: XvP API endpoints will be available when fully integrated
+# This is the expected structure
+curl -X POST http://localhost:3000/api/rpc/xvp.createSettlement \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "participants": [
+        {
+          "address": "'${USER_A_WALLET}'",
+          "token": "'${EUR_STABLECOIN}'",
+          "amount": "1000000000000000000000",
+          "action": "burn"
+        },
+        {
+          "address": "'${USER_B_WALLET}'",
+          "token": "'${SGD_STABLECOIN}'",
+          "amount": "1500000000000000000000",
+          "action": "mint"
+        }
+      ],
+      "fxRate": "1.5",
+      "expiresAt": '$(($(date +%s) + 3600))'
+    }
+  }'
+```
+
+**Amount explanation:** `1500000000000000000000` represents 1500 SGD (1000 EUR
+? 1.5 FX rate).
+
+**Response:**
+
+```json
+{
+  "settlementId": "12345",
+  "transactionHash": "0xSWAP_TX_HASH",
+  "status": "pending"
+}
 ```
 
 **Offchain reconciliation:**
@@ -288,24 +430,8 @@ const swapContract = await orpc.xvp.createSettlement.mutate({
 - Official FX transaction executed between GM Malaysia Entity and GM Singapore
   Entity: MYR to SGD conversion at the specified rate
 
-**Event monitoring:** Listen for XvP settlement events:
-
-```typescript
-// Listen for XvP settlement execution
-xvpContract.on("SettlementExecuted", (settlementId, participants) => {
-  // Settlement completed atomically
-  // Trigger offchain FX transaction creation
-  createOffchainFXTransaction({
-    fromEntity: "GM Malaysia",
-    toEntity: "GM Singapore",
-    fromCurrency: "MYR",
-    toCurrency: "SGD",
-    amount: calculateMYRAmount(participants),
-    fxRate: "1.5",
-    settlementId,
-  });
-});
-```
+**Event monitoring:** Listen for XvP settlement events. See the [Event listening
+architecture](#event-listening-architecture) section for implementation details.
 
 ### Step 3: User B withdraws SGD stablecoin
 
@@ -314,14 +440,26 @@ Singapore Entity to User B's account.
 
 **API call:**
 
-```typescript
-const burnResult = await orpc.token.burn.mutate({
-  input: {
-    address: sgdStablecoin.address,
-    from: userB.walletAddress,
-    amount: "1500000000000000000000", // 1500 SGD
-  },
-});
+```bash
+curl -X POST http://localhost:3000/api/rpc/token.burn \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "address": "'${SGD_STABLECOIN}'",
+      "from": "'${USER_B_WALLET}'",
+      "amount": "1500000000000000000000"
+    }
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "transactionHash": "0xBURN_TX_HASH",
+  "amount": "1500000000000000000000"
+}
 ```
 
 **Offchain reconciliation:**
@@ -331,17 +469,9 @@ const burnResult = await orpc.token.burn.mutate({
 - SGD is transferred from GM Singapore Entity to User B's account
 - Cross-border settlement completes
 
-**Event monitoring:**
-
-```typescript
-// Listen for burn events
-contract.on("Transfer", (from, to, amount) => {
-  if (to === ZERO_ADDRESS && from === userB.walletAddress) {
-    // Burn confirmed, execute offchain SGD transfer
-    executeOffchainSGDTransfer(userB, amount);
-  }
-});
-```
+**Event monitoring:** Listen for burn events (Transfer to zero address). See
+the [Event listening architecture](#event-listening-architecture) section for
+implementation details.
 
 ## Bond investment workflow
 
@@ -353,37 +483,46 @@ payments in EUR, and converts them to SGD through XvP swaps.
 Mint the bond token to GM Malaysia Entity's wallet, representing the bond
 inventory available for investment.
 
-```typescript
-const bondMint = await orpc.token.mint.mutate({
-  input: {
-    address: bondToken.address,
-    recipients: [
-      {
-        to: gmMalaysiaWallet.address,
-        amount: "100000000000000000000", // 100 bond tokens
-      },
-    ],
-  },
-});
+```bash
+curl -X POST http://localhost:3000/api/rpc/token.mint \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "address": "'${BOND_TOKEN}'",
+      "recipients": [
+        {
+          "to": "'${GM_MALAYSIA_WALLET}'",
+          "amount": "100000000000000000000"
+        }
+      ]
+    }
+  }'
 ```
+
+**Amount explanation:** `100000000000000000000` represents 100 bond tokens
+(18 decimals: 100 ? 10^18).
 
 ### Step 2: Mint SGD stablecoin to User B
 
 Simulate User B's SGD deposit by minting SGD stablecoin to their wallet. This
 represents GM Singapore Entity's liability to User B.
 
-```typescript
-const sgdMint = await orpc.token.mint.mutate({
-  input: {
-    address: sgdStablecoin.address,
-    recipients: [
-      {
-        to: userB.walletAddress,
-        amount: "1000000000000000000000", // 1000 SGD
-      },
-    ],
-  },
-});
+```bash
+curl -X POST http://localhost:3000/api/rpc/token.mint \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "address": "'${SGD_STABLECOIN}'",
+      "recipients": [
+        {
+          "to": "'${USER_B_WALLET}'",
+          "amount": "1000000000000000000000"
+        }
+      ]
+    }
+  }'
 ```
 
 **Offchain reconciliation:**
@@ -397,26 +536,29 @@ const sgdMint = await orpc.token.mint.mutate({
 Execute an XvP settlement that swaps User B's SGD stablecoin for GM Malaysia
 Entity's bond tokens.
 
-```typescript
-const bondSwap = await orpc.xvp.createSettlement.mutate({
-  input: {
-    participants: [
-      {
-        address: userB.walletAddress,
-        token: sgdStablecoin.address,
-        amount: "1000000000000000000000", // 1000 SGD
-        action: "burn",
-      },
-      {
-        address: gmMalaysiaWallet.address,
-        token: bondToken.address,
-        amount: "100000000000000000000", // 100 bond tokens
-        action: "transfer", // Transfer from GM wallet to User B
-      },
-    ],
-    expiresAt: Date.now() + 3600000,
-  },
-});
+```bash
+curl -X POST http://localhost:3000/api/rpc/xvp.createSettlement \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "participants": [
+        {
+          "address": "'${USER_B_WALLET}'",
+          "token": "'${SGD_STABLECOIN}'",
+          "amount": "1000000000000000000000",
+          "action": "burn"
+        },
+        {
+          "address": "'${GM_MALAYSIA_WALLET}'",
+          "token": "'${BOND_TOKEN}'",
+          "amount": "100000000000000000000",
+          "action": "transfer"
+        }
+      ],
+      "expiresAt": '$(($(date +%s) + 3600))'
+    }
+  }'
 ```
 
 **Offchain reconciliation:**
@@ -426,23 +568,8 @@ const bondSwap = await orpc.xvp.createSettlement.mutate({
 - Official FX transaction: GM Singapore Entity to GM Malaysia Entity, SGD to
   MYR conversion
 
-**Event monitoring:**
-
-```typescript
-xvpContract.on("SettlementExecuted", (settlementId, participants) => {
-  // Bond swap completed
-  // User B now holds bond tokens
-  // Trigger offchain FX transaction
-  createOffchainFXTransaction({
-    fromEntity: "GM Singapore",
-    toEntity: "GM Malaysia",
-    fromCurrency: "SGD",
-    toCurrency: "MYR",
-    amount: calculateSGDPayment(participants),
-    settlementId,
-  });
-});
-```
+**Event monitoring:** Listen for settlement execution events to trigger offchain
+FX transaction creation.
 
 ### Step 4: Coupon payment distribution
 
@@ -451,19 +578,36 @@ stablecoin to bond holders (User B).
 
 **Note:** The yield management system automatically distributes coupon payments
 based on the bond's `denominationAsset` (EUR stablecoin). User B receives EUR
-stablecoin in their wallet.
+stablecoin in their wallet. This is typically handled by scheduled yield
+distribution procedures.
 
-**Event monitoring for coupon payment:**
+**Query bond yield schedule:**
 
-```typescript
-// Listen for yield distribution events
-yieldContract.on("YieldDistributed", (token, recipient, amount) => {
-  if (token === bondToken.address && recipient === userB.walletAddress) {
-    // Coupon payment received in EUR
-    // Trigger conversion workflow to SGD
-    initiateCouponConversion(recipient, amount);
-  }
-});
+```bash
+curl -X POST http://localhost:3000/api/rpc/fixedYieldSchedule.read \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "tokenAddress": "'${BOND_TOKEN}'"
+    }
+  }'
+```
+
+**Event monitoring for coupon payment:** Listen for yield distribution events
+to detect when User B receives EUR stablecoin:
+
+```bash
+# Listen for yield distribution events via TheGraph subgraph
+curl -X POST http://localhost:8000/subgraphs/name/atk/graphql \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "query YieldDistributions($token: String!, $recipient: String!) { yieldDistributions(where: { token: $token, recipient: $recipient }) { id amount timestamp } }",
+    "variables": {
+      "token": "'${BOND_TOKEN}'",
+      "recipient": "'${USER_B_WALLET}'"
+    }
+  }'
 ```
 
 ### Step 5: Convert coupon EUR to SGD
@@ -471,27 +615,49 @@ yieldContract.on("YieldDistributed", (token, recipient, amount) => {
 User B wants to receive SGD instead of EUR for the coupon payment. Create an
 XvP swap to burn EUR stablecoin and mint SGD stablecoin.
 
-```typescript
-const couponSwap = await orpc.xvp.createSettlement.mutate({
-  input: {
-    participants: [
-      {
-        address: userB.walletAddress,
-        token: eurStablecoin.address,
-        amount: couponAmount, // EUR received from coupon
-        action: "burn",
-      },
-      {
-        address: userB.walletAddress,
-        token: sgdStablecoin.address,
-        amount: calculateSGDEquivalent(couponAmount, fxRate), // Converted SGD
-        action: "mint",
-      },
-    ],
-    fxRate: "1.5", // EUR to SGD
-    expiresAt: Date.now() + 3600000,
-  },
-});
+**First, check User B's EUR balance:**
+
+```bash
+curl -X POST http://localhost:3000/api/rpc/token.read \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "address": "'${EUR_STABLECOIN}'"
+    }
+  }'
+```
+
+**Create coupon conversion swap:**
+
+```bash
+# Calculate coupon amount (example: 50 EUR)
+COUPON_AMOUNT="50000000000000000000"  # 50 EUR (18 decimals)
+SGD_AMOUNT="75000000000000000000"     # 75 SGD (50 EUR ? 1.5 rate)
+
+curl -X POST http://localhost:3000/api/rpc/xvp.createSettlement \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "participants": [
+        {
+          "address": "'${USER_B_WALLET}'",
+          "token": "'${EUR_STABLECOIN}'",
+          "amount": "'${COUPON_AMOUNT}'",
+          "action": "burn"
+        },
+        {
+          "address": "'${USER_B_WALLET}'",
+          "token": "'${SGD_STABLECOIN}'",
+          "amount": "'${SGD_AMOUNT}'",
+          "action": "mint"
+        }
+      ],
+      "fxRate": "1.5",
+      "expiresAt": '$(($(date +%s) + 3600))'
+    }
+  }'
 ```
 
 **Offchain reconciliation:**
@@ -501,143 +667,190 @@ const couponSwap = await orpc.xvp.createSettlement.mutate({
 - Official FX transaction: GM Malaysia Entity to GM Singapore Entity, MYR to
   SGD conversion for the coupon interest amount
 
-## API integration patterns
-
-### Event listening architecture
+## Event listening architecture
 
 To automate offchain FX transaction creation, implement a robust event
 listening system that monitors blockchain events and triggers reconciliation
 workflows.
 
-**WebSocket subscription pattern:**
+### WebSocket subscription pattern
 
-```typescript
-import { createPublicClient, webSocket } from "viem";
+Subscribe to blockchain events using WebSocket connections to your blockchain
+node:
 
-const client = createPublicClient({
-  transport: webSocket("wss://your-blockchain-node"),
-});
+```bash
+# Example: Connect to Besu WebSocket endpoint
+wscat -c ws://localhost:8546
 
-// Subscribe to Transfer events for stablecoin mints/burns
-const unsubscribe = client.watchEvent({
-  event: parseAbiItem("event Transfer(address indexed from, address indexed to, uint256 value)"),
-  address: [eurStablecoin.address, sgdStablecoin.address],
-  onLogs: (logs) => {
-    for (const log of logs) {
-      if (log.args.from === ZERO_ADDRESS) {
-        // Mint event - trigger offchain deposit processing
-        handleMintEvent(log);
-      } else if (log.args.to === ZERO_ADDRESS) {
-        // Burn event - trigger offchain withdrawal processing
-        handleBurnEvent(log);
-      }
+# Subscribe to Transfer events for stablecoin mints/burns
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "eth_subscribe",
+  "params": [
+    "logs",
+    {
+      "address": ["'${EUR_STABLECOIN}'", "'${SGD_STABLECOIN}'"],
+      "topics": [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"  # Transfer event signature
+      ]
     }
-  },
-});
-
-// Subscribe to XvP settlement events
-const xvpUnsubscribe = client.watchEvent({
-  event: parseAbiItem(
-    "event SettlementExecuted(uint256 indexed settlementId, address[] participants)"
-  ),
-  address: xvpSettlementContract.address,
-  onLogs: (logs) => {
-    for (const log of logs) {
-      // Settlement executed - create offchain FX transaction
-      handleSettlementEvent(log);
-    }
-  },
-});
+  ]
+}
 ```
 
-**Event handler implementation:**
+### TheGraph subgraph queries
 
-```typescript
-async function handleSettlementEvent(log: Log) {
-  const { settlementId, participants } = log.args;
+Query indexed events from TheGraph subgraph for reliable event processing:
 
-  // Query settlement details from TheGraph subgraph
-  const settlement = await querySubgraph(`
-    query GetSettlement($id: ID!) {
-      settlement(id: $id) {
-        participants {
-          address
-          token
-          amount
-          action
-        }
-        fxRate
-        executedAt
-      }
+**Transfer events (mints/burns):**
+
+```bash
+curl -X POST http://localhost:8000/subgraphs/name/atk/graphql \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "query Transfers($token: String!, $from: String, $to: String) { transfers(where: { token: $token, from: $from, to: $to }, orderBy: timestamp, orderDirection: desc, first: 100) { id from to amount timestamp transactionHash } }",
+    "variables": {
+      "token": "'${EUR_STABLECOIN}'",
+      "from": "0x0000000000000000000000000000000000000000"
     }
-  `);
+  }'
+```
 
-  // Determine FX transaction details
-  const fxTransaction = {
-    settlementId: settlementId.toString(),
-    fromEntity: determineEntity(settlement.participants[0]),
-    toEntity: determineEntity(settlement.participants[1]),
-    fromCurrency: getCurrencyFromToken(settlement.participants[0].token),
-    toCurrency: getCurrencyFromToken(settlement.participants[1].token),
-    amount: calculateOffchainAmount(settlement),
-    fxRate: settlement.fxRate,
-    executedAt: settlement.executedAt,
-  };
+**XvP settlement events:**
 
-  // Create offchain FX transaction record
-  await createFXTransactionRecord(fxTransaction);
+```bash
+curl -X POST http://localhost:8000/subgraphs/name/atk/graphql \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "query Settlements($status: String) { settlements(where: { status: $status }, orderBy: executedAt, orderDirection: desc) { id participants { address token amount action } fxRate executedAt transactionHash } }",
+    "variables": {
+      "status": "executed"
+    }
+  }'
+```
 
-  // Trigger banking system integration
-  await executeBankingFXTransaction(fxTransaction);
+### Event handler implementation
+
+Process events and trigger offchain FX transactions:
+
+```bash
+#!/bin/bash
+
+# Process settlement event and create offchain FX transaction
+process_settlement() {
+  local SETTLEMENT_ID=$1
+  
+  # Query settlement details
+  SETTLEMENT_DATA=$(curl -s -X POST http://localhost:8000/subgraphs/name/atk/graphql \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"query\": \"query GetSettlement(\$id: ID!) { settlement(id: \$id) { id participants { address token amount action } fxRate executedAt } }\",
+      \"variables\": {\"id\": \"$SETTLEMENT_ID\"}
+    }")
+  
+  # Extract settlement details (simplified - use jq for production)
+  FROM_ENTITY=$(echo $SETTLEMENT_DATA | jq -r '.data.settlement.participants[0].address')
+  TO_ENTITY=$(echo $SETTLEMENT_DATA | jq -r '.data.settlement.participants[1].address')
+  FX_RATE=$(echo $SETTLEMENT_DATA | jq -r '.data.settlement.fxRate')
+  
+  # Determine FX transaction details
+  if [[ "$FROM_ENTITY" == "$GM_MALAYSIA_WALLET" ]]; then
+    FROM_CURRENCY="MYR"
+    TO_CURRENCY="SGD"
+  else
+    FROM_CURRENCY="SGD"
+    TO_CURRENCY="MYR"
+  fi
+  
+  # Create offchain FX transaction record via your banking API
+  curl -X POST https://your-banking-api.com/fx-transactions \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $BANKING_API_TOKEN" \
+    -d "{
+      \"settlementId\": \"$SETTLEMENT_ID\",
+      \"fromEntity\": \"GM $(echo $FROM_ENTITY | cut -c1-8)\",
+      \"toEntity\": \"GM $(echo $TO_ENTITY | cut -c1-8)\",
+      \"fromCurrency\": \"$FROM_CURRENCY\",
+      \"toCurrency\": \"$TO_CURRENCY\",
+      \"fxRate\": \"$FX_RATE\",
+      \"executedAt\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+    }"
 }
+
+# Monitor for new settlements (polling example)
+while true; do
+  # Query for new settlements
+  NEW_SETTLEMENTS=$(curl -s -X POST http://localhost:8000/subgraphs/name/atk/graphql \
+    -H "Content-Type: application/json" \
+    -d '{
+      "query": "query NewSettlements { settlements(where: { status: executed, processed: false }, first: 10) { id } }"
+    }')
+  
+  # Process each settlement
+  echo $NEW_SETTLEMENTS | jq -r '.data.settlements[].id' | while read settlement_id; do
+    process_settlement "$settlement_id"
+  done
+  
+  sleep 30  # Poll every 30 seconds
+done
 ```
 
 ### Error handling and retry logic
 
-Implement resilient error handling for API calls and event processing:
+Implement resilient error handling for API calls:
 
-```typescript
-async function executeWithRetry<T>(
-  operation: () => Promise<T>,
-  maxRetries = 3,
-  delay = 1000
-): Promise<T> {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await operation();
-    } catch (error) {
-      if (attempt === maxRetries) throw error;
-
-      // Exponential backoff
-      await new Promise((resolve) => setTimeout(resolve, delay * attempt));
-    }
-  }
-  throw new Error("Max retries exceeded");
+```bash
+# Retry function with exponential backoff
+retry_api_call() {
+  local MAX_RETRIES=3
+  local DELAY=1
+  local RETRY_COUNT=0
+  
+  while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    if "$@"; then
+      return 0
+    fi
+    
+    RETRY_COUNT=$((RETRY_COUNT + 1))
+    if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+      sleep $((DELAY * RETRY_COUNT))
+    fi
+  done
+  
+  echo "API call failed after $MAX_RETRIES retries" >&2
+  return 1
 }
 
-// Usage
-const mintResult = await executeWithRetry(() =>
-  orpc.token.mint.mutate({
-    input: {
-      address: eurStablecoin.address,
-      recipients: [{ to: userA.walletAddress, amount: "1000" }],
-    },
-  })
-);
+# Usage
+retry_api_call curl -X POST http://localhost:3000/api/rpc/token.mint \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{"input": {...}}'
 ```
 
-### Observability integration
+## Observability integration
 
 Monitor cross-border FX operations through the observability dashboards:
 
 - **Transaction latency** ? Track API response times for mint, burn, and XvP
-  settlement operations
+  settlement operations via Prometheus metrics
 - **Settlement success rate** ? Monitor XvP settlement execution success/failure
-  rates
+  rates in Grafana dashboards
 - **Event processing lag** ? Measure time between on-chain events and offchain
   reconciliation
 - **FX transaction volume** ? Track total FX transaction value processed
   through the system
+
+**Query Prometheus metrics:**
+
+```bash
+# API request duration
+curl "http://localhost:9090/api/v1/query?query=orpc_request_duration_seconds"
+
+# Settlement success rate
+curl "http://localhost:9090/api/v1/query?query=rate(xvp_settlements_executed_total[5m])"
+```
 
 Access these metrics through the **Settlement Operations** dashboard in your
 observability stack.
@@ -647,9 +860,23 @@ observability stack.
 After executing workflows, validate correct operation:
 
 1. **On-chain verification:**
-   - Confirm stablecoin balances match expected liabilities
+   - Query token balances to confirm stablecoin balances match expected
+     liabilities
    - Verify XvP settlements executed atomically
    - Check bond token ownership transferred correctly
+
+**Check token balance:**
+
+```bash
+curl -X POST http://localhost:3000/api/rpc/token.read \
+  -H "Content-Type: application/json" \
+  -H "Cookie: ${SESSION_COOKIE}" \
+  -d '{
+    "input": {
+      "address": "'${EUR_STABLECOIN}'"
+    }
+  }'
+```
 
 2. **Offchain reconciliation:**
    - Verify FX transactions created in banking system
@@ -657,28 +884,32 @@ After executing workflows, validate correct operation:
    - Validate currency conversion amounts match FX rates
 
 3. **Event processing:**
-   - Confirm all expected events were captured
+   - Confirm all expected events were captured via subgraph queries
    - Verify offchain transactions triggered correctly
    - Check for any missed events or processing delays
 
 ## Common issues and troubleshooting
 
+**Issue: API returns 401 Unauthorized**
+
+- **Solution:** Verify session cookie is valid and included in requests. Re-authenticate
+  through web interface if cookie expired.
+
 **Issue: XvP settlement fails due to insufficient balance**
 
 - **Solution:** Verify both participants have sufficient token balances before
-  creating the settlement. Check token balances via `orpc.token.read.query()`.
+  creating the settlement. Check token balances via `token.read` endpoint.
 
 **Issue: Events not triggering offchain reconciliation**
 
 - **Solution:** Verify WebSocket connection stability, check event filter
   addresses match deployed contracts, and ensure event handlers are registered
-  before transactions execute.
+  before transactions execute. Use TheGraph subgraph for reliable event querying.
 
 **Issue: FX rate mismatch between on-chain and offchain**
 
 - **Solution:** Implement FX rate synchronization from a trusted oracle before
-  creating XvP settlements. Use `orpc.exchangeRates.sync.mutate()` to update
-  rates.
+  creating XvP settlements. Use `exchangeRates.sync` endpoint to update rates.
 
 For additional troubleshooting guidance, see the
 [Troubleshooting guide](/docs/user-guides/troubleshooting/transactions).
