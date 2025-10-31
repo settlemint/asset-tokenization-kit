@@ -8,10 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { Web3TransactionHash } from "@/components/web3/web3-transaction-hash";
 import { cn } from "@/lib/utils";
 import { formatEventName } from "@/lib/utils/format-event-name";
-import { FormatDate } from "@/lib/utils/format-value/format-date";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserEvent } from "@/orpc/routes/user/routes/user.events.schema";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { History } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -35,11 +34,12 @@ export const ActivityTable = withErrorBoundary(function ActivityTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const sortColumnMap = useMemo(
-    () => ({
-      blockTimestamp: "blockTimestamp",
-      eventName: "eventName",
-      blockNumber: "blockNumber",
-    }),
+    () =>
+      ({
+        blockTimestamp: "blockTimestamp",
+        eventName: "eventName",
+        blockNumber: "blockNumber",
+      }) as const,
     []
   );
 
@@ -50,14 +50,14 @@ export const ActivityTable = withErrorBoundary(function ActivityTable() {
   );
 
   const activeSorting = sorting[0];
-  const orderBy =
+  const orderBy: "blockTimestamp" | "eventName" | "blockNumber" =
     activeSorting && isSortableColumn(activeSorting.id)
       ? sortColumnMap[activeSorting.id]
       : "blockTimestamp";
   const orderDirection: "asc" | "desc" =
     activeSorting && !activeSorting.desc ? "asc" : "desc";
 
-  const { data, isLoading, error } = useQuery(
+  const { data, isLoading, error } = useSuspenseQuery(
     orpc.user.events.queryOptions({
       input: {
         limit: pagination.pageSize,
@@ -204,16 +204,8 @@ export const ActivityTable = withErrorBoundary(function ActivityTable() {
         enableSorting: true,
         meta: {
           displayName: t("activity:table.columns.timestamp"),
-          type: "text",
-          renderCell: ({ getValue }) => {
-            const timestamp = getValue();
-            return (
-              <FormatDate
-                value={timestamp}
-                options={{ type: "date", dateOptions: { relative: true } }}
-              />
-            );
-          },
+          type: "date",
+          dateOptions: { relative: true },
         },
       }),
     ]) as ColumnDef<ActivityRow>[];

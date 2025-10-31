@@ -3,12 +3,14 @@ import { ethereumHash } from "@atk/zod/ethereum-hash";
 import { timestamp } from "@atk/zod/timestamp";
 import { z } from "zod";
 
-export const UserEventsInputSchema = z.object({
-  limit: z.number().min(1).optional(),
-  offset: z.number().min(0).optional(),
-  orderBy: z.enum(["blockTimestamp", "eventName", "blockNumber"]).optional(),
-  orderDirection: z.enum(["asc", "desc"]).optional(),
-});
+export const UserEventsInputSchema = z
+  .object({
+    limit: z.number().min(1).optional(),
+    offset: z.number().min(0).optional(),
+    orderBy: z.enum(["blockTimestamp", "eventName", "blockNumber"]).optional(),
+    orderDirection: z.enum(["asc", "desc"]).optional(),
+  })
+  .optional();
 
 export const UserEventValueSchema = z.object({
   id: z.string(),
