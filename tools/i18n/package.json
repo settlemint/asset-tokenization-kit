@@ -1,7 +1,8 @@
 {
   "name": "@tools/i18n",
   "scripts": {
-    "verify-translations": "bun run src/verify-translations.ts"
+    "verify-translations": "bun run src/verify-translations.ts",
+    "prune-unused-translations": "bun run src/prune-unused-translations.ts"
   },
   "devDependencies": {
     "@settlemint/sdk-utils": "2.6.2",

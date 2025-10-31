@@ -19,7 +19,7 @@ The following table lists the configurable parameters of this chart and their de
 |fullnameOverride|string|`"postgresql"`|String to fully override common.names.fullname (string)|
 |image|object|-|Image configuration|
 |image.pullPolicy|string|`"IfNotPresent"`|Image pull policy|
-|image.registry|string|`"harbor.settlemint.com/docker.io"`|Image registry|
+|image.registry|string|`"docker.io"`|Image registry|
 |image.repository|string|`"postgres"`|Image repository|
 |image.tag|string|`"18.0-alpine"`|Image tag|
 |initdb|object|-|Database initialization configuration (object)|

@@ -1,24 +1,26 @@
-const fs = require('fs');
-const path = require('path');
-let ts;
-try {
-  ts = require('typescript');
-} catch (error) {
-  console.error(
-    'The prune-unused-translations script requires the "typescript" package. Run `bun install` before pruning locales.'
-  );
-  process.exit(1);
+import { createLogger } from "@settlemint/sdk-utils/logging";
+import fs from "node:fs";
+import path from "node:path";
+import ts from "typescript";
+
+interface Binding {
+  type: "direct" | "hook";
+  namespaces: string[];
+  keyPrefix?: string;
 }
 
-const projectRoot = path.resolve(__dirname, '..');
-const srcDir = path.join(projectRoot, 'kit/dapp/src');
-const localesDir = path.join(projectRoot, 'kit/dapp/locales');
-const tsconfigPath = path.join(projectRoot, 'kit/dapp/tsconfig.json');
+const logger = createLogger({
+  level: "info",
+});
+const projectRoot = path.resolve(__dirname, "../../../");
+const srcDir = path.join(projectRoot, "kit/dapp/src");
+const localesDir = path.join(projectRoot, "kit/dapp/locales");
+const tsconfigPath = path.join(projectRoot, "kit/dapp/tsconfig.json");
 
-const usedKeysByNamespace = new Map();
+const usedKeysByNamespace = new Map<string, Set<string>>();
 const keepAllNamespaces = new Set();
 
-function recordKey(namespace, key) {
+function recordKey(namespace: string, key: string) {
   if (!namespace || keepAllNamespaces.has(namespace)) {
     return;
   }
@@ -30,36 +32,41 @@ function recordKey(namespace, key) {
   set.add(key);
 }
 
-function recordKeys(namespaces, key) {
+function recordKeys(namespaces: string[], key: string) {
   for (const ns of namespaces) {
     recordKey(ns, key);
   }
 }
 
-function markKeepAll(namespaces) {
+function markKeepAll(namespaces: string[]) {
   for (const ns of namespaces) {
     if (!ns) continue;
     keepAllNamespaces.add(ns);
-    usedKeysByNamespace.delete(ns);
+    logger.info(
+      `Marking all keys for namespace: ${ns} as keep because a dynamic syntax was used`
+    );
   }
 }
 
-function joinKey(prefix, key) {
+function joinKey(prefix: string, key: string) {
   if (!prefix) return key;
   if (!key) return prefix;
   return `${prefix}.${key}`;
 }
 
-function isInsideDir(filePath, dir) {
+function isInsideDir(filePath: string, dir: string) {
   const relative = path.relative(dir, filePath);
-  return relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+  return relative && !relative.startsWith("..") && !path.isAbsolute(relative);
 }
 
-function isStringLiteralLike(node) {
+function isStringLiteralLike(node: ts.Node) {
   return ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node);
 }
 
-function unwrapExpression(expression) {
+function unwrapExpression(
+  expression: ts.Expression | undefined
+): ts.Expression {
+  if (!expression) throw new Error("Expression is undefined");
   let current = expression;
   while (true) {
     if (ts.isParenthesizedExpression(current)) {
@@ -83,21 +90,25 @@ function unwrapExpression(expression) {
   return current;
 }
 
-function getPropertyName(node) {
-  if (ts.isIdentifier(node) || ts.isStringLiteral(node) || ts.isNumericLiteral(node)) {
+function getPropertyName(node: ts.Node) {
+  if (
+    ts.isIdentifier(node) ||
+    ts.isStringLiteral(node) ||
+    ts.isNumericLiteral(node)
+  ) {
     return node.text;
   }
   return undefined;
 }
 
-function parseKeyPrefix(callExpression) {
+function parseKeyPrefix(callExpression: ts.CallExpression) {
   for (const arg of callExpression.arguments) {
     const unwrapped = unwrapExpression(arg);
     if (!ts.isObjectLiteralExpression(unwrapped)) continue;
     for (const property of unwrapped.properties) {
       if (!ts.isPropertyAssignment(property)) continue;
       const name = getPropertyName(property.name);
-      if (name !== 'keyPrefix') continue;
+      if (name !== "keyPrefix") continue;
       const initializer = unwrapExpression(property.initializer);
       if (isStringLiteralLike(initializer)) {
         return { value: initializer.text, dynamic: false };
@@ -108,11 +119,13 @@ function parseKeyPrefix(callExpression) {
   return { value: undefined, dynamic: false };
 }
 
-function extractNamespacesFromObjectLiteral(objectLiteral) {
+function extractNamespacesFromObjectLiteral(
+  objectLiteral: ts.ObjectLiteralExpression
+) {
   for (const property of objectLiteral.properties) {
     if (!ts.isPropertyAssignment(property)) continue;
     const name = getPropertyName(property.name);
-    if (name !== 'ns') continue;
+    if (name !== "ns") continue;
     const initializer = unwrapExpression(property.initializer);
     if (isStringLiteralLike(initializer)) {
       return { namespaces: [initializer.text], dynamic: false };
@@ -134,12 +147,15 @@ function extractNamespacesFromObjectLiteral(objectLiteral) {
   return { namespaces: [], dynamic: false };
 }
 
-function parseNamespaces(callExpression) {
+function parseNamespaces(callExpression: ts.CallExpression) {
   if (callExpression.arguments.length === 0) {
     return { namespaces: [], dynamic: false };
   }
 
   const [firstArg] = callExpression.arguments;
+  if (!firstArg) {
+    return { namespaces: [], dynamic: false };
+  }
   const unwrapped = unwrapExpression(firstArg);
 
   if (isStringLiteralLike(unwrapped)) {
@@ -166,25 +182,29 @@ function parseNamespaces(callExpression) {
   return { namespaces: [], dynamic: true };
 }
 
-function getUseTranslationNames(sourceFile) {
-  const names = new Set();
+function getUseTranslationNames(sourceFile: ts.SourceFile) {
+  const names = new Set<string>();
   sourceFile.forEachChild((node) => {
     if (!ts.isImportDeclaration(node)) return;
     const moduleSpecifier = node.moduleSpecifier;
     if (!ts.isStringLiteral(moduleSpecifier)) return;
-    if (moduleSpecifier.text !== 'react-i18next') return;
+    if (moduleSpecifier.text !== "react-i18next") return;
     const clause = node.importClause;
-    if (!clause || !clause.namedBindings || !ts.isNamedImports(clause.namedBindings)) {
+    if (
+      !clause ||
+      !clause.namedBindings ||
+      !ts.isNamedImports(clause.namedBindings)
+    ) {
       return;
     }
     for (const element of clause.namedBindings.elements) {
       if (element.propertyName) {
-        if (element.propertyName.text === 'useTranslation') {
+        if (element.propertyName.text === "useTranslation") {
           names.add(element.name.text);
         }
         continue;
       }
-      if (element.name.text === 'useTranslation') {
+      if (element.name.text === "useTranslation") {
         names.add(element.name.text);
       }
     }
@@ -192,13 +212,19 @@ function getUseTranslationNames(sourceFile) {
   return names;
 }
 
-function findVariableDeclaration(node) {
+function findVariableDeclaration(
+  node: ts.Node
+): ts.VariableDeclaration | undefined {
   let current = node.parent;
   while (current) {
     if (ts.isVariableDeclaration(current) && current.initializer === node) {
       return current;
     }
-    if (ts.isBinaryExpression(current) && current.operatorToken.kind === ts.SyntaxKind.EqualsToken && current.right === node) {
+    if (
+      ts.isBinaryExpression(current) &&
+      current.operatorToken.kind === ts.SyntaxKind.EqualsToken &&
+      current.right === node
+    ) {
       return undefined;
     }
     node = current;
@@ -207,10 +233,14 @@ function findVariableDeclaration(node) {
   return undefined;
 }
 
-function collectBindings(sourceFile, checker, hookNames) {
-  const bindings = new Map();
+function collectBindings(
+  sourceFile: ts.SourceFile,
+  checker: ts.TypeChecker,
+  hookNames: Set<string>
+) {
+  const bindings = new Map<ts.Symbol, Binding>();
 
-  function visit(node) {
+  function visit(node: ts.Node) {
     if (ts.isCallExpression(node)) {
       const expression = unwrapExpression(node.expression);
       if (ts.isIdentifier(expression) && hookNames.has(expression.text)) {
@@ -227,7 +257,9 @@ function collectBindings(sourceFile, checker, hookNames) {
         if (keyPrefixInfo.dynamic) {
           markKeepAll(namespaces);
         }
-        const keyPrefix = keyPrefixInfo.dynamic ? undefined : keyPrefixInfo.value;
+        const keyPrefix = keyPrefixInfo.dynamic
+          ? undefined
+          : keyPrefixInfo.value;
         const declaration = findVariableDeclaration(node);
         if (!declaration) {
           ts.forEachChild(node, visit);
@@ -236,14 +268,16 @@ function collectBindings(sourceFile, checker, hookNames) {
         const nameNode = declaration.name;
         if (ts.isObjectBindingPattern(nameNode)) {
           for (const element of nameNode.elements) {
-            const property = element.propertyName ? element.propertyName.text : element.name?.text;
-            if (property !== 't') continue;
+            const property = element.propertyName
+              ? (element.propertyName as ts.Identifier).text
+              : (element.name as ts.Identifier).text;
+            if (property !== "t") continue;
             const identifier = element.name;
             if (!ts.isIdentifier(identifier)) continue;
             const symbol = checker.getSymbolAtLocation(identifier);
             if (!symbol) continue;
             bindings.set(symbol, {
-              type: 'direct',
+              type: "direct",
               namespaces,
               keyPrefix,
             });
@@ -252,7 +286,7 @@ function collectBindings(sourceFile, checker, hookNames) {
           const symbol = checker.getSymbolAtLocation(nameNode);
           if (symbol) {
             bindings.set(symbol, {
-              type: 'hook',
+              type: "hook",
               namespaces,
               keyPrefix,
             });
@@ -267,7 +301,10 @@ function collectBindings(sourceFile, checker, hookNames) {
   return bindings;
 }
 
-function handleTranslationCall(binding, callExpression) {
+function handleTranslationCall(
+  binding: Binding,
+  callExpression: ts.CallExpression
+) {
   if (!binding.namespaces.length) {
     return;
   }
@@ -279,7 +316,7 @@ function handleTranslationCall(binding, callExpression) {
   const firstArg = unwrapExpression(args[0]);
   if (isStringLiteralLike(firstArg)) {
     const key = firstArg.text;
-    const fullKey = joinKey(binding.keyPrefix, key);
+    const fullKey = joinKey(binding.keyPrefix ?? "", key);
     recordKeys(binding.namespaces, fullKey);
     return;
   }
@@ -295,7 +332,7 @@ function handleTranslationCall(binding, callExpression) {
     for (const element of firstArg.elements) {
       const value = unwrapExpression(element);
       if (isStringLiteralLike(value)) {
-        const fullKey = joinKey(binding.keyPrefix, value.text);
+        const fullKey = joinKey(binding.keyPrefix ?? "", value.text);
         recordKeys(binding.namespaces, fullKey);
       } else {
         markKeepAll(binding.namespaces);
@@ -307,7 +344,10 @@ function handleTranslationCall(binding, callExpression) {
   markKeepAll(binding.namespaces);
 }
 
-function collectKeysFromSourceFile(sourceFile, checker) {
+function collectKeysFromSourceFile(
+  sourceFile: ts.SourceFile,
+  checker: ts.TypeChecker
+) {
   const hookNames = getUseTranslationNames(sourceFile);
   if (!hookNames.size) {
     return;
@@ -316,18 +356,22 @@ function collectKeysFromSourceFile(sourceFile, checker) {
   if (!bindings.size) {
     return;
   }
-  function visit(node) {
+  function visit(node: ts.Node) {
     if (ts.isCallExpression(node)) {
       const expression = unwrapExpression(node.expression);
       if (ts.isIdentifier(expression)) {
         const symbol = checker.getSymbolAtLocation(expression);
         const binding = symbol && bindings.get(symbol);
-        if (binding && binding.type === 'direct') {
+        if (binding && binding.type === "direct") {
           handleTranslationCall(binding, node);
         }
-      } else if (ts.isPropertyAccessExpression(expression) || (typeof ts.isPropertyAccessChain === 'function' && ts.isPropertyAccessChain(expression))) {
+      } else if (
+        ts.isPropertyAccessExpression(expression) ||
+        (typeof ts.isPropertyAccessChain === "function" &&
+          ts.isPropertyAccessChain(expression))
+      ) {
         const name = expression.name?.text;
-        if (name !== 't') {
+        if (name !== "t") {
           ts.forEachChild(node, visit);
           return;
         }
@@ -335,18 +379,22 @@ function collectKeysFromSourceFile(sourceFile, checker) {
         if (ts.isIdentifier(innerExpression)) {
           const symbol = checker.getSymbolAtLocation(innerExpression);
           const binding = symbol && bindings.get(symbol);
-          if (binding && binding.type === 'hook') {
+          if (binding && binding.type === "hook") {
             handleTranslationCall(binding, node);
           }
         }
       } else if (ts.isElementAccessExpression(expression)) {
         const argumentExpression = expression.argumentExpression;
-        if (argumentExpression && isStringLiteralLike(argumentExpression) && argumentExpression.text === 't') {
+        if (
+          argumentExpression &&
+          isStringLiteralLike(argumentExpression) &&
+          argumentExpression.text === "t"
+        ) {
           const innerExpression = unwrapExpression(expression.expression);
           if (ts.isIdentifier(innerExpression)) {
             const symbol = checker.getSymbolAtLocation(innerExpression);
             const binding = symbol && bindings.get(symbol);
-            if (binding && binding.type === 'hook') {
+            if (binding && binding.type === "hook") {
               handleTranslationCall(binding, node);
             }
           }
@@ -362,18 +410,20 @@ function collectKeysFromSourceFile(sourceFile, checker) {
 function loadProgram() {
   const configFile = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
   if (configFile.error) {
-    throw new Error(ts.formatDiagnosticsWithColorAndContext([configFile.error], {
-      getCanonicalFileName: (fileName) => fileName,
-      getCurrentDirectory: () => process.cwd(),
-      getNewLine: () => '\n',
-    }));
+    throw new Error(
+      ts.formatDiagnosticsWithColorAndContext([configFile.error], {
+        getCanonicalFileName: (fileName) => fileName,
+        getCurrentDirectory: () => process.cwd(),
+        getNewLine: () => "\n",
+      })
+    );
   }
   const parsed = ts.parseJsonConfigFileContent(
     configFile.config,
     ts.sys,
     path.dirname(tsconfigPath),
     undefined,
-    tsconfigPath,
+    tsconfigPath
   );
   const compilerOptions = {
     ...parsed.options,
@@ -383,28 +433,40 @@ function loadProgram() {
   const program = ts.createProgram(parsed.fileNames, compilerOptions, host);
   const sourceFiles = program
     .getSourceFiles()
-    .filter((file) => !file.isDeclarationFile && isInsideDir(path.resolve(file.fileName), srcDir));
+    .filter(
+      (file) =>
+        !file.isDeclarationFile &&
+        isInsideDir(path.resolve(file.fileName), srcDir)
+    );
   return { program, sourceFiles };
 }
 
-function pruneObject(obj, namespace, prefix = '') {
+function pruneObject(
+  obj: Record<string, string | object>,
+  namespace: string,
+  prefix = ""
+): Record<string, string | object> {
   if (keepAllNamespaces.has(namespace)) {
     return obj;
   }
   const usedKeys = usedKeysByNamespace.get(namespace) || new Set();
-  if (typeof obj !== 'object' || obj === null) {
+  if (typeof obj !== "object" || obj === null) {
     return obj;
   }
   if (Array.isArray(obj)) {
     return obj;
   }
-  const result = {};
+  const result: Record<string, string | object> = {};
   for (const key of Object.keys(obj)) {
     const value = obj[key];
     const currentPath = prefix ? `${prefix}.${key}` : key;
     let keep = false;
-    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
-      const child = pruneObject(value, namespace, currentPath);
+    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      const child = pruneObject(
+        value as Record<string, string | object>,
+        namespace,
+        currentPath
+      );
       const hasChildren = child && Object.keys(child).length > 0;
       if (hasChildren) {
         result[key] = child;
@@ -414,19 +476,19 @@ function pruneObject(obj, namespace, prefix = '') {
         keep = true;
       }
     } else if (usedKeys.has(currentPath)) {
-      result[key] = value;
+      result[key] = value as string | object;
       keep = true;
     }
     if (!keep && usedKeys.has(currentPath)) {
-      result[key] = value;
+      result[key] = value as string | object;
     }
   }
   return result;
 }
 
-function writeJson(filePath, obj) {
+function writeJson(filePath: string, obj: Record<string, string | object>) {
   const json = JSON.stringify(obj, null, 2);
-  fs.writeFileSync(filePath, `${json}\n`, 'utf8');
+  fs.writeFileSync(filePath, `${json}\n`, "utf8");
 }
 
 const { program, sourceFiles } = loadProgram();
@@ -435,13 +497,24 @@ for (const sourceFile of sourceFiles) {
   collectKeysFromSourceFile(sourceFile, checker);
 }
 
-function processLocaleDir(localeDir) {
+logger.info(
+  `Detected used keys by namespace: ${JSON.stringify(
+    Array.from(usedKeysByNamespace.entries()).map(([namespace, keys]) => ({
+      namespace,
+      keys: keys.size,
+    })),
+    undefined,
+    2
+  )}`
+);
+
+function processLocaleDir(localeDir: string) {
   const entries = fs.readdirSync(localeDir, { withFileTypes: true });
   for (const entry of entries) {
-    if (!entry.isFile() || !entry.name.endsWith('.json')) continue;
-    const namespace = entry.name.replace(/\.json$/, '');
+    if (!entry.isFile() || !entry.name.endsWith(".json")) continue;
+    const namespace = entry.name.replace(/\.json$/, "");
     const filePath = path.join(localeDir, entry.name);
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
     const pruned = pruneObject(data, namespace);
     writeJson(filePath, pruned);
   }
