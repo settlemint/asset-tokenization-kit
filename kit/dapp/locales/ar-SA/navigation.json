@@ -4,7 +4,7 @@
   "activity": "النشاط",
   "assetClasses": "فئات الأصول",
   "assetManagement": "إدارة الأصول",
-  "assetManagementNotAuthorized": "أنت غير مخول لإدارة الأصول.\nليس لديك إذن إنشاء الرموز المميزة.",
+  "assetManagementNotAuthorized": "أنت غير مخول لإدارة الأصول.\nليس لديك دور مدير الرموز.",
   "cashEquivalent": "معادل النقد",
   "fixedIncome": "دخل ثابت",
   "flexibleIncome": "دخل مرن",
@@ -48,7 +48,7 @@
     "addons": {
       "title": "الإضافات",
       "description": "قم بتكوين وحدات الإضافات، والتكاملات، والامتدادات المنصة الخاصة بك.",
-      "notAuthorized": "أنت غير مخول لإدارة الإضافات.\nليس لديك دور مدير الإضافات."
+      "notAuthorized": "أنت غير مخول لإدارة الإضافات.\nليس لديك دور مدير النظام."
     },
     "claimTopicsIssuers": {
       "title": "مواضيع المطالبات والمصدرين",

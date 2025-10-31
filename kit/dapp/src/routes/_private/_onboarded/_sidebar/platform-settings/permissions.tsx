@@ -36,7 +36,6 @@ function PermissionsPage() {
   >();
 
   // Get current user data with roles
-  const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
   const { data: system } = useSuspenseQuery(
     orpc.system.read.queryOptions({
       input: { id: "default" },
@@ -78,8 +77,7 @@ function PermissionsPage() {
       </div>
 
       <div className="space-y-6">
-        {/* Admin-only alert if user is not admin */}
-        {user?.role !== "admin" && (
+        {system?.userPermissions?.actions.adminList !== true && (
           <Alert variant="destructive">
             <Shield className="h-4 w-4" />
             <AlertTitle>{t("settings.permissions.notAuthorized")}</AlertTitle>

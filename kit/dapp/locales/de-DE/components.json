@@ -57,12 +57,10 @@
       "unknown": "Bevorzuge es nicht zu sagen"
     },
     "submit": "Speichern und fortfahren",
-    "identity": {
-      "confirm-description": "Bitte verifizieren Sie Ihre Identität, um Ihre On-Chain-Identität zu erstellen.",
-      "confirm-title": "Identitätserstellung bestätigen",
-      "deployed-toast": "Identität erfolgreich registriert!",
-      "deploying-toast": "Identität wird registriert...",
-      "failed-toast": "Fehler bei der Registrierung der Identität: "
+    "submission": {
+      "loading": "Ihre persönlichen Informationen werden gespeichert...",
+      "success": "Persönliche Informationen erfolgreich gespeichert.",
+      "error": "Ihre Informationen konnten nicht gespeichert werden: "
     }
   },
   "verificationDialog": {

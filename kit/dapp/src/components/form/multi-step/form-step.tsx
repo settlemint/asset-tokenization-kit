@@ -87,7 +87,7 @@ export function FormStepSubmit({
     <footer
       className={cn(
         "OnboardingStepLayout__footer absolute bottom-0 left-0 right-0 p-8 flex bg-[var(--sm-background-lightest)]",
-        actionChildrenCount === 1 ? "justify-end" : "justify-between"
+        actionChildrenCount <= 1 ? "justify-end" : "justify-between"
       )}
     >
       {children}

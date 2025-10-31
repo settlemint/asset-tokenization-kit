@@ -57,12 +57,10 @@
       "unknown": "Prefer not to say"
     },
     "submit": "Save and continue",
-    "identity": {
-      "confirm-description": "Please verify your identity to create your on-chain identity.",
-      "confirm-title": "Confirm identity creation",
-      "deployed-toast": "Identity registered successfully!",
-      "deploying-toast": "Registering identity...",
-      "failed-toast": "Failed to register identity: "
+    "submission": {
+      "loading": "Saving your personal information...",
+      "success": "Personal information saved successfully.",
+      "error": "We couldn't save your information: "
     }
   },
   "verificationDialog": {
