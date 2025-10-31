@@ -46,6 +46,7 @@ import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
 import { zeroAddress } from "viem";
 import { db, migrateDatabase } from "../db";
+import { openAPI } from "better-auth/plugins";
 
 const options = {
   /**
@@ -282,6 +283,7 @@ const options = {
    * Authentication plugins for extended functionality.
    */
   plugins: [
+    openAPI(),
     /**
      * Admin plugin for user management capabilities.
      */

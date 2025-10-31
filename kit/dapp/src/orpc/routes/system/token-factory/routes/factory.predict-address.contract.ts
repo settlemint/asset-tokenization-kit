@@ -10,7 +10,7 @@ export const factoryPredictAddressContract = baseContract
     path: "/system/token-factory/predict-address",
     description: "Predict the address of a token before deployment",
     successDescription: "Predicted token address",
-    tags: ["system", "token-factory"],
+    tags: ["token-factory"],
   })
   .input(PredictAddressInputSchema)
   .output(PredictAddressOutputSchema);

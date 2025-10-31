@@ -11,7 +11,7 @@ export const statsYieldCoverageContract = baseContract
     description: "Get bond yield coverage statistics for a specific token",
     successDescription:
       "Yield coverage data showing underlying asset protection of yields",
-    tags: ["token", "stats", "yield", "coverage"],
+    tags: ["token"],
   })
   .input(StatsYieldCoverageInputSchema)
   .output(StatsYieldCoverageOutputSchema);

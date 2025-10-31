@@ -13,7 +13,7 @@ import {
   TopicUpdateOutputSchema,
 } from "@/orpc/routes/system/claim-topics/routes/topic.update.schema";
 
-const TAGS = ["system", "claim-topics"];
+const TAGS = ["claim-topics"];
 
 /**
  * Contract definition for listing topic schemes.

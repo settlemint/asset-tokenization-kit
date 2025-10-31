@@ -10,7 +10,7 @@ export const factoryCreateContract = baseContract
       "Deploy one or more token factory contracts for creating specific token types (bond, equity, fund, stablecoin, deposit). Factories enable standardized token deployment",
     successDescription:
       "Token factory deployed successfully with streaming progress updates for batch deployments",
-    tags: ["system", "token-factory"],
+    tags: ["token-factory"],
   })
   .input(FactoryCreateSchema)
   .output(SystemSchema);

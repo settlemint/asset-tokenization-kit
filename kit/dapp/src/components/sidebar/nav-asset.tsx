@@ -21,6 +21,11 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useAssetClass } from "@/hooks/use-asset-class";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -33,7 +38,8 @@ import { useTranslation } from "react-i18next";
  * Navigation component for asset management in the sidebar.
  * Uses hybrid navigation: DropdownMenu in collapsed mode, Collapsible in expanded mode.
  * Displays asset classes with their token factories and a link to statistics.
- * Only renders when user has tokenCreate permission.
+ * Shows for admins or users with tokenCreate permission. For admins without permission,
+ * items are disabled with tooltips explaining missing permissions.
  * @example
  * // Used within AppSidebar component
  * <NavAsset />
@@ -68,9 +74,15 @@ export function NavAsset() {
     });
   };
 
-  if (!system.userPermissions?.actions.tokenCreate) {
+  const isAdmin = system.userPermissions?.roles?.admin === true;
+  const canCreateToken = Boolean(system.userPermissions?.actions.tokenCreate);
+
+  // Show for admins or users with permission
+  if (!isAdmin && !canCreateToken) {
     return null;
   }
+
+  const isDisabled = isAdmin && !canCreateToken;
 
   return (
     <>
@@ -79,16 +91,36 @@ export function NavAsset() {
       <SidebarGroup>
         <SidebarGroupLabel>{t("assetManagement")}</SidebarGroupLabel>
         <SidebarMenu>
-          <SidebarMenuButton
-            className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground my-2"
-            onClick={() => {
-              setModalOpen(true);
-            }}
-            tooltip={t("assetDesigner")}
-          >
-            <PlusIcon className="mr-1 h-4 w-4" />
-            <span>{t("assetDesigner")}</span>
-          </SidebarMenuButton>
+          {(() => {
+            const assetDesignerButton = (
+              <SidebarMenuButton
+                className="bg-accent text-primary-foreground shadow-dropdown shadow-inset hover:bg-accent-hover hover:text-primary-foreground my-2"
+                onClick={() => {
+                  if (!isDisabled) {
+                    setModalOpen(true);
+                  }
+                }}
+                disabled={isDisabled}
+                tooltip={isDisabled ? undefined : t("assetDesigner")}
+              >
+                <PlusIcon className="mr-1 h-4 w-4" />
+                <span>{t("assetDesigner")}</span>
+              </SidebarMenuButton>
+            );
+
+            if (isDisabled) {
+              return (
+                <Tooltip>
+                  <TooltipTrigger asChild>{assetDesignerButton}</TooltipTrigger>
+                  <TooltipContent side="right" className="whitespace-pre-wrap">
+                    {t("assetManagementNotAuthorized")}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+
+            return assetDesignerButton;
+          })()}
           {assetClasses
             .filter((assetClass) => assetClass.factories.length > 0)
             .map((assetClass) => {
@@ -116,15 +148,48 @@ export function NavAsset() {
                       >
                         {assetClass.factories.map((factory) => {
                           const isActive = isFactoryActive(factory.id);
+                          const factoryLink = (
+                            <Link
+                              to="/token/$factoryAddress"
+                              params={{ factoryAddress: factory.id }}
+                              className={
+                                isDisabled
+                                  ? "pointer-events-none opacity-50"
+                                  : isActive
+                                    ? "font-semibold"
+                                    : ""
+                              }
+                              onClick={(e) => {
+                                if (isDisabled) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
+                              {factory.name}
+                            </Link>
+                          );
+
+                          if (isDisabled) {
+                            return (
+                              <Tooltip key={factory.id}>
+                                <TooltipTrigger asChild>
+                                  <DropdownMenuItem disabled>
+                                    {factoryLink}
+                                  </DropdownMenuItem>
+                                </TooltipTrigger>
+                                <TooltipContent
+                                  side="right"
+                                  className="whitespace-pre-wrap"
+                                >
+                                  {t("assetManagementNotAuthorized")}
+                                </TooltipContent>
+                              </Tooltip>
+                            );
+                          }
+
                           return (
                             <DropdownMenuItem key={factory.id} asChild>
-                              <Link
-                                to="/token/$factoryAddress"
-                                params={{ factoryAddress: factory.id }}
-                                className={isActive ? "font-semibold" : ""}
-                              >
-                                {factory.name}
-                              </Link>
+                              {factoryLink}
                             </DropdownMenuItem>
                           );
                         })}
@@ -157,9 +222,16 @@ export function NavAsset() {
                       <SidebarMenuSub>
                         {assetClass.factories.map((factory) => {
                           const isActive = isFactoryActive(factory.id);
-                          return (
-                            <SidebarMenuSubItem key={factory.id}>
-                              <SidebarMenuSubButton asChild>
+                          const factorySubLink = (
+                            <SidebarMenuSubButton
+                              asChild={!isDisabled}
+                              aria-disabled={isDisabled}
+                            >
+                              {isDisabled ? (
+                                <div className="flex items-center">
+                                  <span>{factory.name}</span>
+                                </div>
+                              ) : (
                                 <Link
                                   to="/token/$factoryAddress"
                                   params={{ factoryAddress: factory.id }}
@@ -170,7 +242,28 @@ export function NavAsset() {
                                 >
                                   <span>{factory.name}</span>
                                 </Link>
-                              </SidebarMenuSubButton>
+                              )}
+                            </SidebarMenuSubButton>
+                          );
+
+                          if (isDisabled) {
+                            return (
+                              <Tooltip key={factory.id}>
+                                <TooltipTrigger asChild>
+                                  <SidebarMenuSubItem>
+                                    {factorySubLink}
+                                  </SidebarMenuSubItem>
+                                </TooltipTrigger>
+                                <TooltipContent className="whitespace-pre-wrap">
+                                  {t("assetManagementNotAuthorized")}
+                                </TooltipContent>
+                              </Tooltip>
+                            );
+                          }
+
+                          return (
+                            <SidebarMenuSubItem key={factory.id}>
+                              {factorySubLink}
                             </SidebarMenuSubItem>
                           );
                         })}
@@ -181,20 +274,50 @@ export function NavAsset() {
               );
             })}
 
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip={t("statistics")}>
-              <Link
-                to="/token/stats"
-                activeProps={{
-                  "data-active": true,
-                  className: "font-semibold",
-                }}
-              >
-                <ChartLine />
-                <span>{t("statistics")}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {(() => {
+            const statisticsButton = (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild={!isDisabled}
+                  disabled={isDisabled}
+                  tooltip={isDisabled ? undefined : t("statistics")}
+                >
+                  {isDisabled ? (
+                    <>
+                      <ChartLine className="size-4 shrink-0" />
+                      <span className="group-data-[collapsible=icon]:hidden">
+                        {t("statistics")}
+                      </span>
+                    </>
+                  ) : (
+                    <Link
+                      to="/token/stats"
+                      activeProps={{
+                        "data-active": true,
+                        className: "font-semibold",
+                      }}
+                    >
+                      <ChartLine />
+                      <span>{t("statistics")}</span>
+                    </Link>
+                  )}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+
+            if (isDisabled) {
+              return (
+                <Tooltip>
+                  <TooltipTrigger asChild>{statisticsButton}</TooltipTrigger>
+                  <TooltipContent side="right" className="whitespace-pre-wrap">
+                    {t("assetManagementNotAuthorized")}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+
+            return statisticsButton;
+          })()}
         </SidebarMenu>
       </SidebarGroup>
     </>

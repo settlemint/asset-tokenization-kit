@@ -34,7 +34,7 @@ describe("system stats ORPC routes", () => {
   });
 
   it("should fetch system asset lifecycle stats", async () => {
-    const result = await client.system.stats.assetLifecycle({
+    const result = await client.system.stats.assetLifecycleByRange({
       from: subDays(new Date(), 30),
       to: new Date(),
       interval: "day",

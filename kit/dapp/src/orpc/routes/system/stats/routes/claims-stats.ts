@@ -75,71 +75,142 @@ const ClaimsStatsResponseSchema = z.object({
     .nullable(),
 });
 
-export const statsClaimsStats = systemRouter.system.stats.claimsStats.handler(
-  async ({ context, input }) => {
-    const now = new Date();
-    const { interval, fromMicroseconds, toMicroseconds, range } =
-      buildStatsRangeQuery(input, {
-        now,
+export const statsClaimsStatsByRange =
+  systemRouter.system.stats.claimsStatsByRange.handler(
+    async ({ context, input }) => {
+      const now = new Date();
+      const { interval, fromMicroseconds, toMicroseconds, range } =
+        buildStatsRangeQuery(input, {
+          now,
+        });
+
+      const topicSchemeRegistryId =
+        context.system.topicSchemeRegistry.id.toLowerCase();
+
+      const response = await context.theGraphClient.query(CLAIMS_STATS_QUERY, {
+        input: {
+          topicSchemeRegistryId,
+          topicSchemeRegistryIdString: topicSchemeRegistryId,
+          interval,
+          from: fromMicroseconds,
+          to: toMicroseconds,
+        },
+        output: ClaimsStatsResponseSchema,
       });
 
-    const topicSchemeRegistryId =
-      context.system.topicSchemeRegistry.id.toLowerCase();
+      const results = [
+        ...response.baseline.map((item) => ({
+          timestamp: item.timestamp,
+          totalIssuedClaims: item.totalIssuedClaims,
+          totalActiveClaims: item.totalActiveClaims,
+          totalRemovedClaims: item.totalRemovedClaims,
+          totalRevokedClaims: item.totalRevokedClaims,
+        })),
+        ...response.claimsStats.map((item) => ({
+          timestamp: item.timestamp,
+          totalIssuedClaims: item.totalIssuedClaims,
+          totalActiveClaims: item.totalActiveClaims,
+          totalRemovedClaims: item.totalRemovedClaims,
+          totalRevokedClaims: item.totalRevokedClaims,
+        })),
+        {
+          timestamp: range.to,
+          totalIssuedClaims: response.current?.totalIssuedClaims ?? 0,
+          totalActiveClaims: response.current?.totalActiveClaims ?? 0,
+          totalRemovedClaims: response.current?.totalRemovedClaims ?? 0,
+          totalRevokedClaims: response.current?.totalRevokedClaims ?? 0,
+        },
+      ];
 
-    const response = await context.theGraphClient.query(CLAIMS_STATS_QUERY, {
-      input: {
-        topicSchemeRegistryId,
-        topicSchemeRegistryIdString: topicSchemeRegistryId,
-        interval,
-        from: fromMicroseconds,
-        to: toMicroseconds,
-      },
-      output: ClaimsStatsResponseSchema,
-    });
+      const data = createTimeSeries(
+        results,
+        [
+          "totalIssuedClaims",
+          "totalActiveClaims",
+          "totalRemovedClaims",
+          "totalRevokedClaims",
+        ],
+        {
+          range,
+          aggregation: "last",
+          accumulation: "max",
+          historical: true,
+        }
+      );
 
-    const results = [
-      ...response.baseline.map((item) => ({
-        timestamp: item.timestamp,
-        totalIssuedClaims: item.totalIssuedClaims,
-        totalActiveClaims: item.totalActiveClaims,
-        totalRemovedClaims: item.totalRemovedClaims,
-        totalRevokedClaims: item.totalRevokedClaims,
-      })),
-      ...response.claimsStats.map((item) => ({
-        timestamp: item.timestamp,
-        totalIssuedClaims: item.totalIssuedClaims,
-        totalActiveClaims: item.totalActiveClaims,
-        totalRemovedClaims: item.totalRemovedClaims,
-        totalRevokedClaims: item.totalRevokedClaims,
-      })),
-      {
-        timestamp: range.to,
-        totalIssuedClaims: response.current?.totalIssuedClaims ?? 0,
-        totalActiveClaims: response.current?.totalActiveClaims ?? 0,
-        totalRemovedClaims: response.current?.totalRemovedClaims ?? 0,
-        totalRevokedClaims: response.current?.totalRevokedClaims ?? 0,
-      },
-    ];
-
-    const data = createTimeSeries(
-      results,
-      [
-        "totalIssuedClaims",
-        "totalActiveClaims",
-        "totalRemovedClaims",
-        "totalRevokedClaims",
-      ],
-      {
+      return {
         range,
-        aggregation: "last",
-        accumulation: "max",
-        historical: true,
-      }
-    );
+        data,
+      };
+    }
+  );
 
-    return {
-      range,
-      data,
-    };
-  }
-);
+export const statsClaimsStatsByPreset =
+  systemRouter.system.stats.claimsStatsByPreset.handler(
+    async ({ context, input }) => {
+      const now = new Date();
+      const { interval, fromMicroseconds, toMicroseconds, range } =
+        buildStatsRangeQuery(input.preset, {
+          now,
+        });
+
+      const topicSchemeRegistryId =
+        context.system.topicSchemeRegistry.id.toLowerCase();
+
+      const response = await context.theGraphClient.query(CLAIMS_STATS_QUERY, {
+        input: {
+          topicSchemeRegistryId,
+          topicSchemeRegistryIdString: topicSchemeRegistryId,
+          interval,
+          from: fromMicroseconds,
+          to: toMicroseconds,
+        },
+        output: ClaimsStatsResponseSchema,
+      });
+
+      const results = [
+        ...response.baseline.map((item) => ({
+          timestamp: item.timestamp,
+          totalIssuedClaims: item.totalIssuedClaims,
+          totalActiveClaims: item.totalActiveClaims,
+          totalRemovedClaims: item.totalRemovedClaims,
+          totalRevokedClaims: item.totalRevokedClaims,
+        })),
+        ...response.claimsStats.map((item) => ({
+          timestamp: item.timestamp,
+          totalIssuedClaims: item.totalIssuedClaims,
+          totalActiveClaims: item.totalActiveClaims,
+          totalRemovedClaims: item.totalRemovedClaims,
+          totalRevokedClaims: item.totalRevokedClaims,
+        })),
+        {
+          timestamp: range.to,
+          totalIssuedClaims: response.current?.totalIssuedClaims ?? 0,
+          totalActiveClaims: response.current?.totalActiveClaims ?? 0,
+          totalRemovedClaims: response.current?.totalRemovedClaims ?? 0,
+          totalRevokedClaims: response.current?.totalRevokedClaims ?? 0,
+        },
+      ];
+
+      const data = createTimeSeries(
+        results,
+        [
+          "totalIssuedClaims",
+          "totalActiveClaims",
+          "totalRemovedClaims",
+          "totalRevokedClaims",
+        ],
+        {
+          range,
+          aggregation: "last",
+          accumulation: "max",
+          historical: true,
+        }
+      );
+
+      return {
+        range,
+        data,
+      };
+    }
+  );

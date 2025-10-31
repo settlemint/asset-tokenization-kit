@@ -11,7 +11,7 @@ export const statsAssetsContract = baseContract
     description:
       "Get system-wide asset count and value statistics with breakdowns by type",
     successDescription: "System asset count and value statistics",
-    tags: ["stats", "system"],
+    tags: ["system-stats"],
   })
   .input(StatsAssetsInputSchema)
   .output(StatsAssetsOutputSchema);
