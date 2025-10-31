@@ -5,7 +5,6 @@ import { StatCard } from "@/components/stats/widgets/stat-widget";
 import { formatNumber } from "@/lib/utils/format-value/format-number";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Clock, UserCheck, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 export function IdentityMetrics() {
   const { t, i18n } = useTranslation("dashboard");
@@ -31,7 +30,7 @@ export function IdentityMetrics() {
             },
             locale
           )}
-          icon={Users}
+          description={t("identityMetrics.totalIdentitiesDescription")}
         />
         <StatCard
           title={t("identityMetrics.activeRegistrations")}
@@ -42,7 +41,7 @@ export function IdentityMetrics() {
             },
             locale
           )}
-          icon={UserCheck}
+          description={t("identityMetrics.activeRegistrationsDescription")}
         />
         <StatCard
           title={t("identityMetrics.pendingRegistrations")}
@@ -53,7 +52,7 @@ export function IdentityMetrics() {
             },
             locale
           )}
-          icon={Clock}
+          description={t("identityMetrics.pendingRegistrationsDescription")}
         />
       </div>
 

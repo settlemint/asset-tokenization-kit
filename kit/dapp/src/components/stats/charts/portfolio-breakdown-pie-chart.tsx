@@ -32,8 +32,12 @@ export function PortfolioBreakdownPieChart({
     }));
 
     const config: ChartConfig = breakdown.reduce<ChartConfig>((acc, item) => {
+      const capitalizedLabel =
+        item.assetType.charAt(0).toUpperCase() + item.assetType.slice(1);
+      const displayValue =
+        item.percentage < 1 ? "< 1%" : `${Math.floor(item.percentage)}%`;
       acc[item.assetType] = {
-        label: item.assetType.charAt(0).toUpperCase() + item.assetType.slice(1),
+        label: `${capitalizedLabel} ${displayValue}`,
         color: ASSET_COLORS[item.assetType],
       };
       return acc;

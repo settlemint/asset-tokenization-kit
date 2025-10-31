@@ -65,8 +65,11 @@
     "title": "Identity Overview",
     "description": "Current system identity status and registrations",
     "totalIdentities": "Total Identities",
+    "totalIdentitiesDescription": "All identities created in the system",
     "activeRegistrations": "Active Registrations",
+    "activeRegistrationsDescription": "Currently active and verified user identities",
     "pendingRegistrations": "Pending Registrations",
+    "pendingRegistrationsDescription": "Identities awaiting verification",
     "chartTitle": "Active registrations",
     "chartDescription": "Daily trends of active identity registrations over the last 7 days",
     "emptyStateMessage": "No registrations yet",
@@ -76,8 +79,11 @@
     "title": "Claim Topics and Issuers Overview",
     "description": "Track active claims, topics, and trusted issuers",
     "totalActiveClaims": "Active claims",
+    "activeClaimsDescription": "Currently valid identity claims in the system",
     "totalActiveTopics": "Active topics",
-    "totalActiveIssuers": "Active issuers"
+    "activeTopicsDescription": "Categories of verifiable identity attributes",
+    "totalActiveIssuers": "Active issuers",
+    "activeIssuersDescription": "Trusted entities authorized to issue claims"
   },
   "claimTopicsCoverage": {
     "title": "Claim Topics Coverage",
@@ -161,6 +167,46 @@
     "emptyState": {
       "title": "Your asset overview will appear here",
       "description": "Charts and statistics will show once you design your first tokenized asset"
+    }
+  },
+  "portfolioDashboard": {
+    "welcome": "Welcome back, {{name}}",
+    "subtitle": "Here's an overview of your portfolio and assets",
+    "portfolioHeader": {
+      "title": "My Portfolio",
+      "assetsCount_one": "{{count}} asset",
+      "assetsCount_other": "{{count}} assets",
+      "noAssets": "No assets yet",
+      "viewHoldings": "View Your Assets"
+    },
+    "cards": {
+      "totalValue": {
+        "title": "Total value",
+        "description": "Combined value of all assets"
+      },
+      "totalAssets": {
+        "title": "Total assets",
+        "description": "Total number of assets",
+        "noAssets": "No assets"
+      },
+      "identityStatus": {
+        "title": "Identity status",
+        "description": "Current verification status",
+        "verified": "Verified",
+        "pending": "Pending"
+      }
+    },
+    "assetTypes": {
+      "bond_one": "bond",
+      "bond_other": "bonds",
+      "deposit_one": "deposit",
+      "deposit_other": "deposits",
+      "equity_one": "equity",
+      "equity_other": "equities",
+      "fund_one": "fund",
+      "fund_other": "funds",
+      "stablecoin_one": "stablecoin",
+      "stablecoin_other": "stablecoins"
     }
   },
   "widgets": {

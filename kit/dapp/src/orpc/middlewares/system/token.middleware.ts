@@ -280,11 +280,9 @@ export const tokenMiddleware = baseRouter.middleware<
                 action as keyof typeof TOKEN_TRUSTED_ISSUER_REQUIREMENTS
               ] ?? [];
 
-            const trustedIssuerSatisfied =
-              trustedTopics.length === 0 ||
-              trustedTopics.every((topic) =>
-                userTrustedIssuerTopics.includes(topic)
-              );
+            const trustedIssuerSatisfied = trustedTopics.every((topic) =>
+              userTrustedIssuerTopics.includes(topic)
+            );
 
             initialActions[action as keyof typeof TOKEN_PERMISSIONS] =
               rolesSatisfied && trustedIssuerSatisfied;
