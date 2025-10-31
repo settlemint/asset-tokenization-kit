@@ -57,12 +57,10 @@
       "unknown": "言いたくない"
     },
     "submit": "保存して続行",
-    "identity": {
-      "confirm-description": "オンチェーンIDを作成するために、あなたの身元を確認してください。",
-      "confirm-title": "身元作成を確認",
-      "deployed-toast": "身元が正常に登録されました！",
-      "deploying-toast": "身元を登録中...",
-      "failed-toast": "身元の登録に失敗しました: "
+    "submission": {
+      "loading": "個人情報を保存しています...",
+      "success": "個人情報が正常に保存されました。",
+      "error": "情報を保存できませんでした: "
     }
   },
   "verificationDialog": {
