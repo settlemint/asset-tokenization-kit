@@ -44,7 +44,7 @@ const list = baseContract
     description:
       "Retrieve claims information for a specific user by ID or wallet address. Returns lightweight claims data without full user profile information.",
     successDescription: "User claims retrieved successfully",
-    tags: ["system", "identity", "claims"],
+    tags: ["claims"],
   })
   .input(ClaimsListInputSchema)
   .output(ClaimsListOutputSchema);
@@ -68,7 +68,7 @@ const issue = baseContract
     description:
       "Issue a new claim to a user's on-chain identity. Requires claimIssuer role and valid wallet verification. Creates signed claim on blockchain.",
     successDescription: "Claim issued successfully",
-    tags: ["system", "identity", "claims", "blockchain"],
+    tags: ["claims"],
   })
   .input(ClaimsIssueInputSchema)
   .output(ClaimsIssueOutputSchema);
@@ -92,7 +92,7 @@ const revoke = baseContract
     description:
       "Revoke an existing claim from a user's on-chain identity. Requires claimIssuer role and valid wallet verification. Permanently removes claim from blockchain.",
     successDescription: "Claim revoked successfully",
-    tags: ["system", "identity", "claims", "blockchain"],
+    tags: ["claims"],
   })
   .input(ClaimsRevokeInputSchema)
   .output(ClaimsRevokeOutputSchema);

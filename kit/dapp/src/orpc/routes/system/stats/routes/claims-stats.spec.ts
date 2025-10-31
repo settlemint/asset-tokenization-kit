@@ -29,7 +29,7 @@ describe("Claims stats (integration)", () => {
     await registerUserIdentity(adminClient, targetUserData.wallet);
 
     // Get the target user's identity address for issuing claims
-    const targetIdentity = await adminClient.system.identity.read({
+    const targetIdentity = await adminClient.system.identity.readByWallet({
       wallet: targetUserData.wallet,
     });
     targetIdentityAddress = targetIdentity.id;
@@ -51,8 +51,9 @@ describe("Claims stats (integration)", () => {
   });
 
   it("should successfully retrieve claims statistics with trailing24Hours preset", async () => {
-    const result =
-      await adminClient.system.stats.claimsStats("trailing24Hours");
+    const result = await adminClient.system.stats.claimsStatsByPreset({
+      preset: "trailing24Hours",
+    });
 
     // Assert response structure
     expect(result).toBeDefined();
@@ -94,7 +95,9 @@ describe("Claims stats (integration)", () => {
 
     // Query stats before revocation to capture counts
     const beforeRevokeResult =
-      await adminClient.system.stats.claimsStats("trailing24Hours");
+      await adminClient.system.stats.claimsStatsByPreset({
+        preset: "trailing24Hours",
+      });
 
     const beforeRevokeLastDataPoint = beforeRevokeResult.data.at(-1);
     expect(beforeRevokeLastDataPoint).toBeDefined();
@@ -111,7 +114,9 @@ describe("Claims stats (integration)", () => {
 
     // Query stats after revocation
     const afterRevokeResult =
-      await adminClient.system.stats.claimsStats("trailing24Hours");
+      await adminClient.system.stats.claimsStatsByPreset({
+        preset: "trailing24Hours",
+      });
 
     const afterRevokeLastDataPoint = afterRevokeResult.data.at(-1);
     expect(afterRevokeLastDataPoint).toBeDefined();

@@ -10,7 +10,7 @@ export const statsTotalSupplyContract = baseContract
     path: "/token/stats/{tokenAddress}/total-supply",
     description: "Get total supply history statistics for a specific token",
     successDescription: "Token total supply history statistics",
-    tags: ["token", "stats", "asset", "total-supply"],
+    tags: ["token"],
   })
   .input(StatsTotalSupplyInputSchema)
   .output(StatsTotalSupplyOutputSchema);

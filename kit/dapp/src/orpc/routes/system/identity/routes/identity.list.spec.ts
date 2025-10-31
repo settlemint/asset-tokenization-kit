@@ -43,7 +43,7 @@ describe("Identity list (integration)", () => {
 
     await registerUserIdentity(adminClient, targetUserData.wallet);
 
-    const identity = await adminClient.system.identity.read({
+    const identity = await adminClient.system.identity.readByWallet({
       wallet: targetUserData.wallet,
     });
 
@@ -84,7 +84,9 @@ describe("Identity list (integration)", () => {
 
     await waitUntil<z.infer<typeof IdentitySchema>>({
       get: () =>
-        adminClient.system.identity.read({ wallet: targetUserData.wallet }),
+        adminClient.system.identity.readByWallet({
+          wallet: targetUserData.wallet,
+        }),
       until: (latestAccount) => (latestAccount?.claims?.length ?? 0) >= 2,
       timeoutMs: 60_000,
       intervalMs: 1000,

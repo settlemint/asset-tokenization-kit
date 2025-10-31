@@ -245,7 +245,7 @@ export function IssueClaimSheet({
   const { mutateAsync: issueClaim, isPending } = useMutation(
     orpc.system.identity.claims.issue.mutationOptions({
       onSuccess: async () => {
-        const identityQuery = orpc.system.identity.read.queryOptions({
+        const identityQuery = orpc.system.identity.readByWallet.queryOptions({
           input: { wallet: identity.account.id },
         });
         const claimsQuery = orpc.system.identity.claims.list.queryOptions({
