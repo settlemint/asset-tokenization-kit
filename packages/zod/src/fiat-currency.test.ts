@@ -58,6 +58,7 @@ describe("fiatCurrency", () => {
       expect(validator.parse("AED")).toBe("AED");
       expect(validator.parse("SGD")).toBe("SGD");
       expect(validator.parse("SAR")).toBe("SAR");
+      expect(validator.parse("MYR")).toBe("MYR");
     });
   });
 
@@ -287,8 +288,8 @@ describe("fiatCurrencyMetadata", () => {
 });
 
 describe("fiatCurrencies constant", () => {
-  it("should contain exactly 10 currencies", () => {
-    expect(fiatCurrencies).toHaveLength(10);
+  it("should contain exactly 11 currencies", () => {
+    expect(fiatCurrencies).toHaveLength(11);
   });
 
   it("should contain the expected currencies in order", () => {
@@ -303,6 +304,7 @@ describe("fiatCurrencies constant", () => {
       "AED",
       "SGD",
       "SAR",
+      "MYR",
     ]);
   });
 });
