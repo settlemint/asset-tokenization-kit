@@ -1,10 +1,10 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { ClaimsTable } from "@/components/participants/common/claims-table";
 import { TileDetailLayout } from "@/components/layout/tile-detail-layout";
+import { ClaimsTable } from "@/components/participants/common/claims-table";
 import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import { ORPCError } from "@orpc/client";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
@@ -52,12 +52,12 @@ export const Route = createFileRoute(
     }
 
     const user = await queryClient.ensureQueryData(
-      orpc.user.read.queryOptions({ input: { userId } })
+      orpc.user.readByUserId.queryOptions({ input: { userId } })
     );
 
     const identity = await queryClient
       .ensureQueryData(
-        orpc.system.identity.read.queryOptions({
+        orpc.system.identity.readByWallet.queryOptions({
           input: { wallet: user.wallet ?? "" },
         })
       )

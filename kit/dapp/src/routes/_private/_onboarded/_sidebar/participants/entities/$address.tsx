@@ -2,9 +2,9 @@ import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
+import { IdentityClaimsTile } from "@/components/participants/common/tiles/identity-claims-tile";
 import { EntityStatusBadge } from "@/components/participants/entities/entity-status-badge";
 import { BasicInfoTile } from "@/components/participants/entities/tiles/basic-info-tile";
-import { IdentityClaimsTile } from "@/components/participants/common/tiles/identity-claims-tile";
 import { Badge } from "@/components/ui/badge";
 import { ORPCError } from "@orpc/client";
 import {
@@ -147,7 +147,7 @@ function RouteComponent() {
     loaderIdentity,
     loaderToken: loaderToken ?? null,
     createIdentityQueryOptions: (args) =>
-      routeContext.orpc.system.identity.read.queryOptions(args),
+      routeContext.orpc.system.identity.readById.queryOptions(args),
     createTokenQueryOptions: (args) =>
       routeContext.orpc.token.read.queryOptions(args),
   });
