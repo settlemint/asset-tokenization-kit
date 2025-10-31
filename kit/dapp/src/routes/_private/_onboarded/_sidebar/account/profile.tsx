@@ -50,7 +50,7 @@ function Profile() {
 
         <div className="grid gap-4 md:grid-cols-2">
           {authPublicConfig.changeEmailEnabled ? (
-            <ChangeEmailCard className="h-full" />
+            <ChangeEmailCard className="h-full" classNames={CARD_CLASS_NAMES} />
           ) : (
             <Card className={CARD_CLASS_NAMES.base}>
               <CardHeader>
