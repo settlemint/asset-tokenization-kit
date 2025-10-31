@@ -98,7 +98,7 @@ export function StatCard({
   return (
     <Card className={cn("", className)}>
       {/* Vertical flex layout with consistent spacing between elements */}
-      <CardContent className="flex flex-col space-y-2">
+      <CardContent className="flex flex-col space-y-1.5 md:space-y-2">
         {/* Header row: Title and optional indicator with flex wrap */}
         <div className="flex flex-wrap items-start justify-between gap-2">
           {/* Title: Small, muted text to avoid competing with the value */}
@@ -107,7 +107,7 @@ export function StatCard({
           {indicator && <div className="shrink-0">{indicator}</div>}
         </div>
         {/* Value: Large, bold to draw immediate attention */}
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-xl md:text-2xl font-bold">{value}</div>
         {/* Description: Conditional rendering to maintain clean layout when not needed */}
         {description && (
           <div className="text-sm text-muted-foreground">{description}</div>

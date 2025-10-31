@@ -49,8 +49,8 @@ const PortfolioDashboardContent = withErrorBoundary(
     return (
       <div>
         {/* Welcome Header */}
-        <div className="space-y-2 mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">
+        <div className="space-y-2 mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
             {t("portfolioDashboard.welcome", { name: session?.user.name })}
           </h1>
           <p className="text-muted-foreground">
@@ -63,7 +63,7 @@ const PortfolioDashboardContent = withErrorBoundary(
 
         {/* Charts Section */}
         {hasAssets && (
-          <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="mt-6 md:mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Asset Allocation Chart */}
             <PortfolioBreakdownPieChart
               breakdown={portfolioData.tokenFactoryBreakdown}

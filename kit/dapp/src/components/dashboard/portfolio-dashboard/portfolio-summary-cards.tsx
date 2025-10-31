@@ -161,7 +161,7 @@ function StatCardSkeleton() {
  */
 export function PortfolioSummaryCards() {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       <Suspense fallback={<StatCardSkeleton />}>
         <TotalValueCard />
       </Suspense>
@@ -183,7 +183,7 @@ export function PortfolioSummaryCards() {
  */
 export function PortfolioSummaryCardsSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
       <StatCardSkeleton />
       <StatCardSkeleton />
       <StatCardSkeleton />

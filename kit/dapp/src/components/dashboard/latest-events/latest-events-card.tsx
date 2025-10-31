@@ -53,7 +53,7 @@ export function LatestEventsCard({
   return (
     <Card className={cn("flex h-full flex-col", className)}>
       <CardHeader className="shrink-0">
-        <h2 className="text-2xl font-semibold">
+        <h2 className="text-xl md:text-2xl font-semibold">
           {t("widgets.latestEvents.title")}
         </h2>
         <p className="text-sm text-muted-foreground">
