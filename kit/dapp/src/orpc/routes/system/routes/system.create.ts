@@ -21,10 +21,8 @@ import { offChainPermissionsMiddleware } from "@/orpc/middlewares/auth/offchain-
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import { read as settingsRead } from "@/orpc/routes/settings/routes/settings.read";
 import { upsert } from "@/orpc/routes/settings/routes/settings.upsert";
-import { grantRole } from "@/orpc/routes/system/access-manager/routes/grant-role";
 import { complianceModuleCreate } from "@/orpc/routes/system/compliance-module/routes/compliance-module.create";
 import { read } from "@/orpc/routes/system/routes/system.read";
-import type { SystemAccessControlRoles } from "@atk/zod/access-control-roles";
 import { call } from "@orpc/server";
 import type { VariablesOf } from "@settlemint/sdk-portal";
 import { createLogger } from "@settlemint/sdk-utils/logging";
@@ -237,25 +235,6 @@ export const create = onboardedRouter.system.create
       {
         key: "SYSTEM_ADDRESS",
         value: system.id,
-      },
-      { context }
-    );
-
-    // Grant operational roles to the system creator
-    // These roles are required for managing various aspects of the system
-    const operationalRoles: SystemAccessControlRoles[] = [
-      "tokenManager",
-      "identityManager",
-      "complianceManager",
-      "addonManager",
-    ];
-    // Grant all operational roles in a single transaction
-    await call(
-      grantRole,
-      {
-        address: sender.wallet,
-        role: operationalRoles,
-        walletVerification,
       },
       { context }
     );

@@ -111,7 +111,9 @@ export function NavAsset() {
             if (isDisabled) {
               return (
                 <Tooltip>
-                  <TooltipTrigger asChild>{assetDesignerButton}</TooltipTrigger>
+                  <TooltipTrigger className="pointer-events-auto">
+                    {assetDesignerButton}
+                  </TooltipTrigger>
                   <TooltipContent side="right" className="whitespace-pre-wrap">
                     {t("assetManagementNotAuthorized")}
                   </TooltipContent>
@@ -254,7 +256,10 @@ export function NavAsset() {
                                     {factorySubLink}
                                   </SidebarMenuSubItem>
                                 </TooltipTrigger>
-                                <TooltipContent className="whitespace-pre-wrap">
+                                <TooltipContent
+                                  side="right"
+                                  className="whitespace-pre-wrap"
+                                >
                                   {t("assetManagementNotAuthorized")}
                                 </TooltipContent>
                               </Tooltip>

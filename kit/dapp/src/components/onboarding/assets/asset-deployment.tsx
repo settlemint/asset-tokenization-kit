@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { orpc } from "@/orpc/orpc-client";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -16,7 +15,6 @@ const logger = createLogger();
 export function AssetDeployment() {
   const { completeStepAndNavigate } = useOnboardingNavigation();
   const { t } = useTranslation(["onboarding", "common"]);
-  const navigate = useNavigate();
   const { data: systemDetails } = useQuery(
     orpc.system.read.queryOptions({
       input: { id: "default" },
@@ -50,20 +48,9 @@ export function AssetDeployment() {
       title={t("assets.asset-types-deployed")}
       description={t("assets.your-asset-factories-ready")}
       actions={
-        <>
-          <Button
-            variant="outline"
-            onClick={() => {
-              void navigate({ to: "/onboarding" });
-            }}
-          >
-            Cancel
-          </Button>
-
-          <Button type="button" onClick={onNext} className="press-effect">
-            {t("common:continue")}
-          </Button>
-        </>
+        <Button type="button" onClick={onNext} className="press-effect">
+          {t("common:continue")}
+        </Button>
       }
     >
       <div className="flex-1 overflow-y-auto">

@@ -1,12 +1,12 @@
-import { ClaimsTable } from "@/components/participants/common/claims-table";
 import { IssueClaimSheet } from "@/components/manage-dropdown/sheets/issue-claim-sheet";
+import { ClaimsTable } from "@/components/participants/common/claims-table";
 import { Button } from "@/components/ui/button";
 import { isOrpcNotFoundError } from "@/orpc/helpers/error";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import type { Address } from "viem";
 import { useTranslation } from "react-i18next";
+import type { Address } from "viem";
 
 export function OnchainIdentityClaimsSection() {
   const { t } = useTranslation(["user", "identities"]);

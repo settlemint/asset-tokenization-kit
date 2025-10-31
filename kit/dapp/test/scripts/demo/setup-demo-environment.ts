@@ -36,6 +36,7 @@ import {
   JAPANESE_INVESTOR,
   US_INVESTOR,
 } from "./data/demo-users";
+import { EthereumAddress } from "@atk/zod/ethereum-address";
 
 const logger = createLogger({ level: "info" });
 
@@ -183,6 +184,8 @@ for (const bondToCreate of BONDS) {
     },
   });
 
+  let scheduleId: EthereumAddress | undefined = undefined;
+
   if (!bond.yield?.schedule?.id) {
     // Set yield schedule
     logger.info("Creating yield schedule");
@@ -198,6 +201,7 @@ for (const bondToCreate of BONDS) {
         verificationType: "PINCODE",
       },
     });
+    scheduleId = schedule.id;
 
     logger.info("Setting yield schedule");
     await issuerClient.token.setYieldSchedule({
@@ -222,17 +226,27 @@ for (const bondToCreate of BONDS) {
     });
   }
 
-  // Mint some tokens to the german investors
-  logger.info("Minting tokens to the german investors");
-  await issuerClient.token.mint({
-    contract: bond.id,
-    recipients: [germanInvestor1.wallet, germanInvestor2.wallet],
-    amounts: [from(10, 18), from(38, 18)],
-    walletVerification: {
-      secretVerificationCode: DEFAULT_PINCODE,
-      verificationType: "PINCODE",
-    },
-  });
+  if (scheduleId) {
+    const yieldSchedule = await issuerClient.fixedYieldSchedule.read({
+      contract: scheduleId,
+    });
+    const isActive = yieldSchedule.startDate.getTime() < Date.now();
+    if (isActive) {
+      logger.info("Yield schedule is active, skipping minting");
+    } else {
+      // Mint some tokens to the german investors
+      logger.info("Minting tokens to the german investors");
+      await issuerClient.token.mint({
+        contract: bond.id,
+        recipients: [germanInvestor1.wallet, germanInvestor2.wallet],
+        amounts: [from(10, 18), from(38, 18)],
+        walletVerification: {
+          secretVerificationCode: DEFAULT_PINCODE,
+          verificationType: "PINCODE",
+        },
+      });
+    }
+  }
 }
 
 for (const stableCoinToCreate of STABLECOINS) {
