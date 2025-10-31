@@ -44,10 +44,7 @@ export function NavSettings() {
     return matches.some((match) => match.pathname === path);
   };
 
-  const roles = system.userPermissions?.roles ?? {};
-  const canViewSettings =
-    Object.keys(roles).length > 0 ||
-    system.userPermissions?.roles.admin === true;
+  const canViewSettings = system.userPermissions?.roles.admin === true;
 
   if (!canViewSettings) {
     return null;
