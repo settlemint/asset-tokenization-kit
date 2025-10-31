@@ -49,7 +49,7 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("sonner", () => ({
   toast: {
-    promise: vi.fn((promise) => promise),
+    promise: vi.fn((promise) => ({ unwrap: () => promise })),
   },
 }));
 

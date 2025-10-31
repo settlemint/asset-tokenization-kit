@@ -141,7 +141,7 @@ export function BlocklistSheet({
               </Card>
             }
             disabled={() => !isValidAddress}
-            onSubmit={async (verification) => {
+            onSubmit={(verification) => {
               const addr = getEthereumAddress(selectedAddress);
               const promise = (async () => {
                 await freezeAddress({
@@ -165,14 +165,17 @@ export function BlocklistSheet({
                 onCompleted({ address: addr, mode });
               })();
 
-              toast.promise(promise, {
-                loading: t("common:saving"),
-                success: t("common:saved"),
-                error: (data) => t("common:error", { message: data.message }),
-              });
-
-              await promise;
-              resetAndClose();
+              toast
+                .promise(promise, {
+                  loading: t("common:saving"),
+                  success: t("common:saved"),
+                  error: (data) => t("common:error", { message: data.message }),
+                })
+                .unwrap()
+                .then(() => {
+                  resetAndClose();
+                })
+                .catch(() => undefined);
             }}
           >
             <div className="space-y-4">

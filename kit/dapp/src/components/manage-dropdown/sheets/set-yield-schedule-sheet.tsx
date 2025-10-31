@@ -145,13 +145,17 @@ export function SetYieldScheduleSheet({
       });
     };
 
-    toast.promise(createAndSet(), {
-      loading: t("tokens:actions.setYieldSchedule.messages.preparing"),
-      success: t("tokens:actions.setYieldSchedule.messages.success"),
-      error: (data) => t("common:error", { message: data.message }),
-    });
-
-    onOpenChange(false);
+    toast
+      .promise(createAndSet(), {
+        loading: t("tokens:actions.setYieldSchedule.messages.preparing"),
+        success: t("tokens:actions.setYieldSchedule.messages.success"),
+        error: (data) => t("common:error", { message: data.message }),
+      })
+      .unwrap()
+      .then(() => {
+        onOpenChange(false);
+      })
+      .catch(() => undefined);
   };
 
   return (
