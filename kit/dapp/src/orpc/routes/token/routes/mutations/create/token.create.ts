@@ -135,7 +135,7 @@ export const create = systemRouter.token.create
       });
     }
 
-    const grantInput: Extract<TokenGrantRoleInput, { roles: unknown }> = {
+    const grantInput: TokenGrantRoleInput = {
       contract: token.id,
       address: context.auth.user.wallet,
       roles: ["governance"],

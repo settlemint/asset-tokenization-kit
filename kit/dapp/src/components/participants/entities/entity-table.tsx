@@ -3,7 +3,7 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
-import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
+import { EntityStatusBadge } from "@/components/participants/entities/entity-status-badge";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -28,6 +28,7 @@ const columnHelper = createStrictColumnHelper<EntityRow>();
 export const EntityTable = withErrorBoundary(function EntityTable() {
   const router = useRouter();
   const { t } = useTranslation(["entities", "identities"]);
+  const routePath = router.state.matches.at(-1)?.pathname;
   const isNavigatingRef = useRef(false);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -223,9 +224,7 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
           renderCell: ({ getValue }) => {
             const status = getValue();
 
-            return (
-              <IdentityStatusBadge isRegistered={status === "registered"} />
-            );
+            return <EntityStatusBadge isRegistered={status === "registered"} />;
           },
         },
       }),
@@ -255,6 +254,7 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
       externalState={externalState}
       urlState={{
         enabled: true,
+        routePath,
       }}
       advancedToolbar={{
         enableGlobalSearch: true,

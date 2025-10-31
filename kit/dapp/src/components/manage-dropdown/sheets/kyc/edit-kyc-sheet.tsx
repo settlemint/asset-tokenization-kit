@@ -1,7 +1,6 @@
 import { DetailGrid } from "@/components/detail-grid/detail-grid";
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
 import { FormStepContent } from "@/components/form/multi-step/form-step";
-import type { KycFormValues } from "@/components/kyc/kyc-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useCountries } from "@/hooks/use-countries";
@@ -69,7 +68,7 @@ export function EditKycSheet({
     );
   }, [getCountryMap]);
 
-  const baseValues = useMemo<KycFormValues>(
+  const baseValues = useMemo<KycUpsertInput>(
     () => ({
       id: currentKyc.id,
       userId: user.id,
@@ -95,7 +94,6 @@ export function EditKycSheet({
   const resetSheetState = useCallback(() => {
     form.reset({
       ...baseValues,
-      walletVerification: undefined,
     });
     sheetStoreRef.current.setState((state) => ({ ...state, step: "values" }));
   }, [baseValues, form]);
@@ -207,12 +205,12 @@ export function EditKycSheet({
   return (
     <form.Subscribe
       selector={(state) => ({
-        values: state.values as Partial<KycFormValues>,
+        values: state.values,
         errors: state.errors,
       })}
     >
       {({ values, errors }) => {
-        const mergedValues: KycFormValues = {
+        const mergedValues: KycUpsertInput = {
           ...baseValues,
           ...values,
         };

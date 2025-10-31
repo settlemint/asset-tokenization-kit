@@ -15,10 +15,7 @@ export const Route = createFileRoute(
       })
     );
 
-    const roles = system.userPermissions?.roles;
-    const canViewEntities = Boolean(
-      roles?.identityManager || roles?.claimIssuer
-    );
+    const canViewEntities = Boolean(system.userPermissions?.actions.entityList);
 
     return {
       breadcrumb: [

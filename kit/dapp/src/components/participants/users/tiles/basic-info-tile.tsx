@@ -99,7 +99,7 @@ export function BasicInfoTile({ user }: BasicInfoTileProps) {
           <dl className="space-y-3">
             {infoItems.map((item) => (
               <div key={item.label} className="flex flex-col gap-0.5">
-                <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <dt className="text-sm font-medium text-muted-foreground">
                   {item.label}
                 </dt>
                 <dd className="text-sm font-medium text-foreground">

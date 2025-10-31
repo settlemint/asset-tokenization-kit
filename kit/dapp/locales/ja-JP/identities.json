@@ -5,14 +5,14 @@
       "label": "アイデンティティを登録",
       "title": "アイデンティティを登録",
       "description": "国情報と共にアイデンティティレジストリにこのアイデンティティを登録します",
-      "notAuthorized": "このアイデンティティを登録する権限がありません。\nシステムのアイデンティティ管理者ロールを持っていません。",
+      "notAuthorized": "このアイデンティティを登録する権限がありません。\nアイデンティティ管理者ロールを持っていません。",
       "alreadyRegistered": "このアイデンティティはすでに登録されています。"
     },
     "viewEvents": "イベントを表示",
     "issueClaim": {
       "title": "請求を発行",
       "description": "アイデンティティ {{identity}} に請求を発行",
-      "notAuthorized": "このクレームを発行する権限がありません。\nシステムのクレーム発行者ロールを持っていません。",
+      "notAuthorized": "このクレームを発行する権限がありません。\nクレーム発行者ロールを持っていません。",
       "submit": "請求を発行",
       "success": "請求が正常に発行されました",
       "submitting": "請求を発行中...",
@@ -162,6 +162,10 @@
     "untrustedClaimsWarning": "信頼できないクレームを {{count}} 件検出",
     "untrustedClaimsWarning_plural": "信頼できないクレームを {{count}} 件検出",
     "manageVerifications": "確認を管理"
+  },
+  "verificationDetail": {
+    "title": "検証",
+    "noIdentity": "このユーザーのアイデンティティは見つかりませんでした"
   },
   "claimsTable": {
     "columns": {

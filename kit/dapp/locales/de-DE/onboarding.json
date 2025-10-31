@@ -75,8 +75,9 @@
     },
     "info": "Wir erstellen Ihre ONCHAINID mit der Identitätsfabrik.",
     "info-description": "Dies erstellt Ihren Identitäts-Smart-Contract auf der Blockchain — einen sicheren Container für Ihre verifizierten Anmeldedaten.\n\nKeine persönlichen Daten werden noch gespeichert. Das kommt als Nächstes. Für jetzt etablieren wir Ihre einzigartige Identitätsadresse, die nur Sie kontrollieren.\n\nDies dauert typischerweise 10-30 Sekunden.",
-    "success-message": "Ihre on-chain Identität wurde erstellt. Sie können sie nun registrieren und Ihre verifizierten Informationen hinzufügen oder dies später von Ihrem Dashboard aus tun.",
+    "success-message": "Ihre On-Chain-Identität wurde erstellt.",
     "success-title": "Identität erfolgreich erstellt",
+    "success-continue": "Weiter",
     "title": "Ihre On-Chain-Identität",
     "deployment-warning": "Dieser Prozess kann bis zu 2–3 Minuten dauern",
     "transaction-confirmation-info": "Sie werden aufgefordert, jede Transaktion mit Zwei-Faktor-Authentifizierung zu bestätigen.",
@@ -92,7 +93,7 @@
   "steps": {
     "identity": {
       "description": "Persönliche Infos für Compliance hinzufügen",
-      "title": "Identität verifizieren"
+      "title": "Persönliche Informationen"
     },
     "identity-setup": {
       "description": "Stellen Sie Ihren einzigartigen Identitätsvertrag bereit",
@@ -196,7 +197,7 @@
       "title": "Add-ons erfolgreich bereitgestellt",
       "intro-1": "Alle ausgewählten Plattform-Add-ons wurden erfolgreich bereitgestellt.",
       "intro-2": "Diese Funktionen sind nun verfügbar und können konfiguriert werden. Als Plattformadministrator kontrollieren Sie ihre Parameter und ihren Zugriff.",
-      "continue-to-identity-setup": "Mit Identitätseinrichtung fortfahren"
+      "continue-to-identity-setup": "Weiter"
     },
     "addon-selection": {
       "addon-types": {

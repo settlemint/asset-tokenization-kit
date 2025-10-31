@@ -57,12 +57,10 @@
       "unknown": "أفضل عدم القول"
     },
     "submit": "احفظ واستمر",
-    "identity": {
-      "confirm-description": "يرجى التحقق من هويتك لإنشاء هويتك على السلسلة.",
-      "confirm-title": "تأكيد إنشاء الهوية",
-      "deployed-toast": "تم تسجيل الهوية بنجاح!",
-      "deploying-toast": "جارٍ تسجيل الهوية...",
-      "failed-toast": "فشل تسجيل الهوية: "
+    "submission": {
+      "loading": "جارٍ حفظ معلوماتك الشخصية...",
+      "success": "تم حفظ معلوماتك الشخصية بنجاح.",
+      "error": "تعذر حفظ معلوماتك: "
     }
   },
   "verificationDialog": {
