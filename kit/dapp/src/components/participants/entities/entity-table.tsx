@@ -3,7 +3,7 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
-import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
+import { EntityStatusBadge } from "@/components/participants/entities/entity-status-badge";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -224,9 +224,7 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
           renderCell: ({ getValue }) => {
             const status = getValue();
 
-            return (
-              <IdentityStatusBadge isRegistered={status === "registered"} />
-            );
+            return <EntityStatusBadge isRegistered={status === "registered"} />;
           },
         },
       }),

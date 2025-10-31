@@ -1,14 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
 
-interface IdentityStatusBadgeProps {
+interface EntityStatusBadgeProps {
   isRegistered: boolean;
 }
 
-export function IdentityStatusBadge({
-  isRegistered,
-}: IdentityStatusBadgeProps) {
-  const { t } = useTranslation("identities");
+export function EntityStatusBadge({ isRegistered }: EntityStatusBadgeProps) {
+  const { t } = useTranslation("entities");
   const statusKey = isRegistered
     ? "status.registered"
     : "status.pendingRegistration";

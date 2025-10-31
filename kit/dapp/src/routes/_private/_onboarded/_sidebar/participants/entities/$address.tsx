@@ -2,7 +2,7 @@ import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
+import { EntityStatusBadge } from "@/components/participants/entities/entity-status-badge";
 import { BasicInfoTile } from "@/components/participants/entities/tiles/basic-info-tile";
 import { IdentityClaimsTile } from "@/components/participants/common/tiles/identity-claims-tile";
 import { Badge } from "@/components/ui/badge";
@@ -177,13 +177,13 @@ function RouteComponent() {
 
   return (
     <div className="space-y-6 p-6">
-      <RouterBreadcrumb />
       <div className="space-y-2">
+        <RouterBreadcrumb />
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-3xl font-bold tracking-tight mr-2">
             {displayName}
           </h1>
-          <IdentityStatusBadge isRegistered={claimsData.isRegistered} />
+          <EntityStatusBadge isRegistered={claimsData.isRegistered} />
         </div>
         {entityTypeLabel ? (
           <p className="text-sm font-medium text-muted-foreground">
