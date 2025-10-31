@@ -65,7 +65,7 @@ const USER_EVENTS_COUNT_QUERY = theGraphGraphql(`
   query UserEventsCountQuery($userAddress: String!) {
     events(
       where: { involved_contains: [$userAddress] }
-    ) {
+    ) @fetchAll {
       id
     }
   }
