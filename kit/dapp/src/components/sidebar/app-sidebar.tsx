@@ -1,6 +1,5 @@
 import { NavAddons } from "@/components/sidebar/nav-addons";
 import { NavAsset } from "@/components/sidebar/nav-asset";
-import { NavCompliance } from "@/components/sidebar/nav-compliance";
 import { NavMyAssets } from "@/components/sidebar/nav-my-assets";
 import { NavParticipants } from "@/components/sidebar/nav-participants";
 import { NavSettings } from "@/components/sidebar/nav-settings";
@@ -102,7 +101,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavAsset />
         <NavAddons />
         <NavParticipants />
-        <NavCompliance />
         <NavSettings />
       </SidebarContent>
       <SidebarRail />
