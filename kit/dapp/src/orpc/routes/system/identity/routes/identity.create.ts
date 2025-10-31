@@ -40,7 +40,7 @@ import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockch
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
 import type { IdentityCreateSchema } from "@/orpc/routes/system/identity/routes/identity.create.schema";
-import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read";
+import { identityReadByWallet } from "@/orpc/routes/system/identity/routes/identity.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call, ORPCError } from "@orpc/server";
 
@@ -140,7 +140,7 @@ export const identityCreate = onboardedRouter.system.identity.create
     // WHY: Each user should have at most one identity contract per system
     // Multiple identities would complicate compliance verification and access control
     const identity = await call(
-      identityRead,
+      identityReadByWallet,
       {
         wallet: walletAddress,
       },
@@ -185,7 +185,7 @@ export const identityCreate = onboardedRouter.system.identity.create
     // WHY: Client needs updated identity information reflecting the new identity contract
     // Portal middleware ensures transaction is confirmed and indexed before returning
     return await call(
-      identityRead,
+      identityReadByWallet,
       {
         wallet: walletAddress,
       },

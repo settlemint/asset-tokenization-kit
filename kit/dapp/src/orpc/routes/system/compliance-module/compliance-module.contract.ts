@@ -3,7 +3,7 @@ import { SystemComplianceModuleCreateSchema } from "@/orpc/routes/system/complia
 import { ComplianceModulesListOutputSchema } from "@/orpc/routes/system/compliance-module/routes/compliance-module.list.schema";
 import { SystemSchema } from "@/orpc/routes/system/routes/system.read.schema";
 
-const TAGS = ["system", "compliance-module"];
+const TAGS = ["compliance-module"];
 
 const complianceModuleCreate = baseContract
   .route({

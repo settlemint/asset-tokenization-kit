@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 @import "fumadocs-ui/css/shadcn.css";
 @import "fumadocs-ui/css/preset.css";
-@import "fumadocs-openapi/css/preset.css";
 @import "@daveyplate/better-auth-ui/css";
 
 /* Scope dark utilities to the nearest theme container so light previews stay isolated */
@@ -39,6 +38,8 @@
   --color-sm-border: var(--sm-border);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --shadow-inset-button: inset 0 -3px 3px 0 var(--sm-inset-shadow);
   /* shadcn colors */
   --radius-sm: calc(var(--radius) - 4px);
@@ -60,6 +61,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

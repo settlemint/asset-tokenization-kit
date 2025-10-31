@@ -97,7 +97,7 @@ const themeGet = baseContract
     path: "/settings/theme",
     description: "Get current theme configuration",
     successDescription: "Theme retrieved successfully",
-    tags: ["settings", "theme"],
+    tags: ["settings"],
   })
   .input(ThemeGetSchema)
   .output(themeConfigSchema);
@@ -113,7 +113,7 @@ const themeUpdate = baseContract
     path: "/settings/theme",
     description: "Update theme configuration",
     successDescription: "Theme updated successfully",
-    tags: ["settings", "theme"],
+    tags: ["settings"],
   })
   .input(ThemeUpdateSchema)
   .output(ThemeUpdateOutputSchema);
@@ -129,7 +129,7 @@ const themePreview = baseContract
     path: "/settings/theme/preview",
     description: "Cache a theme preview payload",
     successDescription: "Theme preview cached successfully",
-    tags: ["settings", "theme"],
+    tags: ["settings"],
   })
   .input(ThemePreviewSchema)
   .output(ThemePreviewOutputSchema);
@@ -145,7 +145,7 @@ const themeUploadLogo = baseContract
     path: "/settings/theme/logo",
     description: "Upload theme logo asset",
     successDescription: "Theme logo uploaded successfully",
-    tags: ["settings", "theme"],
+    tags: ["settings"],
   })
   .input(ThemeLogoUploadSchema)
   .output(ThemeLogoUploadOutputSchema);

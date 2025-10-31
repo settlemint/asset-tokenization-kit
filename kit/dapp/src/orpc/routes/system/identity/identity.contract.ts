@@ -5,17 +5,16 @@ import {
   IdentityListInputSchema,
   IdentityListOutputSchema,
 } from "@/orpc/routes/system/identity/routes/identity.list.schema";
-import {
-  IdentityReadSchema,
-  IdentitySchema,
-} from "@/orpc/routes/system/identity/routes/identity.read.schema";
+import { IdentitySchema } from "@/orpc/routes/system/identity/routes/identity.read.schema";
 import { IdentityRegisterSchema } from "@/orpc/routes/system/identity/routes/identity.register.schema";
 import {
   IdentitySearchResultSchema,
   IdentitySearchSchema,
 } from "@/orpc/routes/system/identity/routes/identity.search.schema";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
+import { z } from "zod";
 
-const TAGS = ["system", "identity"];
+const TAGS = ["identity"];
 
 const identityCreate = baseContract
   .route({
@@ -43,15 +42,38 @@ const identityRegister = baseContract
   .input(IdentityRegisterSchema)
   .output(IdentitySchema);
 
-const identityRead = baseContract
+const identityReadByWallet = baseContract
   .route({
     method: "GET",
-    path: "/system/identity/{account}",
-    description: "Read identity information for a specified account",
+    path: "/system/identity/by-wallet/{wallet}",
+    description: "Read identity information by wallet address",
     successDescription: "Identity information retrieved successfully",
     tags: TAGS,
   })
-  .input(IdentityReadSchema)
+  .input(
+    z.object({
+      wallet: ethereumAddress.describe(
+        "The wallet address of the user to read the identity for"
+      ),
+    })
+  )
+  .output(IdentitySchema);
+
+const identityReadById = baseContract
+  .route({
+    method: "GET",
+    path: "/system/identity/by-id/{identityId}",
+    description: "Read identity information by identity contract ID",
+    successDescription: "Identity information retrieved successfully",
+    tags: TAGS,
+  })
+  .input(
+    z.object({
+      identityId: ethereumAddress.describe(
+        "The ID of the identity contract to read"
+      ),
+    })
+  )
   .output(IdentitySchema);
 
 const identitySearch = baseContract
@@ -94,7 +116,8 @@ const identityList = baseContract
 export const identityContract = {
   create: identityCreate,
   register: identityRegister,
-  read: identityRead,
+  readByWallet: identityReadByWallet,
+  readById: identityReadById,
   search: identitySearch,
   me: identityMe,
   list: identityList,

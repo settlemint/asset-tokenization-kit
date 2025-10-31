@@ -7,7 +7,7 @@ import {
 import { SystemSchema } from "@/orpc/routes/system/routes/system.read.schema";
 import { z } from "zod";
 
-const TAGS = ["system", "addon"];
+const TAGS = ["addon"];
 
 /**
  * Contract definition for the system addon creation endpoint.

@@ -10,7 +10,7 @@ export const statsWalletDistributionContract = baseContract
     path: "/token/stats/{tokenAddress}/wallet-distribution",
     description: "Get wallet distribution statistics for a specific token",
     successDescription: "Token wallet distribution statistics",
-    tags: ["token", "stats", "asset", "wallet-distribution"],
+    tags: ["token"],
   })
   .input(StatsWalletDistributionInputSchema)
   .output(StatsWalletDistributionOutputSchema);

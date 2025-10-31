@@ -70,12 +70,84 @@ const TopicSchemesStatsResponseSchema = z.object({
     .nullable(),
 });
 
-export const statsTopicSchemesStats =
-  systemRouter.system.stats.topicSchemesStats.handler(
+export const statsTopicSchemesStatsByRange =
+  systemRouter.system.stats.topicSchemesStatsByRange.handler(
     async ({ context, input }) => {
       const now = new Date();
       const { interval, fromMicroseconds, toMicroseconds, range } =
         buildStatsRangeQuery(input, {
+          now,
+        });
+
+      const topicSchemeRegistryId =
+        context.system.topicSchemeRegistry.id.toLowerCase();
+
+      const response = await context.theGraphClient.query(
+        TOPIC_SCHEMES_STATS_QUERY,
+        {
+          input: {
+            topicSchemeRegistryId,
+            topicSchemeRegistryIdString: topicSchemeRegistryId,
+            interval,
+            from: fromMicroseconds,
+            to: toMicroseconds,
+          },
+          output: TopicSchemesStatsResponseSchema,
+        }
+      );
+
+      const results = [
+        ...response.baseline.map((item) => ({
+          timestamp: item.timestamp,
+          totalRegisteredTopicSchemes: item.totalRegisteredTopicSchemes,
+          totalActiveTopicSchemes: item.totalActiveTopicSchemes,
+          totalRemovedTopicSchemes: item.totalRemovedTopicSchemes,
+        })),
+        ...response.topicSchemesStats.map((item) => ({
+          timestamp: item.timestamp,
+          totalRegisteredTopicSchemes: item.totalRegisteredTopicSchemes,
+          totalActiveTopicSchemes: item.totalActiveTopicSchemes,
+          totalRemovedTopicSchemes: item.totalRemovedTopicSchemes,
+        })),
+        {
+          timestamp: range.to,
+          totalRegisteredTopicSchemes:
+            response.current?.totalRegisteredTopicSchemes ?? 0,
+          totalActiveTopicSchemes:
+            response.current?.totalActiveTopicSchemes ?? 0,
+          totalRemovedTopicSchemes:
+            response.current?.totalRemovedTopicSchemes ?? 0,
+        },
+      ];
+
+      const data = createTimeSeries(
+        results,
+        [
+          "totalRegisteredTopicSchemes",
+          "totalActiveTopicSchemes",
+          "totalRemovedTopicSchemes",
+        ],
+        {
+          range,
+          aggregation: "last",
+          accumulation: "max",
+          historical: true,
+        }
+      );
+
+      return {
+        range,
+        data,
+      };
+    }
+  );
+
+export const statsTopicSchemesStatsByPreset =
+  systemRouter.system.stats.topicSchemesStatsByPreset.handler(
+    async ({ context, input }) => {
+      const now = new Date();
+      const { interval, fromMicroseconds, toMicroseconds, range } =
+        buildStatsRangeQuery(input.preset, {
           now,
         });
 

@@ -70,12 +70,76 @@ const SystemAssetActivityResponseSchema = z.object({
     .nullable(),
 });
 
-export const statsAssetActivity =
-  systemRouter.system.stats.assetActivity.handler(
+export const statsAssetActivityByRange =
+  systemRouter.system.stats.assetActivityByRange.handler(
     async ({ context, input }) => {
       const now = new Date();
       const { interval, fromMicroseconds, toMicroseconds, range } =
         buildStatsRangeQuery(input, {
+          now,
+          // TODO: replace minFrom with context.system.createdAt when available
+        });
+
+      const systemId = context.system.id.toLowerCase();
+      const response = await context.theGraphClient.query(
+        SYSTEM_ASSET_ACTIVITY_QUERY,
+        {
+          input: {
+            systemId,
+            systemIdString: systemId,
+            interval,
+            from: fromMicroseconds,
+            to: toMicroseconds,
+          },
+          output: SystemAssetActivityResponseSchema,
+        }
+      );
+
+      const results = [
+        ...response.baseline.map((item) => ({
+          timestamp: item.timestamp,
+          transferEventsCount: item.transferEventsCount,
+          mintEventsCount: item.mintEventsCount,
+          burnEventsCount: item.burnEventsCount,
+        })),
+        ...response.systemStats.map((item) => ({
+          timestamp: item.timestamp,
+          transferEventsCount: item.transferEventsCount,
+          mintEventsCount: item.mintEventsCount,
+          burnEventsCount: item.burnEventsCount,
+        })),
+        {
+          timestamp: range.to,
+          transferEventsCount: response.current?.transferEventsCount ?? 0,
+          mintEventsCount: response.current?.mintEventsCount ?? 0,
+          burnEventsCount: response.current?.burnEventsCount ?? 0,
+        },
+      ];
+
+      const data = createTimeSeries(
+        results,
+        ["transferEventsCount", "mintEventsCount", "burnEventsCount"],
+        {
+          range,
+          aggregation: "last",
+          accumulation: "max",
+          historical: true,
+        }
+      );
+
+      return {
+        range,
+        data,
+      };
+    }
+  );
+
+export const statsAssetActivityByPreset =
+  systemRouter.system.stats.assetActivityByPreset.handler(
+    async ({ context, input }) => {
+      const now = new Date();
+      const { interval, fromMicroseconds, toMicroseconds, range } =
+        buildStatsRangeQuery(input.preset, {
           now,
           // TODO: replace minFrom with context.system.createdAt when available
         });

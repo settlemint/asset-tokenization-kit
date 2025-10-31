@@ -4,7 +4,7 @@ import {
   SystemRolesOutputSchema,
 } from "./roles.list.schema";
 
-const TAGS = ["system", "access-manager"];
+const TAGS = ["access-manager"];
 
 export const rolesListContract = baseContract
   .route({

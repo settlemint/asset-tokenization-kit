@@ -4,7 +4,7 @@ import {
   GrantRoleOutputSchema,
 } from "./grant-role.schema";
 
-const TAGS = ["system", "access-manager"];
+const TAGS = ["access-manager"];
 
 export const grantRoleContract = baseContract
   .route({

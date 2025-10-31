@@ -13,6 +13,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ApiRouteImport } from './routes/api'
 import { Route as PrivateRouteImport } from './routes/_private'
 import { Route as LlmsDotmdxSplatRouteImport } from './routes/llms[.]mdx.$'
 import { Route as DocsSplatRouteImport } from './routes/docs/$'
@@ -39,6 +40,7 @@ import { Route as PrivateOnboardingSidebarIdentitySetupRouteImport } from './rou
 import { Route as PrivateOnboardingSidebarIdentityRouteImport } from './routes/_private/onboarding/_sidebar/identity'
 import { Route as PrivateOnboardedSidebarMyAssetsRouteImport } from './routes/_private/_onboarded/_sidebar/my-assets'
 import { Route as PrivateOnboardedSidebarAddonDesignerRouteImport } from './routes/_private/_onboarded/_sidebar/addon-designer'
+import { Route as PrivateOnboardedSidebarActivityRouteImport } from './routes/_private/_onboarded/_sidebar/activity'
 import { Route as PrivateOnboardedSidebarActionsRouteImport } from './routes/_private/_onboarded/_sidebar/actions'
 import { Route as PrivateOnboardedSidebarAddonIndexRouteImport } from './routes/_private/_onboarded/_sidebar/addon/index'
 import { Route as PrivateOnboardedSidebarTokenStatsRouteImport } from './routes/_private/_onboarded/_sidebar/token/stats'
@@ -88,6 +90,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiRoute = ApiRouteImport.update({
+  id: '/api',
+  path: '/api',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivateRoute = PrivateRouteImport.update({
   id: '/_private',
   getParentRoute: () => rootRouteImport,
@@ -108,19 +115,19 @@ const AuthPathnameRoute = AuthPathnameRouteImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 const ApiThemeDotcssRoute = ApiThemeDotcssRouteImport.update({
-  id: '/api/theme.css',
-  path: '/api/theme.css',
-  getParentRoute: () => rootRouteImport,
+  id: '/theme.css',
+  path: '/theme.css',
+  getParentRoute: () => ApiRoute,
 } as any)
 const ApiSearchRoute = ApiSearchRouteImport.update({
-  id: '/api/search',
-  path: '/api/search',
-  getParentRoute: () => rootRouteImport,
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => ApiRoute,
 } as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootRouteImport,
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => ApiRoute,
 } as any)
 const PrivateOnboardingRoute = PrivateOnboardingRouteImport.update({
   id: '/onboarding',
@@ -137,14 +144,14 @@ const PrivateOnboardingIndexRoute = PrivateOnboardingIndexRouteImport.update({
   getParentRoute: () => PrivateOnboardingRoute,
 } as any)
 const ApiRpcSplatRoute = ApiRpcSplatRouteImport.update({
-  id: '/api/rpc/$',
-  path: '/api/rpc/$',
-  getParentRoute: () => rootRouteImport,
+  id: '/rpc/$',
+  path: '/rpc/$',
+  getParentRoute: () => ApiRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
+  id: '/auth/$',
+  path: '/auth/$',
+  getParentRoute: () => ApiRoute,
 } as any)
 const PrivateOnboardingSidebarRoute =
   PrivateOnboardingSidebarRouteImport.update({
@@ -225,6 +232,12 @@ const PrivateOnboardedSidebarAddonDesignerRoute =
   PrivateOnboardedSidebarAddonDesignerRouteImport.update({
     id: '/addon-designer',
     path: '/addon-designer',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarActivityRoute =
+  PrivateOnboardedSidebarActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
 const PrivateOnboardedSidebarActionsRoute =
@@ -424,6 +437,7 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressActionsRoute =
   )
 
 export interface FileRoutesByFullPath {
+  '/api': typeof ApiRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -439,6 +453,7 @@ export interface FileRoutesByFullPath {
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
   '/actions': typeof PrivateOnboardedSidebarActionsRoute
+  '/activity': typeof PrivateOnboardedSidebarActivityRoute
   '/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
@@ -480,6 +495,7 @@ export interface FileRoutesByFullPath {
   '/token/$factoryAddress/$tokenAddress/': typeof PrivateOnboardedSidebarTokenFactoryAddressTokenAddressIndexRoute
 }
 export interface FileRoutesByTo {
+  '/api': typeof ApiRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -494,6 +510,7 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/actions': typeof PrivateOnboardedSidebarActionsRoute
+  '/activity': typeof PrivateOnboardedSidebarActivityRoute
   '/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
@@ -536,6 +553,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_private': typeof PrivateRouteWithChildren
+  '/api': typeof ApiRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/robots.txt': typeof RobotsDottxtRoute
@@ -554,6 +572,7 @@ export interface FileRoutesById {
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
   '/_private/_onboarded/_sidebar/actions': typeof PrivateOnboardedSidebarActionsRoute
+  '/_private/_onboarded/_sidebar/activity': typeof PrivateOnboardedSidebarActivityRoute
   '/_private/_onboarded/_sidebar/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/_private/_onboarded/_sidebar/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
   '/_private/onboarding/_sidebar/identity': typeof PrivateOnboardingSidebarIdentityRoute
@@ -597,6 +616,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/api'
     | '/auth'
     | '/llms-full.txt'
     | '/robots.txt'
@@ -612,6 +632,7 @@ export interface FileRouteTypes {
     | '/api/rpc/$'
     | '/onboarding/'
     | '/actions'
+    | '/activity'
     | '/addon-designer'
     | '/my-assets'
     | '/onboarding/identity'
@@ -653,6 +674,7 @@ export interface FileRouteTypes {
     | '/token/$factoryAddress/$tokenAddress/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/api'
     | '/auth'
     | '/llms-full.txt'
     | '/robots.txt'
@@ -667,6 +689,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/actions'
+    | '/activity'
     | '/addon-designer'
     | '/my-assets'
     | '/onboarding/identity'
@@ -708,6 +731,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_private'
+    | '/api'
     | '/auth'
     | '/llms-full.txt'
     | '/robots.txt'
@@ -726,6 +750,7 @@ export interface FileRouteTypes {
     | '/api/rpc/$'
     | '/_private/onboarding/'
     | '/_private/_onboarded/_sidebar/actions'
+    | '/_private/_onboarded/_sidebar/activity'
     | '/_private/_onboarded/_sidebar/addon-designer'
     | '/_private/_onboarded/_sidebar/my-assets'
     | '/_private/onboarding/_sidebar/identity'
@@ -769,17 +794,13 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   PrivateRoute: typeof PrivateRouteWithChildren
+  ApiRoute: typeof ApiRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  ApiSplatRoute: typeof ApiSplatRoute
-  ApiSearchRoute: typeof ApiSearchRoute
-  ApiThemeDotcssRoute: typeof ApiThemeDotcssRoute
   DocsSplatRoute: typeof DocsSplatRoute
   LlmsDotmdxSplatRoute: typeof LlmsDotmdxSplatRoute
-  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  ApiRpcSplatRoute: typeof ApiRpcSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -812,6 +833,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api': {
+      id: '/api'
+      path: '/api'
+      fullPath: '/api'
+      preLoaderRoute: typeof ApiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_private': {
       id: '/_private'
       path: ''
@@ -842,24 +870,24 @@ declare module '@tanstack/react-router' {
     }
     '/api/theme.css': {
       id: '/api/theme.css'
-      path: '/api/theme.css'
+      path: '/theme.css'
       fullPath: '/api/theme.css'
       preLoaderRoute: typeof ApiThemeDotcssRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ApiRoute
     }
     '/api/search': {
       id: '/api/search'
-      path: '/api/search'
+      path: '/search'
       fullPath: '/api/search'
       preLoaderRoute: typeof ApiSearchRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ApiRoute
     }
     '/api/$': {
       id: '/api/$'
-      path: '/api/$'
+      path: '/$'
       fullPath: '/api/$'
       preLoaderRoute: typeof ApiSplatRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ApiRoute
     }
     '/_private/onboarding': {
       id: '/_private/onboarding'
@@ -884,17 +912,17 @@ declare module '@tanstack/react-router' {
     }
     '/api/rpc/$': {
       id: '/api/rpc/$'
-      path: '/api/rpc/$'
+      path: '/rpc/$'
       fullPath: '/api/rpc/$'
       preLoaderRoute: typeof ApiRpcSplatRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ApiRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
-      path: '/api/auth/$'
+      path: '/auth/$'
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ApiRoute
     }
     '/_private/onboarding/_sidebar': {
       id: '/_private/onboarding/_sidebar'
@@ -992,6 +1020,13 @@ declare module '@tanstack/react-router' {
       path: '/addon-designer'
       fullPath: '/addon-designer'
       preLoaderRoute: typeof PrivateOnboardedSidebarAddonDesignerRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
+    '/_private/_onboarded/_sidebar/activity': {
+      id: '/_private/_onboarded/_sidebar/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof PrivateOnboardedSidebarActivityRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
     '/_private/_onboarded/_sidebar/actions': {
@@ -1234,6 +1269,7 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren =
 
 interface PrivateOnboardedSidebarRouteChildren {
   PrivateOnboardedSidebarActionsRoute: typeof PrivateOnboardedSidebarActionsRoute
+  PrivateOnboardedSidebarActivityRoute: typeof PrivateOnboardedSidebarActivityRoute
   PrivateOnboardedSidebarAddonDesignerRoute: typeof PrivateOnboardedSidebarAddonDesignerRoute
   PrivateOnboardedSidebarMyAssetsRoute: typeof PrivateOnboardedSidebarMyAssetsRoute
   PrivateOnboardedSidebarIndexRoute: typeof PrivateOnboardedSidebarIndexRoute
@@ -1260,6 +1296,7 @@ interface PrivateOnboardedSidebarRouteChildren {
 const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren =
   {
     PrivateOnboardedSidebarActionsRoute: PrivateOnboardedSidebarActionsRoute,
+    PrivateOnboardedSidebarActivityRoute: PrivateOnboardedSidebarActivityRoute,
     PrivateOnboardedSidebarAddonDesignerRoute:
       PrivateOnboardedSidebarAddonDesignerRoute,
     PrivateOnboardedSidebarMyAssetsRoute: PrivateOnboardedSidebarMyAssetsRoute,
@@ -1382,6 +1419,24 @@ const PrivateRouteChildren: PrivateRouteChildren = {
 const PrivateRouteWithChildren =
   PrivateRoute._addFileChildren(PrivateRouteChildren)
 
+interface ApiRouteChildren {
+  ApiSplatRoute: typeof ApiSplatRoute
+  ApiSearchRoute: typeof ApiSearchRoute
+  ApiThemeDotcssRoute: typeof ApiThemeDotcssRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiRpcSplatRoute: typeof ApiRpcSplatRoute
+}
+
+const ApiRouteChildren: ApiRouteChildren = {
+  ApiSplatRoute: ApiSplatRoute,
+  ApiSearchRoute: ApiSearchRoute,
+  ApiThemeDotcssRoute: ApiThemeDotcssRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiRpcSplatRoute: ApiRpcSplatRoute,
+}
+
+const ApiRouteWithChildren = ApiRoute._addFileChildren(ApiRouteChildren)
+
 interface AuthRouteChildren {
   AuthPathnameRoute: typeof AuthPathnameRoute
 }
@@ -1394,17 +1449,13 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   PrivateRoute: PrivateRouteWithChildren,
+  ApiRoute: ApiRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   LlmsFullDottxtRoute: LlmsFullDottxtRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  ApiSplatRoute: ApiSplatRoute,
-  ApiSearchRoute: ApiSearchRoute,
-  ApiThemeDotcssRoute: ApiThemeDotcssRoute,
   DocsSplatRoute: DocsSplatRoute,
   LlmsDotmdxSplatRoute: LlmsDotmdxSplatRoute,
-  ApiAuthSplatRoute: ApiAuthSplatRoute,
-  ApiRpcSplatRoute: ApiRpcSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

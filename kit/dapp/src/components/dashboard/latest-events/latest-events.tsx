@@ -1,49 +1,54 @@
-import { LatestEventsTable } from "@/components/dashboard/latest-events/latest-events-table";
-import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
-import { SectionTitle } from "@/components/dashboard/section-title";
+import { LatestEventsCard } from "@/components/dashboard/latest-events/latest-events-card";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSession } from "@/hooks/use-auth";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
-import { useTranslation } from "react-i18next";
 
-export function LatestEvents() {
-  const { t } = useTranslation("dashboard");
+interface LatestEventsProps {
+  className?: string;
+}
 
+export function LatestEvents({ className }: LatestEventsProps) {
   return (
-    <div>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="space-y-2">
-          <SectionTitle>{t("widgets.latestEvents.title")}</SectionTitle>
-          <SectionSubtitle>
-            {t("widgets.latestEvents.subtitle", {
-              defaultValue: t("widgets.latestEvents.emptyDescription"),
-            })}
-          </SectionSubtitle>
-        </div>
-        {/* <Button variant="ghost" size="sm" disabled>
-          {t("widgets.latestEvents.viewAll")}
-        </Button> */}
-      </div>
-
-      <Suspense fallback={<LatestEventsSkeleton />}>
-        <LatestEventsContent />
-      </Suspense>
-    </div>
+    <Suspense fallback={<LatestEventsSkeleton />}>
+      <LatestEventsContent className={className} />
+    </Suspense>
   );
 }
 
-const LatestEventsContent = withErrorBoundary(function LatestEventsContent() {
+const LatestEventsContent = withErrorBoundary(function LatestEventsContent({
+  className,
+}: LatestEventsProps) {
+  const { data: session } = useSession();
   const { data } = useSuspenseQuery(
     orpc.user.events.queryOptions({
-      input: { limit: 5 },
+      input: {
+        limit: 20,
+      },
+    })
+  );
+  const { data: system } = useSuspenseQuery(
+    orpc.system.read.queryOptions({
+      input: { id: "default" },
     })
   );
 
   const events = data.events ?? [];
 
-  return <LatestEventsTable events={events} />;
+  const hasAdminPermissions = Object.values(
+    system.userPermissions?.roles ?? {}
+  ).includes(true);
+
+  return (
+    <LatestEventsCard
+      events={events}
+      currentUserAddress={session?.user.wallet}
+      hasAdminPermissions={hasAdminPermissions}
+      className={className}
+    />
+  );
 });
 
 export function LatestEventsSkeleton() {
