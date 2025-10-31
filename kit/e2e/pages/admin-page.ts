@@ -787,7 +787,7 @@ export class AdminPage extends BasePage {
     await this.page.waitForSelector("table tbody tr", { timeout: 10000 });
 
     const changeRolesBtn = this.page.getByRole("button", {
-      name: "Change roles",
+      name: "Add admin",
     });
     await expect
       .poll(() => changeRolesBtn.isVisible(), { timeout: 30000 })

@@ -95,7 +95,7 @@ export function AddTrustedIssuerSheet({
         );
 
         const trustedIssuerIdentity = await client.system.identity
-          .read({
+          .readByWallet({
             wallet: issuerAddress,
           })
           .catch((error: unknown) => {

@@ -12,8 +12,9 @@ describe("Trusted issuer stats (integration)", () => {
   });
 
   it("should successfully retrieve trusted issuer statistics with trailing24Hours preset", async () => {
-    const result =
-      await adminClient.system.stats.trustedIssuerStats("trailing24Hours");
+    const result = await adminClient.system.stats.trustedIssuerStatsByPreset({
+      preset: "trailing24Hours",
+    });
 
     // Assert response structure
     expect(result).toBeDefined();

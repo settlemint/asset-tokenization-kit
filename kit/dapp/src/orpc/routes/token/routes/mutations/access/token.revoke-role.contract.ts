@@ -4,7 +4,7 @@ import {
   TokenRevokeRoleOutputSchema,
 } from "@/orpc/routes/token/routes/mutations/access/token.revoke-role.schema";
 
-const TAGS = ["token", "access-control"];
+const TAGS = ["token"];
 
 export const tokenRevokeRoleContract = baseContract
   .route({

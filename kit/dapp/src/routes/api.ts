@@ -1,7 +1,7 @@
 import { handle } from "@/orpc/api-handler.ts";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/api/$")({
+export const Route = createFileRoute("/api")({
   server: {
     handlers: {
       OPTIONS: handle,
