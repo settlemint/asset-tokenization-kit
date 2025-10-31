@@ -1,5 +1,5 @@
 import { DetailGridItem } from "@/components/detail-grid/detail-grid-item";
-import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
+import { EntityStatusBadge } from "@/components/participants/entities/entity-status-badge";
 import {
   Card,
   CardContent,
@@ -45,7 +45,7 @@ export function OnchainIdentityDetailsCard() {
           info={t("identities:fields.registrationStatusInfo")}
         >
           {identity ? (
-            <IdentityStatusBadge isRegistered={isRegistered} />
+            <EntityStatusBadge isRegistered={isRegistered} />
           ) : (
             <span className="text-sm text-muted-foreground">
               {t("user:fields.noIdentityRegistered")}

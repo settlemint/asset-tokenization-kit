@@ -29,6 +29,7 @@ const columnHelper = createStrictColumnHelper<UserWithIdentity>();
 export const UsersTable = withErrorBoundary(function UsersTable() {
   const { t } = useTranslation("user");
   const router = useRouter();
+  const routePath = router.state.matches.at(-1)?.pathname;
 
   const defaultSorting = useMemo<SortingState>(
     () => [
@@ -351,6 +352,7 @@ export const UsersTable = withErrorBoundary(function UsersTable() {
       externalState={externalState}
       urlState={{
         enabled: true,
+        routePath,
       }}
       advancedToolbar={{
         enableGlobalSearch: true,

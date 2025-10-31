@@ -54,6 +54,9 @@
         "title": "تأكيد إنشاء الموضوع",
         "description": "يرجى التحقق من هويتك لإنشاء هذا الموضوع"
       },
+      "confirmation": {
+        "title": "مراجعة موضوع المطالبة الجديد"
+      },
       "actions": {
         "cancel": "إلغاء",
         "create": "إنشاء الموضوع",
@@ -72,8 +75,12 @@
           "label": "أنواع ABI لبيانات المطالبة",
           "description": "أدخل أنواع Solidity ABI (اختياريًا مع أسماء المعاملات)، مفصولة بفواصل. بدون اسم وظيفة، بدون أقواس. أمثلة: string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
           "placeholder": "string claim",
-          "current": "الحالي: {{signature}}"
+          "current": "الحالي: {{signature}}",
+          "previous": "السابق: {{signature}}"
         }
+      },
+      "confirmation": {
+        "title": "تأكيد تحديث التوقيع"
       },
       "actions": {
         "cancel": "إلغاء",
@@ -178,8 +185,13 @@
         "claimTopics": {
           "label": "مواضيع المطالبات",
           "description": "اختر المواضيع التي يمكن لهذا المصدر التحقق منها. يجب اختيار موضوع واحد على الأقل.",
-          "current": "المواضيع الحالية: {{topics}}"
+          "current": "المواضيع الحالية: {{topics}}",
+          "empty": "لا توجد مواضيع متاحة",
+          "placeholder": "اختر المواضيع..."
         }
+      },
+      "confirmation": {
+        "title": "مراجعة المواضيع المعينة"
       },
       "verification": {
         "title": "تأكيد تغييرات الموضوع",
@@ -191,6 +203,7 @@
         "updating": "جارٍ التحديث..."
       },
       "validation": {
+        "required": "يرجى اختيار موضوع مطالبة واحد على الأقل.",
         "topicsChanged": "يجب أن تكون اختيار المواضيع مختلفًا عن المواضيع الحالية"
       }
     },

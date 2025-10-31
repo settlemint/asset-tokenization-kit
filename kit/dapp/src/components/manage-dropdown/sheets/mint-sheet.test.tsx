@@ -1,11 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { useAppForm } from "@/hooks/use-app-form";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MintSheet } from "./mint-sheet";
-import { useAppForm } from "@/hooks/use-app-form";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import { from } from "dnum";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { MintSheet } from "./mint-sheet";
 
 // i18n mock
 vi.mock("react-i18next", () => ({
@@ -17,7 +17,9 @@ vi.mock("react-i18next", () => ({
 
 // toast mock
 vi.mock("sonner", () => ({
-  toast: { promise: vi.fn((p) => p) },
+  toast: {
+    promise: vi.fn((promise) => ({ unwrap: () => promise })),
+  },
 }));
 
 // orpc mock

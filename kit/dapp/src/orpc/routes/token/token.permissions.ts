@@ -1,3 +1,4 @@
+import { ClaimTopic } from "@/orpc/helpers/claims/create-claim";
 import type { TokenAccessManagedMutations } from "@/orpc/routes/token/token.contract";
 import type { RoleRequirement } from "@atk/zod/role-requirement";
 
@@ -33,7 +34,22 @@ export const TOKEN_PERMISSIONS: Record<
   transfer: { any: [] },
   forcedTransfer: "custodian",
   unpause: "emergency",
-  updateCollateral: { any: [] }, // No roles required (requires to be a trusted issuer of the collateral claim)
+  updateCollateral: { any: [] }, // No token role required – gated via trusted issuer registry
   freezePartial: "custodian",
   unfreezePartial: "custodian",
+};
+
+/**
+ * Additional permission requirements that are not role based.
+ *
+ * @description
+ * Certain token actions rely on trusted issuer authorization instead of the
+ * token's access control roles. These actions require the caller to be
+ * registered as a trusted issuer for specific claim topics in the identity
+ * registry. The trusted issuer middleware performs the runtime enforcement.
+ */
+export const TOKEN_TRUSTED_ISSUER_REQUIREMENTS: Partial<
+  Record<TokenAccessManagedMutations, ClaimTopic[]>
+> = {
+  updateCollateral: [ClaimTopic.collateral],
 };

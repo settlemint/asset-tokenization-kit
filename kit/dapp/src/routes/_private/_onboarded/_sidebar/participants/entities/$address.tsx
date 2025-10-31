@@ -2,15 +2,21 @@ import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
-import { BasicInfoTile } from "@/components/participants/entities/tiles/basic-info-tile";
 import { IdentityClaimsTile } from "@/components/participants/common/tiles/identity-claims-tile";
+import { EntityStatusBadge } from "@/components/participants/entities/entity-status-badge";
+import { BasicInfoTile } from "@/components/participants/entities/tiles/basic-info-tile";
 import { Badge } from "@/components/ui/badge";
 import { ORPCError } from "@orpc/client";
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
+import { useEntityDisplayData } from "./use-entity-display-data";
 
 const routeParamsSchema = z.object({
   address: z.string().min(1),
@@ -124,6 +130,7 @@ function RouteComponent() {
     claimsData,
   } = Route.useLoaderData();
   const { address } = Route.useParams();
+  const location = useLocation();
   const { t } = useTranslation([
     "entities",
     "identities",
@@ -133,42 +140,34 @@ function RouteComponent() {
   ]);
 
   const routeContext = Route.useRouteContext();
+  const navigate = useNavigate();
 
-  const { data: queriedIdentity } = useQuery(
-    routeContext.orpc.system.identity.readById.queryOptions({
-      input: { identityId: address },
-    })
-  );
-
-  const identity = queriedIdentity ?? loaderIdentity;
-  const tokenAddress = identity?.account?.id;
-
-  const { data: queriedToken } = useQuery({
-    ...routeContext.orpc.token.read.queryOptions({
-      input: { tokenAddress: tokenAddress ?? address },
-    }),
-    enabled: Boolean(tokenAddress),
+  const { identity, token, displayName } = useEntityDisplayData({
+    address,
+    loaderIdentity,
+    loaderToken: loaderToken ?? null,
+    createIdentityQueryOptions: (args) =>
+      routeContext.orpc.system.identity.readById.queryOptions(args),
+    createTokenQueryOptions: (args) =>
+      routeContext.orpc.token.read.queryOptions(args),
   });
 
-  const token = queriedToken ?? loaderToken ?? null;
-
-  const displayName =
-    token?.name ??
-    identity?.account?.contractName ??
-    `${address.slice(0, 6)}…${address.slice(-4)}`;
+  if (location.pathname.endsWith("/verifications")) {
+    return <Outlet />;
+  }
 
   const assetTypeKey = token?.type ?? null;
   const entityTypeLabel = assetTypeKey
     ? t(`asset-types:types.${assetTypeKey}.name`)
     : undefined;
 
-  const contractAddress = identity?.account?.id ?? identity?.id;
-  const identityAddress = identity?.id ?? address;
+  const contractAddress = identity.account?.id ?? identity.id;
+  const identityAddress = identity.id;
 
   const truncatedAddress = (value: string) =>
     value.length <= 12 ? value : `${value.slice(0, 6)}…${value.slice(-4)}`;
 
-  if (!identity || !identity.account) {
+  if (!identity.account) {
     return (
       <div className="space-y-6 p-6">
         <RouterBreadcrumb />
@@ -178,13 +177,13 @@ function RouteComponent() {
 
   return (
     <div className="space-y-6 p-6">
-      <RouterBreadcrumb />
       <div className="space-y-2">
+        <RouterBreadcrumb />
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-3xl font-bold tracking-tight mr-2">
             {displayName}
           </h1>
-          <IdentityStatusBadge isRegistered={claimsData.isRegistered} />
+          <EntityStatusBadge isRegistered={claimsData.isRegistered} />
         </div>
         {entityTypeLabel ? (
           <p className="text-sm font-medium text-muted-foreground">
@@ -194,8 +193,8 @@ function RouteComponent() {
         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           {contractAddress ? (
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide">
-                {t("entities:entityTable.columns.address")}
+              <span className="text-sm font-medium text-muted-foreground">
+                {t("entities:entityTable.columns.address")}:
               </span>
               <CopyToClipboard
                 value={contractAddress}
@@ -208,8 +207,8 @@ function RouteComponent() {
             </div>
           ) : null}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide">
-              {t("entities:entityTable.columns.identityAddress")}
+            <span className="text-sm font-medium text-muted-foreground">
+              {t("entities:entityTable.columns.identityAddress")}:
             </span>
             <CopyToClipboard
               value={identityAddress}
@@ -227,10 +226,14 @@ function RouteComponent() {
         <IdentityClaimsTile
           identity={identity}
           onManageVerifications={() => {
-            // TODO: Implement navigation to claims management page
+            void navigate({
+              to: "/participants/entities/$address/verifications",
+              params: { address },
+            });
           }}
         />
       </div>
+      <Outlet />
     </div>
   );
 }

@@ -191,13 +191,17 @@ export function CollateralSheet({
                 walletVerification: verification,
               });
 
-              toast.promise(promise, {
-                loading: t("common:saving"),
-                success: t("tokens:actions.collateral.success"),
-                error: (data) => t("common:error", { message: data.message }),
-              });
-
-              handleClose();
+              toast
+                .promise(promise, {
+                  loading: t("common:saving"),
+                  success: t("tokens:actions.collateral.success"),
+                  error: (data) => t("common:error", { message: data.message }),
+                })
+                .unwrap()
+                .then(() => {
+                  handleClose();
+                })
+                .catch(() => undefined);
             }}
           >
             <div className="space-y-4">

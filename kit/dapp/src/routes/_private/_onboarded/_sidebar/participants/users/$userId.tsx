@@ -9,7 +9,13 @@ import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
@@ -109,7 +115,9 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { user: loaderUser, identity: loaderIdentity } = Route.useLoaderData();
   const { userId } = Route.useParams();
+  const location = useLocation();
   const routeContext = Route.useRouteContext();
+  const navigate = useNavigate();
   const { orpc } = routeContext;
   // Subscribe to live user data so UI reacts to updates
   const { data: queriedUser } = useQuery(
@@ -129,6 +137,12 @@ function RouteComponent() {
   });
 
   const identity = queriedIdentity ?? loaderIdentity;
+  const { t } = useTranslation("user");
+
+  if (location.pathname.endsWith("/verifications")) {
+    return <Outlet />;
+  }
+
   type ExtendedUser = typeof user & {
     roles?: Partial<Record<AccessControlRoles, boolean>>;
     isAdmin?: boolean | null;
@@ -138,7 +152,6 @@ function RouteComponent() {
 
   const detailedUser = user as ExtendedUser;
   const displayName = getUserDisplayName(detailedUser);
-  const { t } = useTranslation("user");
   const isAdminType =
     Boolean(detailedUser.isAdmin) ||
     Boolean(detailedUser.roles?.admin) ||
@@ -180,8 +193,8 @@ function RouteComponent() {
         ) : null}
         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide">
-              {t("management.table.columns.wallet")}
+            <span className="text-sm font-medium text-muted-foreground">
+              {t("management.table.columns.wallet")}:
             </span>
             {walletAddress ? (
               <CopyToClipboard
@@ -197,8 +210,8 @@ function RouteComponent() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide">
-              {t("management.table.columns.identity")}
+            <span className="text-sm font-medium text-muted-foreground">
+              {t("management.table.columns.identity")}:
             </span>
             {identityAddress ? (
               <CopyToClipboard
@@ -221,7 +234,10 @@ function RouteComponent() {
           <IdentityClaimsTile
             identity={identity}
             onManageVerifications={() => {
-              // TODO: Implement navigation to claims management page
+              void navigate({
+                to: "/participants/users/$userId/verifications",
+                params: { userId },
+              });
             }}
           />
         )}

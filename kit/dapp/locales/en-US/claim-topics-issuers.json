@@ -54,6 +54,9 @@
         "title": "Confirm topic creation",
         "description": "Please verify your identity to create this claim topic"
       },
+      "confirmation": {
+        "title": "Review new claim topic"
+      },
       "actions": {
         "cancel": "Cancel",
         "create": "Create topic",
@@ -72,8 +75,12 @@
           "label": "Claim data ABI types",
           "description": "Enter Solidity ABI types (optionally with param names), comma-separated. No function name, no parentheses. Examples: string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
           "placeholder": "string claim",
-          "current": "Current: {{signature}}"
+          "current": "Current: {{signature}}",
+          "previous": "Previous: {{signature}}"
         }
+      },
+      "confirmation": {
+        "title": "Confirm signature update"
       },
       "actions": {
         "cancel": "Cancel",
@@ -178,8 +185,13 @@
         "claimTopics": {
           "label": "Claim topics",
           "description": "Select the topics this issuer can verify. At least one topic must be selected.",
-          "current": "Current topics: {{topics}}"
+          "current": "Current topics: {{topics}}",
+          "empty": "No topics available",
+          "placeholder": "Select topics..."
         }
+      },
+      "confirmation": {
+        "title": "Review topic assignment"
       },
       "verification": {
         "title": "Confirm topic changes",
@@ -191,12 +203,13 @@
         "updating": "Updating..."
       },
       "validation": {
+        "required": "Select at least one claim topic.",
         "topicsChanged": "Topic selection must be different from current topics"
       }
     },
     "toast": {
       "added": "Trusted issuer added successfully",
-      "updated": "Issuer topics updated successfully",
+      "updated": "Trusted issuer topics updated successfully",
       "removed": "Trusted issuer removed successfully",
       "addError": "Failed to add trusted issuer: {{error}}",
       "updateError": "Failed to update issuer topics: {{error}}",

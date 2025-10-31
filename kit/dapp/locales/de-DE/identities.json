@@ -5,14 +5,14 @@
       "label": "Identität registrieren",
       "title": "Identität registrieren",
       "description": "Diese Identität in der Identity-Registry mit Länderinformationen registrieren",
-      "notAuthorized": "Sie sind nicht berechtigt, Identitäten zu registrieren.\nSie besitzen keine Identity-Manager-Rolle für das System.",
+      "notAuthorized": "Sie sind nicht berechtigt, Identitäten zu registrieren.\nSie besitzen keine Identity-Manager-Rolle.",
       "alreadyRegistered": "Diese Identität ist bereits registriert."
     },
     "viewEvents": "Ereignisse ansehen",
     "issueClaim": {
       "title": "Anspruch ausstellen",
       "description": "Einen Anspruch an {{identity}} ausstellen",
-      "notAuthorized": "Sie sind nicht berechtigt, Ansprüche auszustellen.\nSie besitzen keine Claim-Issuer-Rolle für das System.",
+      "notAuthorized": "Sie sind nicht berechtigt, Ansprüche auszustellen.\nSie besitzen keine Claim-Issuer-Rolle.",
       "submit": "Anspruch ausstellen",
       "success": "Anspruch erfolgreich ausgestellt",
       "submitting": "Anspruch wird ausgestellt...",
@@ -163,6 +163,11 @@
     "untrustedClaimsWarning_plural": "{{count}} nicht vertrauenswürdige Ansprüche erkannt",
     "manageVerifications": "Verifizierungen verwalten"
   },
+  "verificationDetail": {
+    "title": "Verifizierungen",
+    "noIdentity": "Keine Identität für diesen Benutzer gefunden",
+    "addClaim": "Anspruch hinzufügen"
+  },
   "claimsTable": {
     "columns": {
       "claimName": "Anspruchsname",
@@ -187,6 +192,15 @@
       "revokeSuccess": "Anspruch erfolgreich widerrufen",
       "revokeLoading": "Anspruch widerrufen...",
       "revokeError": "Fehler beim Widerrufen des Anspruchs",
+      "addTitle": "Anspruch hinzufügen",
+      "addDescription": "Wählen Sie ein Anspruchsthema und geben Sie die erforderlichen Daten an, um einen neuen Anspruch auszustellen.",
+      "addVerificationDescription": "Geben Sie Ihren Verifizierungscode ein, um diesen Anspruch hinzuzufügen.",
+      "addLoading": "Anspruch wird hinzugefügt...",
+      "addError": "Fehler beim Hinzufügen des Anspruchs",
+      "selectTopicError": "Bitte wählen Sie ein Anspruchsthema aus",
+      "invalidClaimData": "Ungültige Anspruchsdaten",
+      "cancel": "Abbrechen",
+      "proceed": "Mit Verifizierung fortfahren",
       "removeTitle": "Anspruch entfernen",
       "removeDescription": "Entfernen löscht den Anspruch von dieser Identität. Diese Aktion kann nicht rückgängig gemacht werden.",
       "removeConfirm": "Anspruch entfernen",
@@ -199,12 +213,51 @@
       },
       "success": {
         "revoke": "Anspruch erfolgreich widerrufen",
-        "remove": "Anspruch erfolgreich entfernt"
+        "remove": "Anspruch erfolgreich entfernt",
+        "add": "Anspruch erfolgreich hinzugefügt"
       }
     },
     "emptyState": {
       "title": "Keine Ansprüche gefunden",
       "description": "Diese Identität hat keine zugeordneten Ansprüche."
+    },
+    "fields": {
+      "topic": "Anspruchsthema",
+      "selectTopic": "Anspruchsthema auswählen",
+      "claim": "Anspruchswert",
+      "claimPlaceholder": "Anspruchswert oder Beschreibung eingeben",
+      "class": "Asset-Klasse",
+      "classPlaceholder": "z. B. Aktie, Anleihe, Fonds",
+      "category": "Asset-Kategorie",
+      "categoryPlaceholder": "z. B. Stammaktie, Unternehmensanleihe",
+      "issuerAddress": "Emittentenadresse",
+      "amount": "Betrag",
+      "amountPlaceholder": "Betrag in Wei oder Basiseinheiten",
+      "currencyCode": "Währungscode",
+      "decimals": "Dezimalstellen",
+      "expiryTimestamp": "Ablaufzeitstempel",
+      "timestampPlaceholder": "Unix-Zeitstempel",
+      "contractAddress": "Vertragsadresse",
+      "isin": "ISIN-Code",
+      "isinPlaceholder": "12-stelliger ISIN",
+      "jurisdiction": "Jurisdiktion",
+      "jurisdictionPlaceholder": "z. B. US, GB, EU",
+      "licenseType": "Lizenztyp",
+      "licenseTypePlaceholder": "Lizenztyp",
+      "licenseNumber": "Lizenznummer",
+      "licenseNumberPlaceholder": "Lizenzidentifikationsnummer",
+      "validUntil": "Gültig bis",
+      "exemptionReference": "Ausnahmereferenz",
+      "exemptionReferencePlaceholder": "Referenz auf Regulierung oder Ausnahmeregelung",
+      "prospectusReference": "Prospektreferenz",
+      "prospectusReferencePlaceholder": "Referenznummer der Prospekt-Einreichung",
+      "compliant": "Konform",
+      "selectCompliant": "Compliance-Status auswählen",
+      "yes": "Ja",
+      "no": "Nein",
+      "lastUpdated": "Zuletzt aktualisiert",
+      "customData": "Benutzerdefinierte Daten",
+      "customDataPlaceholder": "Benutzerdefinierte Anspruchsdaten eingeben"
     }
   }
 }

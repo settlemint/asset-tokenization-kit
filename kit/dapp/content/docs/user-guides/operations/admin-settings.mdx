@@ -92,10 +92,14 @@ administrator privileges including factory deployment and role assignment.
 onboarding and KYC claim verification. **Claim Issuer** signs identity claims
 that authorize investors for specific asset types or jurisdictions.
 
+Identity managers can issue or remove claims directly from the participant verification detail view using the **Add verification** action, now localized across all supported languages.
+
 Navigate to **Platform Settings** &gt; **Platform admins** to view current role
 assignments. The users table shows wallet addresses, assigned roles, and
 assignment timestamps. Role changes emit on-chain events visible in the **Access
 Control** dashboard.
+Table filters and search terms persist in the URL, letting compliance share
+direct links to pre-filtered user views without rebuilding the table state.
 
 ### Token-level roles
 
@@ -244,6 +248,20 @@ The platform pre-registers one claim issuer: your internal platform claim issuer
 wallet. This issuer can sign all four claim topics during investor onboarding.
 External KYC provider integrations register additional issuers when you
 configure third-party identity verification.
+
+To manually add an issuer:
+
+1. Open **Platform Settings → Claim Topics & Issuers** and click
+   **Add Trusted Issuer**.
+2. Select an existing user wallet or enter an Ethereum address manually.
+   Available claim topics remain disabled until a wallet is chosen, preventing
+   accidental assignments.
+3. Choose at least one claim topic that the issuer is allowed to sign. The
+   dialog now presents a confirmation step summarizing the issuer address and
+   selected topics before submission.
+4. Confirm the details and complete the wallet verification challenge (PIN or
+   OTP). The issuer is added only after the verification succeeds; the sheet
+   stays open if the transaction fails so you can adjust and retry.
 
 Adding custom claim topics or additional trusted issuers requires smart contract
 development. Work with your technical team to deploy claim issuer contracts and

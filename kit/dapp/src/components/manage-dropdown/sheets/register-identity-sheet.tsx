@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
-import type { ManagedIdentity } from "../manage-identity-dropdown";
+import type { Address } from "viem";
 import { ConfirmRegisterView } from "./register-identity/ConfirmRegisterView";
 
 const RegisterIdentityFormSchema = z.object({
@@ -28,6 +28,17 @@ interface RegisterIdentitySheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   identity: ManagedIdentity;
+}
+
+interface ManagedIdentityAccount {
+  id: string;
+  contractName: string | null;
+}
+
+interface ManagedIdentity {
+  identity: Address;
+  account: ManagedIdentityAccount;
+  isRegistered: boolean;
 }
 
 export function RegisterIdentitySheet({

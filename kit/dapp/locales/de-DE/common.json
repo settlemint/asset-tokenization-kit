@@ -1,6 +1,7 @@
 {
   "actions": {
     "add": "Hinzufügen",
+    "back": "Zurück",
     "cancel": "Abbrechen",
     "skip": "Überspringen",
     "edit": "Bearbeiten",

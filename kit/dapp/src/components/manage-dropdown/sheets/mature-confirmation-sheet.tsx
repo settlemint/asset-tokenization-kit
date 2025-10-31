@@ -40,21 +40,26 @@ export function MatureConfirmationSheet({
   );
 
   const handleSubmit = (walletVerification: UserVerification) => {
-    toast.promise(
-      matureAsset({
-        contract: asset.id,
-        walletVerification,
-      }),
-      {
-        success: t("tokens:actions.mature.messages.success", {
-          name: asset.name,
-          symbol: asset.symbol,
+    toast
+      .promise(
+        matureAsset({
+          contract: asset.id,
+          walletVerification,
         }),
-        error: (data) => t("common:error", { message: data.message }),
-        loading: t("tokens:actions.mature.messages.submitting"),
-      }
-    );
-    handleClose();
+        {
+          success: t("tokens:actions.mature.messages.success", {
+            name: asset.name,
+            symbol: asset.symbol,
+          }),
+          error: (data) => t("common:error", { message: data.message }),
+          loading: t("tokens:actions.mature.messages.submitting"),
+        }
+      )
+      .unwrap()
+      .then(() => {
+        handleClose();
+      })
+      .catch(() => undefined);
   };
 
   const handleClose = useCallback(() => {

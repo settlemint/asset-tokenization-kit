@@ -10,7 +10,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Edit, FileText, Settings, Shield } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { EditTopicDialog } from "./edit-topic-dialog";
+import { EditTopicSheet } from "./edit-topic-sheet";
 import { TopicActionsMenu } from "./topic-actions-menu";
 
 const columnHelper = createStrictColumnHelper<TopicScheme>();
@@ -198,7 +198,7 @@ export const TopicsTable = withErrorBoundary(function TopicsTable() {
       />
 
       {editingTopic && (
-        <EditTopicDialog
+        <EditTopicSheet
           topic={editingTopic}
           open={true}
           onOpenChange={(open) => {

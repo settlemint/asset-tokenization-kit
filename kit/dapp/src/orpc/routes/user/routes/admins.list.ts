@@ -5,6 +5,7 @@ import { getAccountsWithRoles } from "@/orpc/helpers/access-control-helpers";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { databaseMiddleware } from "@/orpc/middlewares/services/db.middleware";
 import { systemRouter } from "@/orpc/procedures/system.router";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import {
   buildUserWithIdentity,
   buildUserWithoutWallet,
@@ -84,7 +85,7 @@ type QueryResultRow = {
 export const adminList = systemRouter.user.adminList
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["identityManager", "claimIssuer"] },
+      requiredRoles: SYSTEM_PERMISSIONS.adminList,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },
