@@ -283,10 +283,6 @@ describe("User read", () => {
         wallet: testUserData.wallet,
       });
 
-      const userByWallet = await client.user.readByWallet({
-        wallet: testUserData.wallet,
-      });
-
       expect(userById).toEqual(userByWallet);
     });
 
