@@ -141,7 +141,7 @@ export function BlocklistSheet({
               </Card>
             }
             disabled={() => !isValidAddress}
-            onSubmit={async (verification) => {
+            onSubmit={(verification) => {
               const addr = getEthereumAddress(selectedAddress);
               const promise = (async () => {
                 await freezeAddress({

@@ -341,7 +341,7 @@ export function ChangeRolesSheet({
               </Card>
             }
             disabled={() => !selectedAddress || !hasChanges}
-            onSubmit={async (verification) => {
+            onSubmit={(verification) => {
               const address = selectedAddress as EthereumAddress;
               if (!address) return;
               const selectedSet = new Set(derivedSelected);
