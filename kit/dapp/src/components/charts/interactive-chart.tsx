@@ -185,7 +185,7 @@ export function InteractiveChartComponent({
             <Select value={selectedRange} onValueChange={onRangeChange}>
               <SelectTrigger
                 size="sm"
-                className="w-[160px] rounded-lg sm:ml-auto"
+                className="w-[140px] rounded-lg sm:ml-auto"
                 aria-label="Select timeframe"
               >
                 <SelectValue />

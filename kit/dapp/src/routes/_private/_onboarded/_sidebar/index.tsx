@@ -15,6 +15,7 @@
  */
 
 import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";
+import { PortfolioDashboard } from "@/components/dashboard/portfolio-dashboard/portfolio-dashboard";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
@@ -44,19 +45,12 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
   component: Home,
 });
 
-/**
- * Home page component for authenticated users.
- *
- * Displays a welcome message and system data fetched via ORPC.
- * Uses suspense mode for data fetching, which integrates with
- * React Suspense boundaries for loading states.
- */
 function Home() {
   return (
     <div className="h-[calc(100vh-4rem)] overflow-hidden p-6">
       <div className="grid h-full grid-cols-3 gap-6">
         <div className="col-span-2">
-          {/* Other dashboard content goes here */}
+          <PortfolioDashboard />
         </div>
         <div className="col-span-1 flex min-h-0 flex-col">
           <LatestEvents className="flex-1" />

@@ -163,6 +163,36 @@
       "description": "Charts and statistics will show once you design your first tokenized asset"
     }
   },
+  "portfolioDashboard": {
+    "welcome": "Welcome back, {{name}}",
+    "subtitle": "Track your portfolio and assets",
+    "cards": {
+      "totalValue": {
+        "title": "Total value"
+      },
+      "totalAssets": {
+        "title": "Total assets",
+        "noAssets": "No assets"
+      },
+      "identityStatus": {
+        "title": "Identity status",
+        "verified": "Verified",
+        "pending": "Pending"
+      }
+    },
+    "assetTypes": {
+      "bond_one": "bond",
+      "bond_other": "bonds",
+      "deposit_one": "deposit",
+      "deposit_other": "deposits",
+      "equity_one": "equity",
+      "equity_other": "equities",
+      "fund_one": "fund",
+      "fund_other": "funds",
+      "stablecoin_one": "stablecoin",
+      "stablecoin_other": "stablecoins"
+    }
+  },
   "widgets": {
     "alerts": {
       "dismiss": "Dismiss",

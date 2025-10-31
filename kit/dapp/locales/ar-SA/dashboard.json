@@ -163,6 +163,36 @@
       "description": "ستظهر الرسوم البيانية والإحصائيات بمجرد تصميم أول أصل موحد لك"
     }
   },
+  "portfolioDashboard": {
+    "welcome": "مرحبًا بعودتك، {{name}}",
+    "subtitle": "تتبع محفظتك وأصولك",
+    "cards": {
+      "totalValue": {
+        "title": "القيمة الإجمالية"
+      },
+      "totalAssets": {
+        "title": "إجمالي الأصول",
+        "noAssets": "لا توجد أصول"
+      },
+      "identityStatus": {
+        "title": "حالة الهوية",
+        "verified": "تم التحقق",
+        "pending": "قيد الانتظار"
+      }
+    },
+    "assetTypes": {
+      "bond_one": "سند",
+      "bond_other": "سندات",
+      "deposit_one": "إيداع",
+      "deposit_other": "إيداعات",
+      "equity_one": "أسهم",
+      "equity_other": "أسهم",
+      "fund_one": "صندوق",
+      "fund_other": "صناديق",
+      "stablecoin_one": "عملة مستقرة",
+      "stablecoin_other": "عملات مستقرة"
+    }
+  },
   "widgets": {
     "alerts": {
       "dismiss": "تجاهل",
