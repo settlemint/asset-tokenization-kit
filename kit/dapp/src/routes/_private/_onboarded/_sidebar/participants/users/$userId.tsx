@@ -122,7 +122,7 @@ function RouteComponent() {
 
   // Subscribe to live identity data if available
   const { data: queriedIdentity } = useQuery({
-    ...orpc.system.identity.read.queryOptions({
+    ...orpc.system.identity.readByWallet.queryOptions({
       input: { wallet: user.wallet ?? "" },
     }),
     enabled: Boolean(user.wallet),
