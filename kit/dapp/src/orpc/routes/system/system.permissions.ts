@@ -85,9 +85,9 @@ export const SYSTEM_PERMISSIONS = {
   trustedIssuerCreate: { any: ["claimPolicyManager", "systemModule"] },
   trustedIssuerDelete: { any: ["claimPolicyManager", "systemModule"] },
   trustedIssuerUpdate: { any: ["claimPolicyManager", "systemModule"] },
-  userList: { any: ["admin", "identityManager", "claimIssuer"] },
-  userRead: { any: ["admin", "identityManager", "claimIssuer"] },
-  userSearch: { any: ["admin", "identityManager", "claimIssuer"] },
+  userList: { any: ["identityManager", "claimIssuer"] },
+  userRead: { any: ["systemManager", "identityManager", "claimIssuer"] },
+  userSearch: { any: ["systemManager", "identityManager", "claimIssuer"] },
 } as const satisfies Record<string, RoleRequirement>;
 
 // Use the validation type to ensure it's not stripped

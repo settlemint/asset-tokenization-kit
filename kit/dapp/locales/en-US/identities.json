@@ -5,14 +5,14 @@
       "label": "Register identity",
       "title": "Register identity",
       "description": "Register this identity in the identity registry with country information",
-      "notAuthorized": "You are not authorized to register identities.\nYou do not have the identity manager role .",
+      "notAuthorized": "You are not authorized to register identities.\nYou do not have the identity manager role.",
       "alreadyRegistered": "This identity is already registered."
     },
     "viewEvents": "View events",
     "issueClaim": {
       "title": "Issue claim",
       "description": "Issue a claim to {{identity}}",
-      "notAuthorized": "You are not authorized to issue claims.\nYou do not have the claim issuer role .",
+      "notAuthorized": "You are not authorized to issue claims.\nYou do not have the claim issuer role.",
       "submit": "Issue claim",
       "success": "Claim issued successfully",
       "submitting": "Issuing claim...",
