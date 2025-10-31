@@ -50,6 +50,9 @@ should focus on the modern stack in `kit/dapp`.
 - 🛡️ **Security Standards** - Enhanced review process with security
   considerations
 - 🎯 **Modular Rule System** - Organized, maintainable development guidelines
+- 🏦 **Trusted Collateral Management** - Collateral updates demand a trusted
+  issuer for the collateral topic, guaranteeing that reserve attestations come
+  from approved compliance entities
 
 ## Local development
 

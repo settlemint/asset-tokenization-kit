@@ -37,7 +37,10 @@ import { issueClaim } from "@/orpc/helpers/claims/issue-claim";
 import { tokenPermissionMiddleware } from "@/orpc/middlewares/auth/token-permission.middleware";
 import { trustedIssuerMiddleware } from "@/orpc/middlewares/auth/trusted-issuer.middleware";
 import { tokenRouter } from "@/orpc/procedures/token.router";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import {
+  TOKEN_PERMISSIONS,
+  TOKEN_TRUSTED_ISSUER_REQUIREMENTS,
+} from "@/orpc/routes/token/token.permissions";
 import { call } from "@orpc/server";
 import { createLogger } from "@settlemint/sdk-utils/logging";
 import { read } from "../../token.read";
@@ -77,7 +80,7 @@ export const updateCollateral = tokenRouter.token.updateCollateral
   )
   .use(
     trustedIssuerMiddleware({
-      selectTopics: () => [ClaimTopic.collateral],
+      selectTopics: () => TOKEN_TRUSTED_ISSUER_REQUIREMENTS.updateCollateral,
     })
   )
   .handler(async ({ input, context, errors }) => {

@@ -103,6 +103,12 @@ When users redeem tokens, the vault burns them atomically and releases
 collateral. Observers can verify reserve ratios at any block—no waiting for
 monthly auditor reports.
 
+Only designated compliance entities can refresh those collateral attestations.
+Wallets must be registered as trusted issuers for the `collateral` claim topic
+before the **Update collateral** action is enabled. This prevents operators who
+lack regulatory approval from inflating caps or substituting reserves without a
+verified third-party signature.
+
 <Mermaid
   chart={`flowchart TB
     A(Issuer deposits USDC into DALP vault) --> B(Vault records collateral increase)
