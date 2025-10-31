@@ -68,7 +68,9 @@ function PermissionsPage() {
         </div>
         <Button
           size="sm"
-          onClick={() => handleOpenChangeRoles()}
+          onClick={() => {
+            handleOpenChangeRoles();
+          }}
           disabled={!canGrantRoles}
         >
           {t("user:permissions.table.actions.addAdmin")}

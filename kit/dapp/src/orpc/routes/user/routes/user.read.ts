@@ -105,7 +105,7 @@ export const readByWallet = authRouter.user.readByWallet
       })
       .from(user)
       .leftJoin(kycProfiles, eq(kycProfiles.userId, user.id))
-      .where(eq(user.wallet, input.wallet as `0x${string}`))
+      .where(eq(user.wallet, input.wallet))
       .limit(1);
 
     if (result.length === 0) {
