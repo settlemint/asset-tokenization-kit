@@ -38,6 +38,7 @@ import {
 // Types
 export type EventStatusType = "success" | "warning" | "error" | "info";
 export type EventCategoryKey =
+  | "assets"
   | "bonds"
   | "accessControl"
   | "compliance"
@@ -69,6 +70,11 @@ export interface EventConfig {
 
 // Category definitions
 export const CATEGORY_MAP = {
+  assets: {
+    name: "Assets",
+    variant: "default",
+    translationKey: "categories.assets",
+  },
   bonds: {
     name: "Bonds",
     variant: "default",
@@ -185,17 +191,21 @@ export const EVENT_CONFIG_REGISTRY = {
   BondCreated: { category: "bonds", statusType: "success", icon: ScrollText },
   BondMatured: { category: "bonds", statusType: "success", icon: FileCheck },
   BondRedeemed: { category: "bonds", statusType: "success", icon: Coins },
-  FundCreated: { category: "bonds", statusType: "success", icon: ScrollText },
-  EquityCreated: { category: "bonds", statusType: "success", icon: ScrollText },
-  DepositCreated: {
-    category: "bonds",
+  FundCreated: { category: "assets", statusType: "success", icon: ScrollText },
+  EquityCreated: {
+    category: "assets",
     statusType: "success",
     icon: ScrollText,
   },
-  StableCoinCreated: { category: "bonds", statusType: "success", icon: Coins },
-  TokenAssetCreated: { category: "bonds", statusType: "success", icon: Plus },
+  DepositCreated: {
+    category: "assets",
+    statusType: "success",
+    icon: ScrollText,
+  },
+  StableCoinCreated: { category: "assets", statusType: "success", icon: Coins },
+  TokenAssetCreated: { category: "assets", statusType: "success", icon: Plus },
   ATKPushAirdropCreated: {
-    category: "bonds",
+    category: "assets",
     statusType: "success",
     icon: Plus,
   },
@@ -205,16 +215,16 @@ export const EVENT_CONFIG_REGISTRY = {
     icon: Plus,
   },
   ATKTimeBoundAirdropCreated: {
-    category: "bonds",
+    category: "assets",
     statusType: "success",
     icon: Plus,
   },
   ATKFixedYieldScheduleCreated: {
-    category: "bonds",
+    category: "assets",
     statusType: "success",
     icon: TrendingUp,
   },
-  ATKVaultCreated: { category: "bonds", statusType: "success", icon: Vault },
+  ATKVaultCreated: { category: "assets", statusType: "success", icon: Vault },
   ATKXvPSettlementCreated: {
     category: "xvp",
     statusType: "success",

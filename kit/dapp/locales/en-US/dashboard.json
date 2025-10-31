@@ -216,6 +216,7 @@
         "systemEvents": "System Events"
       },
       "categories": {
+        "assets": "Assets",
         "bonds": "Bonds",
         "accessControl": "Access Control",
         "compliance": "Compliance",

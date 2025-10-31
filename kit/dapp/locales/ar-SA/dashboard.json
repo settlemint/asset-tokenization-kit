@@ -204,6 +204,19 @@
       "loading": "جارٍ تحميل الأنشطة",
       "error": "لم نتمكن من تحميل الأنشطة",
       "errorRetry": "حاول مرة أخرى",
+      "categories": {
+        "assets": "الأصول",
+        "bonds": "السندات",
+        "accessControl": "التحكم في الوصول",
+        "compliance": "الامتثال",
+        "identity": "الهوية",
+        "transfers": "التحويلات",
+        "yield": "العائد",
+        "system": "النظام",
+        "xvp": "تسوية XvP",
+        "vesting": "الاستحقاق",
+        "activity": "النشاط"
+      },
       "types": {
         "TransferCompleted": "تم إكمال التحويل",
         "MintCompleted": "تم سك الأصول",

@@ -204,6 +204,19 @@
       "loading": "アクティビティを読み込んでいます",
       "error": "アクティビティを読み込めませんでした",
       "errorRetry": "再試行してください",
+      "categories": {
+        "assets": "資産",
+        "bonds": "債券",
+        "accessControl": "アクセス制御",
+        "compliance": "コンプライアンス",
+        "identity": "アイデンティティ",
+        "transfers": "転送",
+        "yield": "利回り",
+        "system": "システム",
+        "xvp": "XvP決済",
+        "vesting": "ベスティング",
+        "activity": "アクティビティ"
+      },
       "types": {
         "TransferCompleted": "転送が完了しました",
         "MintCompleted": "資産が鋳造されました",

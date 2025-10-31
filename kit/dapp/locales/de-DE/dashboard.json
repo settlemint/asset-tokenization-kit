@@ -204,6 +204,19 @@
       "loading": "Aktivität laden",
       "error": "Wir konnten Aktivität nicht laden",
       "errorRetry": "Erneut versuchen",
+      "categories": {
+        "assets": "Assets",
+        "bonds": "Anleihen",
+        "accessControl": "Zugriffskontrolle",
+        "compliance": "Compliance",
+        "identity": "Identität",
+        "transfers": "Übertragungen",
+        "yield": "Ertrag",
+        "system": "System",
+        "xvp": "XvP-Abwicklung",
+        "vesting": "Vesting",
+        "activity": "Aktivität"
+      },
       "types": {
         "TransferCompleted": "Übertragung abgeschlossen",
         "MintCompleted": "Assets geprägt",
