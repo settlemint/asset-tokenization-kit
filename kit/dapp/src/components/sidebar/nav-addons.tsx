@@ -204,7 +204,10 @@ export function NavAddons() {
                                   {addonLink}
                                 </DropdownMenuItem>
                               </TooltipTrigger>
-                              <TooltipContent className="whitespace-pre-wrap">
+                              <TooltipContent
+                                side="right"
+                                className="whitespace-pre-wrap"
+                              >
                                 {t("settings.addons.notAuthorized")}
                               </TooltipContent>
                             </Tooltip>
@@ -249,7 +252,7 @@ export function NavAddons() {
                         const addonSubLink = (
                           <SidebarMenuSubButton
                             asChild={!isDisabled}
-                            disabled={isDisabled}
+                            aria-disabled={isDisabled}
                           >
                             {isDisabled ? (
                               <div className="flex items-center">
@@ -274,7 +277,9 @@ export function NavAddons() {
                           return (
                             <Tooltip key={addon.id}>
                               <TooltipTrigger asChild>
-                                <SidebarMenuSubItem>{addonSubLink}</SidebarMenuSubItem>
+                                <SidebarMenuSubItem>
+                                  {addonSubLink}
+                                </SidebarMenuSubItem>
                               </TooltipTrigger>
                               <TooltipContent className="whitespace-pre-wrap">
                                 {t("settings.addons.notAuthorized")}

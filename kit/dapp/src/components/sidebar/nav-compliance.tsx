@@ -79,10 +79,12 @@ export function NavCompliance() {
                 tooltip={item.disabled ? undefined : item.name}
               >
                 {item.disabled ? (
-                  <div className="flex items-center gap-2">
-                    <Icon />
-                    <span>{item.name}</span>
-                  </div>
+                  <>
+                    <Icon className="size-4 shrink-0" />
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {item.name}
+                    </span>
+                  </>
                 ) : (
                   <Link
                     to={item.path}
@@ -103,7 +105,7 @@ export function NavCompliance() {
             return (
               <Tooltip key={item.path}>
                 <TooltipTrigger asChild>{button}</TooltipTrigger>
-                <TooltipContent className="whitespace-pre-wrap">
+                <TooltipContent side="right" className="whitespace-pre-wrap">
                   {item.disabledMessage}
                 </TooltipContent>
               </Tooltip>

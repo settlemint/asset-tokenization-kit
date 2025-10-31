@@ -86,10 +86,12 @@ export function NavParticipants() {
                 tooltip={isDisabled ? undefined : item.name}
               >
                 {isDisabled ? (
-                  <div className="flex items-center gap-2">
-                    <Icon />
-                    <span>{item.name}</span>
-                  </div>
+                  <>
+                    <Icon className="size-4 shrink-0" />
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {item.name}
+                    </span>
+                  </>
                 ) : (
                   <Link
                     to={item.path}
@@ -108,7 +110,7 @@ export function NavParticipants() {
             return (
               <Tooltip key={item.path}>
                 <TooltipTrigger asChild>{button}</TooltipTrigger>
-                <TooltipContent className="whitespace-pre-wrap">
+                <TooltipContent side="right" className="whitespace-pre-wrap">
                   {t("participantsNotAuthorized")}
                 </TooltipContent>
               </Tooltip>

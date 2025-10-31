@@ -101,11 +101,7 @@ export function NavAsset() {
                   }
                 }}
                 disabled={isDisabled}
-                tooltip={
-                  isDisabled
-                    ? undefined
-                    : t("assetDesigner")
-                }
+                tooltip={isDisabled ? undefined : t("assetDesigner")}
               >
                 <PlusIcon className="mr-1 h-4 w-4" />
                 <span>{t("assetDesigner")}</span>
@@ -116,7 +112,7 @@ export function NavAsset() {
               return (
                 <Tooltip>
                   <TooltipTrigger asChild>{assetDesignerButton}</TooltipTrigger>
-                  <TooltipContent className="whitespace-pre-wrap">
+                  <TooltipContent side="right" className="whitespace-pre-wrap">
                     {t("assetManagementNotAuthorized")}
                   </TooltipContent>
                 </Tooltip>
@@ -181,7 +177,10 @@ export function NavAsset() {
                                     {factoryLink}
                                   </DropdownMenuItem>
                                 </TooltipTrigger>
-                                <TooltipContent className="whitespace-pre-wrap">
+                                <TooltipContent
+                                  side="right"
+                                  className="whitespace-pre-wrap"
+                                >
                                   {t("assetManagementNotAuthorized")}
                                 </TooltipContent>
                               </Tooltip>
@@ -226,7 +225,7 @@ export function NavAsset() {
                           const factorySubLink = (
                             <SidebarMenuSubButton
                               asChild={!isDisabled}
-                              disabled={isDisabled}
+                              aria-disabled={isDisabled}
                             >
                               {isDisabled ? (
                                 <div className="flex items-center">
@@ -251,7 +250,9 @@ export function NavAsset() {
                             return (
                               <Tooltip key={factory.id}>
                                 <TooltipTrigger asChild>
-                                  <SidebarMenuSubItem>{factorySubLink}</SidebarMenuSubItem>
+                                  <SidebarMenuSubItem>
+                                    {factorySubLink}
+                                  </SidebarMenuSubItem>
                                 </TooltipTrigger>
                                 <TooltipContent className="whitespace-pre-wrap">
                                   {t("assetManagementNotAuthorized")}
@@ -282,10 +283,12 @@ export function NavAsset() {
                   tooltip={isDisabled ? undefined : t("statistics")}
                 >
                   {isDisabled ? (
-                    <div className="flex items-center gap-2">
-                      <ChartLine />
-                      <span>{t("statistics")}</span>
-                    </div>
+                    <>
+                      <ChartLine className="size-4 shrink-0" />
+                      <span className="group-data-[collapsible=icon]:hidden">
+                        {t("statistics")}
+                      </span>
+                    </>
                   ) : (
                     <Link
                       to="/token/stats"
@@ -306,7 +309,7 @@ export function NavAsset() {
               return (
                 <Tooltip>
                   <TooltipTrigger asChild>{statisticsButton}</TooltipTrigger>
-                  <TooltipContent className="whitespace-pre-wrap">
+                  <TooltipContent side="right" className="whitespace-pre-wrap">
                     {t("assetManagementNotAuthorized")}
                   </TooltipContent>
                 </Tooltip>
