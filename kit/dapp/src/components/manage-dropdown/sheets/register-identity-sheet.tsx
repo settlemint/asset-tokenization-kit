@@ -60,7 +60,7 @@ export function RegisterIdentitySheet({
       onSuccess: async (_, variables) => {
         const invalidationPromises = [
           queryClient.invalidateQueries({
-            queryKey: orpc.system.identity.read.queryKey({
+            queryKey: orpc.system.identity.readById.queryKey({
               input: { identityId: identity.identity },
             }),
           }),
@@ -72,7 +72,7 @@ export function RegisterIdentitySheet({
         if (variables.wallet) {
           invalidationPromises.push(
             queryClient.invalidateQueries({
-              queryKey: orpc.system.identity.read.queryKey({
+              queryKey: orpc.system.identity.readByWallet.queryKey({
                 input: { wallet: variables.wallet },
               }),
             })

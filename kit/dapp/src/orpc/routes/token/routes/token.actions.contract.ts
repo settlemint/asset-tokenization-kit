@@ -24,7 +24,7 @@ export const tokenActionsContract = baseContract
     path: "/token/{tokenAddress}/actions",
     description: "Get actions for a specific token",
     successDescription: "List of actions targeting the specified token",
-    tags: ["token", "actions"],
+    tags: ["token"],
   })
   .input(TokenActionsInputSchema)
   .output(ActionsListResponseSchema);

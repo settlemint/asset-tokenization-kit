@@ -11,14 +11,7 @@ export const statsCollateralRatioContract = baseContract
     description:
       "Get collateral ratio statistics for stablecoins and tokenized deposits",
     successDescription: "Token collateral ratio statistics",
-    tags: [
-      "token",
-      "stats",
-      "asset",
-      "collateral-ratio",
-      "stablecoin",
-      "deposit",
-    ],
+    tags: ["token"],
   })
   .input(StatsCollateralRatioInputSchema)
   .output(StatsCollateralRatioOutputSchema);

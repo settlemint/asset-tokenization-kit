@@ -12,8 +12,9 @@ describe("Topic schemes stats (integration)", () => {
   });
 
   it("should successfully retrieve topic schemes statistics with trailing24Hours preset", async () => {
-    const result =
-      await adminClient.system.stats.topicSchemesStats("trailing24Hours");
+    const result = await adminClient.system.stats.topicSchemesStatsByPreset({
+      preset: "trailing24Hours",
+    });
 
     // Assert response structure
     expect(result).toBeDefined();

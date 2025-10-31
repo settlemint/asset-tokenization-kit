@@ -11,7 +11,7 @@ export const factoryAvailableContract = baseContract
     description:
       "Check if a predicted token address is available before deployment",
     successDescription: "Predicted address and availability status",
-    tags: ["system", "token-factory"],
+    tags: ["token-factory"],
   })
   .input(AvailableInputSchema)
   .output(AvailableOutputSchema);

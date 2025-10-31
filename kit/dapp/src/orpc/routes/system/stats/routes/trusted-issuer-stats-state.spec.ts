@@ -30,7 +30,7 @@ describe("Trusted issuer stats state (integration)", () => {
     await registerUserIdentity(adminClient, targetUserData.wallet);
 
     // Get the target user's identity address
-    const targetIdentity = await adminClient.system.identity.read({
+    const targetIdentity = await adminClient.system.identity.readByWallet({
       wallet: targetUserData.wallet,
     });
     targetIdentityAddress = targetIdentity.id;

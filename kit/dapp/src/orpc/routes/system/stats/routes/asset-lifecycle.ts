@@ -65,12 +65,70 @@ const SystemStatsResponseSchema = z.object({
     .nullable(),
 });
 
-export const statsAssetLifecycle =
-  systemRouter.system.stats.assetLifecycle.handler(
+export const statsAssetLifecycleByRange =
+  systemRouter.system.stats.assetLifecycleByRange.handler(
     async ({ context, input }) => {
       const now = new Date();
       const { interval, fromMicroseconds, toMicroseconds, range } =
         buildStatsRangeQuery(input, {
+          now,
+          // TODO: replace minFrom with context.system.createdAt when available
+        });
+
+      const systemId = context.system.id.toLowerCase();
+      const response = await context.theGraphClient.query(SYSTEM_STATS_QUERY, {
+        input: {
+          systemId,
+          systemIdString: systemId,
+          interval,
+          from: fromMicroseconds,
+          to: toMicroseconds,
+        },
+        output: SystemStatsResponseSchema,
+      });
+
+      const results = [
+        ...response.baseline.map((item) => ({
+          timestamp: item.timestamp,
+          assetsCreated: item.tokensCreatedCount,
+          assetsLaunched: item.tokensLaunchedCount,
+        })),
+        ...response.systemStats.map((item) => ({
+          timestamp: item.timestamp,
+          assetsCreated: item.tokensCreatedCount,
+          assetsLaunched: item.tokensLaunchedCount,
+        })),
+        {
+          timestamp: range.to,
+          assetsCreated: response.current?.tokensCreatedCount ?? 0,
+          assetsLaunched: response.current?.tokensLaunchedCount ?? 0,
+        },
+      ];
+
+      const data = createTimeSeries(
+        results,
+        ["assetsCreated", "assetsLaunched"],
+        {
+          range,
+          aggregation: "last",
+          accumulation: "max",
+          historical: true,
+        }
+      );
+
+      return {
+        range,
+        data,
+      };
+    }
+  );
+
+export const statsAssetLifecycleByPreset =
+  systemRouter.system.stats.assetLifecycleByPreset.handler(
+    async ({ context, input }) => {
+      const now = new Date();
+      const { interval, fromMicroseconds, toMicroseconds, range } =
+        buildStatsRangeQuery(input.preset, {
           now,
           // TODO: replace minFrom with context.system.createdAt when available
         });

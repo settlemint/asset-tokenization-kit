@@ -31,7 +31,7 @@ vi.mock("@/orpc/orpc-client", () => ({
   orpc: {
     system: {
       stats: {
-        assetLifecycle: {
+        assetLifecycleByPreset: {
           queryOptions: vi.fn(),
         },
       },

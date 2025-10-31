@@ -46,7 +46,7 @@ describe("Claims issue (integration)", () => {
     }
 
     // Get the target user's identity address
-    const targetIdentity = await adminClient.system.identity.read({
+    const targetIdentity = await adminClient.system.identity.readByWallet({
       wallet: targetUserData.wallet,
     });
     if (!targetIdentity?.id) {
