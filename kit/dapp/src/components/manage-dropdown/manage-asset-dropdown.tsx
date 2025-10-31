@@ -379,6 +379,8 @@ export function ManageAssetDropdown({
     hasWithdrawableAmount,
     yieldSchedule,
     userDenominationAssetBalance,
+    transferSheetAsset,
+    userWallet,
   ]);
 
   const onActionOpenChange = (open: boolean) => {
