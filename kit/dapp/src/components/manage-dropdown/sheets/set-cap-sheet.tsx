@@ -115,8 +115,7 @@ export function SetCapSheet({ open, onOpenChange, asset }: SetCapSheetProps) {
                 .promise(promise, {
                   loading: t("common:saving"),
                   success: t("common:saved"),
-                  error: (data) =>
-                    t("common:error", { message: data.message }),
+                  error: (data) => t("common:error", { message: data.message }),
                 })
                 .unwrap()
                 .then(() => {

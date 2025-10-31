@@ -195,8 +195,7 @@ export function CollateralSheet({
                 .promise(promise, {
                   loading: t("common:saving"),
                   success: t("tokens:actions.collateral.success"),
-                  error: (data) =>
-                    t("common:error", { message: data.message }),
+                  error: (data) => t("common:error", { message: data.message }),
                 })
                 .unwrap()
                 .then(() => {
