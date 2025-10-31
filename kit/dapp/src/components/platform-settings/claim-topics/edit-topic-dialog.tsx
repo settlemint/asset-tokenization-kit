@@ -1,20 +1,15 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ActionFormSheet } from "@/components/manage-dropdown/core/action-form-sheet";
+import { createActionFormStore } from "@/components/manage-dropdown/core/action-form-sheet.store";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppForm } from "@/hooks/use-app-form";
 import { normalizeAbiSignature } from "@/lib/utils/abi-signature";
 import { client, orpc } from "@/orpc/orpc-client";
+import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -29,10 +24,6 @@ const EditTopicFormSchema = z.object({
       message: "Remove parentheses; use a comma-separated type list.",
     })
     .transform(normalizeAbiSignature),
-  walletVerification: z.object({
-    secretVerificationCode: z.string(),
-    verificationType: z.enum(["PINCODE", "OTP", "SECRET_CODES"]),
-  }),
 });
 
 interface EditTopicDialogProps {
@@ -52,13 +43,18 @@ export function EditTopicDialog({
 }: EditTopicDialogProps) {
   const queryClient = useQueryClient();
   const { t } = useTranslation("claim-topics-issuers");
+  const sheetStoreRef = useRef(
+    createActionFormStore({
+      hasValuesStep: true,
+    })
+  );
 
   // Update topic mutation
   const updateMutation = useMutation({
-    mutationFn: (data: z.infer<typeof EditTopicFormSchema>) =>
+    mutationFn: (data: { signature: string; walletVerification: UserVerification }) =>
       client.system.claimTopics.topicUpdate({
         ...data,
-        name: topic.name, // Pass name from topic prop, not form
+        name: topic.name,
       }),
     onSuccess: (result) => {
       toast.success(t("claimTopics.toast.updated", { name: result.name }));
@@ -66,7 +62,7 @@ export function EditTopicDialog({
       void queryClient.invalidateQueries({
         queryKey: orpc.system.claimTopics.topicList.queryKey(),
       });
-      onOpenChange(false);
+      handleClose();
     },
     onError: (error) => {
       toast.error(t("claimTopics.toast.updateError", { error: error.message }));
@@ -76,123 +72,153 @@ export function EditTopicDialog({
   const form = useAppForm({
     defaultValues: {
       signature: topic.signature,
-      walletVerification: {
-        secretVerificationCode: "",
-        verificationType: "PINCODE",
-      },
-    } as z.infer<typeof EditTopicFormSchema>,
+    } satisfies z.infer<typeof EditTopicFormSchema>,
     validators: {
       onChange: EditTopicFormSchema,
-      onSubmit: ({ value }) => {
-        // Additional validation: signature must be different from current
-        if (value.signature === topic.signature) {
-          return {
-            signature: t("claimTopics.edit.validation.signatureChanged"),
-          };
-        }
-      },
     },
-    onSubmit: ({ value }) => {
-      updateMutation.mutate(value);
-    },
+    onSubmit: () => {},
   });
 
   // Reset form when topic changes
   useEffect(() => {
     if (open) {
       form.setFieldValue("signature", topic.signature);
+      sheetStoreRef.current.setState((state) => ({
+        ...state,
+        step: "values",
+      }));
     }
   }, [open, topic.signature, form]);
 
   const handleClose = () => {
     form.reset();
+    sheetStoreRef.current.setState((state) => ({
+      ...state,
+      step: "values",
+    }));
     onOpenChange(false);
   };
 
-  // Avoids reference to an unbound method which may cause unintentional scoping of `this`
-  const handleSubmit = () => {
-    void form.handleSubmit();
-  };
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t("claimTopics.edit.title")}</DialogTitle>
-          <DialogDescription>
-            {t("claimTopics.edit.description")}
-          </DialogDescription>
-        </DialogHeader>
+    <form.Subscribe
+      selector={(state) => ({
+        values: state.values as Partial<z.infer<typeof EditTopicFormSchema>>,
+        errors: state.errors,
+      })}
+    >
+      {({ values, errors }) => {
+        const signature = values.signature ?? "";
+        const sanitizedSignature = signature.trim();
+        const hasChanged = sanitizedSignature !== topic.signature;
+        const hasErrors = Object.keys(errors ?? {}).length > 0;
 
-        <form.AppForm>
-          <div className="space-y-4">
-            {/* Display topic name as read-only info, not as a form field */}
-            <div className="space-y-2">
-              <Label>{t("claimTopics.edit.fields.name.label")}</Label>
-              <Input
-                value={topic.name}
-                readOnly
-                disabled
-                className="bg-muted"
-              />
-              <p className="text-xs text-muted-foreground">
-                {t("claimTopics.edit.fields.name.description", {
-                  topicId: Number(topic.topicId),
-                })}
-              </p>
-            </div>
+        const canContinue = () => hasChanged && !hasErrors;
 
-            <form.AppField
-              name="signature"
-              children={(field) => (
-                <field.TextField
-                  label={t("claimTopics.edit.fields.signature.label")}
-                  required={true}
-                  placeholder={t(
-                    "claimTopics.edit.fields.signature.placeholder"
-                  )}
-                  description={t(
-                    "claimTopics.edit.fields.signature.description"
-                  )}
+        const confirmView = (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                {t("claimTopics.edit.confirmation.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div>
+                <p className="text-xs text-muted-foreground">
+                  {t("claimTopics.edit.fields.name.label")}
+                </p>
+                <p className="font-medium">{topic.name}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">
+                  {t("claimTopics.edit.fields.signature.label")}
+                </p>
+                <div className="space-y-1">
+                  <p className="font-medium break-words">{sanitizedSignature}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("claimTopics.edit.fields.signature.previous", {
+                      signature: topic.signature,
+                    })}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+        return (
+          <ActionFormSheet
+            open={open}
+            onOpenChange={(nextOpen) => {
+              if (!nextOpen) {
+                handleClose();
+              }
+            }}
+            title={t("claimTopics.edit.title")}
+            description={t("claimTopics.edit.description")}
+            submitLabel={
+              updateMutation.isPending
+                ? t("claimTopics.edit.actions.updating")
+                : t("claimTopics.edit.actions.update")
+            }
+            isSubmitting={updateMutation.isPending}
+            disabled={() => updateMutation.isPending}
+            canContinue={canContinue}
+            confirm={confirmView}
+            showAssetDetailsOnConfirm={false}
+            store={sheetStoreRef.current}
+            onSubmit={(verification) => {
+              if (!hasChanged) {
+                toast.error(
+                  t("claimTopics.edit.validation.signatureChanged")
+                );
+                return;
+              }
+
+              updateMutation.mutate({
+                signature: sanitizedSignature,
+                walletVerification: verification,
+              });
+            }}
+          >
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>{t("claimTopics.edit.fields.name.label")}</Label>
+                <Input
+                  value={topic.name}
+                  readOnly
+                  disabled
+                  className="bg-muted"
                 />
-              )}
-            />
-            <div className="text-xs text-muted-foreground">
-              <p>
+                <p className="text-xs text-muted-foreground">
+                  {t("claimTopics.edit.fields.name.description", {
+                    topicId: Number(topic.topicId),
+                  })}
+                </p>
+              </div>
+
+              <form.AppField name="signature">
+                {(field) => (
+                  <field.TextField
+                    label={t("claimTopics.edit.fields.signature.label")}
+                    required
+                    placeholder={t(
+                      "claimTopics.edit.fields.signature.placeholder"
+                    )}
+                    description={t(
+                      "claimTopics.edit.fields.signature.description"
+                    )}
+                  />
+                )}
+              </form.AppField>
+              <p className="text-xs text-muted-foreground">
                 {t("claimTopics.edit.fields.signature.current", {
                   signature: topic.signature,
                 })}
               </p>
             </div>
-          </div>
-
-          <DialogFooter className="gap-2 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={updateMutation.isPending}
-            >
-              {t("claimTopics.edit.actions.cancel")}
-            </Button>
-            <form.VerificationButton
-              onSubmit={handleSubmit}
-              walletVerification={{
-                title: t("claimTopics.add.verification.title"),
-                description: t("claimTopics.add.verification.description"),
-                setField: (verification) => {
-                  form.setFieldValue("walletVerification", verification);
-                },
-              }}
-              disabled={updateMutation.isPending}
-            >
-              {updateMutation.isPending
-                ? t("claimTopics.edit.actions.updating")
-                : t("claimTopics.edit.actions.update")}
-            </form.VerificationButton>
-          </DialogFooter>
-        </form.AppForm>
-      </DialogContent>
-    </Dialog>
+          </ActionFormSheet>
+        );
+      }}
+    </form.Subscribe>
   );
 }

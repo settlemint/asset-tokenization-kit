@@ -1,12 +1,7 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ActionFormSheet } from "@/components/manage-dropdown/core/action-form-sheet";
+import { createActionFormStore } from "@/components/manage-dropdown/core/action-form-sheet.store";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MultipleSelector from "@/components/ui/multiselect";
@@ -21,7 +16,7 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -42,6 +37,11 @@ export function EditIssuerTopicsDialog({
 }: EditIssuerTopicsDialogProps) {
   const queryClient = useQueryClient();
   const { t } = useTranslation(["claim-topics-issuers", "common"]);
+  const sheetStoreRef = useRef(
+    createActionFormStore({
+      hasValuesStep: true,
+    })
+  );
 
   // Fetch available topics for selection
   const { data: topics } = useSuspenseQuery(
@@ -62,31 +62,14 @@ export function EditIssuerTopicsDialog({
       void queryClient.invalidateQueries({
         queryKey: orpc.system.trustedIssuers.list.queryKey(),
       });
-      onOpenChange(false);
     },
   });
 
   const form = useAppForm({
     defaultValues: {
       claimTopicIds: issuer.claimTopics.map((topic) => topic.topicId),
-      walletVerification: {
-        secretVerificationCode: "",
-        verificationType: "PINCODE" as const,
-      } as UserVerification,
     },
-    onSubmit: ({ value }) => {
-      toast.promise(
-        updateMutation.mutateAsync({
-          claimTopicIds: value.claimTopicIds,
-          walletVerification: value.walletVerification,
-        }),
-        {
-          loading: t("common:saving"),
-          success: t("trustedIssuers.toast.updated"),
-          error: (data) => t("common:error", { message: data.message }),
-        }
-      );
-    },
+    onSubmit: () => {},
   });
 
   // Reset form when issuer changes
@@ -96,16 +79,20 @@ export function EditIssuerTopicsDialog({
         "claimTopicIds",
         issuer.claimTopics.map((topic) => topic.topicId)
       );
+      sheetStoreRef.current.setState((state) => ({
+        ...state,
+        step: "values",
+      }));
     }
   }, [open, issuer.claimTopics, form]);
 
   const handleClose = () => {
     form.reset();
+    sheetStoreRef.current.setState((state) => ({
+      ...state,
+      step: "values",
+    }));
     onOpenChange(false);
-  };
-
-  const handleSubmit = () => {
-    void form.handleSubmit();
   };
 
   // Create a lookup map for O(1) topic retrieval and options
@@ -119,114 +106,180 @@ export function EditIssuerTopicsDialog({
   }, [topics]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t("trustedIssuers.edit.title")}</DialogTitle>
-          <DialogDescription>
-            {t("trustedIssuers.edit.description")}
-          </DialogDescription>
-        </DialogHeader>
+    <form.Subscribe
+      selector={(state) => ({
+        values: state.values as { claimTopicIds?: string[] },
+        errors: state.errors,
+      })}
+    >
+      {({ values, errors }) => {
+        const selectedTopicIds = values.claimTopicIds ?? [];
+        const hasSelection = selectedTopicIds.length > 0;
+        const currentTopics = issuer.claimTopics.map((topic) => topic.topicId);
+        const sortedSelected = [...selectedTopicIds].sort();
+        const sortedCurrent = [...currentTopics].sort();
+        const hasChanged =
+          sortedSelected.length !== sortedCurrent.length ||
+          sortedSelected.some((id, index) => sortedCurrent[index] !== id);
+        const hasErrors = Object.keys(errors ?? {}).length > 0;
 
-        <form.AppForm>
-          <div className="space-y-4">
-            {/* Display issuer address as read-only info */}
-            <div className="space-y-2">
-              <Label>
-                {t("trustedIssuers.edit.fields.issuerAddress.label")}
-              </Label>
-              <Input
-                value={issuer.id}
-                readOnly
-                disabled
-                className="bg-muted font-mono text-sm"
-              />
-              <p className="text-xs text-muted-foreground">
-                {t("trustedIssuers.edit.fields.issuerAddress.description")}
-              </p>
-            </div>
+        const canContinue = () => hasSelection && hasChanged && !hasErrors;
 
-            <form.AppField
-              name="claimTopicIds"
-              children={(field) => (
-                <div className="space-y-2">
-                  <Label htmlFor="claimTopicIds">
-                    {t("trustedIssuers.edit.fields.claimTopics.label")}
-                    <span className="text-destructive ml-1">*</span>
-                  </Label>
-                  <MultipleSelector
-                    value={field.state.value.map((id: string) => ({
-                      value: id,
-                      label: topicLookup.get(id) || id,
-                    }))}
-                    onChange={(options) => {
-                      field.handleChange(options.map((o) => o.value));
-                    }}
-                    defaultOptions={topicOptions}
-                    placeholder="Select topics..."
-                    emptyIndicator={
-                      <p className="text-center text-sm">No topics available</p>
-                    }
-                    onSearch={(value) => {
-                      return Promise.resolve(
-                        topicOptions.filter((option) =>
-                          option.label
-                            .toLowerCase()
-                            .includes(value.toLowerCase())
-                        )
-                      );
-                    }}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t("trustedIssuers.edit.fields.claimTopics.description")}
-                  </p>
-                  {field.state.meta.errors.length > 0 && (
-                    <p className="text-sm text-destructive">
-                      {field.state.meta.errors[0]}
-                    </p>
-                  )}
+        const selectedTopicNames = selectedTopicIds.map((id) => ({
+          id,
+          name: topicLookup.get(id) ?? id,
+        }));
+
+        const confirmView = (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                {t("trustedIssuers.edit.confirmation.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div>
+                <p className="text-xs text-muted-foreground">
+                  {t("trustedIssuers.edit.fields.issuerAddress.label")}
+                </p>
+                <p className="font-mono text-xs">{issuer.id}</p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  {t("trustedIssuers.edit.fields.claimTopics.label")}
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {selectedTopicNames.map(({ id, name }) => (
+                    <Badge key={id}>{name}</Badge>
+                  ))}
                 </div>
-              )}
-            />
+                <p className="text-xs text-muted-foreground">
+                  {t("trustedIssuers.edit.fields.claimTopics.current", {
+                    topics: issuer.claimTopics
+                      .map((topic) => topic.name)
+                      .join(", "),
+                  })}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        );
 
-            <div className="text-xs text-muted-foreground">
-              <p>
-                {t("trustedIssuers.edit.fields.claimTopics.current", {
-                  topics: issuer.claimTopics
-                    .map((topic) => topic.name)
-                    .join(", "),
-                })}
-              </p>
-            </div>
-          </div>
-
-          <DialogFooter className="gap-2 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={updateMutation.isPending}
-            >
-              {t("trustedIssuers.edit.actions.cancel")}
-            </Button>
-            <form.VerificationButton
-              onSubmit={handleSubmit}
-              walletVerification={{
-                title: t("trustedIssuers.edit.verification.title"),
-                description: t("trustedIssuers.edit.verification.description"),
-                setField: (verification) => {
-                  form.setFieldValue("walletVerification", verification);
-                },
-              }}
-              disabled={updateMutation.isPending}
-            >
-              {updateMutation.isPending
+        return (
+          <ActionFormSheet
+            open={open}
+            onOpenChange={(nextOpen) => {
+              if (!nextOpen) {
+                handleClose();
+              }
+            }}
+            title={t("trustedIssuers.edit.title")}
+            description={t("trustedIssuers.edit.description")}
+            submitLabel={
+              updateMutation.isPending
                 ? t("trustedIssuers.edit.actions.updating")
-                : t("trustedIssuers.edit.actions.update")}
-            </form.VerificationButton>
-          </DialogFooter>
-        </form.AppForm>
-      </DialogContent>
-    </Dialog>
+                : t("trustedIssuers.edit.actions.update")
+            }
+            isSubmitting={updateMutation.isPending}
+            disabled={() => updateMutation.isPending}
+            canContinue={canContinue}
+            confirm={confirmView}
+            showAssetDetailsOnConfirm={false}
+            store={sheetStoreRef.current}
+            onSubmit={(verification) => {
+              if (!hasSelection) {
+                toast.error(
+                  t(
+                    "trustedIssuers.edit.validation.required",
+                    { defaultValue: t("trustedIssuers.add.fields.claimTopics.validation.required") }
+                  )
+                );
+                return;
+              }
+
+              toast
+                .promise(
+                  updateMutation.mutateAsync({
+                    claimTopicIds: selectedTopicIds,
+                    walletVerification: verification,
+                  }),
+                  {
+                    loading: t("common:saving"),
+                    success: t("trustedIssuers.toast.updated"),
+                    error: (data) =>
+                      t("common:error", { message: data.message }),
+                  }
+                )
+                .then(() => {
+                  handleClose();
+                })
+                .catch(() => undefined);
+            }}
+          >
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>
+                  {t("trustedIssuers.edit.fields.issuerAddress.label")}
+                </Label>
+                <Input
+                  value={issuer.id}
+                  readOnly
+                  disabled
+                  className="bg-muted font-mono text-sm"
+                />
+                <p className="text-xs text-muted-foreground">
+                  {t("trustedIssuers.edit.fields.issuerAddress.description")}
+                </p>
+              </div>
+
+              <form.AppField name="claimTopicIds">
+                {(field) => (
+                  <div className="space-y-2">
+                    <Label htmlFor="claimTopicIds">
+                      {t("trustedIssuers.edit.fields.claimTopics.label")}
+                      <span className="text-destructive ml-1">*</span>
+                    </Label>
+                    <MultipleSelector
+                      value={(field.state.value ?? []).map((id: string) => ({
+                        value: id,
+                        label: topicLookup.get(id) || id,
+                      }))}
+                      onChange={(options) => {
+                        field.handleChange(options.map((o) => o.value));
+                      }}
+                      defaultOptions={topicOptions}
+                      placeholder="Select topics..."
+                      emptyIndicator={
+                        <p className="text-center text-sm">No topics available</p>
+                      }
+                      onSearch={(value) => {
+                        return Promise.resolve(
+                          topicOptions.filter((option) =>
+                            option.label
+                              .toLowerCase()
+                              .includes(value.toLowerCase())
+                          )
+                        );
+                      }}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {t("trustedIssuers.edit.fields.claimTopics.description")}
+                    </p>
+                    {(!hasSelection || field.state.meta.errors.length > 0) && (
+                      <p className="text-sm text-destructive">
+                        {t(
+                          "trustedIssuers.edit.validation.required",
+                          { defaultValue: t("trustedIssuers.add.fields.claimTopics.validation.required") }
+                        )}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </form.AppField>
+            </div>
+          </ActionFormSheet>
+        );
+      }}
+    </form.Subscribe>
   );
 }

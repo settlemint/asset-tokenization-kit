@@ -54,6 +54,9 @@
         "title": "トピック作成の確認",
         "description": "この請求トピックを作成するためにアイデンティティを確認してください"
       },
+      "confirmation": {
+        "title": "新しい請求トピックを確認"
+      },
       "actions": {
         "cancel": "キャンセル",
         "create": "トピックを作成",
@@ -72,8 +75,12 @@
           "label": "クレームデータABIタイプ",
           "description": "Solidity ABIタイプ（オプションでパラメータ名を含む）をカンマ区切りで入力してください。関数名も括弧も不要です。例：string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
           "placeholder": "string claim",
-          "current": "現在の署名：{{signature}}"
+          "current": "現在の署名：{{signature}}",
+          "previous": "以前の署名：{{signature}}"
         }
+      },
+      "confirmation": {
+        "title": "署名の更新を確認"
       },
       "actions": {
         "cancel": "キャンセル",
@@ -181,6 +188,9 @@
           "current": "現在のトピック：{{topics}}"
         }
       },
+      "confirmation": {
+        "title": "割り当てるトピックを確認"
+      },
       "verification": {
         "title": "トピック変更の確認",
         "description": "発行者のトピックを更新するためにアイデンティティを確認してください"
@@ -191,6 +201,7 @@
         "updating": "更新中..."
       },
       "validation": {
+        "required": "少なくとも1つの請求トピックを選択してください。",
         "topicsChanged": "トピックの選択は現在のトピックと異なる必要があります"
       }
     },

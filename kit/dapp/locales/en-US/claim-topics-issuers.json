@@ -54,6 +54,9 @@
         "title": "Confirm topic creation",
         "description": "Please verify your identity to create this claim topic"
       },
+      "confirmation": {
+        "title": "Review new claim topic"
+      },
       "actions": {
         "cancel": "Cancel",
         "create": "Create topic",
@@ -72,8 +75,12 @@
           "label": "Claim data ABI types",
           "description": "Enter Solidity ABI types (optionally with param names), comma-separated. No function name, no parentheses. Examples: string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
           "placeholder": "string claim",
-          "current": "Current: {{signature}}"
+          "current": "Current: {{signature}}",
+          "previous": "Previous: {{signature}}"
         }
+      },
+      "confirmation": {
+        "title": "Confirm signature update"
       },
       "actions": {
         "cancel": "Cancel",
@@ -181,6 +188,9 @@
           "current": "Current topics: {{topics}}"
         }
       },
+      "confirmation": {
+        "title": "Review topic assignment"
+      },
       "verification": {
         "title": "Confirm topic changes",
         "description": "Please verify your identity to update the issuer's topics"
@@ -191,6 +201,7 @@
         "updating": "Updating..."
       },
       "validation": {
+        "required": "Select at least one claim topic.",
         "topicsChanged": "Topic selection must be different from current topics"
       }
     },

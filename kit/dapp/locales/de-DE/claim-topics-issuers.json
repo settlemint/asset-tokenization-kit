@@ -54,6 +54,9 @@
         "title": "Themenerstellung bestätigen",
         "description": "Bitte verifizieren Sie Ihre Identität, um dieses Anspruchsthema zu erstellen"
       },
+      "confirmation": {
+        "title": "Neues Anspruchsthema prüfen"
+      },
       "actions": {
         "cancel": "Abbrechen",
         "create": "Thema erstellen",
@@ -72,8 +75,12 @@
           "label": "Anspruchsdaten-ABI-Typen",
           "description": "Geben Sie Solidity-ABI-Typen (optional mit Parameternamen) kommagetrennt ein. Kein Funktionsname, keine Klammern. Beispiele: string claim · address issuerAddress · bool compliant, uint256 lastUpdated",
           "placeholder": "string claim",
-          "current": "Aktuell: {{signature}}"
+          "current": "Aktuell: {{signature}}",
+          "previous": "Vorher: {{signature}}"
         }
+      },
+      "confirmation": {
+        "title": "Signaturänderung bestätigen"
       },
       "actions": {
         "cancel": "Abbrechen",
@@ -181,6 +188,9 @@
           "current": "Aktuelle Themen: {{topics}}"
         }
       },
+      "confirmation": {
+        "title": "Themenzuordnung prüfen"
+      },
       "verification": {
         "title": "Themenänderungen bestätigen",
         "description": "Bitte verifizieren Sie Ihre Identität, um die Themen des Emittenten zu aktualisieren"
@@ -191,6 +201,7 @@
         "updating": "Aktualisieren..."
       },
       "validation": {
+        "required": "Wählen Sie mindestens ein Anspruchsthema aus.",
         "topicsChanged": "Themenauswahl muss sich von den aktuellen Themen unterscheiden"
       }
     },

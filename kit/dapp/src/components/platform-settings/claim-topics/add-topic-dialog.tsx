@@ -1,12 +1,6 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ActionFormSheet } from "@/components/manage-dropdown/core/action-form-sheet";
+import { createActionFormStore } from "@/components/manage-dropdown/core/action-form-sheet.store";
 import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
 import {
@@ -15,16 +9,17 @@ import {
 } from "@/orpc/routes/system/claim-topics/routes/topic.create.schema";
 import type { TopicScheme } from "@/orpc/routes/system/claim-topics/routes/topic.list.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 
-// Form-level schema to make verificationType required for the form input
-const AddTopicFormSchema = TopicCreateInputSchema.extend({
-  walletVerification: TopicCreateInputSchema.shape.walletVerification.extend({
-    verificationType: z.enum(["PINCODE", "OTP", "SECRET_CODES"]),
-  }),
+// Form-level schema that validates only editable fields.
+const AddTopicFormSchema = TopicCreateInputSchema.omit({
+  walletVerification: true,
 });
+
+type AddTopicFormValues = z.infer<typeof AddTopicFormSchema>;
 
 /**
  * Dialog component for adding new claim topics
@@ -40,6 +35,12 @@ export function AddTopicDialog({
   const queryClient = useQueryClient();
   const { t } = useTranslation("claim-topics-issuers");
   const { t: tErrors } = useTranslation("errors");
+
+  const sheetStoreRef = useRef(
+    createActionFormStore({
+      hasValuesStep: true,
+    })
+  );
 
   const normalizeName = (value: string) =>
     value.normalize("NFKC").trim().toLowerCase();
@@ -58,8 +59,7 @@ export function AddTopicDialog({
       void queryClient.invalidateQueries({
         queryKey: orpc.system.claimTopics.topicList.queryKey(),
       });
-      onOpenChange(false);
-      form.reset();
+      handleClose();
     },
     onError: (error) => {
       toast.error(
@@ -74,118 +74,164 @@ export function AddTopicDialog({
     defaultValues: {
       name: "",
       signature: "",
-      walletVerification: {
-        secretVerificationCode: "",
-        verificationType: "PINCODE",
-      },
-    } as z.infer<typeof AddTopicFormSchema>,
+    } satisfies AddTopicFormValues,
     validators: {
       onChange: AddTopicFormSchema,
-      onSubmit: ({ value }) => {
-        const normalizedInput = normalizeName(value.name);
-        const duplicate = getExistingTopics().some(
-          (topic) => normalizeName(topic.name) === normalizedInput
-        );
-
-        if (duplicate) {
-          return {
-            fields: {
-              name: {
-                message: tErrors("resourceAlreadyExists.description"),
-              },
-            },
-          };
-        }
-      },
     },
-    onSubmit: ({ value }) => {
-      const sanitizedValue: TopicCreateInput = {
-        ...value,
-        name: value.name.trim(),
-        signature: value.signature.trim(),
-      };
-
-      createMutation.mutate(sanitizedValue);
-    },
+    onSubmit: () => {},
   });
+
+  useEffect(() => {
+    if (open) {
+      form.reset();
+      sheetStoreRef.current.setState((state) => ({
+        ...state,
+        step: "values",
+      }));
+    }
+  }, [open, form]);
 
   const handleClose = () => {
     form.reset();
+    sheetStoreRef.current.setState((state) => ({
+      ...state,
+      step: "values",
+    }));
     onOpenChange(false);
   };
 
-  // Avoids reference to an unbound method which may cause unintentional scoping of `this`
-  const handleSubmit = () => {
-    void form.handleSubmit();
-  };
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t("claimTopics.add.title")}</DialogTitle>
-          <DialogDescription>
-            {t("claimTopics.add.description")}
-          </DialogDescription>
-        </DialogHeader>
+    <form.Subscribe
+      selector={(state) => ({
+        values: state.values as Partial<AddTopicFormValues>,
+        errors: state.errors,
+      })}
+    >
+      {({ values, errors }) => {
+        const name = values.name ?? "";
+        const signature = values.signature ?? "";
+        const sanitizedName = name.trim();
+        const sanitizedSignature = signature.trim();
 
-        <form.AppForm>
-          <div className="space-y-4">
-            <form.AppField
-              name="name"
-              children={(field) => (
-                <field.TextField
-                  label={t("claimTopics.add.fields.name.label")}
-                  required={true}
-                  description={t("claimTopics.add.fields.name.description")}
-                />
-              )}
-            />
+        const duplicateName = (() => {
+          if (!sanitizedName) return false;
+          const normalizedInput = normalizeName(sanitizedName);
+          return getExistingTopics().some(
+            (topic) => normalizeName(topic.name) === normalizedInput
+          );
+        })();
 
-            <form.AppField
-              name="signature"
-              children={(field) => (
-                <field.TextField
-                  label={t("claimTopics.add.fields.signature.label")}
-                  required={true}
-                  placeholder={t(
-                    "claimTopics.add.fields.signature.placeholder"
-                  )}
-                  description={t(
-                    "claimTopics.add.fields.signature.description"
-                  )}
-                />
-              )}
-            />
-          </div>
+        const hasFieldErrors =
+          Object.keys(errors ?? {}).length > 0 || duplicateName;
 
-          <DialogFooter className="gap-2 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={createMutation.isPending}
-            >
-              {t("claimTopics.add.actions.cancel")}
-            </Button>
-            <form.VerificationButton
-              onSubmit={handleSubmit}
-              walletVerification={{
-                title: t("claimTopics.add.verification.title"),
-                description: t("claimTopics.add.verification.description"),
-                setField: (verification) => {
-                  form.setFieldValue("walletVerification", verification);
-                },
-              }}
-              disabled={createMutation.isPending}
-            >
-              {createMutation.isPending
+        const canContinue = () =>
+          Boolean(sanitizedName && sanitizedSignature && !hasFieldErrors);
+
+        const confirmView = (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">
+                {t("claimTopics.add.confirmation.title")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              <div>
+                <p className="text-xs text-muted-foreground">
+                  {t("claimTopics.add.fields.name.label")}
+                </p>
+                <p className="font-medium">{sanitizedName}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">
+                  {t("claimTopics.add.fields.signature.label")}
+                </p>
+                <p className="font-medium break-words">{sanitizedSignature}</p>
+              </div>
+            </CardContent>
+          </Card>
+        );
+
+        return (
+          <ActionFormSheet
+            open={open}
+            onOpenChange={(nextOpen) => {
+              if (!nextOpen) {
+                handleClose();
+              }
+            }}
+            title={t("claimTopics.add.title")}
+            description={t("claimTopics.add.description")}
+            submitLabel={
+              createMutation.isPending
                 ? t("claimTopics.add.actions.creating")
-                : t("claimTopics.add.actions.create")}
-            </form.VerificationButton>
-          </DialogFooter>
-        </form.AppForm>
-      </DialogContent>
-    </Dialog>
+                : t("claimTopics.add.actions.create")
+            }
+            isSubmitting={createMutation.isPending}
+            disabled={() => createMutation.isPending}
+            canContinue={canContinue}
+            confirm={confirmView}
+            showAssetDetailsOnConfirm={false}
+            store={sheetStoreRef.current}
+            onSubmit={(verification) => {
+              const payload: TopicCreateInput = {
+                name: sanitizedName,
+                signature: sanitizedSignature,
+                walletVerification: verification,
+              };
+
+              const normalizedInput = normalizeName(payload.name);
+              const duplicate = getExistingTopics().some(
+                (topic) => normalizeName(topic.name) === normalizedInput
+              );
+
+              if (duplicate) {
+                toast.error(
+                  tErrors("resourceAlreadyExists.description")
+                );
+                return;
+              }
+
+              createMutation.mutate(payload);
+            }}
+          >
+            <div className="space-y-4">
+              <form.AppField name="name">
+                {(field) => (
+                  <div className="space-y-1">
+                    <field.TextField
+                      label={t("claimTopics.add.fields.name.label")}
+                      required
+                      description={t(
+                        "claimTopics.add.fields.name.description"
+                      )}
+                    />
+                    {duplicateName && (
+                      <p className="text-xs text-destructive">
+                        {tErrors("resourceAlreadyExists.description")}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </form.AppField>
+
+              <form.AppField name="signature">
+                {(field) => (
+                  <field.TextField
+                    label={t("claimTopics.add.fields.signature.label")}
+                    required
+                    placeholder={t(
+                      "claimTopics.add.fields.signature.placeholder"
+                    )}
+                    description={t(
+                      "claimTopics.add.fields.signature.description"
+                    )}
+                  />
+                )}
+              </form.AppField>
+            </div>
+          </ActionFormSheet>
+        );
+      }}
+    </form.Subscribe>
   );
 }
