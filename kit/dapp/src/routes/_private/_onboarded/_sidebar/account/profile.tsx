@@ -11,13 +11,21 @@ import { authPublicConfig } from "@/lib/auth/public-config";
 import {
   ChangeEmailCard,
   ChangePasswordCard,
+  ApiKeysCard,
 } from "@daveyplate/better-auth-ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-
 import { ProfileKycCard } from "@/components/account/profile/profile-kyc-card";
 import { orpc } from "@/orpc/orpc-client";
+
+const CARD_CLASS_NAMES = {
+  base: "flex h-full flex-col",
+  content: "flex-1",
+  footer:
+    "px-6 py-4 md:py-3 grid grid-cols-2 gap-4 bg-transparent border-none [&>*:first-child]:justify-self-start [&>*:last-child]:justify-self-end",
+  title: "!text-base md:!text-base",
+} as const;
 
 export const Route = createFileRoute(
   "/_private/_onboarded/_sidebar/account/profile"
@@ -27,9 +35,7 @@ export const Route = createFileRoute(
 
 function Profile() {
   const { t } = useTranslation(["user", "common"]);
-
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());
-  const changeEmailEnabled = authPublicConfig.changeEmailEnabled;
 
   return (
     <div className="container mx-auto space-y-6 p-6">
@@ -40,11 +46,13 @@ function Profile() {
       </div>
 
       <div className="grid gap-6">
+        <ProfileKycCard userId={user.id} />
+
         <div className="grid gap-4 md:grid-cols-2">
-          {changeEmailEnabled ? (
-            <ChangeEmailCard className="h-full" />
+          {authPublicConfig.changeEmailEnabled ? (
+            <ChangeEmailCard className="h-full" classNames={CARD_CLASS_NAMES} />
           ) : (
-            <Card className="flex h-full flex-col">
+            <Card className={CARD_CLASS_NAMES.base}>
               <CardHeader>
                 <CardTitle>{t("fields.email")}</CardTitle>
                 <CardDescription>
@@ -65,17 +73,10 @@ function Profile() {
           )}
           <ChangePasswordCard
             className="h-full"
-            classNames={{
-              base: "flex h-full flex-col",
-              content: "flex-1",
-              footer:
-                "p-6 py-4 md:py-3 grid grid-cols-2 gap-4 bg-transparent border-none [&>*:first-child]:justify-self-start [&>*:last-child]:justify-self-end",
-              title: "!text-base md:!text-base",
-            }}
+            classNames={CARD_CLASS_NAMES}
           />
         </div>
-
-        <ProfileKycCard userId={user.id} />
+        <ApiKeysCard classNames={CARD_CLASS_NAMES} />
       </div>
     </div>
   );

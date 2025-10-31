@@ -58,6 +58,7 @@ describe("fiatCurrency", () => {
       expect(validator.parse("AED")).toBe("AED");
       expect(validator.parse("SGD")).toBe("SGD");
       expect(validator.parse("SAR")).toBe("SAR");
+      expect(validator.parse("MYR")).toBe("MYR");
     });
   });
 
@@ -93,6 +94,16 @@ describe("fiatCurrency", () => {
       expect(() => validator.parse("CNY")).toThrow(); // Chinese Yuan, not in supported list
       expect(() => validator.parse("INR")).toThrow(); // Indian Rupee, not in supported list
       expect(() => validator.parse("RUB")).toThrow(); // Russian Ruble, not in supported list
+    });
+
+    it("should reject MYR-like invalid variations", () => {
+      // Test edge cases for MYR to ensure robust validation
+      expect(() => validator.parse("myr")).toThrow(); // lowercase MYR
+      expect(() => validator.parse("MyR")).toThrow(); // mixed case MYR
+      expect(() => validator.parse("MYRR")).toThrow(); // typo - extra letter
+      expect(() => validator.parse("MRY")).toThrow(); // transposed letters (similar looking)
+      expect(() => validator.parse("MY1")).toThrow(); // invalid code with number
+      expect(() => validator.parse("MY")).toThrow(); // too short
     });
   });
 
@@ -287,8 +298,8 @@ describe("fiatCurrencyMetadata", () => {
 });
 
 describe("fiatCurrencies constant", () => {
-  it("should contain exactly 10 currencies", () => {
-    expect(fiatCurrencies).toHaveLength(10);
+  it("should contain exactly 11 currencies", () => {
+    expect(fiatCurrencies).toHaveLength(11);
   });
 
   it("should contain the expected currencies in order", () => {
@@ -303,6 +314,7 @@ describe("fiatCurrencies constant", () => {
       "AED",
       "SGD",
       "SAR",
+      "MYR",
     ]);
   });
 });
