@@ -9,7 +9,12 @@ import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
@@ -109,6 +114,7 @@ function RouteComponent() {
   const { user: loaderUser, identity: loaderIdentity } = Route.useLoaderData();
   const { userId } = Route.useParams();
   const routeContext = Route.useRouteContext();
+  const navigate = useNavigate();
   const { orpc } = routeContext;
   // Subscribe to live user data so UI reacts to updates
   const { data: queriedUser } = useQuery(
@@ -220,7 +226,10 @@ function RouteComponent() {
           <IdentityClaimsTile
             identity={identity}
             onManageVerifications={() => {
-              // TODO: Implement navigation to claims management page
+              void navigate({
+                to: "/participants/users/$userId/verifications",
+                params: { userId },
+              });
             }}
           />
         )}

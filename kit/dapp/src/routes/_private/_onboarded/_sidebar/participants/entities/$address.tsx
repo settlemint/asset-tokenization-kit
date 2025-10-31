@@ -8,7 +8,7 @@ import { IdentityClaimsTile } from "@/components/participants/common/tiles/ident
 import { Badge } from "@/components/ui/badge";
 import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
@@ -133,6 +133,7 @@ function RouteComponent() {
   ]);
 
   const routeContext = Route.useRouteContext();
+  const navigate = useNavigate();
 
   const { data: queriedIdentity } = useQuery(
     routeContext.orpc.system.identity.read.queryOptions({
@@ -227,7 +228,10 @@ function RouteComponent() {
         <IdentityClaimsTile
           identity={identity}
           onManageVerifications={() => {
-            // TODO: Implement navigation to claims management page
+            void navigate({
+              to: "/participants/entities/$address/verifications",
+              params: { address },
+            });
           }}
         />
       </div>
