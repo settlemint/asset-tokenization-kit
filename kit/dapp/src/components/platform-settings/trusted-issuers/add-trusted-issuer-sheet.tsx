@@ -43,9 +43,7 @@ export function AddTrustedIssuerSheet({
 }: AddTrustedIssuerSheetProps) {
   const queryClient = useQueryClient();
   const { t } = useTranslation(["claim-topics-issuers", "common"]);
-  const sheetStoreRef = useRef(
-    createActionFormStore({ hasValuesStep: true })
-  );
+  const sheetStoreRef = useRef(createActionFormStore({ hasValuesStep: true }));
 
   // Fetch available topics for selection
   const { data: topics } = useSuspenseQuery(
@@ -142,16 +140,14 @@ export function AddTrustedIssuerSheet({
     return { topicLookup: lookup, topicOptions: options };
   }, [topics]);
 
-  const selectedTopicIds = Array.isArray(claimTopicIds)
-    ? claimTopicIds
-    : [];
+  const selectedTopicIds = Array.isArray(claimTopicIds) ? claimTopicIds : [];
 
   const confirmView = (
     <div className="space-y-4">
       <div className="rounded-md border p-4 space-y-2">
-        <span className="text-xs text-muted-foreground">
+        <div className="text-xs text-muted-foreground">
           {t("trustedIssuers.add.fields.selectUser.label")}
-        </span>
+        </div>
         {issuerAddress ? (
           <Web3Address address={issuerAddress} size="small" />
         ) : (
@@ -161,9 +157,9 @@ export function AddTrustedIssuerSheet({
         )}
       </div>
       <div className="rounded-md border p-4 space-y-2">
-        <span className="text-xs text-muted-foreground">
+        <div className="text-xs text-muted-foreground">
           {t("trustedIssuers.add.fields.claimTopics.label")}
-        </span>
+        </div>
         {selectedTopicIds.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {selectedTopicIds.map((id) => (
@@ -202,9 +198,7 @@ export function AddTrustedIssuerSheet({
       onSubmit={(verification) => {
         const action = (async () => {
           if (!issuerAddress) {
-            throw new Error(
-              "Issuer address is required before submission"
-            );
+            throw new Error("Issuer address is required before submission");
           }
 
           const missingIdentityErrorMessage = t(
