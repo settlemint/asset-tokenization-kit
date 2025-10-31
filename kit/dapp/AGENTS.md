@@ -116,3 +116,7 @@ BASED ON THE CURRENT CHANGES YOU ARE MAKING: `README.md`, `docs/**`,
 - Verify Drizzle schema and migrations remain synchronized, do not make your own
   migrations, use the drizzle kit commands
 - Validate default locale translations exist for new keys
+- Run `node tools/prune-unused-translations.cjs` after modifying UI copy. The
+  script now parses the TypeScript AST, so install workspace dependencies first
+  to provide the `typescript` runtime. Delete any fully empty JSON files (`{}`)
+  that the pruning pass leaves behind.

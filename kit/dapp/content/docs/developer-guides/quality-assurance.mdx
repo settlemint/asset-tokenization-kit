@@ -987,6 +987,23 @@ View coverage at:
    test.use({ launchOptions: { slowMo: 500 } });
    ```
 
+## Localization hygiene
+
+Run the locale pruning helper whenever you add or rename translation keys. The
+utility now loads the TypeScript compiler to analyze every `useTranslation`
+call and removes unused strings across all locales, keeping the shipped bundles
+small and consistent. If the script reports that `typescript` is missing, run
+`bun install` first so the compiler API is available.
+
+```bash
+node tools/prune-unused-translations.cjs
+```
+
+The script writes the trimmed JSON files back to `kit/dapp/locales`. Include the
+resulting diff in your pull request so reviewers can see which namespaces still
+power UI copy. If a namespace is no longer referenced, delete the resulting
+empty JSON file (`{}`) rather than leaving a placeholder bundle in the tree.
+
 ## Next steps
 
 - Review

@@ -1,7 +1,6 @@
 {
   "dark": "Dunkler Modus",
   "light": "Heller Modus",
-  "switch-to-mode": "Zu {mode} wechseln",
   "system": "System abgleichen",
   "toggle-label": "Theme ändern"
 }

@@ -1,7 +1,6 @@
 {
   "dark": "Dark mode",
   "light": "Light mode",
-  "switch-to-mode": "Switch to {mode}",
   "system": "Match system",
   "toggle-label": "Change theme"
 }
