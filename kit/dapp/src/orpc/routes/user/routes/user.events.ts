@@ -1,9 +1,10 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import { authRouter } from "@/orpc/procedures/auth.router";
-import { UserEventsResponseSchema } from "@/orpc/routes/user/routes/user.events.schema";
+import { UserEventSchema } from "@/orpc/routes/user/routes/user.events.schema";
+import { z } from "zod";
 
 /**
- * GraphQL query for retrieving recent events where a user is involved.
+ * GraphQL query for retrieving events where a user is involved.
  *
  * The 'involved' field captures ALL participants in an event, including:
  * - Sender (who initiated the transaction)
@@ -12,14 +13,23 @@ import { UserEventsResponseSchema } from "@/orpc/routes/user/routes/user.events.
  * - Any other address parameter in the event
  *
  * This ensures users see all events they're part of, not just those they initiated.
+ *
+ * Supports pagination via skip/first and ordering via orderBy/orderDirection.
  */
 const USER_EVENTS_QUERY = theGraphGraphql(`
-  query UserRecentEventsQuery($userAddress: String!, $limit: Int = 5) {
+  query UserEventsQuery(
+    $userAddress: String!
+    $limit: Int!,
+    $skip: Int!,
+    $orderBy: Event_orderBy!,
+    $orderDirection: OrderDirection!
+  ) {
     events(
       where: { involved_contains: [$userAddress] }
       first: $limit
-      orderBy: blockTimestamp
-      orderDirection: desc
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
     ) {
       id
       eventName
@@ -41,6 +51,22 @@ const USER_EVENTS_QUERY = theGraphGraphql(`
         name
         value
       }
+    }
+  }
+`);
+
+/**
+ * GraphQL query for getting total count of events for a user.
+ *
+ * Retrieves the count of all events where the user is involved,
+ * used for pagination calculations.
+ */
+const USER_EVENTS_COUNT_QUERY = theGraphGraphql(`
+  query UserEventsCountQuery($userAddress: String!) {
+    events(
+      where: { involved_contains: [$userAddress] }
+    ) {
+      id
     }
   }
 `);
@@ -76,14 +102,30 @@ export const events = authRouter.user.events.handler(
       throw new Error("User wallet address not found");
     }
 
-    const response = await context.theGraphClient.query(USER_EVENTS_QUERY, {
-      input: {
-        userAddress: context.auth.user.wallet.toLowerCase(),
-        limit: input?.limit ?? 5,
-      },
-      output: UserEventsResponseSchema,
-    });
+    const userAddress = context.auth.user.wallet.toLowerCase();
 
-    return response;
+    const [eventsResponse, countResponse] = await Promise.all([
+      context.theGraphClient.query(USER_EVENTS_QUERY, {
+        input: {
+          userAddress,
+          limit: input?.limit ?? 20,
+          skip: input?.offset ?? 0,
+          orderBy: input?.orderBy ?? "blockTimestamp",
+          orderDirection: input?.orderDirection ?? "desc",
+        },
+        output: z.object({
+          events: z.array(UserEventSchema),
+        }),
+      }),
+      context.theGraphClient.query(USER_EVENTS_COUNT_QUERY, {
+        input: { userAddress },
+        output: z.object({ events: z.array(z.object({ id: z.string() })) }),
+      }),
+    ]);
+
+    return {
+      events: eventsResponse.events,
+      total: countResponse.events.length,
+    };
   }
 );

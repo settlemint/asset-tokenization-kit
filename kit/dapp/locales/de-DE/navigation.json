@@ -1,6 +1,7 @@
 {
   "asset": "Vermögenswert",
   "actions": "Aktionen",
+  "activity": "Aktivität",
   "assetClasses": "Vermögensklassen",
   "assetManagement": "Vermögensverwaltung",
   "cashEquivalent": "Bargeldäquivalent",

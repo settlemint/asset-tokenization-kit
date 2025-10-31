@@ -27,6 +27,7 @@
 
 import type enAccessibilityTranslations from "@/locales/en-US/accessibility.json";
 import type enActionsTranslations from "@/locales/en-US/actions.json";
+import type enActivityTranslations from "@/locales/en-US/activity.json";
 import type enAssetClassTranslations from "@/locales/en-US/asset-class.json";
 import type enAssetDesignerTranslations from "@/locales/en-US/asset-designer.json";
 import type enAssetExtensionsTranslations from "@/locales/en-US/asset-extensions.json";
@@ -91,6 +92,7 @@ declare module "i18next" {
      */
     resources: {
       actions: typeof enActionsTranslations;
+      activity: typeof enActivityTranslations;
       accessibility: typeof enAccessibilityTranslations;
       "asset-class": typeof enAssetClassTranslations;
       "asset-designer": typeof enAssetDesignerTranslations;

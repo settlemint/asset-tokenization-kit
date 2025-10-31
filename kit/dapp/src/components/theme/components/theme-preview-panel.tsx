@@ -209,9 +209,9 @@ export function ThemePreviewPanel({ draft, t }: ThemePreviewPanelProps) {
                   <AuthPreview
                     draft={draft}
                     mode={mode}
-                    controlStyle={controlStyle as CSSProperties}
+                    controlStyle={controlStyle}
                     containerStyle={containerStyle as CSSProperties}
-                    primaryButtonStyle={primaryButtonStyle as CSSProperties}
+                    primaryButtonStyle={primaryButtonStyle}
                     welcomeText={t("authPreviewWelcome")}
                     signInText={t("authPreviewSignIn")}
                     emailLabel={t("authPreviewEmailLabel")}

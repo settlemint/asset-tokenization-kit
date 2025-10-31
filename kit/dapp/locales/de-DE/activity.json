@@ -1,0 +1,26 @@
+{
+  "title": "Aktivität",
+  "description": "Alle Blockchain-Ereignisse anzeigen, die mit Ihrem Konto verbunden sind",
+  "loading": "Aktivität wird geladen...",
+  "table": {
+    "columns": {
+      "eventName": "Ereignis",
+      "category": "Kategorie",
+      "sender": "Absender",
+      "transactionHash": "Transaktion",
+      "blockNumber": "Block",
+      "timestamp": "Zeit"
+    },
+    "fallback": {
+      "noSender": "Kein Absender"
+    },
+    "emptyState": {
+      "title": "Keine Aktivität gefunden",
+      "description": "Für Ihr Konto wurden noch keine Blockchain-Ereignisse aufgezeichnet",
+      "loading": "Ihre Aktivität wird geladen..."
+    },
+    "errors": {
+      "loadFailed": "Fehler beim Laden der Aktivität. Bitte versuchen Sie es später erneut."
+    }
+  }
+}

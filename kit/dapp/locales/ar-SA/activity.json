@@ -1,0 +1,26 @@
+{
+  "title": "النشاط",
+  "description": "عرض جميع أحداث البلوكشين المتعلقة بحسابك",
+  "loading": "جارٍ تحميل النشاط...",
+  "table": {
+    "columns": {
+      "eventName": "الحدث",
+      "category": "الفئة",
+      "sender": "المرسل",
+      "transactionHash": "المعاملة",
+      "blockNumber": "الكتلة",
+      "timestamp": "الوقت"
+    },
+    "fallback": {
+      "noSender": "لا يوجد مرسل"
+    },
+    "emptyState": {
+      "title": "لم يتم العثور على نشاط",
+      "description": "لم يتم تسجيل أحداث البلوكشين لحسابك بعد",
+      "loading": "جارٍ تحميل نشاطك..."
+    },
+    "errors": {
+      "loadFailed": "فشل تحميل النشاط. يرجى المحاولة مرة أخرى لاحقًا."
+    }
+  }
+}

@@ -24,7 +24,9 @@ const LatestEventsContent = withErrorBoundary(function LatestEventsContent({
   const { data: session } = useSession();
   const { data } = useSuspenseQuery(
     orpc.user.events.queryOptions({
-      input: { limit: 20 },
+      input: {
+        limit: 20,
+      },
     })
   );
   const { data: system } = useSuspenseQuery(
