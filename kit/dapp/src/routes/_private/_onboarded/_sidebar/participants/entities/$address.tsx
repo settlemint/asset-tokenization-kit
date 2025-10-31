@@ -7,7 +7,6 @@ import { BasicInfoTile } from "@/components/participants/entities/tiles/basic-in
 import { IdentityClaimsTile } from "@/components/participants/common/tiles/identity-claims-tile";
 import { Badge } from "@/components/ui/badge";
 import { ORPCError } from "@orpc/client";
-import { useQuery } from "@tanstack/react-query";
 import {
   createFileRoute,
   Outlet,
@@ -17,6 +16,7 @@ import {
 } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
+import { useEntityDisplayData } from "./use-entity-display-data";
 
 const routeParamsSchema = z.object({
   address: z.string().min(1),
@@ -142,32 +142,19 @@ function RouteComponent() {
   const routeContext = Route.useRouteContext();
   const navigate = useNavigate();
 
-  const { data: queriedIdentity } = useQuery(
-    routeContext.orpc.system.identity.read.queryOptions({
-      input: { identityId: address },
-    })
-  );
-
-  const identity = queriedIdentity ?? loaderIdentity;
-  const tokenAddress = identity?.account?.id;
-
-  const { data: queriedToken } = useQuery({
-    ...routeContext.orpc.token.read.queryOptions({
-      input: { tokenAddress: tokenAddress ?? address },
-    }),
-    enabled: Boolean(tokenAddress),
+  const { identity, token, displayName } = useEntityDisplayData({
+    address,
+    loaderIdentity,
+    loaderToken: loaderToken ?? null,
+    createIdentityQueryOptions: (args) =>
+      routeContext.orpc.system.identity.read.queryOptions(args),
+    createTokenQueryOptions: (args) =>
+      routeContext.orpc.token.read.queryOptions(args),
   });
-
-  const token = queriedToken ?? loaderToken ?? null;
 
   if (location.pathname.endsWith("/verifications")) {
     return <Outlet />;
   }
-
-  const displayName =
-    token?.name ??
-    identity?.account?.contractName ??
-    `${address.slice(0, 6)}…${address.slice(-4)}`;
 
   const assetTypeKey = token?.type ?? null;
   const entityTypeLabel = assetTypeKey

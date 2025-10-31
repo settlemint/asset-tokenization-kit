@@ -6,6 +6,7 @@ import { TileDetailLayout } from "@/components/layout/tile-detail-layout";
 import { ORPCError } from "@orpc/client";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
+import { useEntityDisplayData } from "./use-entity-display-data";
 
 const routeParamsSchema = z.object({
   address: z.string().min(1),
@@ -117,8 +118,21 @@ export const Route = createFileRoute(
  * - Breadcrumb navigation
  */
 function RouteComponent() {
-  const { identity, displayName } = Route.useLoaderData();
+  const { identity: loaderIdentity, token: loaderToken } =
+    Route.useLoaderData();
+  const { address } = Route.useParams();
+  const routeContext = Route.useRouteContext();
   const { t } = useTranslation(["identities", "common"]);
+
+  const { identity, displayName } = useEntityDisplayData({
+    address,
+    loaderIdentity,
+    loaderToken: loaderToken ?? null,
+    createIdentityQueryOptions: (args) =>
+      routeContext.orpc.system.identity.read.queryOptions(args),
+    createTokenQueryOptions: (args) =>
+      routeContext.orpc.token.read.queryOptions(args),
+  });
 
   const content = identity ? (
     <ClaimsTable identityAddress={identity.id} />
