@@ -1,6 +1,5 @@
 {
   "page": {
-    "title": "Claim topics and issuers",
     "description": "Manage claim topics and trusted issuers for identity verification."
   },
   "claimTopics": {
@@ -8,7 +7,6 @@
     "description": "Configure the available claim topics that can be used for identity verification. System topics are predefined and cannot be modified.",
     "addButton": "Add claim topic",
     "table": {
-      "title": "Claim topics",
       "columns": {
         "id": "ID",
         "name": "Name",
@@ -81,9 +79,7 @@
         "updating": "Updating..."
       },
       "validation": {
-        "signatureChanged": "New signature must be different from current signature",
-        "noParentheses": "Remove parentheses; use a comma-separated type list.",
-        "noFunctionStyle": "Remove function name; use type, type, ..."
+        "signatureChanged": "New signature must be different from current signature"
       }
     },
     "toast": {
@@ -100,7 +96,6 @@
     "description": "Manage trusted issuers who can verify identity claims. Only issuers with claim policy manager role can be added.",
     "addButton": "Add trusted issuer",
     "table": {
-      "title": "Trusted issuers",
       "columns": {
         "issuerIdentity": "Issuer identity",
         "assignedTopics": "Assigned topics",
@@ -130,16 +125,11 @@
     },
     "add": {
       "title": "Add trusted issuer",
-      "description": "Add a new trusted issuer who can verify identity claims.",
       "selectUserDescription": "Select an existing user from the system to assign as a trusted issuer. They will be granted the necessary roles and added to the trusted issuers registry.",
       "fields": {
         "selectUser": {
           "label": "Select user",
           "description": "Select a user from the existing users in the system"
-        },
-        "issuerAddress": {
-          "label": "Issuer identity address",
-          "description": "The Ethereum address of the trusted issuer identity contract"
         },
         "claimTopics": {
           "label": "Claim topics",
@@ -151,11 +141,6 @@
             "required": "Select at least one claim topic."
           }
         }
-      },
-      "selectedUser": {
-        "name": "Name",
-        "email": "Email",
-        "wallet": "Wallet"
       },
       "verification": {
         "title": "Confirm issuer addition",
@@ -189,18 +174,12 @@
         "cancel": "Cancel",
         "update": "Update topics",
         "updating": "Updating..."
-      },
-      "validation": {
-        "topicsChanged": "Topic selection must be different from current topics"
       }
     },
     "toast": {
       "added": "Trusted issuer added successfully",
       "updated": "Issuer topics updated successfully",
-      "removed": "Trusted issuer removed successfully",
-      "addError": "Failed to add trusted issuer: {{error}}",
-      "updateError": "Failed to update issuer topics: {{error}}",
-      "removeError": "Failed to remove trusted issuer: {{error}}"
+      "removed": "Trusted issuer removed successfully"
     }
   }
 }

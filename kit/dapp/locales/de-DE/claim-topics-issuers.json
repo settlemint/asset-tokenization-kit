@@ -1,6 +1,5 @@
 {
   "page": {
-    "title": "Anspruchsthemen und Emittenten",
     "description": "Verwalten Sie Anspruchsthemen und vertrauenswürdige Emittenten für die Identitätsüberprüfung."
   },
   "claimTopics": {
@@ -8,7 +7,6 @@
     "description": "Konfigurieren Sie die verfügbaren Anspruchsthemen, die für die Identitätsüberprüfung verwendet werden können. Systemthemen sind vordefiniert und können nicht geändert werden.",
     "addButton": "Anspruchsthema hinzufügen",
     "table": {
-      "title": "Anspruchsthemen",
       "columns": {
         "id": "ID-Nummer",
         "name": "Bezeichnung",
@@ -81,9 +79,7 @@
         "updating": "Aktualisieren..."
       },
       "validation": {
-        "signatureChanged": "Neue Signatur muss sich von der aktuellen Signatur unterscheiden",
-        "noParentheses": "Entfernen Sie Klammern; verwenden Sie eine kommagetrennte Typliste.",
-        "noFunctionStyle": "Entfernen Sie den Funktionsnamen; verwenden Sie Typ, Typ, ..."
+        "signatureChanged": "Neue Signatur muss sich von der aktuellen Signatur unterscheiden"
       }
     },
     "toast": {
@@ -100,7 +96,6 @@
     "description": "Verwalten Sie vertrauenswürdige Emittenten, die Identitätsansprüche überprüfen können. Nur Emittenten mit der Rolle des Anspruchspolitik-Managers können hinzugefügt werden.",
     "addButton": "Vertrauenswürdigen Emittenten hinzufügen",
     "table": {
-      "title": "Vertrauenswürdige Emittenten",
       "columns": {
         "issuerIdentity": "Emittentenidentität",
         "assignedTopics": "Zugewiesene Themen",
@@ -130,16 +125,11 @@
     },
     "add": {
       "title": "Vertrauenswürdigen Emittenten hinzufügen",
-      "description": "Fügen Sie einen neuen vertrauenswürdigen Emittenten hinzu, der Identitätsansprüche überprüfen kann.",
       "selectUserDescription": "Wählen Sie einen bestehenden Benutzer aus dem System aus, um ihn als vertrauenswürdigen Emittenten zuzuweisen. Ihnen werden die notwendigen Rollen erteilt und sie werden der Registry der vertrauenswürdigen Emittenten hinzugefügt.",
       "fields": {
         "selectUser": {
           "label": "Benutzer auswählen",
           "description": "Wählen Sie einen Benutzer aus den bestehenden Benutzern im System"
-        },
-        "issuerAddress": {
-          "label": "Emittentenidentitätsadresse",
-          "description": "Die Ethereum-Adresse des vertrauenswürdigen Emittentenidentitätsvertrags"
         },
         "claimTopics": {
           "label": "Anspruchsthemen",
@@ -151,11 +141,6 @@
             "required": "Wählen Sie mindestens ein Anspruchsthema aus."
           }
         }
-      },
-      "selectedUser": {
-        "name": "Benutzername",
-        "email": "E-Mail",
-        "wallet": "Wallet-Adresse"
       },
       "verification": {
         "title": "Emittentenhinzufügung bestätigen",
@@ -189,18 +174,12 @@
         "cancel": "Abbrechen",
         "update": "Themen aktualisieren",
         "updating": "Aktualisieren..."
-      },
-      "validation": {
-        "topicsChanged": "Themenauswahl muss sich von den aktuellen Themen unterscheiden"
       }
     },
     "toast": {
       "added": "Vertrauenswürdiger Emittent erfolgreich hinzugefügt",
       "updated": "Emittententhemen erfolgreich aktualisiert",
-      "removed": "Vertrauenswürdiger Emittent erfolgreich entfernt",
-      "addError": "Fehler beim Hinzufügen des vertrauenswürdigen Emittenten: {{error}}",
-      "updateError": "Fehler beim Aktualisieren der Emittententhemen: {{error}}",
-      "removeError": "Fehler beim Entfernen des vertrauenswürdigen Emittenten: {{error}}"
+      "removed": "Vertrauenswürdiger Emittent erfolgreich entfernt"
     }
   }
 }

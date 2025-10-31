@@ -141,6 +141,11 @@ leverage build cache; minimize final image size with distroless/alpine bases
   API tests
 - **Coverage**: `bun run --cwd kit/dapp test:unit:coverage`
 - **Fixtures**: Located in `test/fixtures/` for each package
+- **Localization audit**: `node tools/prune-unused-translations.cjs` walks the
+  TypeScript AST to discover `useTranslation` keys and trims the locale bundles
+  accordingly. Install workspace dependencies first so the TypeScript compiler
+  API is available, and delete any empty JSON artifacts (`{}`) that remain after
+  pruning.
 
 ## CI Gates & Quality
 

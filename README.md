@@ -158,6 +158,23 @@ This command (`bun run ci`) executes the following tasks in order:
    - Executes component tests for the dApp
    - Validates business logic and edge cases
 
+### Localization hygiene
+
+Keep the locale bundles aligned with the keys that are actually referenced via
+`useTranslation`. After editing UI copy, run the pruning helper to drop unused
+entries:
+
+```bash
+node tools/prune-unused-translations.cjs
+```
+
+The script loads the TypeScript compiler to build a full AST for every
+`useTranslation` call and prunes locale bundles based on the exact keys it
+finds. Make sure workspace dependencies are installed (`bun install`) so the
+TypeScript compiler API is available. If a namespace ends up empty, the tool
+leaves behind an empty JSON file; delete those `{}.json` files so that we do not
+ship placeholder bundles to clients.
+
 ### Generating the artifacts
 
 This will change the genesis file, initial database and the portal ABIs that are
