@@ -50,20 +50,9 @@ export function AssetDeployment() {
       title={t("assets.asset-types-deployed")}
       description={t("assets.your-asset-factories-ready")}
       actions={
-        <>
-          <Button
-            variant="outline"
-            onClick={() => {
-              void navigate({ to: "/onboarding" });
-            }}
-          >
-            {t("common:cancel")}
-          </Button>
-
-          <Button type="button" onClick={onNext} className="press-effect">
-            {t("common:continue")}
-          </Button>
-        </>
+        <Button type="button" onClick={onNext} className="press-effect">
+          {t("common:continue")}
+        </Button>
       }
     >
       <div className="flex-1 overflow-y-auto">

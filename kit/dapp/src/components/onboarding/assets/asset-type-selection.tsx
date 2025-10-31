@@ -39,8 +39,7 @@ const ASSET_CLASS_ORDER = [
 ] as const;
 
 export function AssetTypeSelection() {
-  const { refreshUserState, completeStepAndNavigate } =
-    useOnboardingNavigation();
+  const { refreshUserState } = useOnboardingNavigation();
   const { t } = useTranslation([
     "onboarding",
     "common",
@@ -90,8 +89,6 @@ export function AssetTypeSelection() {
             }),
           ]);
           await refreshUserState();
-          // Navigate to next step after successful deployment
-          await completeStepAndNavigate(OnboardingStep.systemAssets);
         },
       })
     );

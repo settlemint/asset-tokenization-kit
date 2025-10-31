@@ -77,7 +77,7 @@
     "info-description": "This creates your identity smart contract on the blockchain—a secure container for your verified credentials.\n\nNo personal data is stored yet. That comes next. For now, we're establishing your unique identity address that only you control.\n\nThis typically takes 10-30 seconds.",
     "success-message": "Your on-chain identity has been created.",
     "success-title": "Identity Created Successfully",
-    "success-continue": "Continue to personal information",
+    "success-continue": "Continue",
     "title": "Your On-Chain Identity",
     "deployment-warning": "This process may take up to 2–3 minutes",
     "transaction-confirmation-info": "You'll be asked to confirm each transaction with two-factor authentication.",
@@ -197,7 +197,7 @@
       "title": "Add-ons Deployed Successfully",
       "intro-1": "All selected platform add-ons have been successfully deployed.",
       "intro-2": "These features are now available for use and configuration. As the platform admin, you control their parameters and access.",
-      "continue-to-identity-setup": "Continue to identity creation"
+      "continue-to-identity-setup": "Continue"
     },
     "addon-selection": {
       "addon-types": {

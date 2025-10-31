@@ -241,7 +241,6 @@ export function getSystemPermissions(
   const initialActions: Record<keyof typeof SYSTEM_PERMISSIONS, boolean> = {
     accountSearch: false,
     addonCreate: false,
-    addonFactoryCreate: false,
     adminList: false,
     claimCreate: false,
     claimList: false,

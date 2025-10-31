@@ -52,8 +52,7 @@ type AssertValidContract =
  */
 export const SYSTEM_PERMISSIONS = {
   accountSearch: { any: [] }, // No roles required
-  addonCreate: "addonManager",
-  addonFactoryCreate: { any: ["addonManager"] },
+  addonCreate: "systemManager",
   adminList: {
     any: [
       "admin",
@@ -108,9 +107,9 @@ export const SYSTEM_PERMISSIONS = {
   trustedIssuerCreate: { any: ["claimPolicyManager", "systemModule"] },
   trustedIssuerDelete: { any: ["claimPolicyManager", "systemModule"] },
   trustedIssuerUpdate: { any: ["claimPolicyManager", "systemModule"] },
-  userList: { any: ["identityManager", "claimIssuer"] },
-  userRead: { any: ["identityManager", "claimIssuer"] },
-  userSearch: { any: ["identityManager", "claimIssuer"] },
+  userList: { any: ["admin", "identityManager", "claimIssuer"] },
+  userRead: { any: ["admin", "identityManager", "claimIssuer"] },
+  userSearch: { any: ["admin", "identityManager", "claimIssuer"] },
 } as const satisfies Record<string, RoleRequirement>;
 
 // Use the validation type to ensure it's not stripped

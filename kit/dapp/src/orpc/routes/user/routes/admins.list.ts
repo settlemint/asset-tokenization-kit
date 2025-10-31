@@ -12,6 +12,7 @@ import {
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
+import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 
 // GraphQL query to fetch multiple identities by wallet addresses
 const READ_IDENTITIES_QUERY = theGraphGraphql(`
