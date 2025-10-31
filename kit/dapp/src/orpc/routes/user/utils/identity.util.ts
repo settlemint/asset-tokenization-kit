@@ -1,6 +1,6 @@
 import { theGraphGraphql } from "@/lib/settlemint/the-graph";
 import type { Context } from "@/orpc/context/context";
-import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read";
+import { identityReadByWallet } from "@/orpc/routes/system/identity/routes/identity.read";
 import type { IdentityClaim } from "@atk/zod/claim";
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { call, ORPCError } from "@orpc/server";
@@ -56,7 +56,7 @@ export async function fetchUserIdentity({
 }: FetchUserIdentityOptions): Promise<UserIdentityResult> {
   try {
     const identityData = await call(
-      identityRead,
+      identityReadByWallet,
       { wallet: wallet },
       { context }
     );

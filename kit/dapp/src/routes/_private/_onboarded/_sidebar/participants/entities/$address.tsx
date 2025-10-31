@@ -47,7 +47,7 @@ export const Route = createFileRoute(
     }
 
     const identity = await queryClient.ensureQueryData(
-      orpc.system.identity.read.queryOptions({
+      orpc.system.identity.readById.queryOptions({
         input: { identityId: address },
       })
     );

@@ -24,6 +24,7 @@ import "./types";
 
 // Import all en-US translations synchronously for SSR
 import enUSAccessibility from "@/locales/en-US/accessibility.json";
+import enUSActivity from "@/locales/en-US/activity.json";
 import enUSAssetClass from "@/locales/en-US/asset-class.json";
 import enUSAssetDesigner from "@/locales/en-US/asset-designer.json";
 import enUSAssetExtensions from "@/locales/en-US/asset-extensions.json";
@@ -89,6 +90,7 @@ export const fallbackLng = "en-US";
  */
 export const namespaces = [
   "actions",
+  "activity",
   "accessibility",
   "asset-class",
   "asset-designer",
@@ -144,6 +146,7 @@ const translationModules = {
   },
   "de-DE": {
     actions: () => import("@/locales/de-DE/actions.json"),
+    activity: () => import("@/locales/de-DE/activity.json"),
     accessibility: () => import("@/locales/de-DE/accessibility.json"),
     "asset-class": () => import("@/locales/de-DE/asset-class.json"),
     "asset-designer": () => import("@/locales/de-DE/asset-designer.json"),
@@ -190,6 +193,7 @@ const translationModules = {
   },
   "ar-SA": {
     actions: () => import("@/locales/ar-SA/actions.json"),
+    activity: () => import("@/locales/ar-SA/activity.json"),
     accessibility: () => import("@/locales/ar-SA/accessibility.json"),
     "asset-class": () => import("@/locales/ar-SA/asset-class.json"),
     "asset-designer": () => import("@/locales/ar-SA/asset-designer.json"),
@@ -236,6 +240,7 @@ const translationModules = {
   },
   "ja-JP": {
     actions: () => import("@/locales/ja-JP/actions.json"),
+    activity: () => import("@/locales/ja-JP/activity.json"),
     accessibility: () => import("@/locales/ja-JP/accessibility.json"),
     "asset-class": () => import("@/locales/ja-JP/asset-class.json"),
     "asset-designer": () => import("@/locales/ja-JP/asset-designer.json"),
@@ -292,6 +297,7 @@ async function loadResource(lng: SupportedLanguage, ns: Namespace) {
     if (lng === "en-US") {
       const enUSResources: Record<Namespace, unknown> = {
         actions: enUSActions,
+        activity: enUSActivity,
         accessibility: enUSAccessibility,
         "asset-class": enUSAssetClass,
         "asset-designer": enUSAssetDesigner,
@@ -405,6 +411,7 @@ void i18n.init({
   resources: {
     "en-US": {
       actions: enUSActions,
+      activity: enUSActivity,
       accessibility: enUSAccessibility,
       "asset-class": enUSAssetClass,
       "asset-designer": enUSAssetDesigner,

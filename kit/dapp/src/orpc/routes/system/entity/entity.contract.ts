@@ -4,7 +4,7 @@ import {
   EntityListOutputSchema,
 } from "@/orpc/routes/system/entity/routes/entity.list.schema";
 
-const TAGS = ["system", "entity"] as const;
+const TAGS = ["entity"] as const;
 
 const entityList = baseContract
   .route({

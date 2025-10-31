@@ -1,6 +1,5 @@
 import { NavAddons } from "@/components/sidebar/nav-addons";
 import { NavAsset } from "@/components/sidebar/nav-asset";
-import { NavCompliance } from "@/components/sidebar/nav-compliance";
 import { NavMyAssets } from "@/components/sidebar/nav-my-assets";
 import { NavParticipants } from "@/components/sidebar/nav-participants";
 import { NavSettings } from "@/components/sidebar/nav-settings";
@@ -19,7 +18,7 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ClipboardList, HomeIcon } from "lucide-react";
+import { Activity, ClipboardList, HomeIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -36,6 +35,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   });
   const isActionsActive = useRouterState({
     select: (state) => state.location.pathname.startsWith("/actions"),
+  });
+  const isActivityActive = useRouterState({
+    select: (state) => state.location.pathname.startsWith("/activity"),
   });
   const { data: actions } = useSuspenseQuery(
     orpc.actions.list.queryOptions({
@@ -96,13 +98,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </SidebarMenuBadge>
               ) : null}
             </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={isActivityActive}>
+                <Link
+                  to="/activity"
+                  aria-current={isActivityActive ? "page" : undefined}
+                  className={isActivityActive ? "font-semibold" : undefined}
+                >
+                  <Activity />
+                  <span>{t("activity")}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
         <NavMyAssets />
         <NavAsset />
         <NavAddons />
         <NavParticipants />
-        <NavCompliance />
         <NavSettings />
       </SidebarContent>
       <SidebarRail />

@@ -1,8 +1,10 @@
 {
   "asset": "الأصل",
   "actions": "الإجراءات",
+  "activity": "النشاط",
   "assetClasses": "فئات الأصول",
   "assetManagement": "إدارة الأصول",
+  "assetManagementNotAuthorized": "أنت غير مخول لإدارة الأصول.\nليس لديك إذن إنشاء الرموز المميزة.",
   "cashEquivalent": "معادل النقد",
   "fixedIncome": "دخل ثابت",
   "flexibleIncome": "دخل مرن",
@@ -21,6 +23,7 @@
   "participants": "المشاركون",
   "participantsUsers": "المستخدمون",
   "participantsEntities": "الكيانات",
+  "participantsNotAuthorized": "أنت غير مخول لإدارة المشاركين.\nليس لديك دور مدير الهوية أو جهة إصدار المطالبات.",
   "claimManagement": "إدارة المطالبات",
   "platformSettings": "إعدادات المنصة",
   "userManagement": "إدارة المستخدمين",

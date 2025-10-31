@@ -62,7 +62,7 @@ describe("Account search (integration)", () => {
     if (!adminUser.wallet) {
       throw new Error("Admin user wallet is not defined");
     }
-    const identity = await client.system.identity.read({
+    const identity = await client.system.identity.readByWallet({
       wallet: adminUser.wallet,
     });
     expect(identity).toBeDefined();

@@ -25,7 +25,7 @@ export function RevokeClaimDialog({
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
-  const identityQuery = orpc.system.identity.read.queryOptions({
+  const identityQuery = orpc.system.identity.readById.queryOptions({
     input: { identityId: identityAddress },
   });
 
