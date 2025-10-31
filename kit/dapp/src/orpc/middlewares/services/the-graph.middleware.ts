@@ -87,10 +87,7 @@ function createValidatedTheGraphClient(
     async query<TResult, TVariables extends Variables, TValidated>(
       document: TadaDocumentNode<TResult, TVariables>,
       options: {
-        input: Omit<
-          TVariables,
-          "skip" | "first" | "orderBy" | "orderDirection"
-        >;
+        input: TVariables;
         output: z.ZodType<TValidated>;
       }
     ): Promise<TValidated> {
@@ -112,7 +109,7 @@ function createValidatedTheGraphClient(
               : (error as Error).message,
           data: {
             document: print(document),
-            variables: input as TVariables,
+            variables: input,
             stack: error instanceof Error ? error.stack : undefined,
             responseValidation:
               error instanceof z.ZodError ? z.prettifyError(error) : undefined,

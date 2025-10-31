@@ -1,6 +1,7 @@
 {
   "asset": "الأصل",
   "actions": "الإجراءات",
+  "activity": "النشاط",
   "assetClasses": "فئات الأصول",
   "assetManagement": "إدارة الأصول",
   "assetManagementNotAuthorized": "أنت غير مخول لإدارة الأصول.\nليس لديك إذن إنشاء الرموز المميزة.",

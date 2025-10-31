@@ -1,6 +1,7 @@
 {
   "asset": "Vermögenswert",
   "actions": "Aktionen",
+  "activity": "Aktivität",
   "assetClasses": "Vermögensklassen",
   "assetManagement": "Vermögensverwaltung",
   "assetManagementNotAuthorized": "Sie sind nicht berechtigt, Vermögenswerte zu verwalten.\nSie haben nicht die Berechtigung zum Erstellen von Token.",
