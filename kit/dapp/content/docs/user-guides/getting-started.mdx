@@ -116,21 +116,34 @@ but choose OTP if regulatory requirements mandate two-factor authentication.
 After selecting your method, verify it works before proceeding—you'll use this
 authentication throughout your platform interactions.
 
-#### Deploy your OnchainID
+#### Create your compliance identity
 
-Your OnchainID is your verifiable identity on the blockchain, required for
-compliance with the ERC-3643 security token standard. This isn't just an
-address—it's a smart contract that holds verifiable claims about your identity
-and compliance status, signed by trusted issuers. Click **Create Identity** on
-the identity setup screen and wait about 30 seconds for the platform to deploy
-your OnchainID contract. Review your identity address once deployed and note
-it—this becomes your permanent on-chain identity for all compliance
-interactions.
+Next, the platform deploys your compliance identity smart contract. This
+on-chain identity anchors every compliance claim—without it, the platform cannot
+tie KYC attestations to your wallet. Click **Continue to personal information**
+and approve the verification dialog using the PIN or OTP you configured. Behind
+the scenes we deploy the identity contract to the Identity Registry and store
+the resulting address for later compliance checks.
 
-The Identity Registry (deployed in the next step) references your OnchainID to
-verify you meet eligibility requirements for holding and transferring security
-tokens. As you add claim issuers and verification topics later, your OnchainID
-accumulates the credentials needed for compliant participation.
+If the transaction fails, retry the action after verifying your wallet
+connection and available gas. Once deployed, the onboarding wizard displays the
+identity address so you can record it for your own audit trail before moving on
+to the personal information form.
+
+#### Add your compliance information
+
+Before you can issue assets or receive allocations, the platform needs a core
+set of personal details to satisfy KYC/AML requirements. The onboarding wizard
+walks you through a short checklist so you know exactly which fields you'll
+provide—legal name, country of residence, residency status, date of birth, and
+a national identifier. Gather accurate information now so compliance reviews
+remain straightforward later.
+
+When you're ready, complete the personal information form. The data is stored
+in the platform's compliance database, never published on-chain, and is only
+accessible to authorized reviewers. You can update these details at any time
+from your dashboard if something changes. Once saved, the onboarding state
+updates automatically and you unlock the rest of the platform experience.
 
 #### Deploy system contracts
 

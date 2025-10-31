@@ -75,7 +75,7 @@
     },
     "info": "We're creating your ONCHAINID using the identity factory.",
     "info-description": "This creates your identity smart contract on the blockchain—a secure container for your verified credentials.\n\nNo personal data is stored yet. That comes next. For now, we're establishing your unique identity address that only you control.\n\nThis typically takes 10-30 seconds.",
-    "success-message": "Your on-chain identity has been created. You can now register it and add your verified information or do it later from your dashboard.",
+    "success-message": "Your on-chain identity has been created.",
     "success-title": "Identity Created Successfully",
     "title": "Your On-Chain Identity",
     "deployment-warning": "This process may take up to 2–3 minutes",
@@ -196,7 +196,7 @@
       "title": "Add-ons Deployed Successfully",
       "intro-1": "All selected platform add-ons have been successfully deployed.",
       "intro-2": "These features are now available for use and configuration. As the platform admin, you control their parameters and access.",
-      "continue-to-identity-setup": "Continue to identity setup"
+      "continue-to-identity-setup": "Continue to personal information"
     },
     "addon-selection": {
       "addon-types": {
