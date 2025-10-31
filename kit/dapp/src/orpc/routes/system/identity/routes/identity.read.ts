@@ -60,13 +60,13 @@ const READ_IDENTITY_QUERY = theGraphGraphql(`
   }
 `);
 
-const IdentityReadByWalletSchema = z.object({
+const _IdentityReadByWalletSchema = z.object({
   wallet: ethereumAddress.describe(
     "The wallet address of the user to read the identity for"
   ),
 });
 
-const IdentityReadByIdSchema = z.object({
+const _IdentityReadByIdSchema = z.object({
   identityId: ethereumAddress.describe(
     "The ID of the identity contract to read"
   ),
@@ -77,7 +77,7 @@ const IdentityReadByIdSchema = z.object({
  */
 export const identityReadByWallet = systemRouter.system.identity.readByWallet
   .use(
-    blockchainPermissionsMiddleware<typeof IdentityReadByWalletSchema>({
+    blockchainPermissionsMiddleware<typeof _IdentityReadByWalletSchema>({
       requiredRoles: SYSTEM_PERMISSIONS.identityRead,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
@@ -144,7 +144,7 @@ export const identityReadByWallet = systemRouter.system.identity.readByWallet
  */
 export const identityReadById = systemRouter.system.identity.readById
   .use(
-    blockchainPermissionsMiddleware<typeof IdentityReadByIdSchema>({
+    blockchainPermissionsMiddleware<typeof _IdentityReadByIdSchema>({
       requiredRoles: SYSTEM_PERMISSIONS.identityRead,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
