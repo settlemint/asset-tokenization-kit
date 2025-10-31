@@ -161,13 +161,13 @@ function RouteComponent() {
     ? t(`asset-types:types.${assetTypeKey}.name`)
     : undefined;
 
-  const contractAddress = identity?.account?.id ?? identity?.id;
-  const identityAddress = identity?.id ?? address;
+  const contractAddress = identity.account?.id ?? identity.id;
+  const identityAddress = identity.id;
 
   const truncatedAddress = (value: string) =>
     value.length <= 12 ? value : `${value.slice(0, 6)}…${value.slice(-4)}`;
 
-  if (!identity || !identity.account) {
+  if (!identity.account) {
     return (
       <div className="space-y-6 p-6">
         <RouterBreadcrumb />

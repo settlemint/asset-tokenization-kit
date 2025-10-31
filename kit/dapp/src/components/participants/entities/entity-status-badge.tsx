@@ -7,9 +7,9 @@ interface EntityStatusBadgeProps {
 
 export function EntityStatusBadge({ isRegistered }: EntityStatusBadgeProps) {
   const { t } = useTranslation("entities");
-  const statusKey = isRegistered
+  const statusKey: "status.registered" | "status.pending" = isRegistered
     ? "status.registered"
-    : "status.pendingRegistration";
+    : "status.pending";
 
   return (
     <Badge variant={isRegistered ? "default" : "outline"}>{t(statusKey)}</Badge>

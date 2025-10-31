@@ -1,46 +1,63 @@
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
+import type { Identity } from "@/orpc/routes/system/identity/routes/identity.read.schema";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 
-type AccountRecord = {
-  account?: {
-    id?: string | null;
-    contractName?: string | null;
-  } | null;
-} | null;
-
-type TokenRecord = {
-  name?: string | null;
-  type?: string | null;
-} | null;
-
-type IdentityQueryOptionsFactory = (args: {
+type IdentityQueryOptionsFactory<
+  TError = unknown,
+  TQueryKey extends readonly unknown[] = readonly unknown[],
+> = (args: {
   input: { identityId: string };
-}) => UseQueryOptions<AccountRecord, unknown, AccountRecord>;
+}) => UseQueryOptions<Identity, TError, Identity, TQueryKey>;
 
-type TokenQueryOptionsFactory = (args: {
+type TokenQueryOptionsFactory<
+  TError = unknown,
+  TQueryKey extends readonly unknown[] = readonly unknown[],
+> = (args: {
   input: { tokenAddress: string };
-}) => UseQueryOptions<TokenRecord, unknown, TokenRecord>;
+}) => UseQueryOptions<Token, TError, Token, TQueryKey>;
 
-type UseEntityDisplayDataParams = {
+type UseEntityDisplayDataParams<
+  TIdentityError = unknown,
+  TIdentityQueryKey extends readonly unknown[] = readonly unknown[],
+  TTokenError = unknown,
+  TTokenQueryKey extends readonly unknown[] = readonly unknown[],
+> = {
   address: string;
-  loaderIdentity: AccountRecord;
-  loaderToken: TokenRecord;
-  createIdentityQueryOptions: IdentityQueryOptionsFactory;
-  createTokenQueryOptions: TokenQueryOptionsFactory;
+  loaderIdentity: Identity;
+  loaderToken: Token | null;
+  createIdentityQueryOptions: IdentityQueryOptionsFactory<
+    TIdentityError,
+    TIdentityQueryKey
+  >;
+  createTokenQueryOptions: TokenQueryOptionsFactory<
+    TTokenError,
+    TTokenQueryKey
+  >;
 };
 
 type UseEntityDisplayDataResult = {
-  identity: AccountRecord;
-  token: TokenRecord;
+  identity: Identity;
+  token: Token | null;
   displayName: string;
 };
 
-export function useEntityDisplayData({
+export function useEntityDisplayData<
+  TIdentityError = unknown,
+  TIdentityQueryKey extends readonly unknown[] = readonly unknown[],
+  TTokenError = unknown,
+  TTokenQueryKey extends readonly unknown[] = readonly unknown[],
+>({
   address,
   loaderIdentity,
   loaderToken,
   createIdentityQueryOptions,
   createTokenQueryOptions,
-}: UseEntityDisplayDataParams): UseEntityDisplayDataResult {
+}: UseEntityDisplayDataParams<
+  TIdentityError,
+  TIdentityQueryKey,
+  TTokenError,
+  TTokenQueryKey
+>): UseEntityDisplayDataResult {
   const identityQueryOptions = createIdentityQueryOptions({
     input: { identityId: address },
   });
