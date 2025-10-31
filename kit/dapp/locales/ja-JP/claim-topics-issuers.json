@@ -185,7 +185,9 @@
         "claimTopics": {
           "label": "請求トピック",
           "description": "この発行者が検証できるトピックを選択します。少なくとも1つのトピックを選択する必要があります。",
-          "current": "現在のトピック：{{topics}}"
+          "current": "現在のトピック：{{topics}}",
+          "empty": "利用可能なトピックはありません",
+          "placeholder": "トピックを選択..."
         }
       },
       "confirmation": {

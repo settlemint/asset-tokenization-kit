@@ -216,7 +216,7 @@ export function EditTopicSheet({
                 {(field) => (
                   <field.TextField
                     label={t("claimTopics.edit.fields.signature.label")}
-                    required
+                    required={true}
                     placeholder={t(
                       "claimTopics.edit.fields.signature.placeholder"
                     )}

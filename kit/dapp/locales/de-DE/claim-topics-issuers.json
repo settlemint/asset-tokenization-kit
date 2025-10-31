@@ -185,7 +185,9 @@
         "claimTopics": {
           "label": "Anspruchsthemen",
           "description": "Wählen Sie die Themen, die dieser Emittent überprüfen kann. Mindestens ein Thema muss ausgewählt werden.",
-          "current": "Aktuelle Themen: {{topics}}"
+          "current": "Aktuelle Themen: {{topics}}",
+          "empty": "Keine Themen verfügbar",
+          "placeholder": "Themen auswählen..."
         }
       },
       "confirmation": {

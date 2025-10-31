@@ -1,7 +1,7 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActionFormSheet } from "@/components/manage-dropdown/core/action-form-sheet";
 import { createActionFormStore } from "@/components/manage-dropdown/core/action-form-sheet.store";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MultipleSelector from "@/components/ui/multiselect";
@@ -116,8 +116,8 @@ export function EditIssuerTopicsSheet({
         const selectedTopicIds = values.claimTopicIds ?? [];
         const hasSelection = selectedTopicIds.length > 0;
         const currentTopics = issuer.claimTopics.map((topic) => topic.topicId);
-        const sortedSelected = [...selectedTopicIds].sort();
-        const sortedCurrent = [...currentTopics].sort();
+        const sortedSelected = [...selectedTopicIds].toSorted();
+        const sortedCurrent = [...currentTopics].toSorted();
         const hasChanged =
           sortedSelected.length !== sortedCurrent.length ||
           sortedSelected.some((id, index) => sortedCurrent[index] !== id);
@@ -250,10 +250,12 @@ export function EditIssuerTopicsSheet({
                         field.handleChange(options.map((o) => o.value));
                       }}
                       defaultOptions={topicOptions}
-                      placeholder="Select topics..."
+                      placeholder={t(
+                        "trustedIssuers.edit.fields.claimTopics.placeholder"
+                      )}
                       emptyIndicator={
                         <p className="text-center text-sm">
-                          No topics available
+                          {t("trustedIssuers.edit.fields.claimTopics.empty")}
                         </p>
                       }
                       onSearch={(value) => {
@@ -269,7 +271,7 @@ export function EditIssuerTopicsSheet({
                     <p className="text-xs text-muted-foreground">
                       {t("trustedIssuers.edit.fields.claimTopics.description")}
                     </p>
-                    {(!hasSelection || field.state.meta.errors.length > 0) && (
+                    {!hasSelection && (
                       <p className="text-sm text-destructive">
                         {t("trustedIssuers.edit.validation.required", {
                           defaultValue: t(

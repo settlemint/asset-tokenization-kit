@@ -185,7 +185,9 @@
         "claimTopics": {
           "label": "Claim topics",
           "description": "Select the topics this issuer can verify. At least one topic must be selected.",
-          "current": "Current topics: {{topics}}"
+          "current": "Current topics: {{topics}}",
+          "empty": "No topics available",
+          "placeholder": "Select topics..."
         }
       },
       "confirmation": {
