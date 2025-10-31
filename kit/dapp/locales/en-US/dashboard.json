@@ -163,6 +163,25 @@
       "description": "Charts and statistics will show once you design your first tokenized asset"
     }
   },
+  "actionsCard": {
+    "title": "Actions",
+    "subtitle": "Track pending and completed actions",
+    "badge": {
+      "pending": "{{count}} pending",
+      "upToDate": "Up to date"
+    },
+    "stats": {
+      "pending": "Pending actions",
+      "completed": "Completed (7d)",
+      "noPending": "No pending actions"
+    },
+    "cta": "View all Actions"
+  },
+  "pendingActionsBanner": {
+    "title": "{{count}} pending actions require your attention",
+    "description": "Review and complete outstanding tasks",
+    "cta": "View All"
+  },
   "widgets": {
     "alerts": {
       "dismiss": "Dismiss",

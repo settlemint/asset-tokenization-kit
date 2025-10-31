@@ -14,6 +14,8 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
+import { ActionsCard } from "@/components/dashboard/actions-card/actions-card";
+import { PendingActionsBanner } from "@/components/dashboard/actions-card/pending-actions-banner";
 import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -54,12 +56,18 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
 function Home() {
   return (
     <div className="h-[calc(100vh-4rem)] overflow-hidden p-6">
-      <div className="grid h-full grid-cols-3 gap-6">
-        <div className="col-span-2">
-          {/* Other dashboard content goes here */}
-        </div>
-        <div className="col-span-1 flex min-h-0 flex-col">
-          <LatestEvents className="flex-1" />
+      <div className="flex h-full flex-col gap-6">
+        <PendingActionsBanner />
+        <div className="grid flex-1 grid-cols-3 gap-6">
+          <div className="col-span-2">
+            <div className="grid grid-cols-2 gap-6">
+              <ActionsCard />
+              <ActionsCard />
+            </div>
+          </div>
+          <div className="col-span-1 flex min-h-0 flex-col">
+            <LatestEvents className="flex-1" />
+          </div>
         </div>
       </div>
     </div>

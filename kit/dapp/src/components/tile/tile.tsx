@@ -8,7 +8,9 @@ import {
 } from "react";
 
 import { Link, useNavigate } from "@tanstack/react-router";
+import type { LucideIcon } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -80,7 +82,7 @@ export function TileHeader({
   return (
     <CardHeader
       data-slot="tile-header"
-      className={cn("gap-1", className)}
+      className={cn("flex flex-row items-center gap-3", className)}
       {...props}
     />
   );
@@ -107,6 +109,62 @@ export function TileSubtitle({
     <p
       data-slot="tile-subtitle"
       className={cn("text-sm text-muted-foreground", className)}
+      {...props}
+    />
+  );
+}
+
+export type TileIconColor =
+  | "chart-1"
+  | "chart-2"
+  | "chart-3"
+  | "chart-4"
+  | "chart-5"
+  | "chart-6";
+
+export interface TileIconProps {
+  icon: LucideIcon;
+  color: TileIconColor;
+  className?: string;
+}
+
+export function TileIcon({ icon: Icon, color, className }: TileIconProps) {
+  return (
+    <span
+      data-slot="tile-icon"
+      className={cn(
+        "flex size-10 shrink-0 items-center justify-center rounded-full",
+        className
+      )}
+      style={{
+        backgroundColor: `var(--${color})`,
+      }}
+    >
+      <Icon className="size-5" aria-hidden="true" />
+    </span>
+  );
+}
+
+export type TileBadgeProps = ComponentPropsWithoutRef<typeof Badge>;
+
+export function TileBadge({ className, ...props }: TileBadgeProps) {
+  return (
+    <Badge
+      data-slot="tile-badge"
+      className={cn("shrink-0", className)}
+      {...props}
+    />
+  );
+}
+
+export function TileHeaderContent({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<"div">) {
+  return (
+    <div
+      data-slot="tile-header-content"
+      className={cn("flex flex-1 flex-col gap-1", className)}
       {...props}
     />
   );
@@ -211,8 +269,11 @@ export function TileFooterAction({
 export const tileComponents = {
   Root: Tile,
   Header: TileHeader,
+  HeaderContent: TileHeaderContent,
   Title: TileTitle,
   Subtitle: TileSubtitle,
+  Icon: TileIcon,
+  Badge: TileBadge,
   Content: TileContent,
   Footer: TileFooter,
   FooterAction: TileFooterAction,

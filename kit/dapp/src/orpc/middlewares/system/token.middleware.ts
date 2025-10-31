@@ -281,7 +281,6 @@ export const tokenMiddleware = baseRouter.middleware<
               ] ?? [];
 
             const trustedIssuerSatisfied =
-              trustedTopics.length === 0 ||
               trustedTopics.every((topic) =>
                 userTrustedIssuerTopics.includes(topic)
               );

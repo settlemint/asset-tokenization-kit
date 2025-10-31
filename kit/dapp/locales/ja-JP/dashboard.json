@@ -163,6 +163,25 @@
       "description": "最初のトークン化された資産を設計すると、チャートと統計が表示されます"
     }
   },
+  "actionsCard": {
+    "title": "アクション",
+    "subtitle": "保留中および完了した操作を追跡",
+    "badge": {
+      "pending": "{{count}}件保留中",
+      "upToDate": "最新"
+    },
+    "stats": {
+      "pending": "保留中のアクション",
+      "completed": "完了済み（7日間）",
+      "noPending": "保留中のアクションはありません"
+    },
+    "cta": "すべてのアクションを表示"
+  },
+  "pendingActionsBanner": {
+    "title": "{{count}}件の保留中のアクションが対応を必要としています",
+    "description": "未処理のタスクを確認して完了してください",
+    "cta": "すべて表示"
+  },
   "widgets": {
     "alerts": {
       "dismiss": "閉じる",
