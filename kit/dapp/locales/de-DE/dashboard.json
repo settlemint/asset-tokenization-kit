@@ -166,16 +166,26 @@
   "portfolioDashboard": {
     "welcome": "Willkommen zurück, {{name}}",
     "subtitle": "Verfolgen Sie Ihr Portfolio und Ihre Vermögenswerte",
+    "portfolioHeader": {
+      "title": "Mein Portfolio",
+      "assetsCount_one": "{{count}} Vermögenswert",
+      "assetsCount_other": "{{count}} Vermögenswerte",
+      "noAssets": "Noch keine Vermögenswerte",
+      "viewHoldings": "Ihre Vermögenswerte ansehen"
+    },
     "cards": {
       "totalValue": {
-        "title": "Gesamtwert"
+        "title": "Gesamtwert",
+        "description": "Gesamtwert aller Vermögenswerte"
       },
       "totalAssets": {
         "title": "Gesamtzahl der Vermögenswerte",
+        "description": "Gesamtzahl der Vermögenswerte",
         "noAssets": "Keine Vermögenswerte"
       },
       "identityStatus": {
         "title": "Identitätsstatus",
+        "description": "Aktueller Verifizierungsstatus",
         "verified": "Verifiziert",
         "pending": "Ausstehend"
       }

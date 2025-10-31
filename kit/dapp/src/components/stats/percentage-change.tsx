@@ -67,6 +67,8 @@ export function PercentageChange({
    * - Division by zero would crash the component
    * - NaN values propagate through calculations silently
    * - Infinity values break percentage displays
+   * - Zero to zero is 0% change (no movement)
+   * - Zero to positive/negative is 100% change (from nothing to something)
    */
   const calculatePercentageChange = (): number => {
     // Handle edge cases: division by invalid values
@@ -74,8 +76,14 @@ export function PercentageChange({
       return 0;
     }
 
+    // Both zero: no change
+    if (previousValue === 0 && currentValue === 0) {
+      return 0;
+    }
+
+    // Previous zero but current non-zero: 100% increase/decrease
     if (previousValue === 0) {
-      return 100;
+      return currentValue > 0 ? 100 : -100;
     }
 
     return ((currentValue - previousValue) / previousValue) * 100;

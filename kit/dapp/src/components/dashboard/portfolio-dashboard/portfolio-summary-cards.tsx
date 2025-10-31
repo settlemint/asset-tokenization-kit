@@ -119,6 +119,11 @@ function TotalAssetsCard() {
  *
  * Fetches identity data to determine verification state. Shows a shield icon
  * as a visual indicator to represent security and identity protection.
+ *
+ * Identity verification logic:
+ * - identity.registered must be defined and not false
+ * - Must have isRegistered property set to true
+ * - Matches the pattern used in participants view for consistency
  */
 function IdentityStatusCard() {
   const { t } = useTranslation("dashboard");
@@ -126,7 +131,10 @@ function IdentityStatusCard() {
     orpc.system.identity.me.queryOptions()
   );
 
-  const isIdentityVerified = identity.registered !== false;
+  const isIdentityVerified =
+    identity.registered !== undefined && identity.registered !== false
+      ? identity.registered.isRegistered
+      : false;
 
   return (
     <StatCard

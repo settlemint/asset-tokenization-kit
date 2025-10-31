@@ -1,6 +1,7 @@
 import { PercentageChange } from "@/components/stats/percentage-change";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DEFAULT_SETTINGS } from "@/lib/db/schemas/settings.constants";
 import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { formatValue } from "@/lib/utils/format-value/index";
 import { orpc } from "@/orpc/orpc-client";
@@ -88,7 +89,8 @@ function PortfolioHeaderContent() {
               <span className="text-xl md:text-2xl font-bold">
                 {formatValue(portfolioData.totalValue, {
                   type: "currency",
-                  currency: baseCurrency as FiatCurrency,
+                  currency: (baseCurrency ??
+                    DEFAULT_SETTINGS.BASE_CURRENCY) as FiatCurrency,
                 })}
               </span>
               <PercentageChange
