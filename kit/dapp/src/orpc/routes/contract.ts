@@ -2,6 +2,7 @@ import { accountContract } from "@/orpc/routes/account/account.contract";
 import { actionsContract } from "@/orpc/routes/actions/actions.contract";
 import { exchangeRatesContract } from "@/orpc/routes/exchange-rates/exchange-rates.contract";
 import { fixedYieldScheduleContract } from "@/orpc/routes/fixed-yield-schedule/fixed-yield-schedule.contract";
+import { contactsContract } from "@/orpc/routes/contacts/contacts.contract";
 import { settingsContract } from "@/orpc/routes/settings/settings.contract";
 import { systemContract } from "@/orpc/routes/system/system.contract";
 import { tokenContract } from "@/orpc/routes/token/token.contract";
@@ -48,6 +49,15 @@ export const contract = {
    * @see {@link ./actions/actions.router} - Corresponding router implementation
    */
   actions: actionsContract,
+
+  /**
+   * Contacts-related API contract.
+   *
+   * Provides address book operations for participant management workflows.
+   * @see {@link ./contacts/contacts.contract} - Contacts contract implementation
+   * @see {@link ./contacts/contacts.router} - Corresponding router implementation
+   */
+  contacts: contactsContract,
 
   /**
    * Exchange rates API contract.

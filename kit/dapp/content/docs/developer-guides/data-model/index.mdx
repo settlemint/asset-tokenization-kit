@@ -232,6 +232,14 @@ required for regulatory audits. Vault custody operations rely on verified
 identities to enforce access control policies, ensuring only authorized parties
 can initiate withdrawals or configuration changes.
 
+The address book lives alongside these identity records in the new `contact`
+table. Each row links a user (`user_id`) to a named wallet destination, giving
+portfolio workflows a reusable set of counterparties. The ORPC surface exposes
+this data via `orpc.contacts.list` for paginated browsing, `orpc.contacts.search`
+for autocomplete, `orpc.contacts.upsert` for creation or edits, and
+`orpc.contacts.delete` for removals. All routes enforce wallet ownership and
+apply case-insensitive matches on both name and wallet to keep lookups fast.
+
 **[Investor entities reference →](/docs/developer-guides/data-model/entity-investor)**
 
 ### Compliance entities

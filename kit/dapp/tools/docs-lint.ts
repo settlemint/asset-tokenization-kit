@@ -308,7 +308,8 @@ async function collectFiles(): Promise<{
     const absolutePath = join(docsDir, normalizedPath);
     const slugs = deriveSlugs(normalizedPath);
     const url = buildUrlFromSlugs(slugs);
-    const content = await readFile(absolutePath, "utf8");
+    const rawContent = await readFile(absolutePath);
+    const content = rawContent.toString("utf8");
 
     files.push({
       path: absolutePath,
