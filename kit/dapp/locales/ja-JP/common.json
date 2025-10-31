@@ -67,6 +67,12 @@
     "trailing24Hours": "過去24時間",
     "trailing7Days": "過去7日間"
   },
+  "timePeriods": {
+    "short": {
+      "trailing24Hours": "24時間",
+      "trailing7Days": "7日"
+    }
+  },
   "chart": {
     "update": {
       "refreshing": "更新中...",

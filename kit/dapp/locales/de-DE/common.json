@@ -67,6 +67,12 @@
     "trailing24Hours": "Letzte 24 Stunden",
     "trailing7Days": "Letzte 7 Tage"
   },
+  "timePeriods": {
+    "short": {
+      "trailing24Hours": "24h",
+      "trailing7Days": "7d"
+    }
+  },
   "chart": {
     "update": {
       "refreshing": "Wird aktualisiert...",

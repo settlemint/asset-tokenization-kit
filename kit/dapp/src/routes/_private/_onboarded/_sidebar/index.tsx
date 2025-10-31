@@ -47,12 +47,12 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
 
 function Home() {
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-hidden p-6">
+    <div className="h-[calc(100vh-4rem)] p-6">
       <div className="grid h-full grid-cols-3 gap-6">
         <div className="col-span-2">
           <PortfolioDashboard />
         </div>
-        <div className="col-span-1 flex min-h-0 flex-col">
+        <div className="col-span-1 flex min-h-0 flex-col mb-10">
           <LatestEvents className="flex-1" />
         </div>
       </div>

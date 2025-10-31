@@ -1,15 +1,29 @@
+import { PercentageChange } from "@/components/stats/percentage-change";
 import { StatCard } from "@/components/stats/widgets/stat-widget";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CHART_QUERY_OPTIONS } from "@/lib/query-options";
 import { formatValue } from "@/lib/utils/format-value/index";
 import { orpc } from "@/orpc/orpc-client";
 import type { FiatCurrency } from "@atk/zod/fiat-currency";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Briefcase, Shield } from "lucide-react";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
- * Total Value Card - Displays combined portfolio value
- * Fetches portfolio data and base currency setting
+ * Total Value Card - Displays combined portfolio value with percentage change
+ *
+ * Why include percentage change: Provides at-a-glance trend information to help
+ * users quickly assess portfolio performance without navigating to detailed views.
+ *
+ * Fetches current portfolio data, base currency setting, and 7-day historical data
+ * to calculate and display percentage change over the trailing 7-day period.
+ *
+ * Data flow:
+ * 1. Fetches portfolio timeseries data for trailing 7 days
+ * 2. Extracts first value (7 days ago) as previous value
+ * 3. Extracts last value (most recent) as current value
+ * 4. Passes both values to PercentageChange component for display
  */
 function TotalValueCard() {
   const { t } = useTranslation("dashboard");
@@ -20,6 +34,34 @@ function TotalValueCard() {
     orpc.settings.read.queryOptions({ input: { key: "BASE_CURRENCY" } })
   );
 
+  /**
+   * Fetch 7-day portfolio value timeseries data
+   *
+   * Why use the same query as the chart: Ensures consistency between
+   * the percentage change shown in the card and the data displayed
+   * in the portfolio value interactive chart.
+   */
+  const { data: historicalData } = useSuspenseQuery(
+    orpc.system.stats.portfolioByPreset.queryOptions({
+      input: { preset: "trailing7Days" },
+      ...CHART_QUERY_OPTIONS,
+    })
+  );
+
+  /**
+   * Extract values for percentage change calculation
+   *
+   * Why use first and last indices:
+   * - First index (0): Oldest data point in the 7-day window (previous value)
+   * - Last index: Most recent data point (current value)
+   *
+   * Edge case handling: If timeseries is empty, values will be undefined
+   * and PercentageChange component will handle this gracefully by showing 0%
+   */
+  const timeseries = historicalData?.data ?? [];
+  const previousValue = timeseries.at(0)?.totalValueInBaseCurrency ?? 0;
+  const currentValue = timeseries.at(-1)?.totalValueInBaseCurrency ?? 0;
+
   return (
     <StatCard
       title={t("portfolioDashboard.cards.totalValue.title")}
@@ -28,13 +70,22 @@ function TotalValueCard() {
         currency: baseCurrency as FiatCurrency,
       })}
       description={t("portfolioDashboard.cards.totalValue.description")}
+      indicator={
+        <PercentageChange
+          previousValue={previousValue}
+          currentValue={currentValue}
+          period="trailing7Days"
+        />
+      }
     />
   );
 }
 
 /**
  * Total Assets Card - Displays number of token factories
- * Fetches portfolio data for factory count
+ *
+ * Fetches portfolio data for factory count. Shows a briefcase icon as a visual
+ * indicator to represent assets/portfolio management.
  */
 function TotalAssetsCard() {
   const { t } = useTranslation("dashboard");
@@ -51,13 +102,16 @@ function TotalAssetsCard() {
         </div>
       }
       description={t("portfolioDashboard.cards.totalAssets.description")}
+      indicator={<Briefcase className="h-4 w-4 text-muted-foreground" />}
     />
   );
 }
 
 /**
  * Identity Status Card - Displays user's identity verification status
- * Fetches identity data to determine verification state
+ *
+ * Fetches identity data to determine verification state. Shows a shield icon
+ * as a visual indicator to represent security and identity protection.
  */
 function IdentityStatusCard() {
   const { t } = useTranslation("dashboard");
@@ -82,6 +136,7 @@ function IdentityStatusCard() {
         </div>
       }
       description={t("portfolioDashboard.cards.identityStatus.description")}
+      indicator={<Shield className="h-4 w-4 text-success" />}
     />
   );
 }

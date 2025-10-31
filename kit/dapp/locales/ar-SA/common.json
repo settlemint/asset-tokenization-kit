@@ -67,6 +67,12 @@
     "trailing24Hours": "آخر 24 ساعة",
     "trailing7Days": "آخر 7 أيام"
   },
+  "timePeriods": {
+    "short": {
+      "trailing24Hours": "24س",
+      "trailing7Days": "7ي"
+    }
+  },
   "chart": {
     "update": {
       "refreshing": "يتم التحديث...",
