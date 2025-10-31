@@ -72,7 +72,7 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
         </div>
         <dl className="space-y-3">
           <div className="flex flex-col gap-1">
-            <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <dt className="text-sm font-medium text-muted-foreground">
               {contractLabel}
             </dt>
             <dd>
@@ -90,7 +90,7 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
             </dd>
           </div>
           <div className="flex flex-col gap-1">
-            <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <dt className="text-sm font-medium text-muted-foreground">
               {identityLabel}
             </dt>
             <dd>

@@ -1,4 +1,4 @@
-import { ClaimsTable } from "@/components/identity/claims-table";
+import { ClaimsTable } from "@/components/participants/common/claims-table";
 import type { ManagedIdentity } from "@/components/manage-dropdown/manage-identity-dropdown";
 import { IssueClaimSheet } from "@/components/manage-dropdown/sheets/issue-claim-sheet";
 import { Button } from "@/components/ui/button";

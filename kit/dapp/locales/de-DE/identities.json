@@ -163,6 +163,10 @@
     "untrustedClaimsWarning_plural": "{{count}} nicht vertrauenswürdige Ansprüche erkannt",
     "manageVerifications": "Verifizierungen verwalten"
   },
+  "verificationDetail": {
+    "title": "Verifizierungen",
+    "noIdentity": "Keine Identität für diesen Benutzer gefunden"
+  },
   "claimsTable": {
     "columns": {
       "claimName": "Anspruchsname",

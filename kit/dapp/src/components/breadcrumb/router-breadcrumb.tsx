@@ -267,9 +267,10 @@ export function RouterBreadcrumb({
           const { segment, metadata } = item;
           // Use metadata href if available, otherwise fall back to segment href
           const href = metadata?.href ?? segment.href;
+          const key = `${metadata?.href ?? segment.href ?? segment.title ?? "segment"}#${index}`;
 
           return (
-            <Fragment key={href ?? segment.title}>
+            <Fragment key={key}>
               <BreadcrumbItemWithMetadata
                 breadcrumbMeta={metadata}
                 fallbackTitle={segment.title}

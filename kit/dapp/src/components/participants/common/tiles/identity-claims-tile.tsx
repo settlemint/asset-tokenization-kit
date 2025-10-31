@@ -61,7 +61,7 @@ export function IdentityClaimsTile({
       <TileContent className="gap-4">
         <div className="space-y-3">
           <div className="flex flex-col gap-1">
-            <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <dt className="text-sm font-medium text-muted-foreground">
               {t("identities:fields.identityAddress")}
             </dt>
             <dd>

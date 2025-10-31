@@ -163,6 +163,10 @@
     "untrustedClaimsWarning_plural": "{{count}} untrusted claims detected",
     "manageVerifications": "Manage Verifications"
   },
+  "verificationDetail": {
+    "title": "Verifications",
+    "noIdentity": "No identity found for this user"
+  },
   "claimsTable": {
     "columns": {
       "claimName": "Claim Name",
