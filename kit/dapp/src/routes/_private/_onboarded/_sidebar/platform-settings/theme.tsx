@@ -1,5 +1,10 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
+import {
+  ContentTabs,
+  ContentTabsContent,
+} from "@/components/tab-navigation/content-tabs";
+import type { ContentTabItem } from "@/components/tab-navigation/content-tabs";
 import { FontSettingsCard } from "@/components/theme/components/font-settings-card";
 import { UnifiedImagesCard } from "@/components/theme/components/unified-images-card";
 import { PaletteCard } from "@/components/theme/components/palette-card";
@@ -32,7 +37,6 @@ import {
 } from "@/components/theme/lib/theme-editor-helpers";
 import type { ThemeFormApi } from "@/components/theme/lib/types";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useDebouncedCallback } from "@/lib/hooks/use-debounced-callback";
 import {
@@ -912,7 +916,7 @@ function ThemeSettingsPage() {
   );
 
   const editorTabs = useMemo(() => {
-    const tabs: Array<{ value: string; label: string; description: string }> = [
+    const tabs: ContentTabItem[] = [
       {
         value: "images",
         label: tTheme("imagesSectionTitle"),
@@ -942,7 +946,7 @@ function ThemeSettingsPage() {
     }
 
     return tabs;
-  }, [t, lightTokens.length, darkTokens.length]);
+  }, [tTheme, lightTokens.length, darkTokens.length]);
 
   return (
     <div className="w-full p-6 space-y-6">
@@ -995,26 +999,12 @@ function ThemeSettingsPage() {
       <form.AppForm>
         <div className="flex flex-col xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] xl:gap-6 gap-6">
           <div className="space-y-6 order-1">
-            <Tabs
+            <ContentTabs
               defaultValue={editorTabs[0]?.value ?? "images"}
-              className="space-y-6"
+              items={editorTabs}
+              aria-label="Theme settings tabs"
             >
-              <div className="overflow-x-auto">
-                <TabsList className="flex w-full justify-start gap-2 bg-muted/30 p-1">
-                  {editorTabs.map((tab) => (
-                    <TabsTrigger
-                      key={tab.value}
-                      value={tab.value}
-                      className="data-[state=active]:bg-background data-[state=active]:shadow-sm"
-                      title={tab.description}
-                    >
-                      <span className="text-sm font-medium">{tab.label}</span>
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </div>
-
-              <TabsContent value="images" className="space-y-4">
+              <ContentTabsContent value="images">
                 <UnifiedImagesCard
                   sectionId="theme-images"
                   form={form}
@@ -1037,19 +1027,19 @@ function ThemeSettingsPage() {
                   uploadStatus={logoUploadStatus}
                   t={tTheme}
                 />
-              </TabsContent>
+              </ContentTabsContent>
 
-              <TabsContent value="fonts" className="space-y-4">
+              <ContentTabsContent value="fonts">
                 <FontSettingsCard
                   sectionId="theme-fonts"
                   form={form}
                   draft={draft}
                   t={tTheme}
                 />
-              </TabsContent>
+              </ContentTabsContent>
 
               {lightTokens.length > 0 ? (
-                <TabsContent value="palette-light" className="space-y-4">
+                <ContentTabsContent value="palette-light">
                   <PaletteCard
                     sectionId="theme-palette-light"
                     form={form}
@@ -1058,11 +1048,11 @@ function ThemeSettingsPage() {
                     tokens={lightTokens}
                     t={tTheme}
                   />
-                </TabsContent>
+                </ContentTabsContent>
               ) : null}
 
               {darkTokens.length > 0 ? (
-                <TabsContent value="palette-dark" className="space-y-4">
+                <ContentTabsContent value="palette-dark">
                   <PaletteCard
                     sectionId="theme-palette-dark"
                     form={form}
@@ -1071,9 +1061,9 @@ function ThemeSettingsPage() {
                     tokens={darkTokens}
                     t={tTheme}
                   />
-                </TabsContent>
+                </ContentTabsContent>
               ) : null}
-            </Tabs>
+            </ContentTabs>
           </div>
           <ThemePreviewPanel draft={previewDraft} t={tTheme} />
         </div>

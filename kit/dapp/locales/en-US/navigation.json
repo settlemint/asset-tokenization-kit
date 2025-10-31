@@ -1,8 +1,10 @@
 {
   "asset": "Asset",
   "actions": "Actions",
+  "activity": "Activity",
   "assetClasses": "Asset classes",
   "assetManagement": "Asset management",
+  "assetManagementNotAuthorized": "You are not authorized to manage assets.\nYou do not have the token create permission.",
   "cashEquivalent": "Cash equivalent",
   "fixedIncome": "Fixed income",
   "flexibleIncome": "Flexible income",
@@ -21,6 +23,7 @@
   "participants": "Participants",
   "participantsUsers": "Users",
   "participantsEntities": "Entities",
+  "participantsNotAuthorized": "You are not authorized to manage participants.\nYou do not have the identity manager or claim issuer role.",
   "claimManagement": "Claim management",
   "platformSettings": "Platform settings",
   "userManagement": "Users",

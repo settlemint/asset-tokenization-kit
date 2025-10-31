@@ -28,7 +28,7 @@ describe("Claims stats state (integration)", () => {
     await registerUserIdentity(adminClient, targetUserData.wallet);
 
     // Get the target user's identity address for issuing claims
-    const targetIdentity = await adminClient.system.identity.read({
+    const targetIdentity = await adminClient.system.identity.readByWallet({
       wallet: targetUserData.wallet,
     });
 

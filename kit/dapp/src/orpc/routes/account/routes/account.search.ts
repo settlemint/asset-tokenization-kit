@@ -7,9 +7,9 @@ import {
   AccountSearchGraphResponseSchema,
   type AccountSearchGraphResponse,
 } from "@/orpc/routes/account/routes/account.search.schema";
-import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read";
+import { identityReadById } from "@/orpc/routes/system/identity/routes/identity.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
-import { read as userRead } from "@/orpc/routes/user/routes/user.read";
+import { readByWallet } from "@/orpc/routes/user/routes/user.read";
 import { call, ORPCError } from "@orpc/server";
 import { isAddress, zeroAddress } from "viem";
 
@@ -85,7 +85,7 @@ async function getDisplayName(
           return undefined;
         }
         const identity = await call(
-          identityRead,
+          identityReadById,
           {
             identityId: account.id,
           },
@@ -99,7 +99,7 @@ async function getDisplayName(
         }
       }
       const user = await call(
-        userRead,
+        readByWallet,
         {
           wallet,
         },

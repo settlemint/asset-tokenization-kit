@@ -4,6 +4,7 @@ import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboar
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { IdentityStatusBadge } from "@/components/identity/identity-status-badge";
 import { BasicInfoTile } from "@/components/participants/entities/tiles/basic-info-tile";
+import { IdentityClaimsTile } from "@/components/participants/common/tiles/identity-claims-tile";
 import { Badge } from "@/components/ui/badge";
 import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
@@ -40,7 +41,7 @@ export const Route = createFileRoute(
     }
 
     const identity = await queryClient.ensureQueryData(
-      orpc.system.identity.read.queryOptions({
+      orpc.system.identity.readById.queryOptions({
         input: { identityId: address },
       })
     );
@@ -134,7 +135,7 @@ function RouteComponent() {
   const routeContext = Route.useRouteContext();
 
   const { data: queriedIdentity } = useQuery(
-    routeContext.orpc.system.identity.read.queryOptions({
+    routeContext.orpc.system.identity.readById.queryOptions({
       input: { identityId: address },
     })
   );
@@ -223,6 +224,12 @@ function RouteComponent() {
       </div>
       <div className="grid auto-rows-fr items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
         <BasicInfoTile identity={identity} token={token} />
+        <IdentityClaimsTile
+          identity={identity}
+          onManageVerifications={() => {
+            // TODO: Implement navigation to claims management page
+          }}
+        />
       </div>
     </div>
   );

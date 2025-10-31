@@ -50,7 +50,7 @@ describe("Identity register", () => {
     const headers = await signInWithUser(DEFAULT_ADMIN);
     const client = getOrpcClient(headers);
 
-    const preRegistrationIdentity = await client.system.identity.read({
+    const preRegistrationIdentity = await client.system.identity.readByWallet({
       wallet: wallet2,
     });
     expect(preRegistrationIdentity.registered).toBeUndefined();
@@ -65,7 +65,7 @@ describe("Identity register", () => {
     });
     expect(result.account.id).toBe(wallet2);
 
-    const postRegistrationIdentity = await client.system.identity.read({
+    const postRegistrationIdentity = await client.system.identity.readByWallet({
       wallet: wallet2,
     });
     expect(postRegistrationIdentity.registered).toEqual({

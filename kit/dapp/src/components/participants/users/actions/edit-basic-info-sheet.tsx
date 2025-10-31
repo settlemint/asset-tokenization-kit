@@ -147,7 +147,7 @@ export function EditBasicInfoSheet({
       } satisfies BasicInfoFormState;
     },
     onSuccess: async (values) => {
-      const readQuery = orpc.user.read.queryOptions({
+      const readQuery = orpc.user.readByUserId.queryOptions({
         input: { userId: user.id },
       });
       const kycReadQuery = orpc.user.kyc.read.queryOptions({

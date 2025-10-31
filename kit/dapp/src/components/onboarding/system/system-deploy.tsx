@@ -1,12 +1,10 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { BulletPoint } from "@/components/onboarding/bullet-point";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
-import { Button } from "@/components/ui/button";
 import { VerificationButton } from "@/components/verification-dialog/verification-button";
 import { orpc } from "@/orpc/orpc-client";
 import type { UserVerification } from "@/orpc/routes/common/schemas/user-verification.schema";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,8 +13,6 @@ import { toast } from "sonner";
 export function SystemDeploy() {
   const { t } = useTranslation(["onboarding", "common"]);
   const { refreshUserState } = useOnboardingNavigation();
-  const navigate = useNavigate();
-
   // System deployment mutation
   const { mutateAsync: createSystem, isPending: isCreatingSystem } =
     useMutation(
@@ -50,27 +46,16 @@ export function SystemDeploy() {
       description={t("system.initialize-subtitle")}
       fullWidth={true}
       actions={
-        <>
-          <Button
-            variant="outline"
-            onClick={() => {
-              void navigate({ to: "/onboarding" });
-            }}
-            disabled={isCreatingSystem}
-          >
-            {t("common:actions.skip")}
-          </Button>
-          <VerificationButton
-            walletVerification={{
-              title: t("system.confirm-deployment-title"),
-              description: t("system.confirm-deployment-description"),
-            }}
-            onSubmit={handleSubmit}
-            disabled={isCreatingSystem}
-          >
-            {isCreatingSystem ? t("system.deploying") : t("system.deploy")}
-          </VerificationButton>
-        </>
+        <VerificationButton
+          walletVerification={{
+            title: t("system.confirm-deployment-title"),
+            description: t("system.confirm-deployment-description"),
+          }}
+          onSubmit={handleSubmit}
+          disabled={isCreatingSystem}
+        >
+          {isCreatingSystem ? t("system.deploying") : t("system.deploy")}
+        </VerificationButton>
       }
     >
       <>
