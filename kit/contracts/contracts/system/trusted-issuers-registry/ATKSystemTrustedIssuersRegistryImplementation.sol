@@ -384,7 +384,7 @@ contract ATKSystemTrustedIssuersRegistryImplementation is
         return interfaceId == type(IATKSystemTrustedIssuersRegistry).interfaceId
             || interfaceId == type(IATKTrustedIssuersRegistry).interfaceId
             || interfaceId == type(ISMARTTrustedIssuersRegistry).interfaceId
-            || interfaceId == type(IClaimAuthorizer).interfaceId || interfaceId == type(IATKSystemAccessManaged).interfaceId
-            || super.supportsInterface(interfaceId);
+            || interfaceId == type(IClaimAuthorizer).interfaceId
+            || interfaceId == type(IATKSystemAccessManaged).interfaceId || super.supportsInterface(interfaceId);
     }
 }

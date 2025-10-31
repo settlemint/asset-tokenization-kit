@@ -8,8 +8,9 @@ import { ERC2771ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/m
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { ERC20VotesUpgradeable } from
-    "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
+import {
+    ERC20VotesUpgradeable
+} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20VotesUpgradeable.sol";
 import { ContextUpgradeable } from "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol";
 
 // Constants
@@ -30,8 +31,9 @@ import { SMARTHooks } from "../../smart/extensions/common/SMARTHooks.sol";
 import { SMARTPausableUpgradeable } from "../../smart/extensions/pausable/SMARTPausableUpgradeable.sol";
 import { SMARTBurnableUpgradeable } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
 import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMARTCustodianUpgradeable.sol";
-import { SMARTTokenAccessManagedUpgradeable } from
-    "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
+import {
+    SMARTTokenAccessManagedUpgradeable
+} from "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 
 /// @title ATKEquityImplementation - A security token representing equity shares
 /// @author SettleMint
@@ -138,11 +140,7 @@ contract ATKEquityImplementation is
     /// @notice Sets the Compliance contract address
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param _compliance The address of the main compliance contract
-    function setCompliance(address _compliance)
-        external
-        override
-        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
-    {
+    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
         _smart_setCompliance(_compliance);
     }
 

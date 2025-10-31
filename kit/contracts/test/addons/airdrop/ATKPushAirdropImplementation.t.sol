@@ -2,8 +2,9 @@
 pragma solidity ^0.8.28;
 
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
-import { ATKPushAirdropFactoryImplementation } from
-    "../../../contracts/addons/airdrop/push-airdrop/ATKPushAirdropFactoryImplementation.sol";
+import {
+    ATKPushAirdropFactoryImplementation
+} from "../../../contracts/addons/airdrop/push-airdrop/ATKPushAirdropFactoryImplementation.sol";
 import { IATKPushAirdropFactory } from "../../../contracts/addons/airdrop/push-airdrop/IATKPushAirdropFactory.sol";
 import { IATKPushAirdrop } from "../../../contracts/addons/airdrop/push-airdrop/IATKPushAirdrop.sol";
 import { IATKAirdrop } from "../../../contracts/addons/airdrop/IATKAirdrop.sol";
@@ -77,9 +78,8 @@ contract ATKPushAirdropTest is AbstractATKAssetTest {
 
         // Create system addon for push airdrop factory
         pushAirdropFactory = IATKPushAirdropFactory(
-            systemUtils.systemAddonRegistry().registerSystemAddon(
-                "push-airdrop-factory", address(pushAirdropFactoryImpl), encodedInitializationData
-            )
+            systemUtils.systemAddonRegistry()
+                .registerSystemAddon("push-airdrop-factory", address(pushAirdropFactoryImpl), encodedInitializationData)
         );
 
         // Grant DEPLOYER_ROLE to owner so they can create push airdrops

@@ -6,8 +6,9 @@ import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IdentityUtils } from "../../utils/IdentityUtils.sol";
 import { ISMARTTopicSchemeRegistry } from "../../../contracts/smart/interface/ISMARTTopicSchemeRegistry.sol";
 import { IATKTopicSchemeRegistry } from "../../../contracts/system/topic-scheme-registry/IATKTopicSchemeRegistry.sol";
-import { ATKTopicSchemeRegistryImplementation } from
-    "../../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
+import {
+    ATKTopicSchemeRegistryImplementation
+} from "../../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
 import { ATKSystemRoles } from "../../../contracts/system/ATKSystemRoles.sol";
 import { ATKRoles } from "../../../contracts/system/ATKRoles.sol";

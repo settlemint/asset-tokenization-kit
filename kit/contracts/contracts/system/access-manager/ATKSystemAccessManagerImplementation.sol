@@ -195,7 +195,13 @@ contract ATKSystemAccessManagerImplementation is
     /// @param account The address to grant roles to
     /// @param roles Array of role identifiers to grant
     /// @dev Caller must have the admin role for each role being granted
-    function grantMultipleRoles(address account, bytes32[] calldata roles) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function grantMultipleRoles(
+        address account,
+        bytes32[] calldata roles
+    )
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         for (uint256 i = 0; i < roles.length;) {
             grantRole(roles[i], account);
             unchecked {
@@ -208,7 +214,13 @@ contract ATKSystemAccessManagerImplementation is
     /// @param account The address to revoke roles from
     /// @param roles Array of role identifiers to revoke
     /// @dev Caller must have the admin role for each role being revoked
-    function revokeMultipleRoles(address account, bytes32[] calldata roles) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function revokeMultipleRoles(
+        address account,
+        bytes32[] calldata roles
+    )
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         for (uint256 i = 0; i < roles.length;) {
             revokeRole(roles[i], account);
             unchecked {

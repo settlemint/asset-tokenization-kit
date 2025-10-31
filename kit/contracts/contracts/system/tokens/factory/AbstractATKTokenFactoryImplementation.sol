@@ -399,9 +399,8 @@ abstract contract AbstractATKTokenFactoryImplementation is
         address contractIdentity = IATKIdentityFactory(system.identityFactory()).createContractIdentity(contractAddress);
 
         // Register the contract identity with the identity registry (same as any other identity)
-        ISMARTIdentityRegistry(system.identityRegistry()).registerIdentity(
-            contractAddress, IIdentity(contractIdentity), country
-        );
+        ISMARTIdentityRegistry(system.identityRegistry())
+            .registerIdentity(contractAddress, IIdentity(contractIdentity), country);
 
         // Issue TOPIC_ASSET_ISSUER claim to link the asset to its issuer
         address organisationIdentity = system.organisationIdentity();

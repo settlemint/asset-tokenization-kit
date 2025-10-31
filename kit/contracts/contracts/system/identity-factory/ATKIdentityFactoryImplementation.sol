@@ -328,13 +328,7 @@ contract ATKIdentityFactoryImplementation is
     ///      This provides predictable addresses based on the contract address.
     /// @param _contractAddress The address of the contract for which the identity will be created.
     /// @return address The pre-computed CREATE2 deployment address for the contract's identity contract.
-    function calculateContractIdentityAddress(address _contractAddress)
-        public
-        view
-        virtual
-        override
-        returns (address)
-    {
+    function calculateContractIdentityAddress(address _contractAddress) public view virtual override returns (address) {
         (bytes32 saltBytes,) = _calculateSalt(CONTRACT_SALT_PREFIX, _contractAddress);
         return _computeContractProxyAddress(saltBytes, _contractAddress);
     }
@@ -355,7 +349,13 @@ contract ATKIdentityFactoryImplementation is
     /// @param _walletAddress The address of the wallet for which to create an identity.
     /// @param _initialManagerAddress The address to be set as the initial management key in the proxy's constructor.
     /// @return address The address of the newly deployed `ATKIdentityProxy`.
-    function _createWalletIdentity(address _walletAddress, address _initialManagerAddress) private returns (address) {
+    function _createWalletIdentity(
+        address _walletAddress,
+        address _initialManagerAddress
+    )
+        private
+        returns (address)
+    {
         (bytes32 saltBytes, string memory saltString) = _calculateSalt(WALLET_SALT_PREFIX, _walletAddress);
 
         if (_saltTakenByteSalt[saltBytes]) revert SaltAlreadyTaken(saltString);
@@ -431,7 +431,14 @@ contract ATKIdentityFactoryImplementation is
     /// @param _saltBytes The pre-calculated `bytes32` salt for the deployment.
     /// @param _initialManager The address that will be passed as the initial manager to the proxy's constructor.
     /// @return address The deterministically computed address where the proxy will be deployed.
-    function _computeWalletProxyAddress(bytes32 _saltBytes, address _initialManager) internal view returns (address) {
+    function _computeWalletProxyAddress(
+        bytes32 _saltBytes,
+        address _initialManager
+    )
+        internal
+        view
+        returns (address)
+    {
         (bytes memory proxyBytecode, bytes memory constructorArgs) = _getWalletProxyAndConstructorArgs(_initialManager);
         // slither-disable-next-line encode-packed-collision
         return Create2.computeAddress(_saltBytes, keccak256(abi.encodePacked(proxyBytecode, constructorArgs)));

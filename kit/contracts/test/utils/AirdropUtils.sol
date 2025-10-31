@@ -26,7 +26,14 @@ library AirdropUtils {
     /// @param user1 Address of first test user
     /// @param user2 Address of second test user
     /// @param user3 Address of third test user
-    function setupTestUsers(TestUserData storage userData, address user1, address user2, address user3) internal {
+    function setupTestUsers(
+        TestUserData storage userData,
+        address user1,
+        address user2,
+        address user3
+    )
+        internal
+    {
         userData.user1 = user1;
         userData.user2 = user2;
         userData.user3 = user3;

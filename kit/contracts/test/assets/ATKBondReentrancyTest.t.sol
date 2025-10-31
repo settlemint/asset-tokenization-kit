@@ -3,8 +3,9 @@ pragma solidity ^0.8.28;
 
 import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKBond } from "../../contracts/assets/bond/IATKBond.sol";
 import { IATKBondFactory } from "../../contracts/assets/bond/IATKBondFactory.sol";
 import { ATKBondFactoryImplementation } from "../../contracts/assets/bond/ATKBondFactoryImplementation.sol";
@@ -48,8 +49,9 @@ contract MaliciousERC20Token is MockedERC20Token {
         if (shouldAttack && address(targetBond) != address(0) && attackCount < 3) {
             attackCount++;
             try targetBond.redeemFor(attacker, 1) {
-                // If this succeeds, the reentrancy guard failed
-            } catch {
+            // If this succeeds, the reentrancy guard failed
+            }
+                catch {
                 // Expected to fail due to reentrancy guard
             }
         }
@@ -156,9 +158,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
     function _createBondWithMaliciousToken() internal returns (IATKBond result) {
         vm.startPrank(owner);
         IATKBond.BondInitParams memory bondParams = IATKBond.BondInitParams({
-            maturityDate: maturityDate,
-            faceValue: faceValue,
-            denominationAsset: address(maliciousToken)
+            maturityDate: maturityDate, faceValue: faceValue, denominationAsset: address(maliciousToken)
         });
 
         address bondAddress = bondFactory.createBond(
@@ -490,9 +490,7 @@ contract ATKBondReentrancyTest is AbstractATKAssetTest {
         // Create a new bond with normal token
         vm.startPrank(owner);
         IATKBond.BondInitParams memory normalBondParams = IATKBond.BondInitParams({
-            maturityDate: maturityDate,
-            faceValue: faceValue,
-            denominationAsset: address(normalToken)
+            maturityDate: maturityDate, faceValue: faceValue, denominationAsset: address(normalToken)
         });
 
         address normalBondAddress = bondFactory.createBond(
