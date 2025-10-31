@@ -1,7 +1,6 @@
 {
   "title": "Activity",
-  "description": "View all blockchain events related to your account",
-  "loading": "Loading activity...",
+  "description": "All blockchain events for your account",
   "table": {
     "columns": {
       "eventName": "Event",
@@ -15,12 +14,11 @@
       "noSender": "No sender"
     },
     "emptyState": {
-      "title": "No activity found",
-      "description": "No blockchain events have been recorded for your account yet",
-      "loading": "Loading your activity..."
+      "title": "No activity yet",
+      "description": "Your blockchain events will appear here"
     },
     "errors": {
-      "loadFailed": "Failed to load activity. Please try again later."
+      "loadFailed": "Unable to load activity. Try again"
     }
   }
 }

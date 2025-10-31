@@ -1,7 +1,6 @@
 {
   "title": "Aktivität",
   "description": "Alle Blockchain-Ereignisse anzeigen, die mit Ihrem Konto verbunden sind",
-  "loading": "Aktivität wird geladen...",
   "table": {
     "columns": {
       "eventName": "Ereignis",
@@ -16,8 +15,7 @@
     },
     "emptyState": {
       "title": "Keine Aktivität gefunden",
-      "description": "Für Ihr Konto wurden noch keine Blockchain-Ereignisse aufgezeichnet",
-      "loading": "Ihre Aktivität wird geladen..."
+      "description": "Für Ihr Konto wurden noch keine Blockchain-Ereignisse aufgezeichnet"
     },
     "errors": {
       "loadFailed": "Fehler beim Laden der Aktivität. Bitte versuchen Sie es später erneut."

@@ -49,7 +49,7 @@ export function LatestEventsCardList({
         to="/activity"
         className="group flex items-center justify-center gap-2 text-sm font-medium text-primary transition-colors hover:text-primary/80"
       >
-        <span>View all activity</span>
+        <span>{t("widgets.latestEvents.viewAll")}</span>
         <ArrowRight
           className="size-4 transition-transform group-hover:translate-x-1"
           aria-hidden

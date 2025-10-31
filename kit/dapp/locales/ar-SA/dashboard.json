@@ -198,12 +198,23 @@
     },
     "latestEvents": {
       "title": "أحدث الأنشطة",
-      "empty": "لا يوجد شيء للمراجعة حتى الآن",
-      "emptyDescription": "تظهر هنا آخر خمس معاملات ناجحة لك",
-      "viewAll": "عرض الكل",
+      "subtitle": "الأحداث والتحديثات الأخيرة",
+      "empty": "لا يوجد نشاط بعد",
+      "emptyDescription": "ستظهر أحداثك الأخيرة هنا",
+      "emptyMyActions": "لا توجد أحداث منك بعد",
+      "emptyMyActionsDescription": "ستظهر الأحداث التي ترسلها هنا",
+      "emptySystemEvents": "لا توجد أحداث نظام بعد",
+      "emptySystemEventsDescription": "ستظهر أحداث النظام هنا",
+      "viewAll": "عرض جميع الأنشطة",
       "loading": "جارٍ تحميل الأنشطة",
       "error": "لم نتمكن من تحميل الأنشطة",
       "errorRetry": "حاول مرة أخرى",
+      "by": "بواسطة",
+      "tabs": {
+        "allActivity": "جميع الأنشطة",
+        "myActions": "إجراءاتي",
+        "systemEvents": "أحداث النظام"
+      },
       "categories": {
         "assets": "الأصول",
         "bonds": "السندات",

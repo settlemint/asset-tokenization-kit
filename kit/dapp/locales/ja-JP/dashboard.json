@@ -198,12 +198,23 @@
     },
     "latestEvents": {
       "title": "最新のアクティビティ",
-      "empty": "まだレビューするものはありません",
-      "emptyDescription": "ここにあなたの最近の成功した取引が5件表示されます",
-      "viewAll": "すべてを見る",
+      "subtitle": "最近のイベントとアップデート",
+      "empty": "まだアクティビティはありません",
+      "emptyDescription": "最近のイベントがここに表示されます",
+      "emptyMyActions": "まだイベントがありません",
+      "emptyMyActionsDescription": "送信したイベントがここに表示されます",
+      "emptySystemEvents": "まだシステムイベントはありません",
+      "emptySystemEventsDescription": "システムイベントがここに表示されます",
+      "viewAll": "すべてのアクティビティを見る",
       "loading": "アクティビティを読み込んでいます",
       "error": "アクティビティを読み込めませんでした",
       "errorRetry": "再試行してください",
+      "by": "による",
+      "tabs": {
+        "allActivity": "すべてのアクティビティ",
+        "myActions": "マイアクション",
+        "systemEvents": "システムイベント"
+      },
       "categories": {
         "assets": "資産",
         "bonds": "債券",
