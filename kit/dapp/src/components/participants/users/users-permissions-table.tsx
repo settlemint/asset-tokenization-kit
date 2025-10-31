@@ -2,7 +2,7 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Users } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -14,8 +14,6 @@ import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
 import { withErrorBoundary } from "@/components/error/component-error-boundary";
-import { ChangeSystemRolesSheet } from "@/components/manage-dropdown/sheets/change-role/change-system-roles-sheet";
-import { Button } from "@/components/ui/button";
 import { mapUserRoles } from "@/orpc/helpers/role-validation";
 import { orpc } from "@/orpc/orpc-client";
 import type { System } from "@/orpc/routes/system/routes/system.read.schema";
@@ -23,6 +21,10 @@ import { User as UserMe } from "@/orpc/routes/user/routes/user.me.schema";
 import { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { EthereumAddress } from "@atk/zod/ethereum-address";
 import { toast } from "sonner";
+
+interface UsersPermissionsTableProps {
+  onOpenChangeRoles?: (account?: EthereumAddress) => void;
+}
 
 interface User extends UserMe {
   roles: string[];
@@ -35,14 +37,9 @@ const columnHelper = createStrictColumnHelper<User>();
  * Shows user information, registration status, and actions for each user with chunked loading
  */
 export const UsersPermissionsTable = withErrorBoundary(
-  function UsersPermissionsTable() {
+  function UsersPermissionsTable({ onOpenChangeRoles }: UsersPermissionsTableProps) {
     const { t } = useTranslation(["user", "common"]);
     const router = useRouter();
-    const [openChangeRoles, setOpenChangeRoles] = useState(false);
-    const [presetAccount, setPresetAccount] = useState<
-      EthereumAddress | undefined
-    >(undefined);
-
     const { data: system } = useSuspenseQuery(
       orpc.system.read.queryOptions({
         input: {
@@ -86,8 +83,6 @@ export const UsersPermissionsTable = withErrorBoundary(
         }
       })();
     };
-
-    const canGrant = system?.userPermissions?.actions.grantRole ?? false;
 
     /**
      * Defines the column configuration for the users table
@@ -158,16 +153,13 @@ export const UsersPermissionsTable = withErrorBoundary(
               <RowActions
                 system={system}
                 row={row.original}
-                onOpenChangeRoles={(account: EthereumAddress) => {
-                  setPresetAccount(account);
-                  setOpenChangeRoles(true);
-                }}
+                onOpenChangeRoles={onOpenChangeRoles}
               />
             ),
             meta: { type: "none", enableCsvExport: false },
           }),
         ] as ColumnDef<User>[]),
-      [t, system]
+      [t, system, onOpenChangeRoles]
     );
 
     // Handle loading and error states
@@ -196,18 +188,6 @@ export const UsersPermissionsTable = withErrorBoundary(
             enableFilters: true,
             enableExport: true,
             enableViewOptions: true,
-            customActions: (
-              <Button
-                size="sm"
-                onClick={() => {
-                  setPresetAccount(undefined);
-                  setOpenChangeRoles(true);
-                }}
-                disabled={!canGrant}
-              >
-                {t("permissions.table.actions.changeRoles")}
-              </Button>
-            ),
             placeholder: t("permissions.table.search.placeholder"),
           }}
           pagination={{
@@ -225,14 +205,6 @@ export const UsersPermissionsTable = withErrorBoundary(
           }}
           onRowClick={handleRowClick}
         />
-        <ChangeSystemRolesSheet
-          open={openChangeRoles}
-          onOpenChange={setOpenChangeRoles}
-          accessControl={
-            system?.systemAccessManager?.accessControl ?? undefined
-          }
-          presetAccount={presetAccount}
-        />
       </>
     );
   }
@@ -245,7 +217,7 @@ function RowActions({
 }: {
   system?: System;
   row: User;
-  onOpenChangeRoles: (account: EthereumAddress) => void;
+  onOpenChangeRoles?: (account: EthereumAddress) => void;
 }) {
   const { t } = useTranslation("user");
   const canGrantRole = system?.userPermissions?.actions.grantRole ?? false;
@@ -256,7 +228,7 @@ function RowActions({
     {
       label: t("permissions.table.actions.changeRoles"),
       onClick: () => {
-        if (row.wallet) {
+        if (row.wallet && onOpenChangeRoles) {
           onOpenChangeRoles(row.wallet);
         }
       },
