@@ -1,0 +1,693 @@
+---
+title: API based cross border FX
+description:
+  Execute cross-border foreign exchange settlements and bond investments using
+  API-driven workflows. This runbook demonstrates how to orchestrate stablecoin
+  minting, XvP settlement swaps, and bond coupon distributions with automated
+  offchain FX transaction reconciliation via blockchain event monitoring.
+pageTitle: API-based cross-border FX settlement runbook
+tags: [runbook, api, fx, cross-border, settlement, xvp, stablecoin, bonds]
+---
+
+**Primary audience:** Integration developers, treasury operations engineers  
+**Secondary audience:** Payment processors, settlement coordinators
+
+## Overview
+
+This runbook guides you through automating cross-border foreign exchange
+settlements using ATK's XvP (Cross-Value Proposition) settlement system and
+stablecoin infrastructure. You'll learn how to execute FX transactions
+between different currency jurisdictions, handle bond investments with coupon
+payments, and automatically reconcile offchain banking transactions by listening
+to on-chain events.
+
+The workflow demonstrates a real-world scenario where Maybank customers in
+Malaysia and Singapore transact across borders. When User A sends MYR to User B
+(who receives SGD), the system orchestrates:
+
+1. **Tokenization** ? User A's MYR deposit becomes an EUR stablecoin
+   liability from GM Malaysia Entity
+2. **Cross-border swap** ? XvP settlement burns EUR stablecoin and mints SGD
+   stablecoin, transferring liability from GM Malaysia to GM Singapore
+3. **Settlement** ? User B withdraws SGD stablecoin, triggering offchain SGD
+   transfer from GM Singapore Entity
+
+For bond investments, the system handles coupon payments across currencies,
+converting bond yields from EUR to SGD using FX swaps.
+
+<Mermaid
+  chart={`flowchart TB
+    Start(Cross-Border FX Workflow) --> Setup(Setup Phase)
+    Setup --> Scenario1(Cross-Border Settlement)
+    Setup --> Scenario2(Bond Investment)
+    
+    Scenario1 --> Mint1(Mint EUR Stablecoin<br/>to User A)
+    Mint1 --> Swap1(XvP Swap: Burn EUR<br/>Mint SGD)
+    Swap1 --> Withdraw1(User B Withdraws<br/>SGD Stablecoin)
+    
+    Scenario2 --> MintBond(Mint Bond<br/>in GM Wallet)
+    MintBond --> MintSGD(Mint SGD Stablecoin<br/>to User B)
+    MintSGD --> SwapBond(XvP Swap: SGD<br/>for Bond)
+    SwapBond --> Coupon(Coupon Payment<br/>EUR Stablecoin)
+    Coupon --> SwapCoupon(XvP Swap: EUR<br/>to SGD)
+    
+    style Start fill:#5fc9bf,stroke:#3a9d96,stroke-width:2px,color:#fff
+    style Swap1 fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style SwapBond fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+    style SwapCoupon fill:#8571d9,stroke:#654bad,stroke-width:2px,color:#fff
+`}
+/>
+
+## Prerequisites
+
+**Required setup:**
+
+- Platform deployed with XvP settlement addon enabled
+- Admin access to create asset types, users, and wallets
+- API credentials with authentication configured
+- Access to observability dashboards for event monitoring
+- Banking integration for offchain FX transaction execution
+
+**Time estimate:** Initial setup 1-2 hours; API workflow execution varies by
+transaction volume
+
+**Required knowledge:**
+
+- ORPC API client usage and authentication patterns
+- Blockchain event listening and WebSocket subscriptions
+- Cross-border settlement operations
+- Treasury operations and FX transaction processing
+
+## Setup phase: Create infrastructure
+
+Before executing cross-border FX workflows, establish the foundational
+infrastructure: stablecoins, test users, bond assets, and entity wallets.
+
+### Step 1: Create stablecoins
+
+Create EUR and SGD stablecoins to represent liabilities from GM Malaysia and GM
+Singapore entities. These stablecoins will participate in XvP settlement swaps.
+
+**Using the API:**
+
+```typescript
+import { orpc } from "@/lib/orpc/client";
+
+// Create EUR stablecoin
+const eurStablecoin = await orpc.token.create.mutate({
+  input: {
+    name: "EUR Stablecoin",
+    symbol: "EURST",
+    typeId: "stablecoin",
+    decimals: 18,
+    initialSupply: "0", // Start with zero supply
+  },
+});
+
+// Create SGD stablecoin
+const sgdStablecoin = await orpc.token.create.mutate({
+  input: {
+    name: "SGD Stablecoin",
+    symbol: "SGDST",
+    typeId: "stablecoin",
+    decimals: 18,
+    initialSupply: "0",
+  },
+});
+```
+
+**Offchain accounting:** Each stablecoin represents a liability from the
+respective GM entity. When EUR stablecoin is minted to User A, GM Malaysia
+Entity's liability to User A increases. The stablecoin balance reflects this
+liability on-chain.
+
+### Step 2: Create test users
+
+Create User A and User B to represent Maybank customers in different
+jurisdictions.
+
+```typescript
+// Create User A (Malaysia)
+const userA = await orpc.user.create.mutate({
+  input: {
+    email: "user-a@example.com",
+    name: "User A",
+    // Additional user fields...
+  },
+});
+
+// Create User B (Singapore)
+const userB = await orpc.user.create.mutate({
+  input: {
+    email: "user-b@example.com",
+    name: "User B",
+    // Additional user fields...
+  },
+});
+```
+
+**Note:** Ensure both users complete KYC verification before executing
+settlement operations. Compliance checks are enforced at the smart contract
+level during XvP swaps.
+
+### Step 3: Create bond asset
+
+Create a bond token that will be exchanged for SGD stablecoin in the investment
+workflow.
+
+```typescript
+const bondToken = await orpc.token.create.mutate({
+  input: {
+    name: "Corporate Bond 2025",
+    symbol: "BOND25",
+    typeId: "bond",
+    decimals: 18,
+    initialSupply: "0",
+    // Bond-specific configuration
+    maturityDate: "2025-12-31",
+    couponRate: "5.0", // 5% annual coupon
+    denominationAsset: eurStablecoin.address, // Coupons paid in EUR
+  },
+});
+```
+
+### Step 4: Create entity wallets
+
+Create wallets representing GM Malaysia Entity and GM Singapore Entity. These
+wallets hold assets and execute XvP settlements on behalf of their respective
+entities.
+
+```typescript
+// Create GM Malaysia Entity wallet
+const gmMalaysiaWallet = await orpc.user.createWallet.mutate({
+  input: {
+    userId: gmMalaysiaEntityUserId,
+    name: "GM Malaysia Entity Wallet",
+  },
+});
+
+// Create GM Singapore Entity wallet
+const gmSingaporeWallet = await orpc.user.createWallet.mutate({
+  input: {
+    userId: gmSingaporeEntityUserId,
+    name: "GM Singapore Entity Wallet",
+  },
+});
+```
+
+**Offchain accounting:** These wallets represent the on-chain presence of GM
+entities. When liabilities transfer between entities (via XvP swaps), the
+wallets reflect the liability shift on-chain.
+
+## Cross-border settlement workflow
+
+This workflow simulates User A sending MYR to User B, who receives SGD. The
+system orchestrates the cross-border transfer through stablecoin tokenization
+and XvP settlement.
+
+### Step 1: Mint EUR stablecoin to User A
+
+Tokenize User A's MYR deposit by minting EUR stablecoin to their wallet. This
+represents GM Malaysia Entity's liability to User A.
+
+**API call:**
+
+```typescript
+// Mint EUR stablecoin to User A
+const mintResult = await orpc.token.mint.mutate({
+  input: {
+    address: eurStablecoin.address,
+    recipients: [
+      {
+        to: userA.walletAddress,
+        amount: "1000000000000000000000", // 1000 EUR stablecoin (18 decimals)
+      },
+    ],
+  },
+});
+```
+
+**Offchain reconciliation:**
+
+- User A's MYR deposit is transferred from their account to GM Malaysia Entity
+- GM Malaysia Entity's liability to User A increases by 1000 EUR equivalent
+- The stablecoin balance on-chain represents this liability
+
+**Event monitoring:** Listen for `Transfer` events from the zero address to
+confirm minting:
+
+```typescript
+// Example event listener (pseudocode)
+contract.on("Transfer", (from, to, amount) => {
+  if (from === ZERO_ADDRESS && to === userA.walletAddress) {
+    // Mint confirmed, trigger offchain MYR transfer
+    executeOffchainMYRTransfer(userA, amount);
+  }
+});
+```
+
+### Step 2: Create XvP swap contract
+
+Create an XvP settlement that burns User A's EUR stablecoin and mints SGD
+stablecoin to User B using the current FX rate.
+
+**FX rate calculation:** Determine the EUR-to-SGD exchange rate (e.g., 1 EUR =
+1.5 SGD).
+
+**API call (XvP settlement creation):**
+
+```typescript
+// Note: XvP API endpoints will be available when fully integrated
+// This is the expected structure
+const swapContract = await orpc.xvp.createSettlement.mutate({
+  input: {
+    participants: [
+      {
+        address: userA.walletAddress,
+        token: eurStablecoin.address,
+        amount: "1000000000000000000000", // 1000 EUR
+        action: "burn", // User A burns EUR
+      },
+      {
+        address: userB.walletAddress,
+        token: sgdStablecoin.address,
+        amount: "1500000000000000000000", // 1500 SGD (1.5x rate)
+        action: "mint", // User B receives SGD
+      },
+    ],
+    fxRate: "1.5", // EUR to SGD
+    expiresAt: Date.now() + 3600000, // 1 hour expiry
+  },
+});
+```
+
+**Offchain reconciliation:**
+
+- GM Malaysia Entity's liability to User A decreases (EUR stablecoin burned)
+- GM Singapore Entity's liability to User B increases (SGD stablecoin minted)
+- Official FX transaction executed between GM Malaysia Entity and GM Singapore
+  Entity: MYR to SGD conversion at the specified rate
+
+**Event monitoring:** Listen for XvP settlement events:
+
+```typescript
+// Listen for XvP settlement execution
+xvpContract.on("SettlementExecuted", (settlementId, participants) => {
+  // Settlement completed atomically
+  // Trigger offchain FX transaction creation
+  createOffchainFXTransaction({
+    fromEntity: "GM Malaysia",
+    toEntity: "GM Singapore",
+    fromCurrency: "MYR",
+    toCurrency: "SGD",
+    amount: calculateMYRAmount(participants),
+    fxRate: "1.5",
+    settlementId,
+  });
+});
+```
+
+### Step 3: User B withdraws SGD stablecoin
+
+User B burns their SGD stablecoin, triggering an offchain SGD transfer from GM
+Singapore Entity to User B's account.
+
+**API call:**
+
+```typescript
+const burnResult = await orpc.token.burn.mutate({
+  input: {
+    address: sgdStablecoin.address,
+    from: userB.walletAddress,
+    amount: "1500000000000000000000", // 1500 SGD
+  },
+});
+```
+
+**Offchain reconciliation:**
+
+- SGD stablecoin is burned, reducing GM Singapore Entity's liability to User
+  B
+- SGD is transferred from GM Singapore Entity to User B's account
+- Cross-border settlement completes
+
+**Event monitoring:**
+
+```typescript
+// Listen for burn events
+contract.on("Transfer", (from, to, amount) => {
+  if (to === ZERO_ADDRESS && from === userB.walletAddress) {
+    // Burn confirmed, execute offchain SGD transfer
+    executeOffchainSGDTransfer(userB, amount);
+  }
+});
+```
+
+## Bond investment workflow
+
+This workflow demonstrates how User B invests SGD in a bond, receives coupon
+payments in EUR, and converts them to SGD through XvP swaps.
+
+### Step 1: Mint bond in GM wallet
+
+Mint the bond token to GM Malaysia Entity's wallet, representing the bond
+inventory available for investment.
+
+```typescript
+const bondMint = await orpc.token.mint.mutate({
+  input: {
+    address: bondToken.address,
+    recipients: [
+      {
+        to: gmMalaysiaWallet.address,
+        amount: "100000000000000000000", // 100 bond tokens
+      },
+    ],
+  },
+});
+```
+
+### Step 2: Mint SGD stablecoin to User B
+
+Simulate User B's SGD deposit by minting SGD stablecoin to their wallet. This
+represents GM Singapore Entity's liability to User B.
+
+```typescript
+const sgdMint = await orpc.token.mint.mutate({
+  input: {
+    address: sgdStablecoin.address,
+    recipients: [
+      {
+        to: userB.walletAddress,
+        amount: "1000000000000000000000", // 1000 SGD
+      },
+    ],
+  },
+});
+```
+
+**Offchain reconciliation:**
+
+- User B's SGD deposit transfers to GM Singapore Entity
+- GM Singapore Entity's liability to User B increases by 1000 SGD
+- Stablecoin balance reflects this liability on-chain
+
+### Step 3: Create XvP swap: SGD for bond
+
+Execute an XvP settlement that swaps User B's SGD stablecoin for GM Malaysia
+Entity's bond tokens.
+
+```typescript
+const bondSwap = await orpc.xvp.createSettlement.mutate({
+  input: {
+    participants: [
+      {
+        address: userB.walletAddress,
+        token: sgdStablecoin.address,
+        amount: "1000000000000000000000", // 1000 SGD
+        action: "burn",
+      },
+      {
+        address: gmMalaysiaWallet.address,
+        token: bondToken.address,
+        amount: "100000000000000000000", // 100 bond tokens
+        action: "transfer", // Transfer from GM wallet to User B
+      },
+    ],
+    expiresAt: Date.now() + 3600000,
+  },
+});
+```
+
+**Offchain reconciliation:**
+
+- GM Singapore Entity's liability to User B decreases (SGD stablecoin burned)
+- GM Malaysia Entity now holds liability for the bond investment
+- Official FX transaction: GM Singapore Entity to GM Malaysia Entity, SGD to
+  MYR conversion
+
+**Event monitoring:**
+
+```typescript
+xvpContract.on("SettlementExecuted", (settlementId, participants) => {
+  // Bond swap completed
+  // User B now holds bond tokens
+  // Trigger offchain FX transaction
+  createOffchainFXTransaction({
+    fromEntity: "GM Singapore",
+    toEntity: "GM Malaysia",
+    fromCurrency: "SGD",
+    toCurrency: "MYR",
+    amount: calculateSGDPayment(participants),
+    settlementId,
+  });
+});
+```
+
+### Step 4: Coupon payment distribution
+
+At the coupon date, the bond's yield management system distributes EUR
+stablecoin to bond holders (User B).
+
+**Note:** The yield management system automatically distributes coupon payments
+based on the bond's `denominationAsset` (EUR stablecoin). User B receives EUR
+stablecoin in their wallet.
+
+**Event monitoring for coupon payment:**
+
+```typescript
+// Listen for yield distribution events
+yieldContract.on("YieldDistributed", (token, recipient, amount) => {
+  if (token === bondToken.address && recipient === userB.walletAddress) {
+    // Coupon payment received in EUR
+    // Trigger conversion workflow to SGD
+    initiateCouponConversion(recipient, amount);
+  }
+});
+```
+
+### Step 5: Convert coupon EUR to SGD
+
+User B wants to receive SGD instead of EUR for the coupon payment. Create an
+XvP swap to burn EUR stablecoin and mint SGD stablecoin.
+
+```typescript
+const couponSwap = await orpc.xvp.createSettlement.mutate({
+  input: {
+    participants: [
+      {
+        address: userB.walletAddress,
+        token: eurStablecoin.address,
+        amount: couponAmount, // EUR received from coupon
+        action: "burn",
+      },
+      {
+        address: userB.walletAddress,
+        token: sgdStablecoin.address,
+        amount: calculateSGDEquivalent(couponAmount, fxRate), // Converted SGD
+        action: "mint",
+      },
+    ],
+    fxRate: "1.5", // EUR to SGD
+    expiresAt: Date.now() + 3600000,
+  },
+});
+```
+
+**Offchain reconciliation:**
+
+- GM Malaysia Entity's liability to User B (interest payment) transfers to GM
+  Singapore Entity in SGD
+- Official FX transaction: GM Malaysia Entity to GM Singapore Entity, MYR to
+  SGD conversion for the coupon interest amount
+
+## API integration patterns
+
+### Event listening architecture
+
+To automate offchain FX transaction creation, implement a robust event
+listening system that monitors blockchain events and triggers reconciliation
+workflows.
+
+**WebSocket subscription pattern:**
+
+```typescript
+import { createPublicClient, webSocket } from "viem";
+
+const client = createPublicClient({
+  transport: webSocket("wss://your-blockchain-node"),
+});
+
+// Subscribe to Transfer events for stablecoin mints/burns
+const unsubscribe = client.watchEvent({
+  event: parseAbiItem("event Transfer(address indexed from, address indexed to, uint256 value)"),
+  address: [eurStablecoin.address, sgdStablecoin.address],
+  onLogs: (logs) => {
+    for (const log of logs) {
+      if (log.args.from === ZERO_ADDRESS) {
+        // Mint event - trigger offchain deposit processing
+        handleMintEvent(log);
+      } else if (log.args.to === ZERO_ADDRESS) {
+        // Burn event - trigger offchain withdrawal processing
+        handleBurnEvent(log);
+      }
+    }
+  },
+});
+
+// Subscribe to XvP settlement events
+const xvpUnsubscribe = client.watchEvent({
+  event: parseAbiItem(
+    "event SettlementExecuted(uint256 indexed settlementId, address[] participants)"
+  ),
+  address: xvpSettlementContract.address,
+  onLogs: (logs) => {
+    for (const log of logs) {
+      // Settlement executed - create offchain FX transaction
+      handleSettlementEvent(log);
+    }
+  },
+});
+```
+
+**Event handler implementation:**
+
+```typescript
+async function handleSettlementEvent(log: Log) {
+  const { settlementId, participants } = log.args;
+
+  // Query settlement details from TheGraph subgraph
+  const settlement = await querySubgraph(`
+    query GetSettlement($id: ID!) {
+      settlement(id: $id) {
+        participants {
+          address
+          token
+          amount
+          action
+        }
+        fxRate
+        executedAt
+      }
+    }
+  `);
+
+  // Determine FX transaction details
+  const fxTransaction = {
+    settlementId: settlementId.toString(),
+    fromEntity: determineEntity(settlement.participants[0]),
+    toEntity: determineEntity(settlement.participants[1]),
+    fromCurrency: getCurrencyFromToken(settlement.participants[0].token),
+    toCurrency: getCurrencyFromToken(settlement.participants[1].token),
+    amount: calculateOffchainAmount(settlement),
+    fxRate: settlement.fxRate,
+    executedAt: settlement.executedAt,
+  };
+
+  // Create offchain FX transaction record
+  await createFXTransactionRecord(fxTransaction);
+
+  // Trigger banking system integration
+  await executeBankingFXTransaction(fxTransaction);
+}
+```
+
+### Error handling and retry logic
+
+Implement resilient error handling for API calls and event processing:
+
+```typescript
+async function executeWithRetry<T>(
+  operation: () => Promise<T>,
+  maxRetries = 3,
+  delay = 1000
+): Promise<T> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (attempt === maxRetries) throw error;
+
+      // Exponential backoff
+      await new Promise((resolve) => setTimeout(resolve, delay * attempt));
+    }
+  }
+  throw new Error("Max retries exceeded");
+}
+
+// Usage
+const mintResult = await executeWithRetry(() =>
+  orpc.token.mint.mutate({
+    input: {
+      address: eurStablecoin.address,
+      recipients: [{ to: userA.walletAddress, amount: "1000" }],
+    },
+  })
+);
+```
+
+### Observability integration
+
+Monitor cross-border FX operations through the observability dashboards:
+
+- **Transaction latency** ? Track API response times for mint, burn, and XvP
+  settlement operations
+- **Settlement success rate** ? Monitor XvP settlement execution success/failure
+  rates
+- **Event processing lag** ? Measure time between on-chain events and offchain
+  reconciliation
+- **FX transaction volume** ? Track total FX transaction value processed
+  through the system
+
+Access these metrics through the **Settlement Operations** dashboard in your
+observability stack.
+
+## Workflow validation
+
+After executing workflows, validate correct operation:
+
+1. **On-chain verification:**
+   - Confirm stablecoin balances match expected liabilities
+   - Verify XvP settlements executed atomically
+   - Check bond token ownership transferred correctly
+
+2. **Offchain reconciliation:**
+   - Verify FX transactions created in banking system
+   - Confirm entity liability records updated
+   - Validate currency conversion amounts match FX rates
+
+3. **Event processing:**
+   - Confirm all expected events were captured
+   - Verify offchain transactions triggered correctly
+   - Check for any missed events or processing delays
+
+## Common issues and troubleshooting
+
+**Issue: XvP settlement fails due to insufficient balance**
+
+- **Solution:** Verify both participants have sufficient token balances before
+  creating the settlement. Check token balances via `orpc.token.read.query()`.
+
+**Issue: Events not triggering offchain reconciliation**
+
+- **Solution:** Verify WebSocket connection stability, check event filter
+  addresses match deployed contracts, and ensure event handlers are registered
+  before transactions execute.
+
+**Issue: FX rate mismatch between on-chain and offchain**
+
+- **Solution:** Implement FX rate synchronization from a trusted oracle before
+  creating XvP settlements. Use `orpc.exchangeRates.sync.mutate()` to update
+  rates.
+
+For additional troubleshooting guidance, see the
+[Troubleshooting guide](/docs/user-guides/troubleshooting/transactions).
+
+## Next steps
+
+- Review [XvP settlement architecture](/docs/architecture/smart-contracts/addon-modules#xvp-settlement-atomic-cross-chain-delivery)
+  for deeper technical understanding
+- Explore [API reference](/docs/developer-guides/api-integration/api-reference)
+  for complete endpoint documentation
+- Configure [Observability dashboards](/docs/developer-guides/deployment-ops/observability-monitoring)
+  for production monitoring
