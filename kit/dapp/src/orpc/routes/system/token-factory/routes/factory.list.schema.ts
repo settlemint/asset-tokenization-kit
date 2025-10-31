@@ -58,7 +58,7 @@ export const TokenFactoryListSchema = SortableListSchema.extend({
     .boolean()
     .optional()
     .describe("Filter factories by whether they have created tokens"),
-  orderBy: z.enum(["id", "name", "typeId"]).optional(),
+  orderBy: z.enum(["id", "name", "typeId"]).optional().default("id"),
 });
 
 /**
