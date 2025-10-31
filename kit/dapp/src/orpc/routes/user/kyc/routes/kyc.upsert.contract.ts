@@ -10,7 +10,7 @@ export const kycUpsertContract = baseContract
     path: "/user/{userId}/kyc/upsert",
     description: "Create or update a user's KYC profile",
     successDescription: "KYC profile saved",
-    tags: ["user", "kyc"],
+    tags: ["kyc"],
   })
   .input(KycUpsertInputSchema)
   .output(KycUpsertOutputSchema);

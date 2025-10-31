@@ -70,12 +70,84 @@ const TrustedIssuerStatsResponseSchema = z.object({
     .nullable(),
 });
 
-export const statsTrustedIssuerStats =
-  systemRouter.system.stats.trustedIssuerStats.handler(
+export const statsTrustedIssuerStatsByRange =
+  systemRouter.system.stats.trustedIssuerStatsByRange.handler(
     async ({ context, input }) => {
       const now = new Date();
       const { interval, fromMicroseconds, toMicroseconds, range } =
         buildStatsRangeQuery(input, {
+          now,
+        });
+
+      const trustedIssuersRegistryId =
+        context.system.trustedIssuersRegistry.id.toLowerCase();
+
+      const response = await context.theGraphClient.query(
+        TRUSTED_ISSUER_STATS_QUERY,
+        {
+          input: {
+            trustedIssuersRegistryId,
+            trustedIssuersRegistryIdString: trustedIssuersRegistryId,
+            interval,
+            from: fromMicroseconds,
+            to: toMicroseconds,
+          },
+          output: TrustedIssuerStatsResponseSchema,
+        }
+      );
+
+      const results = [
+        ...response.baseline.map((item) => ({
+          timestamp: item.timestamp,
+          totalAddedTrustedIssuers: item.totalAddedTrustedIssuers,
+          totalActiveTrustedIssuers: item.totalActiveTrustedIssuers,
+          totalRemovedTrustedIssuers: item.totalRemovedTrustedIssuers,
+        })),
+        ...response.trustedIssuerStats.map((item) => ({
+          timestamp: item.timestamp,
+          totalAddedTrustedIssuers: item.totalAddedTrustedIssuers,
+          totalActiveTrustedIssuers: item.totalActiveTrustedIssuers,
+          totalRemovedTrustedIssuers: item.totalRemovedTrustedIssuers,
+        })),
+        {
+          timestamp: range.to,
+          totalAddedTrustedIssuers:
+            response.current?.totalAddedTrustedIssuers ?? 0,
+          totalActiveTrustedIssuers:
+            response.current?.totalActiveTrustedIssuers ?? 0,
+          totalRemovedTrustedIssuers:
+            response.current?.totalRemovedTrustedIssuers ?? 0,
+        },
+      ];
+
+      const data = createTimeSeries(
+        results,
+        [
+          "totalAddedTrustedIssuers",
+          "totalActiveTrustedIssuers",
+          "totalRemovedTrustedIssuers",
+        ],
+        {
+          range,
+          aggregation: "last",
+          accumulation: "max",
+          historical: true,
+        }
+      );
+
+      return {
+        range,
+        data,
+      };
+    }
+  );
+
+export const statsTrustedIssuerStatsByPreset =
+  systemRouter.system.stats.trustedIssuerStatsByPreset.handler(
+    async ({ context, input }) => {
+      const now = new Date();
+      const { interval, fromMicroseconds, toMicroseconds, range } =
+        buildStatsRangeQuery(input.preset, {
           now,
         });
 

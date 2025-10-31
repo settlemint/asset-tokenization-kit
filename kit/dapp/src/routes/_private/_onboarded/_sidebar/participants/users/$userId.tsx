@@ -66,11 +66,11 @@ export const Route = createFileRoute(
     }
 
     const user = await queryClient.ensureQueryData(
-      orpc.user.read.queryOptions({ input: { userId } })
+      orpc.user.readByUserId.queryOptions({ input: { userId } })
     );
     const identity = await queryClient
       .ensureQueryData(
-        orpc.system.identity.read.queryOptions({
+        orpc.system.identity.readByWallet.queryOptions({
           input: { wallet: user.wallet ?? "" },
         })
       )
@@ -111,7 +111,7 @@ function RouteComponent() {
   const { orpc } = routeContext;
   // Subscribe to live user data so UI reacts to updates
   const { data: queriedUser } = useQuery(
-    orpc.user.read.queryOptions({
+    orpc.user.readByUserId.queryOptions({
       input: { userId },
     })
   );

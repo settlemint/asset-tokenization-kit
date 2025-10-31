@@ -16,7 +16,7 @@ vi.mock("@/orpc/orpc-client", () => ({
   orpc: {
     system: {
       stats: {
-        portfolio: {
+        portfolioByPreset: {
           queryOptions: vi.fn(
             ({
               enabled,
@@ -25,16 +25,19 @@ vi.mock("@/orpc/orpc-client", () => ({
             }: { enabled?: boolean; input?: unknown } = {}) => ({
               ...rest,
               enabled,
-              queryKey: ["system", "stats", "portfolio", input],
+              queryKey: ["system", "stats", "portfolioByPreset", input],
               queryFn: vi.fn(() => {
-                const typedInput = input as StatsRangePreset | undefined;
+                const typedInput = input as
+                  | { preset: StatsRangePreset }
+                  | undefined;
+                const preset = typedInput?.preset;
 
                 let interval: "day" | "hour" = "day";
                 let from = defaultFrom;
                 let to = defaultTo;
 
                 // Handle preset strings
-                if (typedInput === "trailing24Hours") {
+                if (preset === "trailing24Hours") {
                   interval = "hour";
                   from = new Date("2024-01-31T00:00:00Z");
                   to = defaultTo;
@@ -203,6 +206,14 @@ vi.mock("@tanstack/react-query", async () => {
       }
 
       return { data: undefined };
+    }),
+    useQueries: vi.fn(({ queries }) => {
+      return queries.map((query: { queryFn: () => Promise<unknown> }) => ({
+        data: undefined,
+        isLoading: false,
+        error: null,
+        queryFn: query.queryFn,
+      }));
     }),
   };
 });

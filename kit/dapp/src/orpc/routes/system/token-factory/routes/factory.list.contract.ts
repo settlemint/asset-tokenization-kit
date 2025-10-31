@@ -10,7 +10,7 @@ export const factoryListContract = baseContract
     path: "/system/token-factory",
     description: "List all token factories",
     successDescription: "List of token factories",
-    tags: ["system", "token-factory"],
+    tags: ["token-factory"],
   })
   .input(TokenFactoryListSchema)
   .output(FactoryListSchema);

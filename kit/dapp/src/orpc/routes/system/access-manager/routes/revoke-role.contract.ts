@@ -4,7 +4,7 @@ import {
   RevokeRoleOutputSchema,
 } from "./revoke-role.schema";
 
-const TAGS = ["system", "access-manager"];
+const TAGS = ["access-manager"];
 
 export const revokeRoleContract = baseContract
   .route({

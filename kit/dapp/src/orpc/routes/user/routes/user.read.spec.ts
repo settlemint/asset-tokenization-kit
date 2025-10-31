@@ -78,7 +78,7 @@ describe("User read", () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       const client = getOrpcClient(headers);
 
-      const user = await client.user.read({
+      const user = await client.user.readByUserId({
         userId: testUserData.id,
       });
 
@@ -96,8 +96,8 @@ describe("User read", () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       const client = getOrpcClient(headers);
 
-      const user = await client.user.read({
-        wallet: testUserData.wallet,
+      const user = await client.user.readByUserId({
+        userId: testUserData.wallet,
       });
 
       expect(user).toBeDefined();
@@ -113,7 +113,7 @@ describe("User read", () => {
       const client = getOrpcClient(headers);
 
       // Read first user
-      const user1 = await client.user.read({
+      const user1 = await client.user.readByUserId({
         userId: testUserData.id,
       });
 
@@ -121,7 +121,7 @@ describe("User read", () => {
       expect(user1.id).toBe(testUserData.id);
 
       // Read second user
-      const user2 = await client.user.read({
+      const user2 = await client.user.readByUserId({
         userId: otherUserData.id,
       });
 
@@ -138,7 +138,7 @@ describe("User read", () => {
       const client = getOrpcClient(headers);
 
       await expect(
-        client.user.read(
+        client.user.readByUserId(
           {
             userId: testUserData.id,
           },
@@ -158,9 +158,9 @@ describe("User read", () => {
       const client = getOrpcClient(headers);
 
       await expect(
-        client.user.read(
+        client.user.readByUserId(
           {
-            wallet: testUserData.wallet,
+            userId: testUserData.wallet,
           },
           {
             context: {
@@ -177,7 +177,7 @@ describe("User read", () => {
       const client = getOrpcClient(headers);
 
       await expect(
-        client.user.read(
+        client.user.readByUserId(
           {
             userId: unauthorizedUserData.id,
           },
@@ -195,7 +195,7 @@ describe("User read", () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       const client = getOrpcClient(headers);
 
-      const user = await client.user.read({
+      const user = await client.user.readByUserId({
         userId: otherUserData.id,
       });
 
@@ -212,7 +212,7 @@ describe("User read", () => {
       const nonExistentUserId = randomUUID();
 
       await expect(
-        client.user.read(
+        client.user.readByUserId(
           {
             userId: nonExistentUserId,
           },
@@ -233,9 +233,9 @@ describe("User read", () => {
       const nonExistentWallet = "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef";
 
       await expect(
-        client.user.read(
+        client.user.readByUserId(
           {
-            wallet: nonExistentWallet,
+            userId: nonExistentWallet,
           },
           {
             context: {
@@ -256,7 +256,7 @@ describe("User read", () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       const client = getOrpcClient(headers);
 
-      const user = await client.user.read({
+      const user = await client.user.readByUserId({
         userId: userWithoutKycData.id,
       });
 
@@ -275,12 +275,12 @@ describe("User read", () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       const client = getOrpcClient(headers);
 
-      const userById = await client.user.read({
+      const userById = await client.user.readByUserId({
         userId: testUserData.id,
       });
 
-      const userByWallet = await client.user.read({
-        wallet: testUserData.wallet,
+      const userByWallet = await client.user.readByUserId({
+        userId: testUserData.wallet,
       });
 
       expect(userById).toEqual(userByWallet);
@@ -290,7 +290,7 @@ describe("User read", () => {
       const headers = await signInWithUser(DEFAULT_ADMIN);
       const client = getOrpcClient(headers);
 
-      const user = await client.user.read({
+      const user = await client.user.readByUserId({
         userId: testUserData.id,
       });
 
@@ -307,7 +307,7 @@ describe("User read", () => {
       const client = getOrpcClient(headers);
 
       await expect(
-        client.user.read(
+        client.user.readByUserId(
           {
             userId: testUserData.id,
           },

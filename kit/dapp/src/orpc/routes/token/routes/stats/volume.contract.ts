@@ -10,7 +10,7 @@ export const statsVolumeContract = baseContract
     path: "/token/stats/{tokenAddress}/volume",
     description: "Get total volume history statistics for a specific token",
     successDescription: "Token total volume history statistics",
-    tags: ["token", "stats", "asset", "volume"],
+    tags: ["token"],
   })
   .input(StatsVolumeInputSchema)
   .output(StatsVolumeOutputSchema);

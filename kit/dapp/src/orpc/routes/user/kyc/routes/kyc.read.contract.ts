@@ -7,7 +7,7 @@ export const kycReadContract = baseContract
     path: "/user/{userId}/kyc/read",
     description: "Read a user's KYC profile",
     successDescription: "KYC profile details",
-    tags: ["user", "kyc"],
+    tags: ["kyc"],
   })
   .input(KycReadInputSchema)
   .output(KycReadOutputSchema);

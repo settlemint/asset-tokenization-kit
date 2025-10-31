@@ -31,10 +31,7 @@ import {
   UserListOutputSchema,
 } from "@/orpc/routes/user/routes/user.list.schema";
 import { UserMeSchema } from "@/orpc/routes/user/routes/user.me.schema";
-import {
-  UserReadInputSchema,
-  UserReadOutputSchema,
-} from "@/orpc/routes/user/routes/user.read.schema";
+import { UserReadOutputSchema } from "@/orpc/routes/user/routes/user.read.schema";
 import {
   UserSearchInputSchema,
   UserSearchOutputSchema,
@@ -52,6 +49,7 @@ import {
   UserStatsUserCountOutputSchema,
 } from "@/orpc/routes/user/routes/user.stats.user-count.schema";
 import { baseContract } from "../../procedures/base.contract";
+import { z } from "zod";
 
 /**
  * Get current authenticated user information.
@@ -92,7 +90,7 @@ const actions = baseContract
     path: "/user/me/actions",
     description: "List actions available to the current user",
     successDescription: "User actions retrieved successfully",
-    tags: ["user", "actions"],
+    tags: ["user"],
   })
   .input(ActionsListInputSchema)
   .output(ActionsListResponseSchema);
@@ -153,15 +151,34 @@ const adminList = baseContract
  * @input UserReadInputSchema - User ID or wallet address
  * @returns UserReadOutputSchema - Complete user information
  */
-const read = baseContract
+const readByUserId = baseContract
   .route({
     method: "GET",
-    path: "/user/read",
-    description: "Get specific user by ID or wallet address",
+    path: "/user/by-id/{userId}",
+    description: "Get specific user by internal user ID",
     successDescription: "User found",
     tags: ["user"],
   })
-  .input(UserReadInputSchema)
+  .input(
+    z.object({
+      userId: z.string().describe("The internal database ID of the user"),
+    })
+  )
+  .output(UserReadOutputSchema);
+
+const readByWallet = baseContract
+  .route({
+    method: "GET",
+    path: "/user/by-wallet/{wallet}",
+    description: "Get specific user by wallet address",
+    successDescription: "User found",
+    tags: ["user"],
+  })
+  .input(
+    z.object({
+      wallet: z.string().describe("The Ethereum wallet address of the user"),
+    })
+  )
   .output(UserReadOutputSchema);
 
 /**
@@ -193,7 +210,7 @@ const statsUserCount = baseContract
     path: "/user/stats/user-count",
     description: "Get user count statistics",
     successDescription: "User count statistics",
-    tags: ["user", "stats"],
+    tags: ["user"],
   })
   .input(UserStatsUserCountInputSchema)
   .output(UserStatsUserCountOutputSchema);
@@ -204,7 +221,7 @@ const statsGrowthOverTime = baseContract
     path: "/user/stats/growth-over-time",
     description: "Get user growth over time",
     successDescription: "User growth data",
-    tags: ["user", "stats"],
+    tags: ["user"],
   })
   .input(UserStatsGrowthOverTimeInputSchema)
   .output(UserStatsGrowthOverTimeOutputSchema);
@@ -215,7 +232,7 @@ export const assets = baseContract
     path: "/user/assets",
     description: "Get all token assets held by a user",
     successDescription: "List of token balances for the user",
-    tags: ["user", "token"],
+    tags: ["user"],
   })
   .input(UserAssetsInputSchema)
   .output(UserAssetsResponseSchema);
@@ -226,7 +243,7 @@ export const events = baseContract
     path: "/user/events",
     description: "Get recent blockchain events for the authenticated user",
     successDescription: "List of recent events",
-    tags: ["user", "events"],
+    tags: ["user"],
   })
   .input(UserEventsInputSchema)
   .output(UserEventsResponseSchema);
@@ -242,7 +259,8 @@ export const userContract = {
   search,
   list,
   adminList,
-  read,
+  readByUserId,
+  readByWallet,
   stats,
   statsGrowthOverTime,
   statsUserCount,

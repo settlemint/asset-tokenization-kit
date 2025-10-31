@@ -38,7 +38,7 @@ describe("Identity read (integration)", () => {
       const userHeaders = await signInWithUser(targetTestUser.user);
       const userClient = getOrpcClient(userHeaders);
 
-      const result = await userClient.system.identity.read({
+      const result = await userClient.system.identity.readByWallet({
         wallet: targetUserData.wallet,
       });
 
@@ -56,7 +56,7 @@ describe("Identity read (integration)", () => {
     });
 
     it("returns identity when admin reads any identity by wallet", async () => {
-      const result = await adminClient.system.identity.read({
+      const result = await adminClient.system.identity.readByWallet({
         wallet: targetUserData.wallet,
       });
 
@@ -71,7 +71,7 @@ describe("Identity read (integration)", () => {
 
     it("throws NOT_FOUND when wallet does not exist", async () => {
       await expect(
-        adminClient.system.identity.read(
+        adminClient.system.identity.readByWallet(
           {
             wallet: "0x1111111111111111111111111111111111111111",
           },
@@ -86,7 +86,7 @@ describe("Identity read (integration)", () => {
 
     it("prevents investor from reading other identities by wallet", async () => {
       await expect(
-        investorClient.system.identity.read(
+        investorClient.system.identity.readByWallet(
           {
             wallet: targetUserData.wallet,
           },
@@ -105,15 +105,15 @@ describe("Identity read (integration)", () => {
   describe("Reading identity by identity ID", () => {
     it("returns identity when user reads their own identity by ID", async () => {
       // First get the identity ID from reading by wallet
-      const identityByWallet = await adminClient.system.identity.read({
+      const identityByWallet = await adminClient.system.identity.readByWallet({
         wallet: targetUserData.wallet,
       });
 
       const userHeaders = await signInWithUser(targetTestUser.user);
       const userClient = getOrpcClient(userHeaders);
 
-      const result = await userClient.system.identity.read({
-        identityId: identityByWallet.id,
+      const result = await userClient.system.identity.readByWallet({
+        wallet: identityByWallet.id,
       });
 
       expect(result).toBeDefined();
@@ -127,12 +127,12 @@ describe("Identity read (integration)", () => {
 
     it("returns identity when admin reads any identity by ID", async () => {
       // First get the identity ID from reading by wallet
-      const identityByWallet = await adminClient.system.identity.read({
+      const identityByWallet = await adminClient.system.identity.readByWallet({
         wallet: targetUserData.wallet,
       });
 
-      const result = await adminClient.system.identity.read({
-        identityId: identityByWallet.id,
+      const result = await adminClient.system.identity.readByWallet({
+        wallet: identityByWallet.id,
       });
 
       expect(result).toBeDefined();
@@ -146,9 +146,9 @@ describe("Identity read (integration)", () => {
 
     it("throws NOT_FOUND when identity ID does not exist", async () => {
       await expect(
-        adminClient.system.identity.read(
+        adminClient.system.identity.readByWallet(
           {
-            identityId: "0x1111111111111111111111111111111111111111",
+            wallet: "0x1111111111111111111111111111111111111111",
           },
           {
             context: {
@@ -161,14 +161,14 @@ describe("Identity read (integration)", () => {
 
     it("throws FORBIDDEN when investor tries to read other identity by ID", async () => {
       // First get the identity ID from reading by wallet
-      const identityByWallet = await adminClient.system.identity.read({
+      const identityByWallet = await adminClient.system.identity.readByWallet({
         wallet: targetUserData.wallet,
       });
 
       await expect(
-        investorClient.system.identity.read(
+        investorClient.system.identity.readByWallet(
           {
-            identityId: identityByWallet.id,
+            wallet: identityByWallet.id,
           },
           {
             context: {
@@ -182,7 +182,7 @@ describe("Identity read (integration)", () => {
 
   describe("Data structure validation", () => {
     it("validates identity structure fields", async () => {
-      const result = await adminClient.system.identity.read({
+      const result = await adminClient.system.identity.readByWallet({
         wallet: targetUserData.wallet,
       });
 
