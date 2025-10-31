@@ -1,15 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { BurnSheet } from "./burn-sheet";
 import { useAppForm } from "@/hooks/use-app-form";
+import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { from } from "dnum";
-import type { Token } from "@/orpc/routes/token/routes/token.read.schema";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { BurnSheet } from "./burn-sheet";
 
 // i18n mock
 vi.mock("react-i18next", () => ({
@@ -24,7 +24,9 @@ vi.mock("react-i18next", () => ({
 
 // toast mock
 vi.mock("sonner", () => ({
-  toast: { promise: vi.fn((p) => p) },
+  toast: {
+    promise: vi.fn((promise) => ({ unwrap: () => promise })),
+  },
 }));
 
 // Mock useQuery to provide controlled data
