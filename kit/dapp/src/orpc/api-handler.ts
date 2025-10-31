@@ -17,6 +17,7 @@
  * @see {@link https://spec.openapis.org/oas/latest.html} - OpenAPI specification
  */
 
+import { auth } from "@/lib/auth";
 import { normalizeHeaders } from "@/orpc/context/context";
 import { logUnexpectedError } from "@/orpc/helpers/error";
 import { router } from "@/orpc/routes/router";
@@ -30,7 +31,6 @@ import { CORSPlugin } from "@orpc/server/plugins";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import pkgjson from "../../package.json";
-import { auth } from "@/lib/auth";
 
 /**
  * OpenAPI handler configuration.
@@ -55,19 +55,7 @@ const handler = new OpenAPIHandler(router, {
       allowHeaders: ["Content-Type", "X-Api-Key"],
       exposeHeaders: ["Content-Disposition", "X-Retry-After"],
       credentials: true,
-      origin: (origin) => {
-        // Allowlist of trusted origins
-        const allowedOrigins = [
-          "http://localhost:3000",
-          "http://127.0.0.1:3000",
-          ...(import.meta.env.VITE_ALLOWED_ORIGINS
-            ? import.meta.env.VITE_ALLOWED_ORIGINS.split(",")
-            : []),
-        ];
-        return origin && allowedOrigins.includes(origin)
-          ? origin
-          : (allowedOrigins[0] ?? false);
-      },
+      origin: (origin) => origin || "http://localhost:3000",
     }),
 
     /**
