@@ -4,7 +4,7 @@
   "activity": "Activity",
   "assetClasses": "Asset classes",
   "assetManagement": "Asset management",
-  "assetManagementNotAuthorized": "You are not authorized to manage assets.\nYou do not have the token manager role for the system.",
+  "assetManagementNotAuthorized": "You are not authorized to manage assets.\nYou do not have the token manager role .",
   "cashEquivalent": "Cash equivalent",
   "fixedIncome": "Fixed income",
   "flexibleIncome": "Flexible income",
