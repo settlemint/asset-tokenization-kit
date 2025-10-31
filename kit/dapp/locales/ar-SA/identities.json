@@ -165,7 +165,8 @@
   },
   "verificationDetail": {
     "title": "عمليات التحقق",
-    "noIdentity": "لم يتم العثور على هوية لهذا المستخدم"
+    "noIdentity": "لم يتم العثور على هوية لهذا المستخدم",
+    "addClaim": "إضافة مطالبة"
   },
   "claimsTable": {
     "columns": {
@@ -191,6 +192,15 @@
       "revokeSuccess": "تم إلغاء المطالبة بنجاح",
       "revokeLoading": "يتم إلغاء المطالبة...",
       "revokeError": "فشل في إلغاء المطالبة",
+      "addTitle": "إضافة مطالبة",
+      "addDescription": "حدد موضوع المطالبة وقدّم البيانات المطلوبة لإصدار تحقق جديد.",
+      "addVerificationDescription": "أدخل رمز التحقق الخاص بك لإضافة هذه المطالبة.",
+      "addLoading": "جارٍ إضافة المطالبة...",
+      "addError": "فشل في إضافة المطالبة",
+      "selectTopicError": "يرجى اختيار موضوع مطالبة",
+      "invalidClaimData": "بيانات المطالبة غير صالحة",
+      "cancel": "إلغاء",
+      "proceed": "المتابعة إلى التحقق",
       "removeTitle": "إزالة المطالبة",
       "removeDescription": "إزالة المطالبة تحذف المطالبة من هذه الهوية. لا يمكن التراجع عن هذا الإجراء.",
       "removeConfirm": "إزالة المطالبة",
@@ -203,12 +213,51 @@
       },
       "success": {
         "revoke": "تم إلغاء المطالبة بنجاح",
-        "remove": "تمت إزالة المطالبة بنجاح"
+        "remove": "تمت إزالة المطالبة بنجاح",
+        "add": "تمت إضافة المطالبة بنجاح"
       }
     },
     "emptyState": {
       "title": "لم يتم العثور على مطالبات",
       "description": "لا توجد مطالبات مرتبطة بهذه الهوية."
+    },
+    "fields": {
+      "topic": "موضوع المطالبة",
+      "selectTopic": "اختر موضوع المطالبة",
+      "claim": "قيمة المطالبة",
+      "claimPlaceholder": "أدخل قيمة المطالبة أو وصفًا",
+      "class": "فئة الأصول",
+      "classPlaceholder": "مثال: أسهم، سند، صندوق",
+      "category": "تصنيف الأصول",
+      "categoryPlaceholder": "مثال: سهم عادي، سند شركة",
+      "issuerAddress": "عنوان الجهة المصدرة",
+      "amount": "المبلغ",
+      "amountPlaceholder": "المبلغ بالوي أو الوحدات الأساسية",
+      "currencyCode": "رمز العملة",
+      "decimals": "الأرقام العشرية",
+      "expiryTimestamp": "طابع انتهاء الصلاحية",
+      "timestampPlaceholder": "طابع زمني يونكس",
+      "contractAddress": "عنوان العقد",
+      "isin": "رمز ISIN",
+      "isinPlaceholder": "ISIN مكوّن من 12 حرفًا",
+      "jurisdiction": "الولاية القضائية",
+      "jurisdictionPlaceholder": "مثال: US، GB، EU",
+      "licenseType": "نوع الترخيص",
+      "licenseTypePlaceholder": "نوع الترخيص",
+      "licenseNumber": "رقم الترخيص",
+      "licenseNumberPlaceholder": "رقم تعريف الترخيص",
+      "validUntil": "صالح حتى",
+      "exemptionReference": "مرجع الإعفاء",
+      "exemptionReferencePlaceholder": "مرجع التنظيم أو الإعفاء",
+      "prospectusReference": "مرجع نشرة الاكتتاب",
+      "prospectusReferencePlaceholder": "رقم مرجع الإيداع",
+      "compliant": "متوافق",
+      "selectCompliant": "اختر حالة الامتثال",
+      "yes": "نعم",
+      "no": "لا",
+      "lastUpdated": "آخر تحديث",
+      "customData": "بيانات مخصصة",
+      "customDataPlaceholder": "أدخل بيانات مطالبة مخصصة"
     }
   }
 }

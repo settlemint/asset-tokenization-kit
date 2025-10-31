@@ -165,7 +165,8 @@
   },
   "verificationDetail": {
     "title": "Verifizierungen",
-    "noIdentity": "Keine Identität für diesen Benutzer gefunden"
+    "noIdentity": "Keine Identität für diesen Benutzer gefunden",
+    "addClaim": "Anspruch hinzufügen"
   },
   "claimsTable": {
     "columns": {
@@ -191,6 +192,15 @@
       "revokeSuccess": "Anspruch erfolgreich widerrufen",
       "revokeLoading": "Anspruch widerrufen...",
       "revokeError": "Fehler beim Widerrufen des Anspruchs",
+      "addTitle": "Anspruch hinzufügen",
+      "addDescription": "Wählen Sie ein Anspruchsthema und geben Sie die erforderlichen Daten an, um einen neuen Anspruch auszustellen.",
+      "addVerificationDescription": "Geben Sie Ihren Verifizierungscode ein, um diesen Anspruch hinzuzufügen.",
+      "addLoading": "Anspruch wird hinzugefügt...",
+      "addError": "Fehler beim Hinzufügen des Anspruchs",
+      "selectTopicError": "Bitte wählen Sie ein Anspruchsthema aus",
+      "invalidClaimData": "Ungültige Anspruchsdaten",
+      "cancel": "Abbrechen",
+      "proceed": "Mit Verifizierung fortfahren",
       "removeTitle": "Anspruch entfernen",
       "removeDescription": "Entfernen löscht den Anspruch von dieser Identität. Diese Aktion kann nicht rückgängig gemacht werden.",
       "removeConfirm": "Anspruch entfernen",
@@ -203,12 +213,51 @@
       },
       "success": {
         "revoke": "Anspruch erfolgreich widerrufen",
-        "remove": "Anspruch erfolgreich entfernt"
+        "remove": "Anspruch erfolgreich entfernt",
+        "add": "Anspruch erfolgreich hinzugefügt"
       }
     },
     "emptyState": {
       "title": "Keine Ansprüche gefunden",
       "description": "Diese Identität hat keine zugeordneten Ansprüche."
+    },
+    "fields": {
+      "topic": "Anspruchsthema",
+      "selectTopic": "Anspruchsthema auswählen",
+      "claim": "Anspruchswert",
+      "claimPlaceholder": "Anspruchswert oder Beschreibung eingeben",
+      "class": "Asset-Klasse",
+      "classPlaceholder": "z. B. Aktie, Anleihe, Fonds",
+      "category": "Asset-Kategorie",
+      "categoryPlaceholder": "z. B. Stammaktie, Unternehmensanleihe",
+      "issuerAddress": "Emittentenadresse",
+      "amount": "Betrag",
+      "amountPlaceholder": "Betrag in Wei oder Basiseinheiten",
+      "currencyCode": "Währungscode",
+      "decimals": "Dezimalstellen",
+      "expiryTimestamp": "Ablaufzeitstempel",
+      "timestampPlaceholder": "Unix-Zeitstempel",
+      "contractAddress": "Vertragsadresse",
+      "isin": "ISIN-Code",
+      "isinPlaceholder": "12-stelliger ISIN",
+      "jurisdiction": "Jurisdiktion",
+      "jurisdictionPlaceholder": "z. B. US, GB, EU",
+      "licenseType": "Lizenztyp",
+      "licenseTypePlaceholder": "Lizenztyp",
+      "licenseNumber": "Lizenznummer",
+      "licenseNumberPlaceholder": "Lizenzidentifikationsnummer",
+      "validUntil": "Gültig bis",
+      "exemptionReference": "Ausnahmereferenz",
+      "exemptionReferencePlaceholder": "Referenz auf Regulierung oder Ausnahmeregelung",
+      "prospectusReference": "Prospektreferenz",
+      "prospectusReferencePlaceholder": "Referenznummer der Prospekt-Einreichung",
+      "compliant": "Konform",
+      "selectCompliant": "Compliance-Status auswählen",
+      "yes": "Ja",
+      "no": "Nein",
+      "lastUpdated": "Zuletzt aktualisiert",
+      "customData": "Benutzerdefinierte Daten",
+      "customDataPlaceholder": "Benutzerdefinierte Anspruchsdaten eingeben"
     }
   }
 }

@@ -165,7 +165,8 @@
   },
   "verificationDetail": {
     "title": "検証",
-    "noIdentity": "このユーザーのアイデンティティは見つかりませんでした"
+    "noIdentity": "このユーザーのアイデンティティは見つかりませんでした",
+    "addClaim": "クレームを追加"
   },
   "claimsTable": {
     "columns": {
@@ -191,6 +192,15 @@
       "revokeSuccess": "クレームが正常に取り消されました",
       "revokeLoading": "クレームを取り消しています...",
       "revokeError": "クレームの取り消しに失敗しました",
+      "addTitle": "クレームを追加",
+      "addDescription": "クレームトピックを選択し、新しい検証を発行するために必要なデータを入力します。",
+      "addVerificationDescription": "このクレームを追加するには検証コードを入力してください。",
+      "addLoading": "クレームを追加しています...",
+      "addError": "クレームの追加に失敗しました",
+      "selectTopicError": "クレームトピックを選択してください",
+      "invalidClaimData": "クレームデータが無効です",
+      "cancel": "キャンセル",
+      "proceed": "検証に進む",
       "removeTitle": "クレームを削除する",
       "removeDescription": "削除すると、このアイデンティティからクレームが削除されます。この操作は元に戻せません。",
       "removeConfirm": "クレームを削除する",
@@ -203,12 +213,51 @@
       },
       "success": {
         "revoke": "クレームが正常に取り消されました",
-        "remove": "クレームが正常に削除されました"
+        "remove": "クレームが正常に削除されました",
+        "add": "クレームが正常に追加されました"
       }
     },
     "emptyState": {
       "title": "クレームが見つかりません",
       "description": "このアイデンティティには関連するクレームがありません。"
+    },
+    "fields": {
+      "topic": "クレームトピック",
+      "selectTopic": "クレームトピックを選択",
+      "claim": "請求値",
+      "claimPlaceholder": "請求値または説明を入力",
+      "class": "資産クラス",
+      "classPlaceholder": "例: エクイティ、債券、ファンド",
+      "category": "資産カテゴリ",
+      "categoryPlaceholder": "例: 普通株式、社債",
+      "issuerAddress": "発行者アドレス",
+      "amount": "金額",
+      "amountPlaceholder": "Wei または基準単位での金額",
+      "currencyCode": "通貨コード",
+      "decimals": "小数",
+      "expiryTimestamp": "有効期限タイムスタンプ",
+      "timestampPlaceholder": "Unix タイムスタンプ",
+      "contractAddress": "契約アドレス",
+      "isin": "ISIN コード",
+      "isinPlaceholder": "12 文字の ISIN",
+      "jurisdiction": "管轄",
+      "jurisdictionPlaceholder": "例: US、GB、EU",
+      "licenseType": "ライセンスタイプ",
+      "licenseTypePlaceholder": "ライセンスタイプ",
+      "licenseNumber": "ライセンス番号",
+      "licenseNumberPlaceholder": "ライセンス識別番号",
+      "validUntil": "有効期限",
+      "exemptionReference": "免除参照",
+      "exemptionReferencePlaceholder": "規制または免除の参照",
+      "prospectusReference": "目論見書参照",
+      "prospectusReferencePlaceholder": "提出参照番号",
+      "compliant": "準拠",
+      "selectCompliant": "コンプライアンス状況を選択",
+      "yes": "はい",
+      "no": "いいえ",
+      "lastUpdated": "最終更新日",
+      "customData": "カスタムデータ",
+      "customDataPlaceholder": "カスタムクレームデータを入力"
     }
   }
 }

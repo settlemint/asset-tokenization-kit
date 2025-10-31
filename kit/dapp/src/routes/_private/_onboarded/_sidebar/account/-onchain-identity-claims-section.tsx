@@ -1,11 +1,11 @@
 import { ClaimsTable } from "@/components/participants/common/claims-table";
-import type { ManagedIdentity } from "@/components/manage-dropdown/manage-identity-dropdown";
 import { IssueClaimSheet } from "@/components/manage-dropdown/sheets/issue-claim-sheet";
 import { Button } from "@/components/ui/button";
 import { isOrpcNotFoundError } from "@/orpc/helpers/error";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import type { Address } from "viem";
 import { useTranslation } from "react-i18next";
 
 export function OnchainIdentityClaimsSection() {
@@ -29,7 +29,10 @@ export function OnchainIdentityClaimsSection() {
 
     return {
       identity: identity.id,
-      account: identity.account,
+      account: {
+        id: identity.account.id,
+        contractName: identity.account.contractName ?? null,
+      },
       isRegistered:
         typeof identity.registered === "object" &&
         identity.registered.isRegistered,
@@ -69,4 +72,15 @@ export function OnchainIdentityClaimsSection() {
       />
     </>
   );
+}
+
+interface ManagedIdentityAccount {
+  id: string;
+  contractName: string | null;
+}
+
+interface ManagedIdentity {
+  identity: Address;
+  account: ManagedIdentityAccount;
+  isRegistered: boolean;
 }

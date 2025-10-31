@@ -41,9 +41,19 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+import type { Address } from "viem";
 import { ActionFormSheet } from "../core/action-form-sheet";
 import { createActionFormStore } from "../core/action-form-sheet.store";
-import type { ManagedIdentity } from "../manage-identity-dropdown";
+interface ManagedIdentityAccount {
+  id: string;
+  contractName: string | null;
+}
+
+interface ManagedIdentity {
+  identity: Address;
+  account: ManagedIdentityAccount;
+  isRegistered: boolean;
+}
 import { ConfirmIssueClaimView } from "./issue-claim/ConfirmIssueClaimView";
 import { IssueClaimFormView } from "./issue-claim/IssueClaimFormView";
 
