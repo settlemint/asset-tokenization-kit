@@ -7,6 +7,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Web3Address } from "@/components/web3/web3-address";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useSession } from "@/hooks/use-auth";
 import { getAccessControlEntries } from "@/orpc/helpers/access-control-helpers";
@@ -282,7 +283,11 @@ export function ChangeRolesSheet({
                     <div className="text-sm text-muted-foreground">
                       {t("components:changeRolesSheet.accountLabel")}
                     </div>
-                    <div className="text-sm font-medium">{selectedAddress}</div>
+                    <div className="text-sm font-medium">
+                      <Web3Address
+                        address={selectedAddress as EthereumAddress}
+                      />
+                    </div>
                     <div className="mt-4 grid gap-4 md:grid-cols-2">
                       <div>
                         <div className="mb-2 text-xs font-semibold uppercase text-muted-foreground">
