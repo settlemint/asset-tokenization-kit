@@ -1,0 +1,24 @@
+{
+  "title": "Activity",
+  "description": "All blockchain events for your account",
+  "table": {
+    "columns": {
+      "eventName": "Event",
+      "category": "Category",
+      "sender": "Sender",
+      "transactionHash": "Transaction",
+      "blockNumber": "Block",
+      "timestamp": "Time"
+    },
+    "fallback": {
+      "noSender": "No sender"
+    },
+    "emptyState": {
+      "title": "No activity yet",
+      "description": "Your blockchain events will appear here"
+    },
+    "errors": {
+      "loadFailed": "Unable to load activity. Try again"
+    }
+  }
+}

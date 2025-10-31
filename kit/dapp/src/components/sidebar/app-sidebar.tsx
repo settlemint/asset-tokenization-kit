@@ -18,7 +18,7 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ClipboardList, HomeIcon } from "lucide-react";
+import { Activity, ClipboardList, HomeIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -35,6 +35,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   });
   const isActionsActive = useRouterState({
     select: (state) => state.location.pathname.startsWith("/actions"),
+  });
+  const isActivityActive = useRouterState({
+    select: (state) => state.location.pathname.startsWith("/activity"),
   });
   const { data: actions } = useSuspenseQuery(
     orpc.actions.list.queryOptions({
@@ -94,6 +97,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   {pendingCount}
                 </SidebarMenuBadge>
               ) : null}
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={isActivityActive}>
+                <Link
+                  to="/activity"
+                  aria-current={isActivityActive ? "page" : undefined}
+                  className={isActivityActive ? "font-semibold" : undefined}
+                >
+                  <Activity />
+                  <span>{t("activity")}</span>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>

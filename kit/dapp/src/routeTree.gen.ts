@@ -40,6 +40,7 @@ import { Route as PrivateOnboardingSidebarIdentitySetupRouteImport } from './rou
 import { Route as PrivateOnboardingSidebarIdentityRouteImport } from './routes/_private/onboarding/_sidebar/identity'
 import { Route as PrivateOnboardedSidebarMyAssetsRouteImport } from './routes/_private/_onboarded/_sidebar/my-assets'
 import { Route as PrivateOnboardedSidebarAddonDesignerRouteImport } from './routes/_private/_onboarded/_sidebar/addon-designer'
+import { Route as PrivateOnboardedSidebarActivityRouteImport } from './routes/_private/_onboarded/_sidebar/activity'
 import { Route as PrivateOnboardedSidebarActionsRouteImport } from './routes/_private/_onboarded/_sidebar/actions'
 import { Route as PrivateOnboardedSidebarAddonIndexRouteImport } from './routes/_private/_onboarded/_sidebar/addon/index'
 import { Route as PrivateOnboardedSidebarTokenStatsRouteImport } from './routes/_private/_onboarded/_sidebar/token/stats'
@@ -231,6 +232,12 @@ const PrivateOnboardedSidebarAddonDesignerRoute =
   PrivateOnboardedSidebarAddonDesignerRouteImport.update({
     id: '/addon-designer',
     path: '/addon-designer',
+    getParentRoute: () => PrivateOnboardedSidebarRoute,
+  } as any)
+const PrivateOnboardedSidebarActivityRoute =
+  PrivateOnboardedSidebarActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
     getParentRoute: () => PrivateOnboardedSidebarRoute,
   } as any)
 const PrivateOnboardedSidebarActionsRoute =
@@ -446,6 +453,7 @@ export interface FileRoutesByFullPath {
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/onboarding/': typeof PrivateOnboardingIndexRoute
   '/actions': typeof PrivateOnboardedSidebarActionsRoute
+  '/activity': typeof PrivateOnboardedSidebarActivityRoute
   '/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
@@ -502,6 +510,7 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/actions': typeof PrivateOnboardedSidebarActionsRoute
+  '/activity': typeof PrivateOnboardedSidebarActivityRoute
   '/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
   '/onboarding/identity': typeof PrivateOnboardingSidebarIdentityRoute
@@ -563,6 +572,7 @@ export interface FileRoutesById {
   '/api/rpc/$': typeof ApiRpcSplatRoute
   '/_private/onboarding/': typeof PrivateOnboardingIndexRoute
   '/_private/_onboarded/_sidebar/actions': typeof PrivateOnboardedSidebarActionsRoute
+  '/_private/_onboarded/_sidebar/activity': typeof PrivateOnboardedSidebarActivityRoute
   '/_private/_onboarded/_sidebar/addon-designer': typeof PrivateOnboardedSidebarAddonDesignerRoute
   '/_private/_onboarded/_sidebar/my-assets': typeof PrivateOnboardedSidebarMyAssetsRoute
   '/_private/onboarding/_sidebar/identity': typeof PrivateOnboardingSidebarIdentityRoute
@@ -622,6 +632,7 @@ export interface FileRouteTypes {
     | '/api/rpc/$'
     | '/onboarding/'
     | '/actions'
+    | '/activity'
     | '/addon-designer'
     | '/my-assets'
     | '/onboarding/identity'
@@ -678,6 +689,7 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/rpc/$'
     | '/actions'
+    | '/activity'
     | '/addon-designer'
     | '/my-assets'
     | '/onboarding/identity'
@@ -738,6 +750,7 @@ export interface FileRouteTypes {
     | '/api/rpc/$'
     | '/_private/onboarding/'
     | '/_private/_onboarded/_sidebar/actions'
+    | '/_private/_onboarded/_sidebar/activity'
     | '/_private/_onboarded/_sidebar/addon-designer'
     | '/_private/_onboarded/_sidebar/my-assets'
     | '/_private/onboarding/_sidebar/identity'
@@ -1009,6 +1022,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateOnboardedSidebarAddonDesignerRouteImport
       parentRoute: typeof PrivateOnboardedSidebarRoute
     }
+    '/_private/_onboarded/_sidebar/activity': {
+      id: '/_private/_onboarded/_sidebar/activity'
+      path: '/activity'
+      fullPath: '/activity'
+      preLoaderRoute: typeof PrivateOnboardedSidebarActivityRouteImport
+      parentRoute: typeof PrivateOnboardedSidebarRoute
+    }
     '/_private/_onboarded/_sidebar/actions': {
       id: '/_private/_onboarded/_sidebar/actions'
       path: '/actions'
@@ -1249,6 +1269,7 @@ const PrivateOnboardedSidebarTokenFactoryAddressTokenAddressRouteWithChildren =
 
 interface PrivateOnboardedSidebarRouteChildren {
   PrivateOnboardedSidebarActionsRoute: typeof PrivateOnboardedSidebarActionsRoute
+  PrivateOnboardedSidebarActivityRoute: typeof PrivateOnboardedSidebarActivityRoute
   PrivateOnboardedSidebarAddonDesignerRoute: typeof PrivateOnboardedSidebarAddonDesignerRoute
   PrivateOnboardedSidebarMyAssetsRoute: typeof PrivateOnboardedSidebarMyAssetsRoute
   PrivateOnboardedSidebarIndexRoute: typeof PrivateOnboardedSidebarIndexRoute
@@ -1275,6 +1296,7 @@ interface PrivateOnboardedSidebarRouteChildren {
 const PrivateOnboardedSidebarRouteChildren: PrivateOnboardedSidebarRouteChildren =
   {
     PrivateOnboardedSidebarActionsRoute: PrivateOnboardedSidebarActionsRoute,
+    PrivateOnboardedSidebarActivityRoute: PrivateOnboardedSidebarActivityRoute,
     PrivateOnboardedSidebarAddonDesignerRoute:
       PrivateOnboardedSidebarAddonDesignerRoute,
     PrivateOnboardedSidebarMyAssetsRoute: PrivateOnboardedSidebarMyAssetsRoute,

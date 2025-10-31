@@ -18,7 +18,7 @@ export function FormatDate({ value, options }: FormatValueProps) {
   const relative = dateOptions?.relative ?? false;
 
   if (relative) {
-    // Format with relative time for recent dates
+    // Format with relative time
     if (isToday(dateValue)) {
       return (
         <span className={cn("text-sm", className)}>{t("dates.today")}</span>
@@ -31,16 +31,11 @@ export function FormatDate({ value, options }: FormatValueProps) {
       );
     }
 
-    const daysDiff = Math.floor(
-      (Date.now() - dateValue.getTime()) / (1000 * 60 * 60 * 24)
+    return (
+      <span className={cn("text-sm", className)}>
+        {formatDistanceToNow(dateValue, { addSuffix: true })}
+      </span>
     );
-    if (daysDiff <= 7 && daysDiff > 0) {
-      return (
-        <span className={cn("text-sm", className)}>
-          {formatDistanceToNow(dateValue, { addSuffix: true })}
-        </span>
-      );
-    }
   }
 
   return (

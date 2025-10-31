@@ -1,6 +1,7 @@
 {
   "asset": "Asset",
   "actions": "Actions",
+  "activity": "Activity",
   "assetClasses": "Asset classes",
   "assetManagement": "Asset management",
   "assetManagementNotAuthorized": "You are not authorized to manage assets.\nYou do not have the token create permission.",

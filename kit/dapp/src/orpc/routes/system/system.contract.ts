@@ -1,4 +1,3 @@
-import { SortableListSchema } from "@/orpc/routes/common/schemas/sortable-list.schema";
 import { accessManagerContract } from "@/orpc/routes/system/access-manager/access-manager.contract";
 import { addonContract } from "@/orpc/routes/system/addon/addon.contract";
 import { claimTopicsContract } from "@/orpc/routes/system/claim-topics/claim-topics.contract";
@@ -13,7 +12,10 @@ import { trustedIssuersContract } from "@/orpc/routes/system/trusted-issuers/tru
 import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 import { baseContract } from "../../procedures/base.contract";
-import { SystemListItemSchema } from "./routes/system.list.schema";
+import {
+  SystemListInputSchema,
+  SystemListItemSchema,
+} from "./routes/system.list.schema";
 
 /**
  * Contract definition for the system list endpoint.
@@ -37,7 +39,7 @@ const list = baseContract
       "List of SMART systems with deployment details and registry addresses",
     tags: ["system"],
   })
-  .input(SortableListSchema)
+  .input(SystemListInputSchema)
   .output(z.array(SystemListItemSchema)); // Return array of system objects
 
 /**
