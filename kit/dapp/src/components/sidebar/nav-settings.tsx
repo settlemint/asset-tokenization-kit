@@ -96,21 +96,28 @@ export function NavSettings() {
           const button = (
             <SidebarMenuItem key={item.path}>
               <SidebarMenuButton
-                asChild
+                asChild={!item.disabled}
                 isActive={isActive}
                 disabled={item.disabled}
-                tooltip={item.name}
+                tooltip={item.disabled ? undefined : item.name}
               >
-                <Link
-                  to={item.path}
-                  activeProps={{
-                    "data-active": true,
-                  }}
-                  className={isActive ? "font-semibold" : undefined}
-                >
-                  <Icon />
-                  <span>{item.name}</span>
-                </Link>
+                {item.disabled ? (
+                  <div className="flex items-center gap-2">
+                    <Icon />
+                    <span>{item.name}</span>
+                  </div>
+                ) : (
+                  <Link
+                    to={item.path}
+                    activeProps={{
+                      "data-active": true,
+                    }}
+                    className={isActive ? "font-semibold" : undefined}
+                  >
+                    <Icon />
+                    <span>{item.name}</span>
+                  </Link>
+                )}
               </SidebarMenuButton>
             </SidebarMenuItem>
           );

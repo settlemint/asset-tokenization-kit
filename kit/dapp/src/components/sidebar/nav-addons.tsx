@@ -20,6 +20,11 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { orpc } from "@/orpc/orpc-client";
 import { getAddonCategoryFromFactoryTypeId } from "@atk/zod/addon-types";
 import { useSuspenseQuery } from "@tanstack/react-query";
@@ -32,7 +37,8 @@ import { useTranslation } from "react-i18next";
  * Navigation component for addon management in the sidebar.
  * Uses hybrid navigation: DropdownMenu in collapsed mode, Collapsible in expanded mode.
  * Displays addon categories (custody, income) with their addon instances.
- * Only renders when user has addonCreate permission.
+ * Shows for admins or users with addonCreate permission. For admins without permission,
+ * items are disabled with tooltips explaining missing permissions.
  * @example
  * // Used within AppSidebar component
  * <NavAddons />
@@ -116,9 +122,15 @@ export function NavAddons() {
     },
   ];
 
-  if (!system.userPermissions?.actions.addonCreate) {
+  const isAdmin = system.userPermissions?.roles?.admin === true;
+  const canCreateAddon = Boolean(system.userPermissions?.actions.addonCreate);
+
+  // Show for admins or users with permission
+  if (!isAdmin && !canCreateAddon) {
     return null;
   }
+
+  const isDisabled = isAdmin && !canCreateAddon;
 
   return (
     <SidebarGroup>
@@ -163,15 +175,45 @@ export function NavAddons() {
                     >
                       {category.addons.map((addon) => {
                         const isActive = isAddonActive(addon.id);
+                        const addonLink = (
+                          <Link
+                            to="/addon/$addonAddress"
+                            params={{ addonAddress: addon.id }}
+                            className={
+                              isDisabled
+                                ? "pointer-events-none opacity-50"
+                                : isActive
+                                  ? "font-semibold"
+                                  : ""
+                            }
+                            onClick={(e) => {
+                              if (isDisabled) {
+                                e.preventDefault();
+                              }
+                            }}
+                          >
+                            {addon.name}
+                          </Link>
+                        );
+
+                        if (isDisabled) {
+                          return (
+                            <Tooltip key={addon.id}>
+                              <TooltipTrigger asChild>
+                                <DropdownMenuItem disabled>
+                                  {addonLink}
+                                </DropdownMenuItem>
+                              </TooltipTrigger>
+                              <TooltipContent className="whitespace-pre-wrap">
+                                {t("settings.addons.notAuthorized")}
+                              </TooltipContent>
+                            </Tooltip>
+                          );
+                        }
+
                         return (
                           <DropdownMenuItem key={addon.id} asChild>
-                            <Link
-                              to="/addon/$addonAddress"
-                              params={{ addonAddress: addon.id }}
-                              className={isActive ? "font-semibold" : ""}
-                            >
-                              {addon.name}
-                            </Link>
+                            {addonLink}
                           </DropdownMenuItem>
                         );
                       })}
@@ -204,9 +246,16 @@ export function NavAddons() {
                     <SidebarMenuSub>
                       {category.addons.map((addon) => {
                         const isActive = isAddonActive(addon.id);
-                        return (
-                          <SidebarMenuSubItem key={addon.id}>
-                            <SidebarMenuSubButton asChild>
+                        const addonSubLink = (
+                          <SidebarMenuSubButton
+                            asChild={!isDisabled}
+                            disabled={isDisabled}
+                          >
+                            {isDisabled ? (
+                              <div className="flex items-center">
+                                <span>{addon.name}</span>
+                              </div>
+                            ) : (
                               <Link
                                 to="/addon/$addonAddress"
                                 params={{ addonAddress: addon.id }}
@@ -217,7 +266,26 @@ export function NavAddons() {
                               >
                                 <span>{addon.name}</span>
                               </Link>
-                            </SidebarMenuSubButton>
+                            )}
+                          </SidebarMenuSubButton>
+                        );
+
+                        if (isDisabled) {
+                          return (
+                            <Tooltip key={addon.id}>
+                              <TooltipTrigger asChild>
+                                <SidebarMenuSubItem>{addonSubLink}</SidebarMenuSubItem>
+                              </TooltipTrigger>
+                              <TooltipContent className="whitespace-pre-wrap">
+                                {t("settings.addons.notAuthorized")}
+                              </TooltipContent>
+                            </Tooltip>
+                          );
+                        }
+
+                        return (
+                          <SidebarMenuSubItem key={addon.id}>
+                            {addonSubLink}
                           </SidebarMenuSubItem>
                         );
                       })}
