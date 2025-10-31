@@ -13,13 +13,7 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatches } from "@tanstack/react-router";
-import {
-  ClipboardCheck,
-  FileText,
-  Key,
-  Paintbrush,
-  Puzzle,
-} from "lucide-react";
+import { FileText, Key, Paintbrush, Puzzle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -79,11 +73,6 @@ export function NavSettings() {
       path: "/platform-settings/theme",
       disabled: system.userPermissions?.roles.admin !== true,
       disabledMessage: t("settings.theme.notAuthorized"),
-    },
-    {
-      name: t("settings.claimTopicsIssuers.title"),
-      icon: ClipboardCheck,
-      path: "/platform-settings/claim-topics-issuers",
     },
     {
       name: t("settings.permissions.title"),
