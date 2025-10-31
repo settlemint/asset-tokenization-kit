@@ -49,6 +49,7 @@ import {
   UserStatsUserCountOutputSchema,
 } from "@/orpc/routes/user/routes/user.stats.user-count.schema";
 import { baseContract } from "../../procedures/base.contract";
+import { ethereumAddress } from "@atk/zod/ethereum-address";
 import { z } from "zod";
 
 /**
