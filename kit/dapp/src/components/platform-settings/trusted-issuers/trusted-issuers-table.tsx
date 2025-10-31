@@ -15,7 +15,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { FileText, Hash } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { EditIssuerTopicsDialog } from "./edit-issuer-topics-dialog";
+import { EditIssuerTopicsSheet } from "./edit-issuer-topics-sheet";
 import { TrustedIssuerActionsMenu } from "./trusted-issuer-actions-menu";
 
 const columnHelper = createStrictColumnHelper<TrustedIssuer>();
@@ -176,7 +176,7 @@ export const TrustedIssuersTable = withErrorBoundary(
         />
 
         {editingIssuer && (
-          <EditIssuerTopicsDialog
+          <EditIssuerTopicsSheet
             issuer={editingIssuer}
             open={true}
             onOpenChange={(open) => {

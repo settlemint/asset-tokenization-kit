@@ -22,10 +22,10 @@ const AddTopicFormSchema = TopicCreateInputSchema.omit({
 type AddTopicFormValues = z.infer<typeof AddTopicFormSchema>;
 
 /**
- * Dialog component for adding new claim topics
+ * Sheet component for adding new claim topics
  * Allows administrators to create custom topics for identity verification
  */
-export function AddTopicDialog({
+export function AddTopicSheet({
   open,
   onOpenChange,
 }: {
@@ -33,8 +33,7 @@ export function AddTopicDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const queryClient = useQueryClient();
-  const { t } = useTranslation("claim-topics-issuers");
-  const { t: tErrors } = useTranslation("errors");
+  const { t } = useTranslation(["claim-topics-issuers", "common", "errors"]);
 
   const sheetStoreRef = useRef(
     createActionFormStore({
@@ -54,19 +53,11 @@ export function AddTopicDialog({
   const createMutation = useMutation({
     mutationFn: (data: TopicCreateInput) =>
       client.system.claimTopics.topicCreate(data),
-    onSuccess: (result) => {
-      toast.success(t("claimTopics.toast.created", { name: result.name }));
+    onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: orpc.system.claimTopics.topicList.queryKey(),
       });
       handleClose();
-    },
-    onError: (error) => {
-      toast.error(
-        t("claimTopics.toast.createError", {
-          error: error.message || error.toString() || "Unknown error",
-        })
-      );
     },
   });
 
@@ -185,13 +176,27 @@ export function AddTopicDialog({
               );
 
               if (duplicate) {
-                toast.error(
-                  tErrors("resourceAlreadyExists.description")
-                );
+                toast.error(t("errors:resourceAlreadyExists.description"));
                 return;
               }
 
-              createMutation.mutate(payload);
+              toast
+                .promise(createMutation.mutateAsync(payload), {
+                  loading: t("common:saving"),
+                  success: t("claimTopics.toast.created", {
+                    name: payload.name,
+                  }),
+                  error: (error) =>
+                    t("claimTopics.toast.createError", {
+                      error:
+                        error.message || error.toString() || "Unknown error",
+                    }),
+                })
+                .unwrap()
+                .then(() => {
+                  handleClose();
+                })
+                .catch(() => undefined);
             }}
           >
             <div className="space-y-4">
@@ -201,13 +206,11 @@ export function AddTopicDialog({
                     <field.TextField
                       label={t("claimTopics.add.fields.name.label")}
                       required
-                      description={t(
-                        "claimTopics.add.fields.name.description"
-                      )}
+                      description={t("claimTopics.add.fields.name.description")}
                     />
                     {duplicateName && (
                       <p className="text-xs text-destructive">
-                        {tErrors("resourceAlreadyExists.description")}
+                        {t("errors:resourceAlreadyExists.description")}
                       </p>
                     )}
                   </div>

@@ -207,7 +207,7 @@
     },
     "toast": {
       "added": "Trusted issuer added successfully",
-      "updated": "Issuer topics updated successfully",
+      "updated": "Trusted issuer topics updated successfully",
       "removed": "Trusted issuer removed successfully",
       "addError": "Failed to add trusted issuer: {{error}}",
       "updateError": "Failed to update issuer topics: {{error}}",

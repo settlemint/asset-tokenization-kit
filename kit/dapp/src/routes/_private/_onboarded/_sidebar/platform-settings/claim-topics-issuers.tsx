@@ -1,7 +1,7 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { AddTopicDialog } from "@/components/platform-settings/claim-topics/add-topic-dialog";
+import { AddTopicSheet } from "@/components/platform-settings/claim-topics/add-topic-sheet";
 import { TopicsTable } from "@/components/platform-settings/claim-topics/topics-table";
 import { AddTrustedIssuerSheet } from "@/components/platform-settings/trusted-issuers/add-trusted-issuer-sheet";
 import { TrustedIssuersTable } from "@/components/platform-settings/trusted-issuers/trusted-issuers-table";
@@ -129,7 +129,7 @@ function ClaimTopicsIssuersPage() {
         </Card>
       </div>
 
-      <AddTopicDialog
+      <AddTopicSheet
         open={showAddTopicDialog}
         onOpenChange={setShowAddTopicDialog}
       />

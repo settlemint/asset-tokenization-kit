@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActionFormSheet } from "@/components/manage-dropdown/core/action-form-sheet";
 import { createActionFormStore } from "@/components/manage-dropdown/core/action-form-sheet.store";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppForm } from "@/hooks/use-app-form";
@@ -26,23 +26,23 @@ const EditTopicFormSchema = z.object({
     .transform(normalizeAbiSignature),
 });
 
-interface EditTopicDialogProps {
+interface EditTopicSheetProps {
   topic: TopicScheme;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 /**
- * Dialog component for editing claim topic signatures
+ * Sheet component for editing claim topic signatures
  * Allows administrators to update the verification signature for custom topics
  */
-export function EditTopicDialog({
+export function EditTopicSheet({
   topic,
   open,
   onOpenChange,
-}: EditTopicDialogProps) {
+}: EditTopicSheetProps) {
   const queryClient = useQueryClient();
-  const { t } = useTranslation("claim-topics-issuers");
+  const { t } = useTranslation(["claim-topics-issuers", "common"]);
   const sheetStoreRef = useRef(
     createActionFormStore({
       hasValuesStep: true,
@@ -51,21 +51,19 @@ export function EditTopicDialog({
 
   // Update topic mutation
   const updateMutation = useMutation({
-    mutationFn: (data: { signature: string; walletVerification: UserVerification }) =>
+    mutationFn: (data: {
+      signature: string;
+      walletVerification: UserVerification;
+    }) =>
       client.system.claimTopics.topicUpdate({
         ...data,
         name: topic.name,
       }),
-    onSuccess: (result) => {
-      toast.success(t("claimTopics.toast.updated", { name: result.name }));
+    onSuccess: () => {
       // Invalidate and refetch topics data
       void queryClient.invalidateQueries({
         queryKey: orpc.system.claimTopics.topicList.queryKey(),
       });
-      handleClose();
-    },
-    onError: (error) => {
-      toast.error(t("claimTopics.toast.updateError", { error: error.message }));
     },
   });
 
@@ -133,7 +131,9 @@ export function EditTopicDialog({
                   {t("claimTopics.edit.fields.signature.label")}
                 </p>
                 <div className="space-y-1">
-                  <p className="font-medium break-words">{sanitizedSignature}</p>
+                  <p className="font-medium break-words">
+                    {sanitizedSignature}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {t("claimTopics.edit.fields.signature.previous", {
                       signature: topic.signature,
@@ -168,16 +168,32 @@ export function EditTopicDialog({
             store={sheetStoreRef.current}
             onSubmit={(verification) => {
               if (!hasChanged) {
-                toast.error(
-                  t("claimTopics.edit.validation.signatureChanged")
-                );
+                toast.error(t("claimTopics.edit.validation.signatureChanged"));
                 return;
               }
 
-              updateMutation.mutate({
-                signature: sanitizedSignature,
-                walletVerification: verification,
-              });
+              toast
+                .promise(
+                  updateMutation.mutateAsync({
+                    signature: sanitizedSignature,
+                    walletVerification: verification,
+                  }),
+                  {
+                    loading: t("common:saving"),
+                    success: t("claimTopics.toast.updated", {
+                      name: topic.name,
+                    }),
+                    error: (error) =>
+                      t("claimTopics.toast.updateError", {
+                        error: error.message,
+                      }),
+                  }
+                )
+                .unwrap()
+                .then(() => {
+                  handleClose();
+                })
+                .catch(() => undefined);
             }}
           >
             <div className="space-y-4">

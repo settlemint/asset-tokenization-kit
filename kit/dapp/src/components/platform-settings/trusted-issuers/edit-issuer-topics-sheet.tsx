@@ -20,21 +20,21 @@ import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-interface EditIssuerTopicsDialogProps {
+interface EditIssuerTopicsSheetProps {
   issuer: TrustedIssuer;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 /**
- * Dialog component for editing trusted issuer topics
+ * Sheet component for editing trusted issuer topics
  * Allows administrators to update the topics an issuer can verify
  */
-export function EditIssuerTopicsDialog({
+export function EditIssuerTopicsSheet({
   issuer,
   open,
   onOpenChange,
-}: EditIssuerTopicsDialogProps) {
+}: EditIssuerTopicsSheetProps) {
   const queryClient = useQueryClient();
   const { t } = useTranslation(["claim-topics-issuers", "common"]);
   const sheetStoreRef = useRef(
@@ -189,10 +189,11 @@ export function EditIssuerTopicsDialog({
             onSubmit={(verification) => {
               if (!hasSelection) {
                 toast.error(
-                  t(
-                    "trustedIssuers.edit.validation.required",
-                    { defaultValue: t("trustedIssuers.add.fields.claimTopics.validation.required") }
-                  )
+                  t("trustedIssuers.edit.validation.required", {
+                    defaultValue: t(
+                      "trustedIssuers.add.fields.claimTopics.validation.required"
+                    ),
+                  })
                 );
                 return;
               }
@@ -210,6 +211,7 @@ export function EditIssuerTopicsDialog({
                       t("common:error", { message: data.message }),
                   }
                 )
+                .unwrap()
                 .then(() => {
                   handleClose();
                 })
@@ -250,7 +252,9 @@ export function EditIssuerTopicsDialog({
                       defaultOptions={topicOptions}
                       placeholder="Select topics..."
                       emptyIndicator={
-                        <p className="text-center text-sm">No topics available</p>
+                        <p className="text-center text-sm">
+                          No topics available
+                        </p>
                       }
                       onSearch={(value) => {
                         return Promise.resolve(
@@ -267,10 +271,11 @@ export function EditIssuerTopicsDialog({
                     </p>
                     {(!hasSelection || field.state.meta.errors.length > 0) && (
                       <p className="text-sm text-destructive">
-                        {t(
-                          "trustedIssuers.edit.validation.required",
-                          { defaultValue: t("trustedIssuers.add.fields.claimTopics.validation.required") }
-                        )}
+                        {t("trustedIssuers.edit.validation.required", {
+                          defaultValue: t(
+                            "trustedIssuers.add.fields.claimTopics.validation.required"
+                          ),
+                        })}
                       </p>
                     )}
                   </div>
