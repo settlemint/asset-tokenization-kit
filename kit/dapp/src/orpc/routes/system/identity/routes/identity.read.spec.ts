@@ -112,8 +112,8 @@ describe("Identity read (integration)", () => {
       const userHeaders = await signInWithUser(targetTestUser.user);
       const userClient = getOrpcClient(userHeaders);
 
-      const result = await userClient.system.identity.readByWallet({
-        wallet: identityByWallet.id,
+      const result = await userClient.system.identity.readById({
+        identityId: identityByWallet.id,
       });
 
       expect(result).toBeDefined();
@@ -131,8 +131,8 @@ describe("Identity read (integration)", () => {
         wallet: targetUserData.wallet,
       });
 
-      const result = await adminClient.system.identity.readByWallet({
-        wallet: identityByWallet.id,
+      const result = await adminClient.system.identity.readById({
+        identityId: identityByWallet.id,
       });
 
       expect(result).toBeDefined();
@@ -146,9 +146,9 @@ describe("Identity read (integration)", () => {
 
     it("throws NOT_FOUND when identity ID does not exist", async () => {
       await expect(
-        adminClient.system.identity.readByWallet(
+        adminClient.system.identity.readById(
           {
-            wallet: "0x1111111111111111111111111111111111111111",
+            identityId: "0x1111111111111111111111111111111111111111",
           },
           {
             context: {
@@ -166,9 +166,9 @@ describe("Identity read (integration)", () => {
       });
 
       await expect(
-        investorClient.system.identity.readByWallet(
+        investorClient.system.identity.readById(
           {
-            wallet: identityByWallet.id,
+            identityId: identityByWallet.id,
           },
           {
             context: {

@@ -176,7 +176,9 @@ const readByWallet = baseContract
   })
   .input(
     z.object({
-      wallet: z.string().describe("The Ethereum wallet address of the user"),
+      wallet: ethereumAddress.describe(
+        "The Ethereum wallet address of the user"
+      ),
     })
   )
   .output(UserReadOutputSchema);

@@ -48,13 +48,26 @@ const handler = new OpenAPIHandler(router, {
     /**
      * CORS plugin configuration.
      * Enables cross-origin requests with credentials support.
+     * Uses an allowlist of trusted origins instead of reflecting any origin.
      */
     new CORSPlugin({
       allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH"],
       allowHeaders: ["Content-Type", "X-Api-Key"],
       exposeHeaders: ["Content-Disposition", "X-Retry-After"],
       credentials: true,
-      origin: (origin) => origin || "http://localhost:3000",
+      origin: (origin) => {
+        // Allowlist of trusted origins
+        const allowedOrigins = [
+          "http://localhost:3000",
+          "http://127.0.0.1:3000",
+          ...(import.meta.env.VITE_ALLOWED_ORIGINS
+            ? import.meta.env.VITE_ALLOWED_ORIGINS.split(",")
+            : []),
+        ];
+        return origin && allowedOrigins.includes(origin)
+          ? origin
+          : (allowedOrigins[0] ?? false);
+      },
     }),
 
     /**
