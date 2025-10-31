@@ -38,7 +38,7 @@ export function ClaimsTable({
   const { t } = useTranslation("identities");
 
   const { data, isLoading, isFetching, isError, error } = useQuery(
-    orpc.system.identity.read.queryOptions({
+    orpc.system.identity.readById.queryOptions({
       input: { identityId: identityAddress },
     })
   );

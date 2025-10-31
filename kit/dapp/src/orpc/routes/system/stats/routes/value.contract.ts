@@ -10,7 +10,7 @@ export const statsValueContract = baseContract
     path: "/system/stats/value",
     description: "Get system-wide total value statistics",
     successDescription: "System total value statistics",
-    tags: ["stats", "system"],
+    tags: ["system-stats"],
   })
   .input(StatsValueInputSchema)
   .output(StatsValueOutputSchema);

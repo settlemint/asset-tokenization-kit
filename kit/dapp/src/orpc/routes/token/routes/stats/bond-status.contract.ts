@@ -11,7 +11,7 @@ export const statsBondStatusContract = baseContract
     description: "Get bond status statistics for a specific token",
     successDescription:
       "Bond status statistics including denomination asset information",
-    tags: ["token", "stats", "bond"],
+    tags: ["token"],
   })
   .input(StatsBondStatusInputSchema)
   .output(StatsBondStatusOutputSchema);

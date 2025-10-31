@@ -11,7 +11,7 @@ export const statsSupplyChangesContract = baseContract
     description:
       "Get supply changes history (minted/burned) statistics for a specific token",
     successDescription: "Token supply changes history statistics",
-    tags: ["token", "stats", "asset", "supply-changes"],
+    tags: ["token"],
   })
   .input(StatsSupplyChangesInputSchema)
   .output(StatsSupplyChangesOutputSchema);

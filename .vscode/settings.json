@@ -150,5 +150,5 @@
   "workbench.fontAliasing": "auto",
   "workbench.tips.enabled": false,
   "workbench.tree.enableStickyScroll": true,
-  "typescript.experimental.useTsgo": true
+  "typescript.experimental.useTsgo": false
 }

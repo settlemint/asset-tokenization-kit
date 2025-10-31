@@ -42,8 +42,8 @@ export const IdentityGrowthAreaChart = withErrorBoundary(
 
     const queriesResults = useQueries({
       queries: statsRangePresets.map((preset) =>
-        orpc.system.stats.identityStatsOverTime.queryOptions({
-          input: preset,
+        orpc.system.stats.identityStatsOverTimeByPreset.queryOptions({
+          input: { preset },
           ...CHART_QUERY_OPTIONS,
         })
       ),

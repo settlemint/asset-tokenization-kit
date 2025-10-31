@@ -6,7 +6,10 @@ import { assets } from "@/orpc/routes/user/routes/user.assets";
 import { events } from "@/orpc/routes/user/routes/user.events";
 import { list } from "@/orpc/routes/user/routes/user.list";
 import { me } from "@/orpc/routes/user/routes/user.me";
-import { read } from "@/orpc/routes/user/routes/user.read";
+import {
+  readByUserId,
+  readByWallet,
+} from "@/orpc/routes/user/routes/user.read";
 import { search } from "@/orpc/routes/user/routes/user.search";
 import { stats } from "@/orpc/routes/user/routes/user.stats";
 import { statsGrowthOverTime } from "@/orpc/routes/user/routes/user.stats.growth-over-time";
@@ -45,7 +48,8 @@ const routes = {
   search,
   list,
   adminList,
-  read,
+  readByUserId,
+  readByWallet,
   stats,
   statsGrowthOverTime,
   statsUserCount,

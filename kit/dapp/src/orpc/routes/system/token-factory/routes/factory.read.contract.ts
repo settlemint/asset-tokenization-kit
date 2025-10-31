@@ -10,7 +10,7 @@ export const factoryReadContract = baseContract
     path: "/system/token-factory/{id}",
     description: "Get a token factory by ID",
     successDescription: "Token factory details",
-    tags: ["system", "token-factory"],
+    tags: ["token-factory"],
   })
   .input(FactoryReadSchema)
   .output(TokenFactoryDetailSchema);

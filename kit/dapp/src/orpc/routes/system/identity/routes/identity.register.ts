@@ -2,7 +2,7 @@ import { portalGraphql } from "@/lib/settlemint/portal";
 import { blockchainPermissionsMiddleware } from "@/orpc/middlewares/auth/blockchain-permissions.middleware";
 import { systemMiddleware } from "@/orpc/middlewares/system/system.middleware";
 import { onboardedRouter } from "@/orpc/procedures/onboarded.router";
-import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read";
+import { identityReadByWallet } from "@/orpc/routes/system/identity/routes/identity.read";
 import { SYSTEM_PERMISSIONS } from "@/orpc/routes/system/system.permissions";
 import { call } from "@orpc/server";
 import countries from "i18n-iso-countries";
@@ -51,7 +51,7 @@ export const identityRegister = onboardedRouter.system.identity.register
     const walletAddress = wallet ?? auth.user.wallet;
 
     const identity = await call(
-      identityRead,
+      identityReadByWallet,
       {
         wallet: walletAddress,
       },
@@ -82,7 +82,7 @@ export const identityRegister = onboardedRouter.system.identity.register
 
     // Return the updated identity data
     return await call(
-      identityRead,
+      identityReadByWallet,
       {
         wallet: walletAddress,
       },

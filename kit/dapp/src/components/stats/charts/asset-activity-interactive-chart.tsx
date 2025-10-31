@@ -49,8 +49,8 @@ export const AssetActivityInteractiveChart = withErrorBoundary(
 
     const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
       queries: statsRangePresets.map((preset) =>
-        orpc.system.stats.assetActivity.queryOptions({
-          input: preset,
+        orpc.system.stats.assetActivityByPreset.queryOptions({
+          input: { preset },
           ...CHART_QUERY_OPTIONS,
         })
       ),
