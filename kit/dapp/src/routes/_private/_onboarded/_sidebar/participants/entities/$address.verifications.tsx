@@ -1,7 +1,6 @@
 import { createI18nBreadcrumbMetadata } from "@/components/breadcrumb/metadata";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
-import { TileDetailLayout } from "@/components/layout/tile-detail-layout";
-import { ClaimsTable } from "@/components/participants/common/claims-table";
+import { VerificationDetailView } from "@/components/participants/common/verification-detail-view";
 import { ORPCError } from "@orpc/client";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -134,22 +133,20 @@ function RouteComponent() {
       routeContext.orpc.token.read.queryOptions(args),
   });
 
-  const content = identity ? (
-    <ClaimsTable identityAddress={identity.id} />
-  ) : (
-    <div className="py-12 text-center">
-      <p className="text-muted-foreground">
-        {t("identities:verificationDetail.noIdentity")}
-      </p>
-    </div>
-  );
+  if (!identity) {
+    return (
+      <div className="py-12 text-center">
+        <p className="text-muted-foreground">
+          {t("identities:verificationDetail.noIdentity")}
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <TileDetailLayout
-      title={t("identities:verificationDetail.title")}
-      subtitle={displayName}
-    >
-      {content}
-    </TileDetailLayout>
+    <VerificationDetailView
+      identityAddress={identity.id}
+      displayName={displayName}
+    />
   );
 }

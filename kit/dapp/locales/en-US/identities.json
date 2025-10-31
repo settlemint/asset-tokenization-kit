@@ -191,6 +191,15 @@
       "revokeSuccess": "Claim revoked successfully",
       "revokeLoading": "Revoking claim...",
       "revokeError": "Failed to revoke claim",
+      "addTitle": "Add Verification",
+      "addDescription": "Select a claim topic and provide the required data to issue a new verification.",
+      "addVerificationDescription": "Enter your verification code to add this claim.",
+      "addLoading": "Adding claim...",
+      "addError": "Failed to add claim",
+      "selectTopicError": "Please select a claim topic",
+      "invalidClaimData": "Invalid claim data",
+      "cancel": "Cancel",
+      "proceed": "Proceed to Verification",
       "removeTitle": "Remove claim",
       "removeDescription": "Removing deletes the claim from this identity. This action cannot be undone.",
       "removeConfirm": "Remove claim",
@@ -203,12 +212,56 @@
       },
       "success": {
         "revoke": "Claim revoked successfully",
-        "remove": "Claim removed successfully"
+        "remove": "Claim removed successfully",
+        "add": "Claim added successfully"
       }
+    },
+    "fields": {
+      "topic": "Claim Topic",
+      "selectTopic": "Select a claim topic",
+      "claim": "Claim Value",
+      "claimPlaceholder": "Enter claim value or description",
+      "class": "Asset Class",
+      "classPlaceholder": "e.g., Equity, Bond, Fund",
+      "category": "Asset Category",
+      "categoryPlaceholder": "e.g., Common Stock, Corporate Bond",
+      "issuerAddress": "Issuer Address",
+      "amount": "Amount",
+      "amountPlaceholder": "Amount in wei or base units",
+      "currencyCode": "Currency Code",
+      "decimals": "Decimals",
+      "expiryTimestamp": "Expiry Timestamp",
+      "timestampPlaceholder": "Unix timestamp",
+      "contractAddress": "Contract Address",
+      "isin": "ISIN Code",
+      "isinPlaceholder": "12-character ISIN",
+      "jurisdiction": "Jurisdiction",
+      "jurisdictionPlaceholder": "e.g., US, GB, EU",
+      "licenseType": "License Type",
+      "licenseTypePlaceholder": "Type of license",
+      "licenseNumber": "License Number",
+      "licenseNumberPlaceholder": "License identification number",
+      "validUntil": "Valid Until",
+      "exemptionReference": "Exemption Reference",
+      "exemptionReferencePlaceholder": "Regulation or exemption reference",
+      "prospectusReference": "Prospectus Reference",
+      "prospectusReferencePlaceholder": "Filing reference number",
+      "compliant": "Compliant",
+      "selectCompliant": "Select compliance status",
+      "yes": "Yes",
+      "no": "No",
+      "lastUpdated": "Last Updated",
+      "customData": "Custom Data",
+      "customDataPlaceholder": "Enter custom claim data"
     },
     "emptyState": {
       "title": "No claims found",
       "description": "This identity has no associated claims."
     }
+  },
+  "verificationDetail": {
+    "title": "Verifications",
+    "addClaim": "Add claim",
+    "noIdentity": "No identity found"
   }
 }
