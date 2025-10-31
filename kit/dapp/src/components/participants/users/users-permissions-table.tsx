@@ -1,5 +1,4 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Users } from "lucide-react";
 import { useMemo } from "react";
@@ -19,8 +18,7 @@ import { orpc } from "@/orpc/orpc-client";
 import type { System } from "@/orpc/routes/system/routes/system.read.schema";
 import { User as UserMe } from "@/orpc/routes/user/routes/user.me.schema";
 import { AccessControlRoles } from "@atk/zod/access-control-roles";
-import { EthereumAddress } from "@atk/zod/ethereum-address";
-import { toast } from "sonner";
+import { EthereumAddress, isEthereumAddress } from "@atk/zod/ethereum-address";
 
 interface UsersPermissionsTableProps {
   onOpenChangeRoles?: (account?: EthereumAddress) => void;
@@ -41,7 +39,6 @@ export const UsersPermissionsTable = withErrorBoundary(
     onOpenChangeRoles,
   }: UsersPermissionsTableProps) {
     const { t } = useTranslation(["user", "common"]);
-    const router = useRouter();
     const { data: system } = useSuspenseQuery(
       orpc.system.read.queryOptions({
         input: {
@@ -74,16 +71,9 @@ export const UsersPermissionsTable = withErrorBoundary(
 
     // Handle row click to navigate to user detail
     const handleRowClick = (user: User) => {
-      void (async () => {
-        try {
-          await router.navigate({
-            to: "/participants/users/$userId",
-            params: { userId: user.id },
-          });
-        } catch {
-          toast.error(t("permissions.table.errors.navigationFailed"));
-        }
-      })();
+      if (isEthereumAddress(user.wallet)) {
+        onOpenChangeRoles?.(user.wallet);
+      }
     };
 
     /**

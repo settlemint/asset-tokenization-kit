@@ -4,7 +4,7 @@
   "activity": "Aktivität",
   "assetClasses": "Vermögensklassen",
   "assetManagement": "Vermögensverwaltung",
-  "assetManagementNotAuthorized": "Sie sind nicht berechtigt, Vermögenswerte zu verwalten.\nSie haben nicht die Berechtigung zum Erstellen von Token.",
+  "assetManagementNotAuthorized": "Sie sind nicht berechtigt, Vermögenswerte zu verwalten.\nSie haben nicht die Token-Manager-Rolle.",
   "cashEquivalent": "Bargeldäquivalent",
   "fixedIncome": "Festverzinsliche Wertpapiere",
   "flexibleIncome": "Flexibles Einkommen",
@@ -48,7 +48,7 @@
     "addons": {
       "title": "Add-ons",
       "description": "Konfigurieren Sie Addon-Module, Integrationen und Plattform-Erweiterungen.",
-      "notAuthorized": "Sie sind nicht berechtigt, Add-ons zu verwalten.\nSie haben nicht die Rolle Add-on-Manager."
+      "notAuthorized": "Sie sind nicht berechtigt, Add-ons zu verwalten.\nSie haben nicht die Rolle Systemmanager."
     },
     "claimTopicsIssuers": {
       "title": "Anspruchsthemen & Emittenten",

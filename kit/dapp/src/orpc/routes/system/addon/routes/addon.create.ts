@@ -233,7 +233,7 @@ export const addonCreate = onboardedRouter.system.addon.create
   .use(systemMiddleware)
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: SYSTEM_PERMISSIONS.addonFactoryCreate,
+      requiredRoles: SYSTEM_PERMISSIONS.addonCreate,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

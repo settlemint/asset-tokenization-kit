@@ -22,10 +22,13 @@ export function IdentityCreated() {
       actions={
         <Button
           onClick={() =>
-            void completeStepAndNavigate(OnboardingStep.identitySetup)
+            void completeStepAndNavigate(
+              OnboardingStep.identitySetup,
+              OnboardingStep.identity
+            )
           }
         >
-          Add personal information
+          {t("onboarding:identity-setup.success-continue")}
         </Button>
       }
     >

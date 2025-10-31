@@ -165,9 +165,9 @@ export const SystemSchema = z.object({
               addonCreate: z
                 .boolean()
                 .describe("Whether the user can create addons"),
-              addonFactoryCreate: z
+              adminList: z
                 .boolean()
-                .describe("Whether the user can create addon factories"),
+                .describe("Whether the user can list admins"),
               claimCreate: z
                 .boolean()
                 .describe("Whether the user can create claims"),

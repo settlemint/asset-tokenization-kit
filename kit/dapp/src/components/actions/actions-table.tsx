@@ -160,14 +160,14 @@ export function ActionsTable({
       }
 
       const labelKey = ACTION_LABEL_MAP[actionName];
-      return t(labelKey as never, {
+      return t(labelKey, {
         defaultValue: toTitleCase(actionName),
       });
     };
 
     const resolveTypeLabelFromValue = (typeValue: string): string => {
       const labelKey = `types.${typeValue}`;
-      return t(labelKey as never, {
+      return t(labelKey, {
         defaultValue: toTitleCase(typeValue),
       });
     };
