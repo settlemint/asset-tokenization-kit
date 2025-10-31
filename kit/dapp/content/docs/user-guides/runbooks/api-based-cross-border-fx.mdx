@@ -1,0 +1,275 @@
+---
+title: API-based cross-border FX runbook
+description:
+  Draft end-to-end operations guide for orchestrating a cross-border FX flow
+  between GM Malaysia and GM Singapore entities using the ATK UI and ORPC API.
+pageTitle: Runbook - API cross-border FX settlement
+tags: [runbook, fx, xvp, stablecoin, bond, api]
+---
+
+**Primary audience:** Treasury operations, settlement engineers, integration squads  
+**Secondary audience:** Risk, finance, compliance reviewers
+
+> ?? **Status:** The XvP settlement addon is not yet wired to production backends. This runbook documents the intended flow so teams can rehearse the process, validate data contracts, and prepare integrations. Where live services are missing, follow the "Simulation" notes.
+
+## Why this runbook exists
+
+Cross-border payments and bond servicing require synchronising on-chain atomic swaps with off-chain FX and banking movements. This runbook captures the target flow for the **API-based cross-border FX** scenario so Maybank teams can dry-run the lifecycle, align responsibilities, and expose integration gaps before XvP goes live.
+
+- **Scenario:** An existing Maybank customer (User A) converts MYR exposure into SGD for User B via EUR and SGD stablecoins, then reinvests into a bond with coupon redemptions auto-converted back to SGD.
+- **Scope:** Covers UI rehearsal, corresponding API orchestration, and observability hooks for off-chain FX booking.
+- **Not covered:** Real bank settlement, production-grade reconciliation, or regulatory approvals.
+
+## Prerequisites and environment checklist
+
+- **Platforms:** ATK tenant with admin access, sandbox blockchain, and portal credentials for GM Malaysia (`GM-MY`) and GM Singapore (`GM-SG`).
+- **Identities:** Verified OnchainID for both treasury entities and test users (`User A`, `User B`).
+- **Tokens:** Ability to deploy two ERC-3643 stablecoins (EUR, SGD) and one bond instrument (EUR-denominated coupon, MYR face value optional).
+- **Wallets:** Custody wallets representing `GM Malaysia Entity` and `GM Singapore Entity` (multi-sig or vault-backed recommended).
+- **FX data:** Reference FX rate source (manual input, file upload, or API from treasury system) with snapshot for each leg.
+- **APIs:** ORPC client credentials (`clientId`, `clientSecret`) and access to the subgraph endpoint for event streaming.
+- **Simulation ledger:** Spreadsheet or treasury system workspace to mirror off-chain legs (MYR and SGD) until XvP hooks the banking rails.
+
+## Phase 0 - Baseline tenant configuration (UI)
+
+1. **Create stablecoins**  
+   Navigate to `Platform Settings > Asset Types > Create Stablecoin` and deploy:
+   - `EURX` (represents tokenised MYR deposit in the interim) with GM Malaysia as issuer.
+   - `SGDX` with GM Singapore as issuer.
+   Capture contract addresses and assign mint/burn permissions to respective treasury operators.
+2. **Register testing users**  
+   Use `Operations > Participants > Create user` to onboard `User A` (Malaysia) and `User B` (Singapore). Ensure both pass KYC/AML policies.
+3. **Issue bond asset**  
+   Under `Asset Issuance > Bonds > Create bond`, configure coupon currency (EUR), settlement currency (SGD via SGDX), and register GM Malaysia as issuer. Record ISIN/asset ID.
+4. **Provision treasury wallets**  
+   Create custodial wallets representing `GM Malaysia Entity` (`GM-MY Ops`) and `GM Singapore Entity` (`GM-SG Ops`). Verify signer policies and whitelist both wallets for mint/swap privileges.
+
+_Simulation note:_ Because MYR tokens are unavailable, treat `EURX` balances as liabilities of GM Malaysia against User A's MYR deposits. Document the MYR to EUR mapping in the simulation ledger.
+
+## Phase 1 - FX settlement rehearsal (UI powered)
+
+Goal: User A off-ramps MYR exposure; User B receives SGD tokens.
+
+1. **Mint EURX to User A**  
+   - On UI: `Operations > Stablecoins > Mint` with token `EURX`, recipient `User A`, amount equal to the MYR deposit translated to EUR notionally.  
+   - Off-chain: Record MYR debit from User A's bank account and credit GM Malaysia's MYR account.
+2. **Create XvP FX swap (EURX to SGDX)**  
+   - UI path: `Operations > Settlements > New XvP Settlement`.  
+   - Configure legs: burn `EURX` from User A, mint `SGDX` to User B. Input FX rate snapshot (MYR to SGD). Set both GM entities as approving counterparties.  
+   - Simulation: Until XvP executes on-chain, operators manually burn/mint using mint/burn forms after approvals.
+3. **Execute settlement**  
+   - When both GM treasury signers approve, execute the settlement. Verify `EURX` burned from User A and `SGDX` minted to User B.  
+   - Off-chain: Log intercompany FX booking from GM Malaysia to GM Singapore reflecting MYR to SGD conversion.
+4. **User B withdrawal**  
+   - UI: `User B > Stablecoins > Redeem` to burn SGDX back to fiat.  
+   - Off-chain: Treasury triggers SGD payout from GM Singapore's bank account to User B.
+
+## Phase 2 - Bond investment and coupon conversion (UI powered)
+
+Goal: User B swaps SGD stablecoin for GM Malaysia bond and receives coupons in SGD.
+
+1. **Mint bond into GM-MY treasury wallet**  
+   The bond issuance console mints required lots into `GM-MY Ops`.
+2. **Tokenise User B's SGD deposit**  
+   Mint `SGDX` to User B mirroring a new SGD deposit (off-chain: debit User B, credit GM Singapore).
+3. **Create XvP bond swap**  
+   - Settlement legs: User B contributes `SGDX`; `GM-MY Ops` delivers bond tokens.  
+   - FX leg: record SGD to MYR intercompany transfer for the bond consideration.
+4. **Execute coupon schedule**  
+   - Configure coupon schedule to pay in EURX to bond holders. On coupon date, verify EURX minted to User B.  
+   - Off-chain: Liability sits with GM Malaysia.
+5. **Convert coupon to SGD**  
+   - Launch follow-up XvP settlement burning User B's EURX coupon and minting SGDX at agreed FX.  
+   - Off-chain: GM Malaysia recognises EUR liability transfer to GM Singapore; GM Singapore settles SGD to User B if they redeem.
+
+## Phase 3 - API automation blueprint
+
+> Use the ORPC client to move from manual UI actions to scripted automation. Endpoint names below reflect current ORPC routes; adjust when XvP RPCs are finalised.
+
+### Authenticate ORPC client
+
+```ts
+import { createClient } from "@settlemint/orpc-client";
+
+const client = await createClient({
+  baseUrl: process.env.ORPC_BASE_URL!,
+  clientId: process.env.ORPC_CLIENT_ID!,
+  clientSecret: process.env.ORPC_CLIENT_SECRET!,
+});
+```
+
+### Mint or burn stablecoins
+
+```ts
+// Mint EURX to User A
+await client.token.mint.mutate({
+  contract: { address: process.env.EURX_ADDRESS! },
+  recipients: [process.env.USER_A_ADDRESS!],
+  amounts: ["100000000"], // 100 EURX assuming 6 decimals
+  walletVerification: { challengeId: null, challengeResponse: null },
+});
+
+// Burn SGDX from User B after withdrawal
+await client.token.burn.mutate({
+  contract: { address: process.env.SGDX_ADDRESS! },
+  holders: [process.env.USER_B_ADDRESS!],
+  amounts: ["50000000"],
+  walletVerification: { challengeId: null, challengeResponse: null },
+});
+```
+
+### Create and execute XvP settlements (draft API)
+
+```ts
+// Placeholder pending XvP route exposure
+const draftSettlement = await client.xvp.settlement.create.mutate({
+  label: "EURX to SGDX FX swap",
+  approvalsRequired: ["GM-MY", "GM-SG"],
+  legs: [
+    {
+      type: "burn",
+      tokenAddress: process.env.EURX_ADDRESS!,
+      participant: process.env.USER_A_ADDRESS!,
+      amount: "100000000",
+    },
+    {
+      type: "mint",
+      tokenAddress: process.env.SGDX_ADDRESS!,
+      participant: process.env.USER_B_ADDRESS!,
+      amount: "145000000",
+      fxRate: {
+        source: "TreasurySheet",
+        baseCurrency: "MYR",
+        quoteCurrency: "SGD",
+        rate: "1.45",
+        asOf: new Date().toISOString(),
+      },
+    },
+  ],
+});
+
+// Execute once approvals collected
+await client.xvp.settlement.execute.mutate({
+  settlementId: draftSettlement.id,
+});
+```
+
+### Bond lifecycle hooks
+
+```ts
+// Mint bond tokens to treasury wallet
+await client.assets.bond.allocate.mutate({
+  assetId: process.env.BOND_ID!,
+  recipient: process.env.GM_MY_WALLET!,
+  amount: "1000", // face value lots
+});
+
+// Enrol coupon schedule payout (EURX)
+await client.yield.fixedSchedule.createPayout.mutate({
+  scheduleId: process.env.SCHEDULE_ID!,
+  currencyToken: process.env.EURX_ADDRESS!,
+  amountPerUnit: "2000000",
+  dueDate: "2025-03-31",
+});
+```
+
+## Observability and off-chain orchestration
+
+### Subscribe to settlement events
+
+Use the public RPC client or subgraph to detect on-chain changes and trigger FX bookings.
+
+```ts
+import { createClient } from "@settlemint/orpc-client";
+import { createPublicClient, http, parseAbiItem } from "viem";
+
+const treasuryApi = createTreasuryApi(); // your treasury integration layer
+const reconciliationStore = createReconciliationStore(); // shared reconciliation log
+
+const orpcClient = await createClient({
+  baseUrl: process.env.ORPC_BASE_URL!,
+  clientId: process.env.ORPC_CLIENT_ID!,
+  clientSecret: process.env.ORPC_CLIENT_SECRET!,
+});
+
+const publicClient = createPublicClient({
+  transport: http(process.env.RPC_URL!),
+  chain: process.env.CHAIN_ID as any,
+});
+
+const stopWatching = publicClient.watchEvent({
+  address: process.env.XVP_ADDRESS!,
+  event: parseAbiItem("event SettlementExecuted(bytes32 indexed settlementId)"),
+  onLogs: async (logs) => {
+    for (const log of logs) {
+      // 1. Fetch settlement detail via ORPC or subgraph
+      const settlement = await orpcClient.xvp.settlement.read.query({
+        id: log.args.settlementId,
+      });
+
+      // 2. Create FX ticket in treasury system (for example, Murex) using captured rate
+      await treasuryApi.createFxDeal({
+        fromEntity: "GM-MY",
+        toEntity: "GM-SG",
+        baseCurrency: settlement.fx.baseCurrency,
+        quoteCurrency: settlement.fx.quoteCurrency,
+        amount: settlement.fx.baseAmount,
+        rate: settlement.fx.rate,
+      });
+
+      // 3. Update reconciliation sheet with on-chain transaction hash
+      await reconciliationStore.addEntry({
+        settlementId: log.args.settlementId,
+        transactionHash: log.transactionHash,
+      });
+    }
+  },
+});
+
+// Later, stop listening when the monitoring window ends
+// stopWatching();
+```
+
+For mint/burn tracking, subscribe to `Transfer` events on stablecoin contracts (zero address => mint, burn => zero address) and align with ORPC transaction hashes.
+
+### Manual fallbacks while XvP integration is pending
+
+- Record each mint/burn action with status `Simulated` in the treasury ledger.
+- Use a dual-approval checklist (GM-MY, GM-SG) stored in Confluence or Jira to simulate XvP approval flow.
+- Maintain an FX rate log with timestamp, trader, and data source for auditability.
+
+## Validation, approvals, and sign-off
+
+| Checkpoint | Owner | Evidence |
+| --- | --- | --- |
+| Stablecoin mint/burn permissions configured | Treasury ops | Screenshots, ORPC audit log |
+| XvP settlement definitions reviewed | Integration squad | Exported JSON payload |
+| Off-chain FX booking captured | Treasury middle office | Treasury system ticket ID |
+| Coupon conversion proved | Finance | On-chain transaction hash plus FX ticket |
+
+## Failure scenarios to rehearse
+
+- **Mint/burn permission errors:** Ensure wallet verification challenges are satisfied. Use `token.permission.list` ORPC call to confirm roles.
+- **FX rate staleness:** Run the settlement with an expired rate to confirm rejection rules trigger and operators know the override path.
+- **Partial approval:** Simulate one GM entity withholding approval; confirm escalation path and cancellation workflow.
+- **Event listener outage:** Disconnect event listener to validate reconciliation reports identify missing FX tickets.
+
+## Next steps before go-live
+
+- Finalise XvP to core banking integration (automate MYR/SGD ledger entries).
+- Harden ORPC error handling (retry policies, idempotency keys).
+- Align with compliance for cross-border quota reporting.
+- Update this runbook once the XvP API schemas and production endpoints are frozen.
+
+---
+
+### Does the workflow make sense?
+
+Yes - with clarifications:
+
+- Using EURX as a proxy for tokenised MYR is acceptable for rehearsals; document the temporary mapping so accounting understands the placeholder.
+- Each swap should be managed through a single XvP settlement record tying together the burn/mint legs; falling back to manual mint/burn is the right interim step.
+- Capturing FX tickets after every on-chain execution maintains intercompany balance; ensure both GM entities reconcile to the same valuation date.
+- Listening to on-chain `SettlementExecuted` and `Transfer` events is the correct trigger mechanism for automating off-chain FX entries.
+
+Proceed with the simulation and feed learnings back into the XvP integration backlog.
