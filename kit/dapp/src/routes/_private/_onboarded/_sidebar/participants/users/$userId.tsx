@@ -65,6 +65,7 @@ export const Route = createFileRoute(
       });
     }
 
+    // get the user
     const user = await queryClient.ensureQueryData(
       orpc.user.readByUserId.queryOptions({ input: { userId } })
     );
