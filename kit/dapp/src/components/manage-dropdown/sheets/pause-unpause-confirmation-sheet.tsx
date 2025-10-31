@@ -69,38 +69,38 @@ export function PauseUnpauseConfirmationSheet({
   );
 
   const handleSubmit = (walletVerification: UserVerification) => {
-    if (action === "pause") {
-      toast.promise(
-        pauseAsset({
+    const isPause = action === "pause";
+    const promise = isPause
+      ? pauseAsset({
           contract: asset.id,
           walletVerification,
-        }),
-        {
-          success: t("tokens:actions.pause.messages.success", {
-            name: asset.name,
-            symbol: asset.symbol,
-          }),
-          error: (data) => t("common:error", { message: data.message }),
-          loading: t("tokens:actions.pause.messages.submitting"),
-        }
-      );
-    } else {
-      toast.promise(
-        unpauseAsset({
+        })
+      : unpauseAsset({
           contract: asset.id,
           walletVerification,
-        }),
-        {
-          success: t("tokens:actions.unpause.messages.success", {
-            name: asset.name,
-            symbol: asset.symbol,
-          }),
-          error: (data) => t("common:error", { message: data.message }),
-          loading: t("tokens:actions.unpause.messages.submitting"),
-        }
-      );
-    }
-    handleClose();
+        });
+
+    toast
+      .promise(promise, {
+        success: isPause
+          ? t("tokens:actions.pause.messages.success", {
+              name: asset.name,
+              symbol: asset.symbol,
+            })
+          : t("tokens:actions.unpause.messages.success", {
+              name: asset.name,
+              symbol: asset.symbol,
+            }),
+        error: (data) => t("common:error", { message: data.message }),
+        loading: isPause
+          ? t("tokens:actions.pause.messages.submitting")
+          : t("tokens:actions.unpause.messages.submitting"),
+      })
+      .unwrap()
+      .then(() => {
+        handleClose();
+      })
+      .catch(() => undefined);
   };
 
   const handleClose = useCallback(() => {

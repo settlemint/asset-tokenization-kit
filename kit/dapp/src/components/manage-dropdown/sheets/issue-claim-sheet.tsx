@@ -347,13 +347,18 @@ export function IssueClaimSheet({
       walletVerification: verification,
     });
 
-    toast.promise(promise, {
-      loading: t("actions.issueClaim.submitting"),
-      success: t("actions.issueClaim.success"),
-      error: (error: Error) =>
-        t("actions.issueClaim.error", { error: error.message }),
-    });
-    handleClose();
+    toast
+      .promise(promise, {
+        loading: t("actions.issueClaim.submitting"),
+        success: t("actions.issueClaim.success"),
+        error: (error: Error) =>
+          t("actions.issueClaim.error", { error: error.message }),
+      })
+      .unwrap()
+      .then(() => {
+        handleClose();
+      })
+      .catch(() => undefined);
   };
 
   return (

@@ -245,6 +245,20 @@ wallet. This issuer can sign all four claim topics during investor onboarding.
 External KYC provider integrations register additional issuers when you
 configure third-party identity verification.
 
+To manually add an issuer:
+
+1. Open **Platform Settings → Claim Topics & Issuers** and click
+   **Add Trusted Issuer**.
+2. Select an existing user wallet or enter an Ethereum address manually.
+   Available claim topics remain disabled until a wallet is chosen, preventing
+   accidental assignments.
+3. Choose at least one claim topic that the issuer is allowed to sign. The
+   dialog now presents a confirmation step summarizing the issuer address and
+   selected topics before submission.
+4. Confirm the details and complete the wallet verification challenge (PIN or
+   OTP). The issuer is added only after the verification succeeds; the sheet
+   stays open if the transaction fails so you can adjust and retry.
+
 Adding custom claim topics or additional trusted issuers requires smart contract
 development. Work with your technical team to deploy claim issuer contracts and
 register them via the identity registry governance functions. Changes to the

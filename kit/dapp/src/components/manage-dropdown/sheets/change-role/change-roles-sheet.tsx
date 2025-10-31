@@ -383,23 +383,22 @@ export function ChangeRolesSheet({
                 }
               })();
 
-              toast.promise(promise, {
-                loading: t("common:saving"),
-                success: t("common:saved"),
-                error: (data) => {
-                  const message =
-                    data?.message ||
-                    t("components:changeRolesSheet.unexpectedError");
-                  return t("common:error", { message });
-                },
-              });
-
-              try {
-                await promise;
-                handleClose();
-              } catch {
-                // Error already shown in toast, just prevent closing on failure
-              }
+              toast
+                .promise(promise, {
+                  loading: t("common:saving"),
+                  success: t("common:saved"),
+                  error: (data) => {
+                    const message =
+                      data?.message ||
+                      t("components:changeRolesSheet.unexpectedError");
+                    return t("common:error", { message });
+                  },
+                })
+                .unwrap()
+                .then(() => {
+                  handleClose();
+                })
+                .catch(() => undefined);
             }}
           >
             <div className="space-y-4">
