@@ -151,6 +151,18 @@
     "linkedEntity": "リンクされたエンティティ",
     "linkedEntityInfo": "このアイデンティティに関連付けられたエンティティ"
   },
+  "claimsTile": {
+    "title": "アイデンティティと検証",
+    "subtitle": "オンチェーンのアイデンティティとクレーム",
+    "activeVerifications": "有効な確認",
+    "totalClaims": "合計 {{count}} 件のクレーム",
+    "totalClaims_plural": "合計 {{count}} 件のクレーム",
+    "revokedClaims": "{{count}} 件取り消し",
+    "revokedClaims_plural": "{{count}} 件取り消し",
+    "untrustedClaimsWarning": "信頼できないクレームを {{count}} 件検出",
+    "untrustedClaimsWarning_plural": "信頼できないクレームを {{count}} 件検出",
+    "manageVerifications": "確認を管理"
+  },
   "claimsTable": {
     "columns": {
       "claimName": "クレーム名",

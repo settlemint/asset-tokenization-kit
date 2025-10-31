@@ -3,6 +3,7 @@ import { RouterBreadcrumb } from "@/components/breadcrumb/router-breadcrumb";
 import { CopyToClipboard } from "@/components/copy-to-clipboard/copy-to-clipboard";
 import { DefaultCatchBoundary } from "@/components/error/default-catch-boundary";
 import { BasicInfoTile } from "@/components/participants/users/tiles/basic-info-tile";
+import { IdentityClaimsTile } from "@/components/participants/common/tiles/identity-claims-tile";
 import { Badge } from "@/components/ui/badge";
 import { getUserDisplayName } from "@/lib/utils/user-display-name";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
@@ -106,7 +107,7 @@ export const Route = createFileRoute(
  * including header, breadcrumbs, tabs, and renders child routes through Outlet.
  */
 function RouteComponent() {
-  const { user: loaderUser } = Route.useLoaderData();
+  const { user: loaderUser, identity: loaderIdentity } = Route.useLoaderData();
   const { userId } = Route.useParams();
   const routeContext = Route.useRouteContext();
   const { orpc } = routeContext;
@@ -118,6 +119,16 @@ function RouteComponent() {
   );
 
   const user = queriedUser ?? loaderUser;
+
+  // Subscribe to live identity data if available
+  const { data: queriedIdentity } = useQuery({
+    ...orpc.system.identity.read.queryOptions({
+      input: { wallet: user.wallet ?? "" },
+    }),
+    enabled: Boolean(user.wallet),
+  });
+
+  const identity = queriedIdentity ?? loaderIdentity;
   type ExtendedUser = typeof user & {
     roles?: Partial<Record<AccessControlRoles, boolean>>;
     isAdmin?: boolean | null;
@@ -206,6 +217,14 @@ function RouteComponent() {
       </div>
       <div className="grid auto-rows-fr items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
         <BasicInfoTile user={user} />
+        {identity && (
+          <IdentityClaimsTile
+            identity={identity}
+            onManageVerifications={() => {
+              // TODO: Implement navigation to claims management page
+            }}
+          />
+        )}
       </div>
       <Outlet />
     </div>
