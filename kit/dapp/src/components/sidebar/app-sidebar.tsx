@@ -1,5 +1,6 @@
 import { NavAddons } from "@/components/sidebar/nav-addons";
 import { NavAsset } from "@/components/sidebar/nav-asset";
+import { NavCompliance } from "@/components/sidebar/nav-compliance";
 import { NavMyAssets } from "@/components/sidebar/nav-my-assets";
 import { NavParticipants } from "@/components/sidebar/nav-participants";
 import { NavSettings } from "@/components/sidebar/nav-settings";
@@ -54,7 +55,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarGroup className="mt-6">
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isHomeActive}>
+              <SidebarMenuButton
+                asChild
+                isActive={isHomeActive}
+                tooltip={t("home")}
+              >
                 <Link
                   to="/"
                   aria-current={isHomeActive ? "page" : undefined}
@@ -66,7 +71,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild isActive={isActionsActive}>
+              <SidebarMenuButton
+                asChild
+                isActive={isActionsActive}
+                tooltip={t("actions")}
+              >
                 <Link
                   to="/actions"
                   aria-current={isActionsActive ? "page" : undefined}
@@ -93,6 +102,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavAsset />
         <NavAddons />
         <NavParticipants />
+        <NavCompliance />
         <NavSettings />
       </SidebarContent>
       <SidebarRail />

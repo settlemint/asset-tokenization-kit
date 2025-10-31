@@ -4,6 +4,12 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
@@ -12,6 +18,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { orpc } from "@/orpc/orpc-client";
 import { getAddonCategoryFromFactoryTypeId } from "@atk/zod/addon-types";
@@ -23,7 +30,9 @@ import { useTranslation } from "react-i18next";
 
 /**
  * Navigation component for addon management in the sidebar.
- * Displays a list of system addons with navigation to addon details.
+ * Uses hybrid navigation: DropdownMenu in collapsed mode, Collapsible in expanded mode.
+ * Displays addon categories (custody, income) with their addon instances.
+ * Only renders when user has addonCreate permission.
  * @example
  * // Used within AppSidebar component
  * <NavAddons />
@@ -31,6 +40,7 @@ import { useTranslation } from "react-i18next";
 export function NavAddons() {
   const { t } = useTranslation("navigation");
   const matches = useMatches();
+  const { state } = useSidebar();
   const { data: system } = useSuspenseQuery(
     orpc.system.read.queryOptions({
       input: { id: "default" },
@@ -132,6 +142,46 @@ export function NavAddons() {
             const hasActiveChild = isAnyCategoryAddonActive(
               category.addons.map((a) => a.id)
             );
+
+            // Collapsed state: Use DropdownMenu
+            if (state === "collapsed") {
+              return (
+                <SidebarMenuItem key={category.name}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuButton
+                        className={hasActiveChild ? "font-semibold" : ""}
+                        tooltip={category.name}
+                      >
+                        <category.icon />
+                      </SidebarMenuButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      side="right"
+                      align="start"
+                      className="w-48"
+                    >
+                      {category.addons.map((addon) => {
+                        const isActive = isAddonActive(addon.id);
+                        return (
+                          <DropdownMenuItem key={addon.id} asChild>
+                            <Link
+                              to="/addon/$addonAddress"
+                              params={{ addonAddress: addon.id }}
+                              className={isActive ? "font-semibold" : ""}
+                            >
+                              {addon.name}
+                            </Link>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </SidebarMenuItem>
+              );
+            }
+
+            // Expanded state: Use Collapsible
             return (
               <Collapsible
                 key={category.name}
@@ -143,6 +193,7 @@ export function NavAddons() {
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
                       className={hasActiveChild ? "font-semibold" : ""}
+                      tooltip={category.name}
                     >
                       <category.icon />
                       <span>{category.name}</span>

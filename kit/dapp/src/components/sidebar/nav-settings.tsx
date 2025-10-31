@@ -13,13 +13,7 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useMatches } from "@tanstack/react-router";
-import {
-  ClipboardCheck,
-  FileText,
-  Key,
-  Paintbrush,
-  Puzzle,
-} from "lucide-react";
+import { FileText, Key, Paintbrush, Puzzle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -44,10 +38,7 @@ export function NavSettings() {
     return matches.some((match) => match.pathname === path);
   };
 
-  const roles = system.userPermissions?.roles ?? {};
-  const canViewSettings =
-    Object.keys(roles).length > 0 ||
-    system.userPermissions?.roles.admin === true;
+  const canViewSettings = system.userPermissions?.roles.admin === true;
 
   if (!canViewSettings) {
     return null;
@@ -84,11 +75,6 @@ export function NavSettings() {
       disabledMessage: t("settings.theme.notAuthorized"),
     },
     {
-      name: t("settings.claimTopicsIssuers.title"),
-      icon: ClipboardCheck,
-      path: "/platform-settings/claim-topics-issuers",
-    },
-    {
       name: t("settings.permissions.title"),
       icon: Key,
       path: "/platform-settings/permissions",
@@ -113,6 +99,7 @@ export function NavSettings() {
                 asChild
                 isActive={isActive}
                 disabled={item.disabled}
+                tooltip={item.name}
               >
                 <Link
                   to={item.path}

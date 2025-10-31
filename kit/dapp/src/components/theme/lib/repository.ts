@@ -102,8 +102,8 @@ export function mergeTheme(
   partial: ThemeConfigPartial
 ): ThemeConfig {
   const merged: ThemeConfig = {
-    logo: { ...base.logo, ...(partial.logo ?? {}) },
-    images: { ...base.images, ...(partial.images ?? {}) },
+    logo: { ...base.logo, ...partial.logo },
+    images: { ...base.images, ...partial.images },
     fonts: {
       sans: { ...base.fonts.sans, ...partial.fonts?.sans },
       mono: { ...base.fonts.mono, ...partial.fonts?.mono },

@@ -5,6 +5,12 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
@@ -13,6 +19,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useAssetClass } from "@/hooks/use-asset-class";
 import { orpc } from "@/orpc/orpc-client";
@@ -24,8 +31,9 @@ import { useTranslation } from "react-i18next";
 
 /**
  * Navigation component for asset management in the sidebar.
- * Displays a collapsible list of asset factories with tokens and a link to statistics.
- * Only renders when there are factories with tokens available.
+ * Uses hybrid navigation: DropdownMenu in collapsed mode, Collapsible in expanded mode.
+ * Displays asset classes with their token factories and a link to statistics.
+ * Only renders when user has tokenCreate permission.
  * @example
  * // Used within AppSidebar component
  * <NavAsset />
@@ -34,6 +42,7 @@ export function NavAsset() {
   const { t } = useTranslation("navigation");
   const matches = useMatches();
   const [modalOpen, setModalOpen] = useState(false);
+  const { state } = useSidebar();
   const { data: system } = useSuspenseQuery(
     orpc.system.read.queryOptions({
       input: { id: "default" },
@@ -75,6 +84,7 @@ export function NavAsset() {
             onClick={() => {
               setModalOpen(true);
             }}
+            tooltip={t("assetDesigner")}
           >
             <PlusIcon className="mr-1 h-4 w-4" />
             <span>{t("assetDesigner")}</span>
@@ -85,6 +95,46 @@ export function NavAsset() {
               const hasActiveChild = isAnyFactoryActive(
                 assetClass.factories.map((f) => f.id)
               );
+
+              // Collapsed state: Use DropdownMenu
+              if (state === "collapsed") {
+                return (
+                  <SidebarMenuItem key={assetClass.name}>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <SidebarMenuButton
+                          className={hasActiveChild ? "font-semibold" : ""}
+                          tooltip={assetClass.name}
+                        >
+                          <assetClass.icon />
+                        </SidebarMenuButton>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        side="right"
+                        align="start"
+                        className="w-48"
+                      >
+                        {assetClass.factories.map((factory) => {
+                          const isActive = isFactoryActive(factory.id);
+                          return (
+                            <DropdownMenuItem key={factory.id} asChild>
+                              <Link
+                                to="/token/$factoryAddress"
+                                params={{ factoryAddress: factory.id }}
+                                className={isActive ? "font-semibold" : ""}
+                              >
+                                {factory.name}
+                              </Link>
+                            </DropdownMenuItem>
+                          );
+                        })}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </SidebarMenuItem>
+                );
+              }
+
+              // Expanded state: Use Collapsible
               return (
                 <Collapsible
                   key={assetClass.name}
@@ -96,6 +146,7 @@ export function NavAsset() {
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         className={hasActiveChild ? "font-semibold" : ""}
+                        tooltip={assetClass.name}
                       >
                         <assetClass.icon />
                         <span>{assetClass.name}</span>
@@ -131,7 +182,7 @@ export function NavAsset() {
             })}
 
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild tooltip={t("statistics")}>
               <Link
                 to="/token/stats"
                 activeProps={{

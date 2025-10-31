@@ -38,7 +38,11 @@ export function NavMyAssets() {
       <SidebarGroupLabel>{t("myAssets")}</SidebarGroupLabel>
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton asChild isActive={isMyAssetsActive}>
+          <SidebarMenuButton
+            asChild
+            isActive={isMyAssetsActive}
+            tooltip={t("myAssets")}
+          >
             <Link
               to="/my-assets"
               aria-current={isMyAssetsActive ? "page" : undefined}
