@@ -14,8 +14,10 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
+import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
 import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";
 import { PortfolioDashboard } from "@/components/dashboard/portfolio-dashboard/portfolio-dashboard";
+import { PortfolioHeader } from "@/components/dashboard/portfolio-dashboard/portfolio-header";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
@@ -46,11 +48,26 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
 });
 
 function Home() {
+  const { user, system } = Route.useLoaderData();
+  const identityRegistered = !!system?.userIdentity?.registered;
+  const hasAdminPermissions = Object.values(
+    system?.userPermissions?.roles ?? {}
+  ).some(Boolean);
   return (
     <div className="h-[calc(100vh-4rem)] p-4 md:p-6">
       <div className="grid h-full grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="col-span-1 lg:col-span-2">
-          <PortfolioDashboard />
+          {!identityRegistered && (
+            <div className="col-span-1 flex min-h-0 flex-col mb-4 lg:mb-10">
+              <IdentityProgress user={user} />
+            </div>
+          )}
+          {identityRegistered &&
+            (hasAdminPermissions ? (
+              <PortfolioHeader />
+            ) : (
+              <PortfolioDashboard />
+            ))}
         </div>
         <div className="col-span-1 flex min-h-0 flex-col mb-4 lg:mb-10">
           <LatestEvents className="flex-1" />
