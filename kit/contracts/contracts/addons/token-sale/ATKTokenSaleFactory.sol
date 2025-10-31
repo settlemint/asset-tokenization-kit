@@ -197,7 +197,12 @@ contract ATKTokenSaleFactory is Initializable, AccessControlUpgradeable, ERC2771
     /// @notice Returns the calldata of the transaction, supporting ERC2771 meta-transactions
     /// @dev Required override for ERC2771ContextUpgradeable
     /// @return The calldata of the transaction
-    function _msgData() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (bytes calldata) {
+    function _msgData()
+        internal
+        view
+        override(ContextUpgradeable, ERC2771ContextUpgradeable)
+        returns (bytes calldata)
+    {
         return ERC2771ContextUpgradeable._msgData();
     }
 }

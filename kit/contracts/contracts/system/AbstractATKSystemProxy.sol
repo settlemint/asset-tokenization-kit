@@ -63,12 +63,7 @@ abstract contract AbstractATKSystemProxy is Proxy {
     ///         3. Prepared the `bytes memory initializeData` specific to their implementation's `initialize` function.
     /// @param implementationAddress The non-zero address of the logic contract to `delegatecall` to.
     /// @param initializeData The ABI-encoded data for the `initialize` function call.
-    function _performInitializationDelegatecall(
-        address implementationAddress,
-        bytes memory initializeData
-    )
-        internal
-    {
+    function _performInitializationDelegatecall(address implementationAddress, bytes memory initializeData) internal {
         if (implementationAddress == address(0)) {
             revert InitializationWithZeroAddress();
         }

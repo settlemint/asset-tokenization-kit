@@ -383,13 +383,7 @@ contract ATKVault is ERC2771Context, AccessControlEnumerable, Pausable, Reentran
     /// @param txIndex Index of the transaction
     /// @param signerAddresses Array of signer addresses
     /// @param sigs Array of signatures
-    function _processSignatures(
-        uint256 txIndex,
-        address[] memory signerAddresses,
-        bytes[] memory sigs
-    )
-        internal
-    {
+    function _processSignatures(uint256 txIndex, address[] memory signerAddresses, bytes[] memory sigs) internal {
         Transaction storage txn = transactions[txIndex];
 
         // Check for duplicates in new signatures

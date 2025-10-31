@@ -18,12 +18,11 @@ import { ISMARTTokenAccessManaged } from "../../smart/extensions/access-managed/
 ///      - Type safety for token interactions
 ///      - Consistent API across all asset types
 interface IATKToken is ISMART, ISMARTTokenAccessManaged {
-    // This interface intentionally contains no additional functions or events.
-    // It serves as a composition interface that combines the functionality of
-    // ISMART and ISMARTTokenAccessManaged for easier consumption by:
-    // - Asset implementations
-    // - Factory contracts
-    // - Integration code
-    // - External consumers
-
-    }
+// This interface intentionally contains no additional functions or events.
+// It serves as a composition interface that combines the functionality of
+// ISMART and ISMARTTokenAccessManaged for easier consumption by:
+// - Asset implementations
+// - Factory contracts
+// - Integration code
+// - External consumers
+}

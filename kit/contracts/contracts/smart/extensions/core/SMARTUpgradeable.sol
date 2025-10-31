@@ -72,7 +72,6 @@ abstract contract SMARTUpgradeable is Initializable, SMARTExtensionUpgradeable, 
     )
         internal
         onlyInitializing // Ensures this logic runs only once during the proxy initialization process.
-
     {
         // Initialize the ERC20 part (name and symbol).
         // Decimals are handled by __SMART_init_unchained as it's part of _SMARTLogic's state.

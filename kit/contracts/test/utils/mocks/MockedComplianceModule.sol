@@ -71,7 +71,12 @@ contract MockedComplianceModule is AbstractComplianceModule {
         transferredCallCount++;
         callHistory.push(
             CallRecord({
-                callType: CallType.TRANSFERRED, token: _token, from: _from, to: _to, value: _value, params: _params
+                callType: CallType.TRANSFERRED,
+                token: _token,
+                from: _from,
+                to: _to,
+                value: _value,
+                params: _params
             })
         );
     }
@@ -93,7 +98,12 @@ contract MockedComplianceModule is AbstractComplianceModule {
         destroyedCallCount++;
         callHistory.push(
             CallRecord({
-                callType: CallType.DESTROYED, token: _token, from: _from, to: address(0), value: _value, params: _params
+                callType: CallType.DESTROYED,
+                token: _token,
+                from: _from,
+                to: address(0),
+                value: _value,
+                params: _params
             })
         );
     }
@@ -106,7 +116,12 @@ contract MockedComplianceModule is AbstractComplianceModule {
         createdCallCount++;
         callHistory.push(
             CallRecord({
-                callType: CallType.CREATED, token: _token, from: address(0), to: _to, value: _value, params: _params
+                callType: CallType.CREATED,
+                token: _token,
+                from: address(0),
+                to: _to,
+                value: _value,
+                params: _params
             })
         );
     }

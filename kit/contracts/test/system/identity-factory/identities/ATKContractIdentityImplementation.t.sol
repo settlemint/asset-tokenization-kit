@@ -2,15 +2,11 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import {
-    ATKContractIdentityImplementation
-} from "../../../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
-import {
-    ATKContractIdentityProxy
-} from "../../../../contracts/system/identity-factory/identities/ATKContractIdentityProxy.sol";
-import {
-    IATKContractIdentity
-} from "../../../../contracts/system/identity-factory/identities/IATKContractIdentity.sol";
+import { ATKContractIdentityImplementation } from
+    "../../../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
+import { ATKContractIdentityProxy } from
+    "../../../../contracts/system/identity-factory/identities/ATKContractIdentityProxy.sol";
+import { IATKContractIdentity } from "../../../../contracts/system/identity-factory/identities/IATKContractIdentity.sol";
 import { ZeroAddressNotAllowed } from "../../../../contracts/system/identity-factory/ATKIdentityErrors.sol";
 import { IContractWithIdentity } from "../../../../contracts/system/identity-factory/IContractWithIdentity.sol";
 import { IClaimAuthorizer } from "../../../../contracts/onchainid/extensions/IClaimAuthorizer.sol";
@@ -154,7 +150,12 @@ contract MockIdentityReceiver is IIdentity, ERC165 {
     {
         claimId = keccak256(abi.encode(_issuer, _topic));
         claims[claimId] = ClaimData({
-            topic: _topic, scheme: _scheme, issuer: _issuer, signature: _signature, data: _data, uri: _uri
+            topic: _topic,
+            scheme: _scheme,
+            issuer: _issuer,
+            signature: _signature,
+            data: _data,
+            uri: _uri
         });
         claimExists[claimId] = true;
         return claimId;
@@ -224,7 +225,12 @@ contract MockIdentityReceiver is IIdentity, ERC165 {
         external
     {
         validationClaims[_claimId] = ClaimData({
-            topic: _topic, scheme: _scheme, issuer: _issuer, signature: _signature, data: _data, uri: _uri
+            topic: _topic,
+            scheme: _scheme,
+            issuer: _issuer,
+            signature: _signature,
+            data: _data,
+            uri: _uri
         });
     }
 
@@ -269,17 +275,7 @@ contract MockIdentityReceiver is IIdentity, ERC165 {
         return false;
     }
 
-    function isClaimValid(
-        IIdentity,
-        uint256,
-        bytes calldata,
-        bytes calldata
-    )
-        external
-        pure
-        override
-        returns (bool)
-    {
+    function isClaimValid(IIdentity, uint256, bytes calldata, bytes calldata) external pure override returns (bool) {
         return false;
     }
 
@@ -436,8 +432,9 @@ contract ATKContractIdentityImplementationTest is Test {
     /// @notice Test that contract owner can add self-attested claims via contract permissions
     function testContractOwnerCanAddClaims() public {
         vm.prank(contractOwner);
-        bytes32 claimId = IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI);
+        bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+        );
 
         assertTrue(claimId != bytes32(0), "Contract owner should be able to add claims");
 
@@ -455,8 +452,9 @@ contract ATKContractIdentityImplementationTest is Test {
     /// @notice Test that claim manager can also add claims via contract permissions
     function testClaimManagerCanAddClaims() public {
         vm.prank(claimManager);
-        bytes32 claimId = IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI);
+        bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+        );
 
         assertTrue(claimId != bytes32(0), "Claim manager should be able to add claims");
     }
@@ -467,8 +465,9 @@ contract ATKContractIdentityImplementationTest is Test {
         vm.expectRevert(
             abi.encodeWithSelector(ATKContractIdentityImplementation.UnauthorizedOperation.selector, unauthorizedUser)
         );
-        IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI);
+        IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+        );
     }
 
     /// @notice Test that external claim issuers can add claims when whitelisted via authorizer
@@ -486,30 +485,18 @@ contract ATKContractIdentityImplementationTest is Test {
                 ATKContractIdentityImplementation.UnauthorizedOperation.selector, address(externalClaimIssuer)
             )
         );
-        IATKContractIdentity(address(proxy))
-            .addClaim(
-                CLAIM_TOPIC,
-                CLAIM_SCHEME,
-                address(externalClaimIssuer),
-                issuerSignature,
-                issuerClaimData,
-                "external-claim"
-            );
+        IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(externalClaimIssuer), issuerSignature, issuerClaimData, "external-claim"
+        );
 
         // Whitelist the external claim issuer via authorizer
         trustedIssuerAuthorizer.setAuthorization(address(externalClaimIssuer), CLAIM_TOPIC, true);
 
         // Now the external claim issuer can add claims
         vm.prank(address(externalClaimIssuer));
-        bytes32 claimId = IATKContractIdentity(address(proxy))
-            .addClaim(
-                CLAIM_TOPIC,
-                CLAIM_SCHEME,
-                address(externalClaimIssuer),
-                issuerSignature,
-                issuerClaimData,
-                "external-claim"
-            );
+        bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(externalClaimIssuer), issuerSignature, issuerClaimData, "external-claim"
+        );
 
         assertTrue(claimId != bytes32(0), "Whitelisted external claim issuer should be able to add claims");
 
@@ -546,8 +533,9 @@ contract ATKContractIdentityImplementationTest is Test {
         // ============================================================
 
         vm.prank(contractOwner);
-        bytes32 ownerClaimId = IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), contractOwnerSig, contractOwnerData, "self-attested");
+        bytes32 ownerClaimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), contractOwnerSig, contractOwnerData, "self-attested"
+        );
         assertTrue(ownerClaimId != bytes32(0), "Contract owner should be able to add self-attested claims");
 
         // ============================================================
@@ -560,15 +548,9 @@ contract ATKContractIdentityImplementationTest is Test {
                 ATKContractIdentityImplementation.UnauthorizedOperation.selector, address(externalClaimIssuer)
             )
         );
-        IATKContractIdentity(address(proxy))
-            .addClaim(
-                CLAIM_TOPIC,
-                CLAIM_SCHEME,
-                address(externalClaimIssuer),
-                externalIssuerSig,
-                externalIssuerData,
-                "external"
-            );
+        IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(externalClaimIssuer), externalIssuerSig, externalIssuerData, "external"
+        );
 
         // ============================================================
         // STEP 3: Contract Owner manages authorizers (adds external issuer to whitelist)
@@ -590,28 +572,16 @@ contract ATKContractIdentityImplementationTest is Test {
 
         // First external issuer can add claims (whitelisted via primary authorizer)
         vm.prank(address(externalClaimIssuer));
-        bytes32 externalClaimId = IATKContractIdentity(address(proxy))
-            .addClaim(
-                CLAIM_TOPIC,
-                CLAIM_SCHEME,
-                address(externalClaimIssuer),
-                externalIssuerSig,
-                externalIssuerData,
-                "external"
-            );
+        bytes32 externalClaimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(externalClaimIssuer), externalIssuerSig, externalIssuerData, "external"
+        );
         assertTrue(externalClaimId != bytes32(0), "Whitelisted external issuer should add claims");
 
         // Second external issuer can add claims (whitelisted via secondary authorizer)
         vm.prank(address(anotherClaimIssuer));
-        bytes32 anotherClaimId = IATKContractIdentity(address(proxy))
-            .addClaim(
-                CLAIM_TOPIC + 1,
-                CLAIM_SCHEME,
-                address(anotherClaimIssuer),
-                anotherIssuerSig,
-                anotherIssuerData,
-                "another"
-            );
+        bytes32 anotherClaimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC + 1, CLAIM_SCHEME, address(anotherClaimIssuer), anotherIssuerSig, anotherIssuerData, "another"
+        );
         assertTrue(anotherClaimId != bytes32(0), "Another whitelisted issuer should add claims");
 
         // ============================================================
@@ -657,20 +627,20 @@ contract ATKContractIdentityImplementationTest is Test {
                 ATKContractIdentityImplementation.UnauthorizedOperation.selector, address(externalClaimIssuer)
             )
         );
-        IATKContractIdentity(address(proxy))
-            .addClaim(
-                CLAIM_TOPIC + 2,
-                CLAIM_SCHEME,
-                address(externalClaimIssuer),
-                externalIssuerSig,
-                externalIssuerData,
-                "blocked"
-            );
+        IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC + 2,
+            CLAIM_SCHEME,
+            address(externalClaimIssuer),
+            externalIssuerSig,
+            externalIssuerData,
+            "blocked"
+        );
 
         // But contract owner can still add claims
         vm.prank(contractOwner);
-        bytes32 finalClaimId = IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC + 2, CLAIM_SCHEME, address(proxy), contractOwnerSig, contractOwnerData, "still-works");
+        bytes32 finalClaimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC + 2, CLAIM_SCHEME, address(proxy), contractOwnerSig, contractOwnerData, "still-works"
+        );
         assertTrue(finalClaimId != bytes32(0), "Contract owner should always be able to add claims");
     }
 
@@ -696,8 +666,9 @@ contract ATKContractIdentityImplementationTest is Test {
         IATKContractIdentity(address(proxy)).removeClaimAuthorizationContract(address(trustedIssuerAuthorizer));
 
         assertFalse(
-            IATKContractIdentity(address(proxy))
-                .isClaimAuthorizationContractRegistered(address(trustedIssuerAuthorizer))
+            IATKContractIdentity(address(proxy)).isClaimAuthorizationContractRegistered(
+                address(trustedIssuerAuthorizer)
+            )
         );
     }
 
@@ -729,8 +700,9 @@ contract ATKContractIdentityImplementationTest is Test {
 
         // Should succeed because secondary authorizer approves
         vm.prank(address(externalClaimIssuer));
-        bytes32 claimId = IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC, CLAIM_SCHEME, address(externalClaimIssuer), signature, claimData, CLAIM_URI);
+        bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(externalClaimIssuer), signature, claimData, CLAIM_URI
+        );
 
         assertTrue(claimId != bytes32(0), "Claim should succeed via secondary authorizer");
     }
@@ -749,8 +721,9 @@ contract ATKContractIdentityImplementationTest is Test {
 
         // Should succeed despite one authorizer failing
         vm.prank(address(externalClaimIssuer));
-        bytes32 claimId = IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC, CLAIM_SCHEME, address(externalClaimIssuer), signature, claimData, CLAIM_URI);
+        bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(externalClaimIssuer), signature, claimData, CLAIM_URI
+        );
 
         assertTrue(claimId != bytes32(0), "Should succeed despite failing authorizer");
     }
@@ -762,8 +735,9 @@ contract ATKContractIdentityImplementationTest is Test {
     function testContractOwnerCanRemoveClaims() public {
         // Add a claim first
         vm.prank(contractOwner);
-        bytes32 claimId = IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI);
+        bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+        );
 
         // Contract owner can remove the claim
         vm.prank(contractOwner);
@@ -781,8 +755,9 @@ contract ATKContractIdentityImplementationTest is Test {
     function testClaimManagerCanRemoveClaims() public {
         // Add a claim first
         vm.prank(contractOwner);
-        bytes32 claimId = IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI);
+        bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+        );
 
         // Claim manager can remove the claim
         vm.prank(claimManager);
@@ -793,8 +768,9 @@ contract ATKContractIdentityImplementationTest is Test {
     function testUnauthorizedUserCannotRemoveClaims() public {
         // Add a claim first
         vm.prank(contractOwner);
-        bytes32 claimId = IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI);
+        bytes32 claimId = IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+        );
 
         // Unauthorized user cannot remove the claim
         vm.prank(unauthorizedUser);
@@ -821,10 +797,12 @@ contract ATKContractIdentityImplementationTest is Test {
     function testGetClaimsByTopic() public {
         // Add multiple claims
         vm.startPrank(contractOwner);
-        IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI);
-        IATKContractIdentity(address(proxy))
-            .addClaim(CLAIM_TOPIC, 2, address(proxy), hex"9abc", hex"def0", "https://example.com/claim2");
+        IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, CLAIM_SCHEME, address(proxy), CLAIM_SIGNATURE, CLAIM_DATA, CLAIM_URI
+        );
+        IATKContractIdentity(address(proxy)).addClaim(
+            CLAIM_TOPIC, 2, address(proxy), hex"9abc", hex"def0", "https://example.com/claim2"
+        );
         vm.stopPrank();
 
         bytes32[] memory claimIds = IERC735(address(proxy)).getClaimIdsByTopic(CLAIM_TOPIC);
@@ -886,8 +864,9 @@ contract ATKContractIdentityImplementationTest is Test {
 
         // Issue claim from the contract
         vm.prank(address(testContract));
-        bytes32 claimId = IATKContractIdentity(address(proxy))
-            .issueClaimTo(IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI);
+        bytes32 claimId = IATKContractIdentity(address(proxy)).issueClaimTo(
+            IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI
+        );
 
         assertTrue(claimId != bytes32(0), "Should return valid claim ID");
 
@@ -910,16 +889,18 @@ contract ATKContractIdentityImplementationTest is Test {
         vm.expectRevert(
             abi.encodeWithSelector(OnChainContractIdentity.UnauthorizedContractOperation.selector, contractOwner)
         );
-        IATKContractIdentity(address(proxy))
-            .issueClaimTo(IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI);
+        IATKContractIdentity(address(proxy)).issueClaimTo(
+            IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI
+        );
 
         // Unauthorized user cannot issue claims
         vm.prank(unauthorizedUser);
         vm.expectRevert(
             abi.encodeWithSelector(OnChainContractIdentity.UnauthorizedContractOperation.selector, unauthorizedUser)
         );
-        IATKContractIdentity(address(proxy))
-            .issueClaimTo(IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI);
+        IATKContractIdentity(address(proxy)).issueClaimTo(
+            IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI
+        );
     }
 
     /// @notice Test issuing claim fails when contract address is not set
@@ -938,8 +919,9 @@ contract ATKContractIdentityImplementationTest is Test {
         MockIdentityReceiver subjectIdentity = new MockIdentityReceiver();
 
         vm.prank(address(testContract));
-        bytes32 claimId = IATKContractIdentity(address(proxy))
-            .issueClaimTo(IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI);
+        bytes32 claimId = IATKContractIdentity(address(proxy)).issueClaimTo(
+            IIdentity(address(subjectIdentity)), CLAIM_TOPIC, CLAIM_DATA, CLAIM_URI
+        );
 
         // Set up the mock to return the claim
         subjectIdentity.setClaimForValidation(
@@ -947,13 +929,12 @@ contract ATKContractIdentityImplementationTest is Test {
         );
 
         // Validate the claim
-        bool isValid = IIdentity(address(proxy))
-            .isClaimValid(
-                IIdentity(address(subjectIdentity)),
-                CLAIM_TOPIC,
-                "", // signature not used for contract scheme
-                CLAIM_DATA
-            );
+        bool isValid = IIdentity(address(proxy)).isClaimValid(
+            IIdentity(address(subjectIdentity)),
+            CLAIM_TOPIC,
+            "", // signature not used for contract scheme
+            CLAIM_DATA
+        );
 
         assertTrue(isValid, "Contract scheme claim should be valid");
 
@@ -964,8 +945,8 @@ contract ATKContractIdentityImplementationTest is Test {
         assertFalse(isValid, "Claim with wrong data should be invalid");
 
         // Test with wrong topic
-        isValid = IIdentity(address(proxy))
-            .isClaimValid(IIdentity(address(subjectIdentity)), CLAIM_TOPIC + 1, "", CLAIM_DATA);
+        isValid =
+            IIdentity(address(proxy)).isClaimValid(IIdentity(address(subjectIdentity)), CLAIM_TOPIC + 1, "", CLAIM_DATA);
 
         assertFalse(isValid, "Claim with wrong topic should be invalid");
     }
@@ -981,11 +962,12 @@ contract ATKContractIdentityImplementationTest is Test {
         // Issue claims to both identities
         vm.startPrank(address(testContract));
 
-        bytes32 claimId1 = IATKContractIdentity(address(proxy))
-            .issueClaimTo(IIdentity(address(identity1)), CLAIM_TOPIC, data1, "uri1");
+        bytes32 claimId1 =
+            IATKContractIdentity(address(proxy)).issueClaimTo(IIdentity(address(identity1)), CLAIM_TOPIC, data1, "uri1");
 
-        bytes32 claimId2 = IATKContractIdentity(address(proxy))
-            .issueClaimTo(IIdentity(address(identity2)), CLAIM_TOPIC + 1, data2, "uri2");
+        bytes32 claimId2 = IATKContractIdentity(address(proxy)).issueClaimTo(
+            IIdentity(address(identity2)), CLAIM_TOPIC + 1, data2, "uri2"
+        );
 
         vm.stopPrank();
 
@@ -1006,8 +988,9 @@ contract ATKContractIdentityImplementationTest is Test {
     function testIsClaimValidReturnsFalseForInvalidClaims() public {
         // Test with a valid identity but no claims - should return false
         MockIdentityReceiver emptyIdentity = new MockIdentityReceiver();
-        bool isValid = IIdentity(address(proxy))
-            .isClaimValid(IIdentity(address(emptyIdentity)), CLAIM_TOPIC, CLAIM_SIGNATURE, CLAIM_DATA);
+        bool isValid = IIdentity(address(proxy)).isClaimValid(
+            IIdentity(address(emptyIdentity)), CLAIM_TOPIC, CLAIM_SIGNATURE, CLAIM_DATA
+        );
         assertFalse(isValid, "Should return false when no claims exist");
 
         // Test with wrong issuer claim - should return false

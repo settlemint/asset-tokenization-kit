@@ -277,15 +277,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @param _country The country code to check
     /// @param _global Whether to check global tracking
     /// @return The current number of investors from the specified country
-    function getCountryInvestorCount(
-        address _token,
-        uint16 _country,
-        bool _global
-    )
-        external
-        view
-        returns (uint256)
-    {
+    function getCountryInvestorCount(address _token, uint16 _country, bool _global) external view returns (uint256) {
         if (_global) {
             return globalInvestorTracker.countryInvestorCounts[_country];
         } else {
@@ -511,12 +503,7 @@ contract InvestorCountComplianceModule is AbstractComplianceModule {
     /// @dev Sets all country limits from config to avoid lazy initialization inconsistencies
     /// @param tracker The storage reference to the tracker to initialize
     /// @param config The compliance configuration containing country codes and limits
-    function _initializeCountryLimits(
-        InvestorTracker storage tracker,
-        InvestorCountConfig memory config
-    )
-        private
-    {
+    function _initializeCountryLimits(InvestorTracker storage tracker, InvestorCountConfig memory config) private {
         // Only initialize if we have country limits configured and they haven't been set yet
         if (config.countryCodes.length > 0) {
             // Check if already initialized by testing the first country code

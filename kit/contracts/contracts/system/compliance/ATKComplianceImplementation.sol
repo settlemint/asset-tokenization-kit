@@ -265,7 +265,8 @@ contract ATKComplianceImplementation is
 
         for (uint256 i = 0; i < length;) {
             modules[i] = SMARTComplianceModuleParamPair({
-                module: _globalComplianceModuleList[i], params: _globalModuleParameters[_globalComplianceModuleList[i]]
+                module: _globalComplianceModuleList[i],
+                params: _globalModuleParameters[_globalComplianceModuleList[i]]
             });
             unchecked {
                 ++i;
@@ -297,8 +298,9 @@ contract ATKComplianceImplementation is
         SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
         uint256 tokenModulePairsLength = tokenModulePairs.length;
         for (uint256 i = 0; i < tokenModulePairsLength;) {
-            ISMARTComplianceModule(tokenModulePairs[i].module)
-                .transferred(_token, _from, _to, _amount, tokenModulePairs[i].params);
+            ISMARTComplianceModule(tokenModulePairs[i].module).transferred(
+                _token, _from, _to, _amount, tokenModulePairs[i].params
+            );
             unchecked {
                 ++i;
             }
@@ -307,8 +309,9 @@ contract ATKComplianceImplementation is
         // Second, call global compliance modules
         uint256 globalModulesLength = _globalComplianceModuleList.length;
         for (uint256 i = 0; i < globalModulesLength;) {
-            ISMARTComplianceModule(_globalComplianceModuleList[i])
-                .transferred(_token, _from, _to, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]);
+            ISMARTComplianceModule(_globalComplianceModuleList[i]).transferred(
+                _token, _from, _to, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]
+            );
             unchecked {
                 ++i;
             }
@@ -333,8 +336,9 @@ contract ATKComplianceImplementation is
         // Second, call global compliance modules
         uint256 globalModulesLength = _globalComplianceModuleList.length;
         for (uint256 i = 0; i < globalModulesLength;) {
-            ISMARTComplianceModule(_globalComplianceModuleList[i])
-                .created(_token, _to, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]);
+            ISMARTComplianceModule(_globalComplianceModuleList[i]).created(
+                _token, _to, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]
+            );
             unchecked {
                 ++i;
             }
@@ -350,8 +354,9 @@ contract ATKComplianceImplementation is
         SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
         uint256 tokenModulePairsLength = tokenModulePairs.length;
         for (uint256 i = 0; i < tokenModulePairsLength;) {
-            ISMARTComplianceModule(tokenModulePairs[i].module)
-                .destroyed(_token, _from, _amount, tokenModulePairs[i].params);
+            ISMARTComplianceModule(tokenModulePairs[i].module).destroyed(
+                _token, _from, _amount, tokenModulePairs[i].params
+            );
             unchecked {
                 ++i;
             }
@@ -360,8 +365,9 @@ contract ATKComplianceImplementation is
         // Second, call global compliance modules
         uint256 globalModulesLength = _globalComplianceModuleList.length;
         for (uint256 i = 0; i < globalModulesLength;) {
-            ISMARTComplianceModule(_globalComplianceModuleList[i])
-                .destroyed(_token, _from, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]);
+            ISMARTComplianceModule(_globalComplianceModuleList[i]).destroyed(
+                _token, _from, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]
+            );
             unchecked {
                 ++i;
             }
@@ -421,8 +427,9 @@ contract ATKComplianceImplementation is
         SMARTComplianceModuleParamPair[] memory tokenModulePairs = ISMART(_token).complianceModules();
         uint256 tokenModulePairsLength = tokenModulePairs.length;
         for (uint256 i = 0; i < tokenModulePairsLength;) {
-            ISMARTComplianceModule(tokenModulePairs[i].module)
-                .canTransfer(_token, _from, _to, _amount, tokenModulePairs[i].params);
+            ISMARTComplianceModule(tokenModulePairs[i].module).canTransfer(
+                _token, _from, _to, _amount, tokenModulePairs[i].params
+            );
             unchecked {
                 ++i;
             }
@@ -431,8 +438,9 @@ contract ATKComplianceImplementation is
         // Second, check global compliance modules
         uint256 globalModulesLength = _globalComplianceModuleList.length;
         for (uint256 i = 0; i < globalModulesLength;) {
-            ISMARTComplianceModule(_globalComplianceModuleList[i])
-                .canTransfer(_token, _from, _to, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]);
+            ISMARTComplianceModule(_globalComplianceModuleList[i]).canTransfer(
+                _token, _from, _to, _amount, _globalModuleParameters[_globalComplianceModuleList[i]]
+            );
             unchecked {
                 ++i;
             }

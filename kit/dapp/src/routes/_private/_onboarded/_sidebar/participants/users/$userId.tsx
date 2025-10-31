@@ -115,11 +115,6 @@ function RouteComponent() {
   const { user: loaderUser, identity: loaderIdentity } = Route.useLoaderData();
   const { userId } = Route.useParams();
   const location = useLocation();
-
-  if (location.pathname.endsWith("/verifications")) {
-    return <Outlet />;
-  }
-
   const routeContext = Route.useRouteContext();
   const navigate = useNavigate();
   const { orpc } = routeContext;
@@ -141,6 +136,12 @@ function RouteComponent() {
   });
 
   const identity = queriedIdentity ?? loaderIdentity;
+  const { t } = useTranslation("user");
+
+  if (location.pathname.endsWith("/verifications")) {
+    return <Outlet />;
+  }
+
   type ExtendedUser = typeof user & {
     roles?: Partial<Record<AccessControlRoles, boolean>>;
     isAdmin?: boolean | null;
@@ -150,7 +151,6 @@ function RouteComponent() {
 
   const detailedUser = user as ExtendedUser;
   const displayName = getUserDisplayName(detailedUser);
-  const { t } = useTranslation("user");
   const isAdminType =
     Boolean(detailedUser.isAdmin) ||
     Boolean(detailedUser.roles?.admin) ||

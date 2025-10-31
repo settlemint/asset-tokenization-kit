@@ -18,10 +18,10 @@ interface IATKTokenFactory is IERC165, IATKSystemAccessManaged {
     error InvalidImplementationAddress();
     /// @notice Error for when the provided token implementation address is the zero address.
     error ProxyCreationFailed(); // Added for CREATE2
-        /// @notice Error when a CREATE2 proxy deployment fails.
+    /// @notice Error when a CREATE2 proxy deployment fails.
     error AddressAlreadyDeployed(address predictedAddress); // Added for CREATE2
-        /// @notice Error when a predicted CREATE2 address for an access manager is already marked as deployed by this
-        /// factory.
+    /// @notice Error when a predicted CREATE2 address for an access manager is already marked as deployed by this
+    /// factory.
     error AccessManagerAlreadyDeployed(address predictedAddress);
     /// @notice Error when a token identity address mismatch is detected.
     error TokenIdentityAddressMismatch(address deployedTokenIdentityAddress, address tokenIdentityAddress);

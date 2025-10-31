@@ -258,13 +258,7 @@ contract TokenSupplyLimitComplianceModule is AbstractComplianceModule {
     /// @param tracker The storage reference to the tracker to update
     /// @param amount The already-converted amount to add to tracking
     /// @param config The supply limit configuration
-    function _updateTracker(
-        SupplyTracker storage tracker,
-        uint256 amount,
-        SupplyLimitConfig memory config
-    )
-        private
-    {
+    function _updateTracker(SupplyTracker storage tracker, uint256 amount, SupplyLimitConfig memory config) private {
         if (config.periodLength == 0) {
             // Lifetime cap
             tracker.totalSupply += amount;

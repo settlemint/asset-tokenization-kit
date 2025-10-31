@@ -9,7 +9,7 @@ import { SMARTToken } from "../examples/SMARTToken.sol";
 
 abstract contract SMARTPausableTest is AbstractSMARTTest {
     // Renamed from setUp, removed override
-    function _setUpPausableTest() internal /* override */  {
+    function _setUpPausableTest() internal /* override */ {
         super.setUp();
         // Ensure token has default collateral set up for pausable tests
         _setupDefaultCollateralClaim();

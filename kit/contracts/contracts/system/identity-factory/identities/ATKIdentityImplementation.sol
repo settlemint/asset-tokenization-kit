@@ -53,8 +53,12 @@ contract ATKIdentityImplementation is
 
     /// @notice Ensures caller holds the management key or is the contract itself.
     function _onlyManager() internal view {
-        if (!(_msgSender() == address(this)
-                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.MANAGEMENT_KEY))) {
+        if (
+            !(
+                _msgSender() == address(this)
+                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.MANAGEMENT_KEY)
+            )
+        ) {
             revert SenderLacksManagementKey();
         }
     }
@@ -66,8 +70,12 @@ contract ATKIdentityImplementation is
 
     /// @notice Allows only claim-signing keys or self-calls.
     function _onlyClaimKey() internal view {
-        if (!(_msgSender() == address(this)
-                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.CLAIM_SIGNER_KEY))) {
+        if (
+            !(
+                _msgSender() == address(this)
+                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.CLAIM_SIGNER_KEY)
+            )
+        ) {
             revert SenderLacksClaimSignerKey();
         }
     }
@@ -79,8 +87,12 @@ contract ATKIdentityImplementation is
 
     /// @notice Requires the action key or self-call authority.
     function _onlyActionKey() internal view {
-        if (!(_msgSender() == address(this)
-                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.ACTION_KEY))) {
+        if (
+            !(
+                _msgSender() == address(this)
+                    || keyHasPurpose(keccak256(abi.encode(_msgSender())), ERC734KeyPurposes.ACTION_KEY)
+            )
+        ) {
             revert SenderLacksActionKey();
         }
     }

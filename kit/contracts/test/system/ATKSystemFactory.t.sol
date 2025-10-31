@@ -25,51 +25,37 @@ import {
 import { IATKSystemAccessManaged } from "../../contracts/system/access-manager/IATKSystemAccessManaged.sol";
 
 // Implementations for testing
-import {
-    ATKIdentityRegistryStorageImplementation
-} from "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
-import {
-    ATKSystemTrustedIssuersRegistryImplementation
-} from "../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
-import {
-    ATKIdentityRegistryImplementation
-} from "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
-import {
-    ATKTopicSchemeRegistryImplementation
-} from "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
+import { ATKIdentityRegistryStorageImplementation } from
+    "../../contracts/system/identity-registry-storage/ATKIdentityRegistryStorageImplementation.sol";
+import { ATKSystemTrustedIssuersRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKSystemTrustedIssuersRegistryImplementation.sol";
+import { ATKIdentityRegistryImplementation } from
+    "../../contracts/system/identity-registry/ATKIdentityRegistryImplementation.sol";
+import { ATKTopicSchemeRegistryImplementation } from
+    "../../contracts/system/topic-scheme-registry/ATKTopicSchemeRegistryImplementation.sol";
 import { ATKComplianceImplementation } from "../../contracts/system/compliance/ATKComplianceImplementation.sol";
-import {
-    ATKIdentityFactoryImplementation
-} from "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
-import {
-    ATKIdentityImplementation
-} from "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
-import {
-    ATKContractIdentityImplementation
-} from "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
-import {
-    ATKTokenAccessManagerImplementation
-} from "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
-import {
-    ATKSystemAccessManagerImplementation
-} from "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
-import {
-    ATKTokenFactoryRegistryImplementation
-} from "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
-import {
-    ATKSystemAddonRegistryImplementation
-} from "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
-import {
-    ATKComplianceModuleRegistryImplementation
-} from "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
-import {
-    ATKTrustedIssuersMetaRegistryImplementation
-} from "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
+import { ATKIdentityFactoryImplementation } from
+    "../../contracts/system/identity-factory/ATKIdentityFactoryImplementation.sol";
+import { ATKIdentityImplementation } from
+    "../../contracts/system/identity-factory/identities/ATKIdentityImplementation.sol";
+import { ATKContractIdentityImplementation } from
+    "../../contracts/system/identity-factory/identities/ATKContractIdentityImplementation.sol";
+import { ATKTokenAccessManagerImplementation } from
+    "../../contracts/system/tokens/access/ATKTokenAccessManagerImplementation.sol";
+import { ATKSystemAccessManagerImplementation } from
+    "../../contracts/system/access-manager/ATKSystemAccessManagerImplementation.sol";
+import { ATKTokenFactoryRegistryImplementation } from
+    "../../contracts/system/tokens/factory/ATKTokenFactoryRegistryImplementation.sol";
+import { ATKSystemAddonRegistryImplementation } from
+    "../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
+import { ATKComplianceModuleRegistryImplementation } from
+    "../../contracts/system/compliance/ATKComplianceModuleRegistryImplementation.sol";
+import { ATKTrustedIssuersMetaRegistryImplementation } from
+    "../../contracts/system/trusted-issuers-registry/ATKTrustedIssuersMetaRegistryImplementation.sol";
 
 // Import compliance module
-import {
-    SMARTIdentityVerificationComplianceModule
-} from "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
+import { SMARTIdentityVerificationComplianceModule } from
+    "../../contracts/smart/modules/SMARTIdentityVerificationComplianceModule.sol";
 
 contract ATKSystemFactoryTest is Test {
     ATKSystemFactory public factory;

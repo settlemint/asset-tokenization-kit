@@ -59,7 +59,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
         bool allowExemptions;
         /// @notice Whether approvals are single-use (one-time execution)
         bool oneTimeUse; // set to true for regulatory compliance
-            /// @notice Expression defining exemption logic (e.g., [TOPIC_QII])
+        /// @notice Expression defining exemption logic (e.g., [TOPIC_QII])
         ExpressionNode[] exemptionExpression;
         /// @notice Default expiry for approvals in seconds
         uint256 approvalExpiry;
@@ -308,14 +308,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @param _toIdentity The identity address to which tokens will be transferred
     /// @param _value The amount of tokens to approve for transfer
     /// @custom:throws ComplianceCheckFailed when the caller is not an authorized approval authority
-    function approveTransfer(
-        address _token,
-        address _fromIdentity,
-        address _toIdentity,
-        uint256 _value
-    )
-        external
-    {
+    function approveTransfer(address _token, address _fromIdentity, address _toIdentity, uint256 _value) external {
         // Get the module configuration from the token
         bytes memory params = _getModuleParameters(_token);
         Config memory config = abi.decode(params, (Config));
@@ -355,14 +348,7 @@ contract TransferApprovalComplianceModule is AbstractComplianceModule {
     /// @param _fromIdentity The identity address from which tokens were to be transferred
     /// @param _toIdentity The identity address to which tokens were to be transferred
     /// @param _value The amount of tokens for which to revoke approval
-    function revokeApproval(
-        address _token,
-        address _fromIdentity,
-        address _toIdentity,
-        uint256 _value
-    )
-        external
-    {
+    function revokeApproval(address _token, address _fromIdentity, address _toIdentity, uint256 _value) external {
         // Get the caller's identity address
         address callerIdentity = _getIdentityAddress(_token, _msgSender());
         if (callerIdentity == address(0)) {

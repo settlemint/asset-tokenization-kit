@@ -419,11 +419,7 @@ interface IERC3643 is IERC20, IERC20Metadata {
      *  To execute this function, the calling agent must not be restricted from partially freezing tokens.
      *  If the agent is restricted from this capability, the function call will fail.
      */
-    function batchUnfreezePartialTokens(
-        address[] calldata _userAddresses,
-        uint256[] calldata _amounts
-    )
-        external;
+    function batchUnfreezePartialTokens(address[] calldata _userAddresses, uint256[] calldata _amounts) external;
 
     /// Getters
 

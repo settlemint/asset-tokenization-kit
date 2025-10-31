@@ -28,6 +28,7 @@ const columnHelper = createStrictColumnHelper<EntityRow>();
 export const EntityTable = withErrorBoundary(function EntityTable() {
   const router = useRouter();
   const { t } = useTranslation(["entities", "identities"]);
+  const routePath = router.state.matches.at(-1)?.pathname;
   const isNavigatingRef = useRef(false);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -255,6 +256,7 @@ export const EntityTable = withErrorBoundary(function EntityTable() {
       externalState={externalState}
       urlState={{
         enabled: true,
+        routePath,
       }}
       advancedToolbar={{
         enableGlobalSearch: true,

@@ -2,9 +2,8 @@
 pragma solidity ^0.8.28;
 
 import { AbstractComplianceModuleTest } from "./AbstractComplianceModuleTest.t.sol";
-import {
-    IdentityBlockListComplianceModule
-} from "../../../contracts/smart/modules/IdentityBlockListComplianceModule.sol";
+import { IdentityBlockListComplianceModule } from
+    "../../../contracts/smart/modules/IdentityBlockListComplianceModule.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 
 contract IdentityBlockListComplianceModuleTest is AbstractComplianceModuleTest {

@@ -38,7 +38,7 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
         expression[0] = ExpressionNode({
             nodeType: ExpressionType.TOPIC,
             value: secondarySaleTopicId // Use dynamic topic ID
-        });
+         });
         return expression;
     }
 
@@ -71,7 +71,9 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
 
         // Default 6-month lock period without exemptions
         defaultParams = TimeLockComplianceModule.TimeLockParams({
-            holdPeriod: SIX_MONTHS, allowExemptions: false, exemptionExpression: _emptyExpression()
+            holdPeriod: SIX_MONTHS,
+            allowExemptions: false,
+            exemptionExpression: _emptyExpression()
         });
         defaultParamsEncoded = abi.encode(defaultParams);
     }
@@ -94,25 +96,33 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TimeLock_ValidateParameters_ValidConfig() public view {
         // 6-month lock without exemptions
         TimeLockComplianceModule.TimeLockParams memory params = TimeLockComplianceModule.TimeLockParams({
-            holdPeriod: SIX_MONTHS, allowExemptions: false, exemptionExpression: _emptyExpression()
+            holdPeriod: SIX_MONTHS,
+            allowExemptions: false,
+            exemptionExpression: _emptyExpression()
         });
         module.validateParameters(abi.encode(params));
 
         // 1-year lock with exemptions
         params = TimeLockComplianceModule.TimeLockParams({
-            holdPeriod: ONE_YEAR, allowExemptions: true, exemptionExpression: _secondarySaleApprovalExpression()
+            holdPeriod: ONE_YEAR,
+            allowExemptions: true,
+            exemptionExpression: _secondarySaleApprovalExpression()
         });
         module.validateParameters(abi.encode(params));
 
         // Minimum 1-second lock
         params = TimeLockComplianceModule.TimeLockParams({
-            holdPeriod: 1, allowExemptions: false, exemptionExpression: _emptyExpression()
+            holdPeriod: 1,
+            allowExemptions: false,
+            exemptionExpression: _emptyExpression()
         });
         module.validateParameters(abi.encode(params));
 
         // Maximum 10-year lock
         params = TimeLockComplianceModule.TimeLockParams({
-            holdPeriod: TEN_YEARS, allowExemptions: true, exemptionExpression: _secondarySaleApprovalExpression()
+            holdPeriod: TEN_YEARS,
+            allowExemptions: true,
+            exemptionExpression: _secondarySaleApprovalExpression()
         });
         module.validateParameters(abi.encode(params));
     }
@@ -128,7 +138,9 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TimeLock_RevertWhen_ZeroHoldPeriod() public {
         TimeLockComplianceModule.TimeLockParams memory params = TimeLockComplianceModule.TimeLockParams({
-            holdPeriod: 0, allowExemptions: false, exemptionExpression: _emptyExpression()
+            holdPeriod: 0,
+            allowExemptions: false,
+            exemptionExpression: _emptyExpression()
         });
 
         vm.expectRevert(
@@ -141,7 +153,9 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
 
     function test_TimeLock_RevertWhen_HoldPeriodTooLong() public {
         TimeLockComplianceModule.TimeLockParams memory params = TimeLockComplianceModule.TimeLockParams({
-            holdPeriod: TEN_YEARS + 1, allowExemptions: false, exemptionExpression: _emptyExpression()
+            holdPeriod: TEN_YEARS + 1,
+            allowExemptions: false,
+            exemptionExpression: _emptyExpression()
         });
 
         vm.expectRevert(
@@ -495,7 +509,9 @@ contract TimeLockComplianceModuleTest is AbstractComplianceModuleTest {
     function test_TimeLock_WithExemptions() public {
         // Create time-lock params with secondary sale approval exemption
         TimeLockComplianceModule.TimeLockParams memory paramsWithExemption = TimeLockComplianceModule.TimeLockParams({
-            holdPeriod: ONE_YEAR, allowExemptions: true, exemptionExpression: _secondarySaleApprovalExpression()
+            holdPeriod: ONE_YEAR,
+            allowExemptions: true,
+            exemptionExpression: _secondarySaleApprovalExpression()
         });
         bytes memory paramsEncoded = abi.encode(paramsWithExemption);
 

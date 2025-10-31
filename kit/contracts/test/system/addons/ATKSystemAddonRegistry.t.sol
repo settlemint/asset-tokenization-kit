@@ -4,9 +4,8 @@ pragma solidity ^0.8.28;
 import { Test, Vm } from "forge-std/Test.sol";
 import { SystemUtils } from "../../utils/SystemUtils.sol";
 import { IATKSystemAddonRegistry } from "../../../contracts/system/addons/IATKSystemAddonRegistry.sol";
-import {
-    ATKSystemAddonRegistryImplementation
-} from "../../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
+import { ATKSystemAddonRegistryImplementation } from
+    "../../../contracts/system/addons/ATKSystemAddonRegistryImplementation.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { IWithTypeIdentifier } from "../../../contracts/smart/interface/IWithTypeIdentifier.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
@@ -222,17 +221,20 @@ contract ATKSystemAddonRegistryTest is Test {
 
     function test_SupportsInterface() public view {
         assertTrue(
-            ATKSystemAddonRegistryImplementation(address(registry))
-                .supportsInterface(type(IATKSystemAddonRegistry).interfaceId)
+            ATKSystemAddonRegistryImplementation(address(registry)).supportsInterface(
+                type(IATKSystemAddonRegistry).interfaceId
+            )
         );
         assertTrue(
-            ATKSystemAddonRegistryImplementation(address(registry))
-                .supportsInterface(type(IATKSystemAccessManaged).interfaceId)
+            ATKSystemAddonRegistryImplementation(address(registry)).supportsInterface(
+                type(IATKSystemAccessManaged).interfaceId
+            )
         );
         assertTrue(ATKSystemAddonRegistryImplementation(address(registry)).supportsInterface(type(IERC165).interfaceId));
         assertTrue(
-            ATKSystemAddonRegistryImplementation(address(registry))
-                .supportsInterface(type(IATKTypedImplementationRegistry).interfaceId)
+            ATKSystemAddonRegistryImplementation(address(registry)).supportsInterface(
+                type(IATKTypedImplementationRegistry).interfaceId
+            )
         );
     }
 }

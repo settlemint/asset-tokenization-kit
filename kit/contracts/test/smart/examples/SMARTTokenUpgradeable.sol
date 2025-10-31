@@ -10,9 +10,8 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 // Interface imports
-import {
-    SMARTComplianceModuleParamPair
-} from "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IContractWithIdentity } from "../../../contracts/system/identity-factory/IContractWithIdentity.sol";
 import { _SMARTLogic } from "../../../contracts/smart/extensions/core/internal/_SMARTLogic.sol";
 import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
@@ -26,18 +25,14 @@ import { SMARTHooks } from "../../../contracts/smart/extensions/common/SMARTHook
 import { SMARTPausableUpgradeable } from "../../../contracts/smart/extensions/pausable/SMARTPausableUpgradeable.sol";
 import { SMARTBurnableUpgradeable } from "../../../contracts/smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
 import { SMARTCustodianUpgradeable } from "../../../contracts/smart/extensions/custodian/SMARTCustodianUpgradeable.sol";
-import {
-    SMARTRedeemableUpgradeable
-} from "../../../contracts/smart/extensions/redeemable/SMARTRedeemableUpgradeable.sol";
-import {
-    SMARTCollateralUpgradeable
-} from "../../../contracts/smart/extensions/collateral/SMARTCollateralUpgradeable.sol";
-import {
-    SMARTHistoricalBalancesUpgradeable
-} from "../../../contracts/smart/extensions/historical-balances/SMARTHistoricalBalancesUpgradeable.sol";
-import {
-    SMARTTokenAccessManagedUpgradeable
-} from "../../../contracts/smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
+import { SMARTRedeemableUpgradeable } from
+    "../../../contracts/smart/extensions/redeemable/SMARTRedeemableUpgradeable.sol";
+import { SMARTCollateralUpgradeable } from
+    "../../../contracts/smart/extensions/collateral/SMARTCollateralUpgradeable.sol";
+import { SMARTHistoricalBalancesUpgradeable } from
+    "../../../contracts/smart/extensions/historical-balances/SMARTHistoricalBalancesUpgradeable.sol";
+import { SMARTTokenAccessManagedUpgradeable } from
+    "../../../contracts/smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 import { SMARTCappedUpgradeable } from "../../../contracts/smart/extensions/capped/SMARTCappedUpgradeable.sol";
 
 /// @title SMARTTokenUpgradeable
@@ -144,18 +139,10 @@ contract SMARTTokenUpgradeable is
     )
         public
         initializer // OpenZeppelin modifier to ensure this function is called only once
-
     {
         __ERC20_init(name_, symbol_); // Initializes ERC20 basic properties (name, symbol)
         __SMART_init( // Initializes core SMART logic (decimals, identity, compliance)
-            name_,
-            symbol_,
-            decimals_,
-            onchainID_,
-            identityRegistry_,
-            compliance_,
-            initialModulePairs_
-        );
+        name_, symbol_, decimals_, onchainID_, identityRegistry_, compliance_, initialModulePairs_);
         __SMARTTokenAccessManaged_init(accessManager_);
         __SMARTCustodian_init(); // Initializes custodian features
         __SMARTBurnable_init(); // Initializes burnable token features
@@ -333,14 +320,7 @@ contract SMARTTokenUpgradeable is
     /// @dev Only callable by `FREEZER_ROLE`.
     /// @param userAddress The address to freeze or unfreeze.
     /// @param freeze `true` to freeze, `false` to unfreeze.
-    function setAddressFrozen(
-        address userAddress,
-        bool freeze
-    )
-        external
-        override
-        onlyAccessManagerRole(FREEZER_ROLE)
-    {
+    function setAddressFrozen(address userAddress, bool freeze) external override onlyAccessManagerRole(FREEZER_ROLE) {
         _smart_setAddressFrozen(userAddress, freeze);
     }
 
@@ -561,11 +541,7 @@ contract SMARTTokenUpgradeable is
         internal
         virtual
         override(
-            SMARTUpgradeable,
-            SMARTCollateralUpgradeable,
-            SMARTCustodianUpgradeable,
-            SMARTCappedUpgradeable,
-            SMARTHooks
+            SMARTUpgradeable, SMARTCollateralUpgradeable, SMARTCustodianUpgradeable, SMARTCappedUpgradeable, SMARTHooks
         )
     {
         super._beforeMint(to, amount);
@@ -603,7 +579,6 @@ contract SMARTTokenUpgradeable is
         virtual
         override(SMARTCustodianUpgradeable, SMARTHooks) // SMARTUpgradeable
             // does not implement _beforeBurn
-
     {
         super._beforeBurn(from, amount);
     }
@@ -655,8 +630,7 @@ contract SMARTTokenUpgradeable is
         internal
         virtual
         override(SMARTUpgradeable, SMARTHistoricalBalancesUpgradeable, SMARTHooks)
-        // SMARTCustodianUpgradeable, SMARTPausableUpgradeable, SMARTBurnableUpgradeable do not implement _afterTransfer
-
+    // SMARTCustodianUpgradeable, SMARTPausableUpgradeable, SMARTBurnableUpgradeable do not implement _afterTransfer
     {
         super._afterTransfer(from, to, amount);
     }

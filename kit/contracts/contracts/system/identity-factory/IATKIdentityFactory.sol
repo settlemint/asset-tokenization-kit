@@ -102,7 +102,10 @@ interface IATKIdentityFactory is IERC165 {
     ///      This provides predictable addresses based on the contract address.
     /// @param _contractAddress The address of the contract for which the identity will be created.
     /// @return predictedAddress The pre-computed or actual deployment address of the contract's identity contract.
-    function calculateContractIdentityAddress(address _contractAddress) external view returns (address predictedAddress);
+    function calculateContractIdentityAddress(address _contractAddress)
+        external
+        view
+        returns (address predictedAddress);
 
     /// @notice Sets the identity factory's own OnChain ID and issues a self-claim.
     /// @dev This is called during bootstrap by the system contract only. After setting the identity,

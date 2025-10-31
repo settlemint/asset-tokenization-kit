@@ -248,10 +248,5 @@ interface IATKSystem is IERC165, IATKSystemAccessManaged {
     /// @param targetIdentity The identity contract to receive the claim
     /// @param topicId The topic ID of the claim
     /// @param claimData The claim data
-    function issueClaimByOrganisation(
-        address targetIdentity,
-        uint256 topicId,
-        bytes memory claimData
-    )
-        external;
+    function issueClaimByOrganisation(address targetIdentity, uint256 topicId, bytes memory claimData) external;
 }

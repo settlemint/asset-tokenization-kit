@@ -76,12 +76,15 @@ abstract contract SMARTPausableUpgradeable is Initializable, SMARTExtensionUpgra
      * @param to The address to which tokens are being sent (or `address(0)` for burns).
      * @param value The amount of tokens being affected.
      */
-    function _update(address from, address to, uint256 value)
+    function _update(
+        address from,
+        address to,
+        uint256 value
+    )
         internal
         virtual
         override(ERC20Upgradeable) // Specifies that this overrides `_update` from `ERC20Upgradeable`.
         whenNotPaused // Applies the modifier from `_SMARTPausableLogic`.
-
     {
         // `super._update` calls the `_update` function of the parent contract in the inheritance hierarchy
         // that also overrides `_update`. For an upgradeable SMART token, this is likely `SMARTUpgradeable`,

@@ -2,16 +2,13 @@
 pragma solidity ^0.8.28;
 
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
-import {
-    ATKVestingAirdropFactoryImplementation
-} from "../../../contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropFactoryImplementation.sol";
-import {
-    IATKVestingAirdropFactory
-} from "../../../contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol";
+import { ATKVestingAirdropFactoryImplementation } from
+    "../../../contracts/addons/airdrop/vesting-airdrop/ATKVestingAirdropFactoryImplementation.sol";
+import { IATKVestingAirdropFactory } from
+    "../../../contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdropFactory.sol";
 import { IATKVestingAirdrop } from "../../../contracts/addons/airdrop/vesting-airdrop/IATKVestingAirdrop.sol";
-import {
-    ATKLinearVestingStrategy
-} from "../../../contracts/addons/airdrop/vesting-airdrop/ATKLinearVestingStrategy.sol";
+import { ATKLinearVestingStrategy } from
+    "../../../contracts/addons/airdrop/vesting-airdrop/ATKLinearVestingStrategy.sol";
 import { IATKVestingStrategy } from "../../../contracts/addons/airdrop/vesting-airdrop/IATKVestingStrategy.sol";
 import { MockedERC20Token } from "../../utils/mocks/MockedERC20Token.sol";
 import { ATKPeopleRoles } from "../../../contracts/system/ATKPeopleRoles.sol";
@@ -85,10 +82,9 @@ contract ATKVestingAirdropTest is AbstractATKAssetTest {
 
         // Create system addon for vesting airdrop factory
         vestingAirdropFactory = IATKVestingAirdropFactory(
-            systemUtils.systemAddonRegistry()
-                .registerSystemAddon(
-                    "vesting-airdrop-factory", address(vestingAirdropFactoryImpl), encodedInitializationData
-                )
+            systemUtils.systemAddonRegistry().registerSystemAddon(
+                "vesting-airdrop-factory", address(vestingAirdropFactoryImpl), encodedInitializationData
+            )
         );
 
         // Grant DEPLOYER_ROLE to owner so they can create vesting airdrops

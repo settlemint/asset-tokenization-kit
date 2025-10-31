@@ -9,7 +9,6 @@ import { SMARTYieldIntegrationTest } from "./SMARTYieldIntegrationTest.sol";
 /// @dev This contract inherits from both unit and integration test contracts to provide
 ///      a comprehensive test suite for the SMART Yield extension
 abstract contract SMARTYieldTest is SMARTYieldUnitTest, SMARTYieldIntegrationTest {
-    // All test functions are inherited from SMARTYieldUnitTest and SMARTYieldIntegrationTest
-    // This contract serves as the main entry point for running all yield-related tests
-
-    }
+// All test functions are inherited from SMARTYieldUnitTest and SMARTYieldIntegrationTest
+// This contract serves as the main entry point for running all yield-related tests
+}

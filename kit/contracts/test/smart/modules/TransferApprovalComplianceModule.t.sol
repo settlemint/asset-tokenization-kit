@@ -23,16 +23,13 @@ pragma solidity ^0.8.28;
  * ✓ Edge cases (no identity = blocked, burns/mints allowed)
  */
 import { AbstractComplianceModuleTest } from "./AbstractComplianceModuleTest.t.sol";
-import {
-    TransferApprovalComplianceModule
-} from "../../../contracts/smart/modules/TransferApprovalComplianceModule.sol";
+import { TransferApprovalComplianceModule } from "../../../contracts/smart/modules/TransferApprovalComplianceModule.sol";
 import { ISMARTComplianceModule } from "../../../contracts/smart/interface/ISMARTComplianceModule.sol";
 import { TestConstants } from "../../Constants.sol";
 import { ExpressionNode, ExpressionType } from "../../../contracts/smart/interface/structs/ExpressionNode.sol";
 import { ATKTopics } from "../../../contracts/system/ATKTopics.sol";
-import {
-    SMARTComplianceModuleParamPair
-} from "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import { SMARTComplianceModuleParamPair } from
+    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { MockSMARTToken } from "../../utils/mocks/MockSMARTToken.sol";
 
 contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
@@ -489,7 +486,7 @@ contract TransferApprovalComplianceModuleTest is AbstractComplianceModuleTest {
         expression[0] = ExpressionNode({
             nodeType: ExpressionType.TOPIC,
             value: qiiTopicId // Use the topic ID created in setUp
-        });
+         });
         return expression;
     }
 

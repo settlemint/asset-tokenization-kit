@@ -2,9 +2,8 @@
 pragma solidity ^0.8.28;
 
 import { Test } from "forge-std/Test.sol";
-import {
-    OnChainIdentityWithRevocation
-} from "../../../../../contracts/onchainid/extensions/OnChainIdentityWithRevocation.sol";
+import { OnChainIdentityWithRevocation } from
+    "../../../../../contracts/onchainid/extensions/OnChainIdentityWithRevocation.sol";
 import { OnChainIdentity } from "../../../../../contracts/onchainid/extensions/OnChainIdentity.sol";
 import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
@@ -32,16 +31,24 @@ contract TestableOnChainIdentityWithRevocation is ERC734, ERC735, OnChainIdentit
 
     // --- Modifiers for Access Control ---
     modifier onlyManager() {
-        if (!(msg.sender == address(this)
-                    || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.MANAGEMENT_KEY))) {
+        if (
+            !(
+                msg.sender == address(this)
+                    || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.MANAGEMENT_KEY)
+            )
+        ) {
             revert SenderLacksManagementKey();
         }
         _;
     }
 
     modifier onlyActionKey() {
-        if (!(msg.sender == address(this)
-                    || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.ACTION_KEY))) {
+        if (
+            !(
+                msg.sender == address(this)
+                    || keyHasPurpose(keccak256(abi.encode(msg.sender)), ERC734KeyPurposes.ACTION_KEY)
+            )
+        ) {
             revert SenderLacksActionKey();
         }
         _;

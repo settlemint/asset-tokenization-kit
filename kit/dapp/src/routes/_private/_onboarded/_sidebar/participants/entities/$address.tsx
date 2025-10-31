@@ -8,7 +8,13 @@ import { IdentityClaimsTile } from "@/components/participants/common/tiles/ident
 import { Badge } from "@/components/ui/badge";
 import { ORPCError } from "@orpc/client";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useLocation,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
@@ -124,6 +130,7 @@ function RouteComponent() {
     claimsData,
   } = Route.useLoaderData();
   const { address } = Route.useParams();
+  const location = useLocation();
   const { t } = useTranslation([
     "entities",
     "identities",
@@ -152,6 +159,10 @@ function RouteComponent() {
   });
 
   const token = queriedToken ?? loaderToken ?? null;
+
+  if (location.pathname.endsWith("/verifications")) {
+    return <Outlet />;
+  }
 
   const displayName =
     token?.name ??
@@ -235,6 +246,7 @@ function RouteComponent() {
           }}
         />
       </div>
+      <Outlet />
     </div>
   );
 }

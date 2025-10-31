@@ -28,9 +28,8 @@ import { SMARTHooks } from "../../smart/extensions/common/SMARTHooks.sol";
 import { SMARTPausableUpgradeable } from "../../smart/extensions/pausable/SMARTPausableUpgradeable.sol";
 import { SMARTBurnableUpgradeable } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
 import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMARTCustodianUpgradeable.sol";
-import {
-    SMARTTokenAccessManagedUpgradeable
-} from "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
+import { SMARTTokenAccessManagedUpgradeable } from
+    "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 
 /// @title ATKDeposit Implementation
 /// @author SettleMint
@@ -127,7 +126,11 @@ contract ATKDepositImplementation is
 
     /// @notice Sets the compliance contract address for the token
     /// @param _compliance The address of the compliance contract
-    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
+    function setCompliance(address _compliance)
+        external
+        override
+        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
+    {
         _smart_setCompliance(_compliance);
     }
 

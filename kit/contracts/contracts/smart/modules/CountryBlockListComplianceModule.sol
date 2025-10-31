@@ -77,7 +77,6 @@ contract CountryBlockListComplianceModule is AbstractCountryComplianceModule {
         view
         virtual
         override // Overrides canTransfer from AbstractCountryComplianceModule
-
     {
         (bool hasIdentity, uint16 receiverCountry) = _getUserCountry(_token, _to);
 
