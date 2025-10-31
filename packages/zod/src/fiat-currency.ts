@@ -48,6 +48,7 @@ export const fiatCurrencies = [
   "AED",
   "SGD",
   "SAR",
+  "MYR",
 ] as const;
 
 /**
