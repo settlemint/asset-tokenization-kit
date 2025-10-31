@@ -45,7 +45,11 @@ export function NavParticipants() {
       <SidebarGroupLabel>{t("participants")}</SidebarGroupLabel>
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton asChild isActive={isUsersActive}>
+          <SidebarMenuButton
+            asChild
+            isActive={isUsersActive}
+            tooltip={t("participantsUsers")}
+          >
             <Link
               to="/participants/users"
               aria-current={isUsersActive ? "page" : undefined}
@@ -57,7 +61,11 @@ export function NavParticipants() {
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <SidebarMenuButton asChild isActive={isEntitiesActive}>
+          <SidebarMenuButton
+            asChild
+            isActive={isEntitiesActive}
+            tooltip={t("participantsEntities")}
+          >
             <Link
               to="/participants/entities"
               aria-current={isEntitiesActive ? "page" : undefined}

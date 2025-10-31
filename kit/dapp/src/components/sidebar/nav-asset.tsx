@@ -75,6 +75,7 @@ export function NavAsset() {
             onClick={() => {
               setModalOpen(true);
             }}
+            tooltip={t("assetDesigner")}
           >
             <PlusIcon className="mr-1 h-4 w-4" />
             <span>{t("assetDesigner")}</span>
@@ -96,6 +97,7 @@ export function NavAsset() {
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         className={hasActiveChild ? "font-semibold" : ""}
+                        tooltip={assetClass.name}
                       >
                         <assetClass.icon />
                         <span>{assetClass.name}</span>
@@ -131,7 +133,7 @@ export function NavAsset() {
             })}
 
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild tooltip={t("statistics")}>
               <Link
                 to="/token/stats"
                 activeProps={{

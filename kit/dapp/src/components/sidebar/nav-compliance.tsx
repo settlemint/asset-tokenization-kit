@@ -32,7 +32,7 @@ export function NavCompliance() {
   };
 
   const roles = system.userPermissions?.roles;
-  const canViewCompliance = Boolean(roles?.claimPolicyManager || roles?.admin);
+  const canViewCompliance = Boolean(roles?.claimPolicyManager);
 
   if (!canViewCompliance) {
     return null;
@@ -60,7 +60,11 @@ export function NavCompliance() {
 
           return (
             <SidebarMenuItem key={item.path}>
-              <SidebarMenuButton asChild isActive={isActive}>
+              <SidebarMenuButton
+                asChild
+                isActive={isActive}
+                tooltip={item.name}
+              >
                 <Link
                   to={item.path}
                   activeProps={{

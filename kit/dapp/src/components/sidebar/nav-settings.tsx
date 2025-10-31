@@ -99,6 +99,7 @@ export function NavSettings() {
                 asChild
                 isActive={isActive}
                 disabled={item.disabled}
+                tooltip={item.name}
               >
                 <Link
                   to={item.path}
