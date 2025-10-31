@@ -13,6 +13,7 @@ import {
   createFileRoute,
   Outlet,
   redirect,
+  useLocation,
   useNavigate,
 } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
@@ -113,6 +114,12 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { user: loaderUser, identity: loaderIdentity } = Route.useLoaderData();
   const { userId } = Route.useParams();
+  const location = useLocation();
+
+  if (location.pathname.endsWith("/verifications")) {
+    return <Outlet />;
+  }
+
   const routeContext = Route.useRouteContext();
   const navigate = useNavigate();
   const { orpc } = routeContext;

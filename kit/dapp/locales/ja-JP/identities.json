@@ -163,6 +163,10 @@
     "untrustedClaimsWarning_plural": "信頼できないクレームを {{count}} 件検出",
     "manageVerifications": "確認を管理"
   },
+  "verificationDetail": {
+    "title": "検証",
+    "noIdentity": "このユーザーのアイデンティティは見つかりませんでした"
+  },
   "claimsTable": {
     "columns": {
       "claimName": "クレーム名",

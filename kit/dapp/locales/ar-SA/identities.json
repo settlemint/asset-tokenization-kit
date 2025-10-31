@@ -163,6 +163,10 @@
     "untrustedClaimsWarning_plural": "تم اكتشاف {{count}} مطالبات غير موثوقة",
     "manageVerifications": "إدارة عمليات التحقق"
   },
+  "verificationDetail": {
+    "title": "عمليات التحقق",
+    "noIdentity": "لم يتم العثور على هوية لهذا المستخدم"
+  },
   "claimsTable": {
     "columns": {
       "claimName": "اسم المطالبة",
