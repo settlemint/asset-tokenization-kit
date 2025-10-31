@@ -1002,6 +1002,7 @@ function ThemeSettingsPage() {
             <ContentTabs
               defaultValue={editorTabs[0]?.value ?? "images"}
               items={editorTabs}
+              aria-label="Theme settings tabs"
             >
               <ContentTabsContent value="images">
                 <UnifiedImagesCard
