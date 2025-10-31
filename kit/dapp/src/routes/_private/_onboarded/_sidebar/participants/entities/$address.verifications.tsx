@@ -118,7 +118,6 @@ export const Route = createFileRoute(
  */
 function RouteComponent() {
   const { identity, displayName } = Route.useLoaderData();
-  const { address } = Route.useParams();
   const { t } = useTranslation(["identities", "common"]);
 
   const content = identity ? (
@@ -133,11 +132,6 @@ function RouteComponent() {
 
   return (
     <TileDetailLayout
-      backLink={{
-        to: "/participants/entities/$address",
-        params: { address },
-        label: t("common:actions.back"),
-      }}
       title={t("identities:verificationDetail.title")}
       subtitle={displayName}
     >

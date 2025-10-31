@@ -106,7 +106,6 @@ export const Route = createFileRoute(
  */
 function RouteComponent() {
   const { identity, displayName } = Route.useLoaderData();
-  const { userId } = Route.useParams();
   const { t } = useTranslation(["identities", "common"]);
 
   const content = identity ? (
@@ -121,11 +120,6 @@ function RouteComponent() {
 
   return (
     <TileDetailLayout
-      backLink={{
-        to: "/participants/users/$userId",
-        params: { userId },
-        label: t("common:actions.back"),
-      }}
       title={t("identities:verificationDetail.title")}
       subtitle={displayName}
     >
