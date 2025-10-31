@@ -1,5 +1,4 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
-import { OnboardingStep } from "@/components/onboarding/state-machine";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { AssetTypeCard } from "@/components/platform-settings/asset-types/asset-type-card";
 import {
@@ -14,10 +13,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { InfoAlert } from "@/components/ui/info-alert";
 import { WarningAlert } from "@/components/ui/warning-alert";
 import { useAppForm } from "@/hooks/use-app-form";
+import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc/orpc-client";
 import {
   type FactoryCreateInput,
@@ -27,10 +26,10 @@ import {
 import { getAssetTypeFromFactoryTypeId } from "@atk/zod/asset-types";
 import { useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CheckCircle2 } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { CheckCircle2 } from "lucide-react";
 
 const ASSET_CLASS_ORDER = [
   "fixedIncome",
