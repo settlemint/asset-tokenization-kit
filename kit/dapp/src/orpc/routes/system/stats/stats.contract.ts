@@ -25,7 +25,7 @@ import {
 import { StatsTrustedIssuerStatsOutputSchema } from "@/orpc/routes/system/stats/routes/trusted-issuer-stats.schema";
 import { StatsTrustedIssuerStatsStateOutputSchema } from "@/orpc/routes/system/stats/routes/trusted-issuer-stats-state.schema";
 import { StatsValueOutputSchema } from "@/orpc/routes/system/stats/routes/value.schema";
-import { StatsRangeInputSchema } from "@atk/zod/stats-range";
+import { z } from "zod";
 
 const statsAssets = baseContract
   .route({
@@ -33,43 +33,110 @@ const statsAssets = baseContract
     path: "/system/stats/assets",
     description: "Retrieve system-wide asset statistics and metrics",
     successDescription: "System asset statistics retrieved successfully",
-    tags: ["stats", "system"],
+    tags: ["system-stats"],
   })
   .output(StatsAssetsOutputSchema);
 
-const statsAssetLifecycle = baseContract
+const statsAssetLifecycleByRange = baseContract
   .route({
     method: "GET",
-    path: "/system/stats/asset-lifecycle",
-    description: "Retrieve counts for created and launched assets over time",
+    path: "/system/stats/asset-lifecycle/by-range",
+    description:
+      "Retrieve counts for created and launched assets over custom time range",
     successDescription: "System asset lifecycle metrics retrieved successfully",
-    tags: ["stats", "system", "assets"],
+    tags: ["system-stats"],
   })
-  .input(StatsRangeInputSchema)
+  .input(
+    z.object({
+      interval: z.enum(["hour", "day"]),
+      from: z.date(),
+      to: z.date(),
+    })
+  )
   .output(StatsAssetLifecycleOutputSchema);
 
-const statsAssetActivity = baseContract
+const statsAssetLifecycleByPreset = baseContract
   .route({
     method: "GET",
-    path: "/system/stats/asset-activity",
+    path: "/system/stats/asset-lifecycle/by-preset/{preset}",
     description:
-      "Retrieve counts for transfer, mint, and burn events over time",
-    successDescription: "System asset activity metrics retrieved successfully",
-    tags: ["stats", "system", "assets"],
+      "Retrieve counts for created and launched assets using preset range",
+    successDescription: "System asset lifecycle metrics retrieved successfully",
+    tags: ["system-stats"],
   })
-  .input(StatsRangeInputSchema)
+  .input(
+    z.object({
+      preset: z.enum(["trailing24Hours", "trailing7Days"]),
+    })
+  )
+  .output(StatsAssetLifecycleOutputSchema);
+
+const statsAssetActivityByRange = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/asset-activity/by-range",
+    description:
+      "Retrieve counts for transfer, mint, and burn events over custom time range",
+    successDescription: "System asset activity metrics retrieved successfully",
+    tags: ["system-stats"],
+  })
+  .input(
+    z.object({
+      interval: z.enum(["hour", "day"]),
+      from: z.date(),
+      to: z.date(),
+    })
+  )
   .output(StatsAssetActivityOutputSchema);
 
-const statsClaimsStats = baseContract
+const statsAssetActivityByPreset = baseContract
   .route({
     method: "GET",
-    path: "/system/stats/claims-stats",
+    path: "/system/stats/asset-activity/by-preset/{preset}",
     description:
-      "Retrieve claims statistics over time including issued, active, removed, and revoked claims",
-    successDescription: "Claims statistics retrieved successfully",
-    tags: ["stats", "system", "claims"],
+      "Retrieve counts for transfer, mint, and burn events using preset range",
+    successDescription: "System asset activity metrics retrieved successfully",
+    tags: ["system-stats"],
   })
-  .input(StatsRangeInputSchema)
+  .input(
+    z.object({
+      preset: z.enum(["trailing24Hours", "trailing7Days"]),
+    })
+  )
+  .output(StatsAssetActivityOutputSchema);
+
+const statsClaimsStatsByRange = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/claims-stats/by-range",
+    description:
+      "Retrieve claims statistics over custom time range including issued, active, removed, and revoked claims",
+    successDescription: "Claims statistics retrieved successfully",
+    tags: ["system-stats"],
+  })
+  .input(
+    z.object({
+      interval: z.enum(["hour", "day"]),
+      from: z.date(),
+      to: z.date(),
+    })
+  )
+  .output(StatsClaimsStatsOutputSchema);
+
+const statsClaimsStatsByPreset = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/claims-stats/by-preset/{preset}",
+    description:
+      "Retrieve claims statistics using preset range including issued, active, removed, and revoked claims",
+    successDescription: "Claims statistics retrieved successfully",
+    tags: ["system-stats"],
+  })
+  .input(
+    z.object({
+      preset: z.enum(["trailing24Hours", "trailing7Days"]),
+    })
+  )
   .output(StatsClaimsStatsOutputSchema);
 
 const statsClaimsStatsState = baseContract
@@ -79,7 +146,7 @@ const statsClaimsStatsState = baseContract
     description:
       "Retrieve current claims statistics state including issued, active, removed, and revoked claims",
     successDescription: "Claims statistics state retrieved successfully",
-    tags: ["stats", "system", "claims"],
+    tags: ["system-stats"],
   })
   .output(StatsClaimsStatsStateOutputSchema);
 
@@ -90,19 +157,41 @@ const statsIdentityCount = baseContract
     description: "Retrieve count of identities created by the identity factory",
     successDescription:
       "Identity factory creation count statistics retrieved successfully",
-    tags: ["stats", "system", "identity"],
+    tags: ["system-stats"],
   })
   .output(StatsIdentityCountOutputSchema);
 
-const statsIdentityStatsOverTime = baseContract
+const statsIdentityStatsOverTimeByRange = baseContract
   .route({
     method: "GET",
-    path: "/system/stats/identity-stats-over-time",
-    description: "Retrieve identity statistics over time for charts",
+    path: "/system/stats/identity-stats-over-time/by-range",
+    description:
+      "Retrieve identity statistics over custom time range for charts",
     successDescription: "Identity statistics over time retrieved successfully",
-    tags: ["stats", "system", "identity"],
+    tags: ["system-stats"],
   })
-  .input(StatsRangeInputSchema)
+  .input(
+    z.object({
+      interval: z.enum(["hour", "day"]),
+      from: z.date(),
+      to: z.date(),
+    })
+  )
+  .output(StatsIdentityStatsOverTimeOutputSchema);
+
+const statsIdentityStatsOverTimeByPreset = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/identity-stats-over-time/by-preset/{preset}",
+    description: "Retrieve identity statistics using preset range for charts",
+    successDescription: "Identity statistics over time retrieved successfully",
+    tags: ["system-stats"],
+  })
+  .input(
+    z.object({
+      preset: z.enum(["trailing24Hours", "trailing7Days"]),
+    })
+  )
   .output(StatsIdentityStatsOverTimeOutputSchema);
 
 const statsTransactionCount = baseContract
@@ -112,7 +201,7 @@ const statsTransactionCount = baseContract
     description: "Retrieve system-wide transaction count statistics",
     successDescription:
       "System transaction count statistics retrieved successfully",
-    tags: ["stats", "system"],
+    tags: ["system-stats"],
   })
   .input(StatsTransactionCountInputSchema)
   .output(StatsTransactionCountOutputSchema);
@@ -123,21 +212,43 @@ const statsTransactionHistory = baseContract
     path: "/system/stats/transaction-history",
     description: "Retrieve system-wide transaction history and trends",
     successDescription: "System transaction history retrieved successfully",
-    tags: ["stats", "system"],
+    tags: ["system-stats"],
   })
   .input(StatsTransactionHistoryInputSchema)
   .output(StatsTransactionHistoryOutputSchema);
 
-const statsTrustedIssuerStats = baseContract
+const statsTrustedIssuerStatsByRange = baseContract
   .route({
     method: "GET",
-    path: "/system/stats/trusted-issuer-stats",
+    path: "/system/stats/trusted-issuer-stats/by-range",
     description:
-      "Retrieve trusted issuer statistics over time including added, active, and removed issuers",
+      "Retrieve trusted issuer statistics over custom time range including added, active, and removed issuers",
     successDescription: "Trusted issuer statistics retrieved successfully",
-    tags: ["stats", "system", "trusted-issuers"],
+    tags: ["system-stats"],
   })
-  .input(StatsRangeInputSchema)
+  .input(
+    z.object({
+      interval: z.enum(["hour", "day"]),
+      from: z.date(),
+      to: z.date(),
+    })
+  )
+  .output(StatsTrustedIssuerStatsOutputSchema);
+
+const statsTrustedIssuerStatsByPreset = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/trusted-issuer-stats/by-preset/{preset}",
+    description:
+      "Retrieve trusted issuer statistics using preset range including added, active, and removed issuers",
+    successDescription: "Trusted issuer statistics retrieved successfully",
+    tags: ["system-stats"],
+  })
+  .input(
+    z.object({
+      preset: z.enum(["trailing24Hours", "trailing7Days"]),
+    })
+  )
   .output(StatsTrustedIssuerStatsOutputSchema);
 
 const statsTrustedIssuerStatsState = baseContract
@@ -148,7 +259,7 @@ const statsTrustedIssuerStatsState = baseContract
       "Retrieve current trusted issuer statistics state including added, active, and removed issuers",
     successDescription:
       "Trusted issuer statistics state retrieved successfully",
-    tags: ["stats", "system", "trusted-issuers"],
+    tags: ["system-stats"],
   })
   .output(StatsTrustedIssuerStatsStateOutputSchema);
 
@@ -158,19 +269,41 @@ const statsValue = baseContract
     path: "/system/stats/value",
     description: "Retrieve system-wide value metrics and statistics",
     successDescription: "System value statistics retrieved successfully",
-    tags: ["stats", "system"],
+    tags: ["system-stats"],
   })
   .output(StatsValueOutputSchema);
 
-const statsPortfolio = baseContract
+const statsPortfolioByRange = baseContract
   .route({
     method: "GET",
-    path: "/system/stats/portfolio",
-    description: "Retrieve system-wide portfolio statistics",
+    path: "/system/stats/portfolio/by-range",
+    description:
+      "Retrieve system-wide portfolio statistics over custom time range",
     successDescription: "System portfolio statistics retrieved successfully",
-    tags: ["stats", "system"],
+    tags: ["system-stats"],
   })
-  .input(StatsRangeInputSchema)
+  .input(
+    z.object({
+      interval: z.enum(["hour", "day"]),
+      from: z.date(),
+      to: z.date(),
+    })
+  )
+  .output(StatsPortfolioOutputSchema);
+
+const statsPortfolioByPreset = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/portfolio/by-preset/{preset}",
+    description: "Retrieve system-wide portfolio statistics using preset range",
+    successDescription: "System portfolio statistics retrieved successfully",
+    tags: ["system-stats"],
+  })
+  .input(
+    z.object({
+      preset: z.enum(["trailing24Hours", "trailing7Days"]),
+    })
+  )
   .output(StatsPortfolioOutputSchema);
 
 const statsPortfolioDetails = baseContract
@@ -179,21 +312,43 @@ const statsPortfolioDetails = baseContract
     path: "/system/stats/portfolio/details",
     description: "Retrieve detailed portfolio breakdown by token factory",
     successDescription: "Portfolio details retrieved successfully",
-    tags: ["stats", "system"],
+    tags: ["system-stats"],
   })
   .input(StatsPortfolioDetailsInputSchema)
   .output(StatsPortfolioDetailsOutputSchema);
 
-const statsTopicSchemesStats = baseContract
+const statsTopicSchemesStatsByRange = baseContract
   .route({
     method: "GET",
-    path: "/system/stats/topic-schemes-stats",
+    path: "/system/stats/topic-schemes-stats/by-range",
     description:
-      "Retrieve topic schemes statistics over time including registered, active, and removed schemes",
+      "Retrieve topic schemes statistics over custom time range including registered, active, and removed schemes",
     successDescription: "Topic schemes statistics retrieved successfully",
-    tags: ["stats", "system", "topic-schemes"],
+    tags: ["system-stats"],
   })
-  .input(StatsRangeInputSchema)
+  .input(
+    z.object({
+      interval: z.enum(["hour", "day"]),
+      from: z.date(),
+      to: z.date(),
+    })
+  )
+  .output(StatsTopicSchemesStatsOutputSchema);
+
+const statsTopicSchemesStatsByPreset = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/topic-schemes-stats/by-preset/{preset}",
+    description:
+      "Retrieve topic schemes statistics using preset range including registered, active, and removed schemes",
+    successDescription: "Topic schemes statistics retrieved successfully",
+    tags: ["system-stats"],
+  })
+  .input(
+    z.object({
+      preset: z.enum(["trailing24Hours", "trailing7Days"]),
+    })
+  )
   .output(StatsTopicSchemesStatsOutputSchema);
 
 const statsTopicSchemesStatsState = baseContract
@@ -203,7 +358,7 @@ const statsTopicSchemesStatsState = baseContract
     description:
       "Retrieve current topic schemes statistics state including registered, active, and removed schemes",
     successDescription: "Topic schemes statistics state retrieved successfully",
-    tags: ["stats", "system", "topic-schemes"],
+    tags: ["system-stats"],
   })
   .output(StatsTopicSchemesStatsStateOutputSchema);
 
@@ -215,26 +370,33 @@ const statsTopicSchemeClaimsCoverage = baseContract
       "Retrieve topic schemes that have no active claims, identifying coverage gaps in the claim system",
     successDescription:
       "Topic scheme claims coverage statistics retrieved successfully",
-    tags: ["stats", "system", "topic-schemes", "claims"],
+    tags: ["system-stats"],
   })
   .output(StatsTopicSchemeClaimsCoverageOutputSchema);
 
 export const statsContract = {
   assets: statsAssets,
-  assetLifecycle: statsAssetLifecycle,
-  assetActivity: statsAssetActivity,
-  claimsStats: statsClaimsStats,
+  assetLifecycleByRange: statsAssetLifecycleByRange,
+  assetLifecycleByPreset: statsAssetLifecycleByPreset,
+  assetActivityByRange: statsAssetActivityByRange,
+  assetActivityByPreset: statsAssetActivityByPreset,
+  claimsStatsByRange: statsClaimsStatsByRange,
+  claimsStatsByPreset: statsClaimsStatsByPreset,
   claimsStatsState: statsClaimsStatsState,
   identityCount: statsIdentityCount,
-  identityStatsOverTime: statsIdentityStatsOverTime,
+  identityStatsOverTimeByRange: statsIdentityStatsOverTimeByRange,
+  identityStatsOverTimeByPreset: statsIdentityStatsOverTimeByPreset,
   transactionCount: statsTransactionCount,
   transactionHistory: statsTransactionHistory,
-  topicSchemesStats: statsTopicSchemesStats,
+  topicSchemesStatsByRange: statsTopicSchemesStatsByRange,
+  topicSchemesStatsByPreset: statsTopicSchemesStatsByPreset,
   topicSchemesStatsState: statsTopicSchemesStatsState,
   topicSchemeClaimsCoverage: statsTopicSchemeClaimsCoverage,
-  trustedIssuerStats: statsTrustedIssuerStats,
+  trustedIssuerStatsByRange: statsTrustedIssuerStatsByRange,
+  trustedIssuerStatsByPreset: statsTrustedIssuerStatsByPreset,
   trustedIssuerStatsState: statsTrustedIssuerStatsState,
   value: statsValue,
-  portfolio: statsPortfolio,
+  portfolioByRange: statsPortfolioByRange,
+  portfolioByPreset: statsPortfolioByPreset,
   portfolioDetails: statsPortfolioDetails,
 };

@@ -93,6 +93,7 @@
         "loading": "Benutzer werden geladen..."
       },
       "actions": {
+        "addAdmin": "Admin hinzufügen",
         "changeRoles": "Rollen ändern"
       }
     }

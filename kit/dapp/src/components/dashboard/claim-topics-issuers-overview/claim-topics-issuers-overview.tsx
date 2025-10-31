@@ -25,20 +25,20 @@ export function ClaimTopicsIssuersOverview() {
   );
 
   const last7DaysClaimsStats = useSuspenseQuery(
-    orpc.system.stats.claimsStats.queryOptions({
-      input: "trailing7Days" as const,
+    orpc.system.stats.claimsStatsByPreset.queryOptions({
+      input: { preset: "trailing7Days" as const },
     })
   );
 
   const last7DaysTopicSchemesStats = useSuspenseQuery(
-    orpc.system.stats.topicSchemesStats.queryOptions({
-      input: "trailing7Days" as const,
+    orpc.system.stats.topicSchemesStatsByPreset.queryOptions({
+      input: { preset: "trailing7Days" as const },
     })
   );
 
   const last7DaysIssuersStats = useSuspenseQuery(
-    orpc.system.stats.trustedIssuerStats.queryOptions({
-      input: "trailing7Days" as const,
+    orpc.system.stats.trustedIssuerStatsByPreset.queryOptions({
+      input: { preset: "trailing7Days" as const },
     })
   );
 

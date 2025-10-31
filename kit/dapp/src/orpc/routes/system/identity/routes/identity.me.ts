@@ -1,5 +1,5 @@
 import { systemRouter } from "@/orpc/procedures/system.router";
-import { identityRead } from "@/orpc/routes/system/identity/routes/identity.read";
+import { identityReadByWallet } from "@/orpc/routes/system/identity/routes/identity.read";
 import { call } from "@orpc/server";
 
 /**
@@ -19,7 +19,7 @@ export const identityMe = systemRouter.system.identity.me.handler(
     const { auth } = context;
 
     return await call(
-      identityRead,
+      identityReadByWallet,
       {
         wallet: auth.user.wallet,
       },

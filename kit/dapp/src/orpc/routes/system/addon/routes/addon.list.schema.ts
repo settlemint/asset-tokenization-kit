@@ -63,6 +63,7 @@ export const SystemAddonListSchema = SortableListSchema.extend({
   account: ethereumAddress
     .optional()
     .describe("Filter addons by account address"),
+  orderBy: z.enum(["id", "name", "typeId"]).optional().default("id"),
 });
 
 /**

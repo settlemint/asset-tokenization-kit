@@ -4,10 +4,10 @@ import { KycListInputSchema, KycListOutputSchema } from "./kyc.list.schema";
 export const kycListContract = baseContract
   .route({
     method: "GET",
-    path: "/user/{userId}/kyc/list",
+    path: "/user/kyc/list",
     description: "List KYC profiles for a user",
     successDescription: "List of KYC profiles",
-    tags: ["user", "kyc"],
+    tags: ["kyc"],
   })
   .input(KycListInputSchema)
   .output(KycListOutputSchema);

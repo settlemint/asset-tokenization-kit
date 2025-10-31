@@ -10,7 +10,7 @@ export const kycDeleteContract = baseContract
     path: "/user/{userId}/kyc/remove",
     description: "Delete a user's KYC profile",
     successDescription: "KYC profile deleted",
-    tags: ["user", "kyc"],
+    tags: ["kyc"],
   })
   .input(KycDeleteInputSchema)
   .output(KycDeleteOutputSchema);

@@ -97,56 +97,112 @@ const PortfolioResponseSchema = z.object({
  * });
  * ```
  */
-export const statsPortfolio = systemRouter.system.stats.portfolio.handler(
-  async ({ input, context }) => {
-    // Get user's wallet address from auth context
-    const userAddress = context.auth.user.wallet;
+export const statsPortfolioByRange =
+  systemRouter.system.stats.portfolioByRange.handler(
+    async ({ input, context }) => {
+      // Get user's wallet address from auth context
+      const userAddress = context.auth.user.wallet;
 
-    const now = new Date();
-    const { interval, fromMicroseconds, toMicroseconds, range } =
-      buildStatsRangeQuery(input, {
-        now,
-        // TODO: replace minFrom with context.system.createdAt when available
+      const now = new Date();
+      const { interval, fromMicroseconds, toMicroseconds, range } =
+        buildStatsRangeQuery(input, {
+          now,
+          // TODO: replace minFrom with context.system.createdAt when available
+        });
+
+      // Build query variables
+      const accountId = userAddress.toLowerCase();
+      const variables = {
+        accountId,
+        accountIdString: accountId,
+        fromMicroseconds,
+        toMicroseconds,
+        interval,
+      } as const;
+
+      const portfolioData = await context.theGraphClient.query(
+        PORTFOLIO_VALUE_QUERY,
+        {
+          input: variables,
+          output: PortfolioResponseSchema,
+        }
+      );
+
+      const results = [
+        ...portfolioData.baseline,
+        ...portfolioData.accountStats,
+        {
+          timestamp: range.to,
+          totalValueInBaseCurrency:
+            portfolioData.current?.totalValueInBaseCurrency ?? "0",
+        },
+      ];
+
+      const series = createTimeSeries(results, ["totalValueInBaseCurrency"], {
+        range,
+        aggregation: "last",
+        accumulation: "max",
+        historical: true,
       });
 
-    // Build query variables
-    const accountId = userAddress.toLowerCase();
-    const variables = {
-      accountId,
-      accountIdString: accountId,
-      fromMicroseconds,
-      toMicroseconds,
-      interval,
-    } as const;
+      return {
+        range,
+        data: series,
+      };
+    }
+  );
 
-    const portfolioData = await context.theGraphClient.query(
-      PORTFOLIO_VALUE_QUERY,
-      {
-        input: variables,
-        output: PortfolioResponseSchema,
-      }
-    );
+export const statsPortfolioByPreset =
+  systemRouter.system.stats.portfolioByPreset.handler(
+    async ({ input, context }) => {
+      // Get user's wallet address from auth context
+      const userAddress = context.auth.user.wallet;
 
-    const results = [
-      ...portfolioData.baseline,
-      ...portfolioData.accountStats,
-      {
-        timestamp: range.to,
-        totalValueInBaseCurrency:
-          portfolioData.current?.totalValueInBaseCurrency ?? "0",
-      },
-    ];
+      const now = new Date();
+      const { interval, fromMicroseconds, toMicroseconds, range } =
+        buildStatsRangeQuery(input.preset, {
+          now,
+          // TODO: replace minFrom with context.system.createdAt when available
+        });
 
-    const series = createTimeSeries(results, ["totalValueInBaseCurrency"], {
-      range,
-      aggregation: "last",
-      accumulation: "max",
-      historical: true,
-    });
+      // Build query variables
+      const accountId = userAddress.toLowerCase();
+      const variables = {
+        accountId,
+        accountIdString: accountId,
+        fromMicroseconds,
+        toMicroseconds,
+        interval,
+      } as const;
 
-    return {
-      range,
-      data: series,
-    };
-  }
-);
+      const portfolioData = await context.theGraphClient.query(
+        PORTFOLIO_VALUE_QUERY,
+        {
+          input: variables,
+          output: PortfolioResponseSchema,
+        }
+      );
+
+      const results = [
+        ...portfolioData.baseline,
+        ...portfolioData.accountStats,
+        {
+          timestamp: range.to,
+          totalValueInBaseCurrency:
+            portfolioData.current?.totalValueInBaseCurrency ?? "0",
+        },
+      ];
+
+      const series = createTimeSeries(results, ["totalValueInBaseCurrency"], {
+        range,
+        aggregation: "last",
+        accumulation: "max",
+        historical: true,
+      });
+
+      return {
+        range,
+        data: series,
+      };
+    }
+  );

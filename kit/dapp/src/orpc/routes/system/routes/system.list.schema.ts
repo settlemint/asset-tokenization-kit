@@ -1,3 +1,4 @@
+import { SortableListSchema } from "@/orpc/routes/common/schemas/sortable-list.schema";
 import { z } from "zod";
 
 /**
@@ -69,4 +70,8 @@ export const SystemListSchema = z.array(SystemListItemSchema);
  */
 export const SystemsResponseSchema = z.object({
   systems: SystemListSchema,
+});
+
+export const SystemListInputSchema = SortableListSchema.extend({
+  orderBy: z.enum(["id"]).optional().default("id"),
 });
