@@ -2,11 +2,9 @@ import { withErrorBoundary } from "@/components/error/component-error-boundary";
 import { PortfolioBreakdownPieChart } from "@/components/stats/charts/portfolio-breakdown-pie-chart";
 import { PortfolioValueInteractiveChart } from "@/components/stats/charts/portfolio-value-interactive-chart";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSession } from "@/hooks/use-auth";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
-import { useTranslation } from "react-i18next";
 import {
   PortfolioSummaryCards,
   PortfolioSummaryCardsSkeleton,
@@ -35,9 +33,6 @@ export function PortfolioDashboard() {
 
 const PortfolioDashboardContent = withErrorBoundary(
   function PortfolioDashboardContent() {
-    const { t } = useTranslation("dashboard");
-    const { data: session } = useSession();
-
     const { data: portfolioData } = useSuspenseQuery(
       orpc.system.stats.portfolioDetails.queryOptions({
         input: {},
@@ -48,20 +43,8 @@ const PortfolioDashboardContent = withErrorBoundary(
 
     return (
       <div>
-        {/* Welcome Header */}
-        <div className="space-y-2 mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            {t("portfolioDashboard.welcome", { name: session?.user.name })}
-          </h1>
-          <p className="text-muted-foreground">
-            {t("portfolioDashboard.subtitle")}
-          </p>
-        </div>
-
         {/* Summary Cards */}
-        <div className="mt-6">
-          <PortfolioSummaryCards />
-        </div>
+        <PortfolioSummaryCards />
 
         {/* Charts Section */}
         {hasAssets && (

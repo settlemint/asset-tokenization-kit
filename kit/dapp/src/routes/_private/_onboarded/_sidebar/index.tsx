@@ -18,6 +18,7 @@ import { IdentityProgress } from "@/components/dashboard/identity-progress/ident
 import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";
 import { PortfolioDashboard } from "@/components/dashboard/portfolio-dashboard/portfolio-dashboard";
 import { PortfolioHeader } from "@/components/dashboard/portfolio-dashboard/portfolio-header";
+import { WelcomeHeader } from "@/components/dashboard/welcome-header/welcome-header";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
@@ -53,8 +54,11 @@ function Home() {
   const hasAdminPermissions = Object.values(
     system?.userPermissions?.roles ?? {}
   ).some(Boolean);
+  const isInvestor = !hasAdminPermissions;
+
   return (
     <div className="h-[calc(100vh-4rem)] p-4 md:p-6">
+      {isInvestor && <WelcomeHeader />}
       <div className="grid h-full grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="col-span-1 lg:col-span-2">
           {!identityRegistered && (
