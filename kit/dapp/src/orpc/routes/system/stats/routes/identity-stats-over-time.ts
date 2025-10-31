@@ -71,12 +71,61 @@ const IdentityStatsOverTimeResponseSchema = z.object({
     .nullable(),
 });
 
-export const statsIdentityStatsOverTime =
-  systemRouter.system.stats.identityStatsOverTime.handler(
+export const statsIdentityStatsOverTimeByRange =
+  systemRouter.system.stats.identityStatsOverTimeByRange.handler(
     async ({ context, input }) => {
       const now = new Date();
       const { interval, fromMicroseconds, toMicroseconds, range } =
         buildStatsRangeQuery(input, {
+          now,
+          // TODO: replace minFrom with context.system.createdAt when available
+        });
+
+      const systemId = context.system.id.toLowerCase();
+      const response = await context.theGraphClient.query(
+        IDENTITY_STATS_OVER_TIME_QUERY,
+        {
+          input: {
+            systemId,
+            systemIdString: systemId,
+            interval,
+            from: fromMicroseconds,
+            to: toMicroseconds,
+          },
+          output: IdentityStatsOverTimeResponseSchema,
+        }
+      );
+
+      const results = [
+        ...response.baseline,
+        ...response.identityStats,
+        {
+          timestamp: range.to,
+          activeUserIdentitiesCount:
+            response.current?.activeUserIdentitiesCount ?? 0,
+        },
+      ];
+
+      const series = createTimeSeries(results, ["activeUserIdentitiesCount"], {
+        range,
+        aggregation: "last",
+        accumulation: "max",
+        historical: true,
+      });
+
+      return {
+        range,
+        identityStats: series,
+      };
+    }
+  );
+
+export const statsIdentityStatsOverTimeByPreset =
+  systemRouter.system.stats.identityStatsOverTimeByPreset.handler(
+    async ({ context, input }) => {
+      const now = new Date();
+      const { interval, fromMicroseconds, toMicroseconds, range } =
+        buildStatsRangeQuery(input.preset, {
           now,
           // TODO: replace minFrom with context.system.createdAt when available
         });

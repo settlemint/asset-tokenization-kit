@@ -151,6 +151,18 @@
     "linkedEntity": "Linked entity",
     "linkedEntityInfo": "The entity associated with this identity"
   },
+  "claimsTile": {
+    "title": "Identity and verifications",
+    "subtitle": "On-chain identity and claims",
+    "activeVerifications": "Active verifications",
+    "totalClaims": "{{count}} total claim",
+    "totalClaims_plural": "{{count}} total claims",
+    "revokedClaims": "{{count}} revoked",
+    "revokedClaims_plural": "{{count}} revoked",
+    "untrustedClaimsWarning": "{{count}} untrusted claim detected",
+    "untrustedClaimsWarning_plural": "{{count}} untrusted claims detected",
+    "manageVerifications": "Manage Verifications"
+  },
   "claimsTable": {
     "columns": {
       "claimName": "Claim Name",

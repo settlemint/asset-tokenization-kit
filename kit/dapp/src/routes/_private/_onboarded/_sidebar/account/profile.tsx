@@ -23,7 +23,7 @@ const CARD_CLASS_NAMES = {
   base: "flex h-full flex-col",
   content: "flex-1",
   footer:
-    "p-6 py-4 md:py-3 grid grid-cols-2 gap-4 bg-transparent border-none [&>*:first-child]:justify-self-start [&>*:last-child]:justify-self-end",
+    "px-6 py-4 md:py-3 grid grid-cols-2 gap-4 bg-transparent border-none [&>*:first-child]:justify-self-start [&>*:last-child]:justify-self-end",
   title: "!text-base md:!text-base",
 } as const;
 
@@ -50,9 +50,9 @@ function Profile() {
 
         <div className="grid gap-4 md:grid-cols-2">
           {authPublicConfig.changeEmailEnabled ? (
-            <ChangeEmailCard className="h-full" />
+            <ChangeEmailCard className="h-full" classNames={CARD_CLASS_NAMES} />
           ) : (
-            <Card className="flex h-full flex-col">
+            <Card className={CARD_CLASS_NAMES.base}>
               <CardHeader>
                 <CardTitle>{t("fields.email")}</CardTitle>
                 <CardDescription>

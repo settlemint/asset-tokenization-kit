@@ -10,7 +10,7 @@ export const statsTransactionHistoryContract = baseContract
     path: "/system/stats/transaction-history",
     description: "Get system-wide transaction history statistics",
     successDescription: "System transaction history statistics",
-    tags: ["stats", "system"],
+    tags: ["system-stats"],
   })
   .input(StatsTransactionHistoryInputSchema)
   .output(StatsTransactionHistoryOutputSchema);

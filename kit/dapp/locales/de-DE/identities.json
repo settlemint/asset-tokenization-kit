@@ -151,6 +151,18 @@
     "linkedEntity": "Verknüpfte Entität",
     "linkedEntityInfo": "Die mit dieser Identität verknüpfte Entität"
   },
+  "claimsTile": {
+    "title": "Identität und Verifizierungen",
+    "subtitle": "On-Chain-Identität und Ansprüche",
+    "activeVerifications": "Aktive Verifizierungen",
+    "totalClaims": "{{count}} Gesamtanspruch",
+    "totalClaims_plural": "{{count}} Gesamtansprüche",
+    "revokedClaims": "{{count}} widerrufen",
+    "revokedClaims_plural": "{{count}} widerrufen",
+    "untrustedClaimsWarning": "{{count}} nicht vertrauenswürdiger Anspruch erkannt",
+    "untrustedClaimsWarning_plural": "{{count}} nicht vertrauenswürdige Ansprüche erkannt",
+    "manageVerifications": "Verifizierungen verwalten"
+  },
   "claimsTable": {
     "columns": {
       "claimName": "Anspruchsname",

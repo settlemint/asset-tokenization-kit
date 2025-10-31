@@ -43,20 +43,21 @@ export const AssetLifecycleInteractiveChart = withErrorBoundary(
       [t]
     );
 
-    const [trailing24HrRangeData, trailing7DaysRangeData] = useQueries({
+    const queriesResults = useQueries({
       queries: statsRangePresets.map((preset) =>
-        orpc.system.stats.assetLifecycle.queryOptions({
-          input: preset,
+        orpc.system.stats.assetLifecycleByPreset.queryOptions({
+          input: { preset },
           ...CHART_QUERY_OPTIONS,
         })
       ),
     });
 
-    // Get the raw data for the selected range
-    const rawData =
-      selectedRange === "trailing24Hours"
-        ? trailing24HrRangeData?.data
-        : trailing7DaysRangeData?.data;
+    // Map results to presets to avoid positional coupling
+    const dataByPreset = new Map(
+      statsRangePresets.map((preset, index) => [preset, queriesResults[index]])
+    );
+
+    const rawData = dataByPreset.get(selectedRange)?.data;
 
     const fallbackRange = useMemo<StatsResolvedRange>(() => {
       return resolveStatsRange(selectedRange);

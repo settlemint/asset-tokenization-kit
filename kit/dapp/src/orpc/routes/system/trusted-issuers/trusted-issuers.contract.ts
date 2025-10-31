@@ -13,7 +13,7 @@ import {
   TrustedIssuerUpdateOutputSchema,
 } from "@/orpc/routes/system/trusted-issuers/routes/trusted-issuer.update.schema";
 
-const TAGS = ["system", "trusted-issuers"];
+const TAGS = ["trusted-issuers"];
 
 /**
  * Contract definition for listing trusted issuers.

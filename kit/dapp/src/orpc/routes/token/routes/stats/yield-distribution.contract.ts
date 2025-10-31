@@ -27,7 +27,7 @@ export const statsYieldDistributionContract = baseContract
     description: "Get bond yield distribution statistics for a specific token",
     successDescription:
       "Yield distribution data showing generation and claims over time",
-    tags: ["token", "stats", "yield"],
+    tags: ["token"],
   })
   .input(StatsYieldDistributionInputSchema)
   .output(StatsYieldDistributionOutputSchema);
