@@ -26,10 +26,10 @@ export function LatestEventsCardItem({ event }: LatestEventsCardItemProps) {
   );
   const Icon = status.icon;
 
-  const eventDisplayName =
-    t(`widgets.latestEvents.types.${event.eventName}`, {
-      defaultValue: event.eventName,
-    }) ?? formatEventName(event.eventName);
+  const fallbackEventName = formatEventName(event.eventName);
+  const eventDisplayName = t(`widgets.latestEvents.types.${event.eventName}`, {
+    defaultValue: fallbackEventName,
+  });
 
   return (
     <div className="flex items-start gap-3 rounded-lg border p-3">

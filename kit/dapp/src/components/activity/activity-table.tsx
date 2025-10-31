@@ -1,5 +1,4 @@
 import { DataTable } from "@/components/data-table/data-table";
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import "@/components/data-table/filters/types/table-extensions";
 import { withAutoFeatures } from "@/components/data-table/utils/auto-column";
 import { createStrictColumnHelper } from "@/components/data-table/utils/typed-column-helper";
@@ -25,7 +24,7 @@ type ActivityRow = UserEvent;
 
 const columnHelper = createStrictColumnHelper<ActivityRow>();
 
-export const ActivityTable = withErrorBoundary(function ActivityTable() {
+function ActivityTableInner() {
   const { t } = useTranslation(["activity", "dashboard"]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -57,7 +56,7 @@ export const ActivityTable = withErrorBoundary(function ActivityTable() {
   const orderDirection: "asc" | "desc" =
     activeSorting && !activeSorting.desc ? "asc" : "desc";
 
-  const { data, isLoading, error } = useSuspenseQuery(
+  const { data } = useSuspenseQuery(
     orpc.user.events.queryOptions({
       input: {
         limit: pagination.pageSize,
@@ -107,10 +106,13 @@ export const ActivityTable = withErrorBoundary(function ActivityTable() {
             );
             const Icon = status.icon;
 
-            const eventDisplayName =
-              t(`dashboard:widgets.latestEvents.types.${eventName}`, {
-                defaultValue: eventName,
-              }) ?? formatEventName(eventName);
+            const fallbackEventName = formatEventName(eventName);
+            const eventDisplayName = t(
+              `dashboard:widgets.latestEvents.types.${eventName}`,
+              {
+                defaultValue: fallbackEventName,
+              }
+            );
 
             return (
               <div className="flex items-center gap-2">
@@ -211,26 +213,11 @@ export const ActivityTable = withErrorBoundary(function ActivityTable() {
     ]) as ColumnDef<ActivityRow>[];
   }, [t]);
 
-  if (isLoading) {
-    return <DataTableSkeleton />;
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-muted-foreground">
-          {t("activity:table.errors.loadFailed")}
-        </p>
-      </div>
-    );
-  }
-
   return (
     <DataTable
       name="activity-table"
       data={items}
       columns={columns}
-      isLoading={isLoading}
       serverSidePagination={{
         enabled: true,
         totalCount,
@@ -256,4 +243,6 @@ export const ActivityTable = withErrorBoundary(function ActivityTable() {
       }}
     />
   );
-});
+}
+
+export const ActivityTable = withErrorBoundary(ActivityTableInner);

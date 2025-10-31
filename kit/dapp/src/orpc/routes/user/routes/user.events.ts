@@ -58,8 +58,9 @@ const USER_EVENTS_QUERY = theGraphGraphql(`
 /**
  * GraphQL query for getting total count of events for a user.
  *
- * Retrieves the count of all events where the user is involved,
- * used for pagination calculations.
+ * Retrieves all events where the user is involved, used for pagination
+ * calculations. The @fetchAll directive ensures we get accurate counts
+ * even for users with many events beyond the default page limit.
  */
 const USER_EVENTS_COUNT_QUERY = theGraphGraphql(`
   query UserEventsCountQuery($userAddress: String!) {
