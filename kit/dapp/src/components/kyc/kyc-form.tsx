@@ -1,4 +1,7 @@
-import { FormStepContent } from "@/components/form/multi-step/form-step";
+import {
+  FormStepContent,
+  FormStepSubmit,
+} from "@/components/form/multi-step/form-step";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/use-app-form";
 import { useSession } from "@/hooks/use-auth";
@@ -171,33 +174,35 @@ export function KycForm({ onComplete }: KycFormProps) {
             )}
           />
         </FormStepContent>
-        <form.Subscribe
-          selector={(state) => ({
-            isDirty: state.isDirty,
-            errors: state.errors,
-            isValid: state.isValid,
-            isSubmitting: state.isSubmitting,
-          })}
-        >
-          {({ isDirty, errors, isValid, isSubmitting }) => (
-            <Button
-              type="button"
-              className="press-effect"
-              disabled={
-                isUpdatingKyc ||
-                isSubmitting ||
-                !isDirty ||
-                !isValid ||
-                Object.keys(errors).length > 0
-              }
-              onClick={() => {
-                void form.handleSubmit();
-              }}
-            >
-              {t("kycForm.submit")}
-            </Button>
-          )}
-        </form.Subscribe>
+        <FormStepSubmit>
+          <form.Subscribe
+            selector={(state) => ({
+              isDirty: state.isDirty,
+              errors: state.errors,
+              isValid: state.isValid,
+              isSubmitting: state.isSubmitting,
+            })}
+          >
+            {({ isDirty, errors, isValid, isSubmitting }) => (
+              <Button
+                type="button"
+                className="press-effect"
+                disabled={
+                  isUpdatingKyc ||
+                  isSubmitting ||
+                  !isDirty ||
+                  !isValid ||
+                  Object.keys(errors).length > 0
+                }
+                onClick={() => {
+                  void form.handleSubmit();
+                }}
+              >
+                {t("kycForm.submit")}
+              </Button>
+            )}
+          </form.Subscribe>
+        </FormStepSubmit>
       </form.AppForm>
     </div>
   );

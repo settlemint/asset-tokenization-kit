@@ -28,7 +28,7 @@ export function IdentityCreated() {
             )
           }
         >
-          {t("identity-setup.form.submit")}
+          {t("onboarding:identity-setup.success-continue")}
         </Button>
       }
     >

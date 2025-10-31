@@ -84,7 +84,7 @@ type QueryResultRow = {
 export const adminList = systemRouter.user.adminList
   .use(
     blockchainPermissionsMiddleware({
-      requiredRoles: { any: ["identityManager", "claimIssuer"] },
+      requiredRoles: SYSTEM_PERMISSIONS.adminList,
       getAccessControl: ({ context }) => {
         return context.system?.systemAccessManager?.accessControl;
       },

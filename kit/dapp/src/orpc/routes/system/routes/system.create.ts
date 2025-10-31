@@ -241,14 +241,9 @@ export const create = onboardedRouter.system.create
       { context }
     );
 
-    // Grant operational roles to the system creator
-    // These roles are required for managing various aspects of the system
-    const operationalRoles: SystemAccessControlRoles[] = [
-      "tokenManager",
-      "identityManager",
-      "complianceManager",
-      "addonManager",
-    ];
+    // Grant the addon manager role to the system creator
+    // As this is required during onboarding
+    const operationalRoles: SystemAccessControlRoles[] = ["addonManager"];
     // Grant all operational roles in a single transaction
     await call(
       grantRole,

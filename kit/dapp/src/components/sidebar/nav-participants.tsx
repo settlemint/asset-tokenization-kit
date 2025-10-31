@@ -33,7 +33,7 @@ export function NavParticipants() {
 
   const roles = system.userPermissions?.roles;
   const canManageParticipants = Boolean(
-    roles?.identityManager || roles?.claimIssuer
+    roles?.admin || roles?.identityManager || roles?.claimIssuer
   );
 
   if (!canManageParticipants) {

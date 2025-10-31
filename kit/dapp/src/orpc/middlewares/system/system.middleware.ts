@@ -242,6 +242,7 @@ export function getSystemPermissions(
     accountSearch: false,
     addonCreate: false,
     addonFactoryCreate: false,
+    adminList: false,
     claimCreate: false,
     claimList: false,
     claimRevoke: false,

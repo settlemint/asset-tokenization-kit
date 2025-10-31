@@ -57,7 +57,7 @@ export function AssetDeployment() {
               void navigate({ to: "/onboarding" });
             }}
           >
-            Cancel
+            {t("common:cancel")}
           </Button>
 
           <Button type="button" onClick={onNext} className="press-effect">
