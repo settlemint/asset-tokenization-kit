@@ -1,0 +1,1516 @@
+---
+title: API based cross border FX
+description:
+  Execute cross-border foreign exchange settlements using stablecoins and atomic
+  swap contracts. This runbook demonstrates both UI-based and API-based workflows
+  for simulating multi-currency transfers between entities with automatic FX rate
+  application through tokenized assets.
+pageTitle: API-based cross-border FX settlement runbook
+tags: [runbook, cross-border, fx, stablecoin, swap, api, settlement]
+---
+
+**Primary audience:** Treasury operations staff, integration developers, banking system architects  
+**Secondary audience:** Financial controllers, compliance officers
+
+## Overview
+
+This runbook demonstrates how to execute cross-border foreign exchange settlements using the Asset Tokenization Kit. The workflows simulate real-world scenarios where corporate entities facilitate currency exchange for customers using tokenized stablecoins and atomic swap contracts.
+
+The core mechanism uses:
+
+- **Stablecoins** to represent fiat currency liabilities (EUR, SGD as proxies for MYR where needed)
+- **Atomic swap contracts** to execute currency exchanges at specified FX rates
+- **Bond tokens** for cross-border investment scenarios
+- **XvP (Exchange vs Payment)** for atomic settlement coordination across entities
+
+<Callout type="info" title="XvP Integration Status">
+  This runbook is written assuming full XvP (Exchange vs Payment) integration.
+  While the core swap and settlement mechanisms are operational, the complete
+  XvP coordination layer is under development. The workflows described here
+  represent the target architecture and can be executed with manual coordination
+  until XvP automation is fully deployed.
+</Callout>
+
+## Prerequisites
+
+Before starting these workflows, ensure:
+
+- Platform admin access with asset creation permissions
+- Treasury operator role for minting stablecoin operations
+- Two verified user accounts (User A and User B) with OnchainID claims
+- Understanding of [Stablecoin issuance](/docs/user-guides/asset-issuance/issue-stablecoin)
+- Understanding of [Bond issuance](/docs/user-guides/asset-issuance/issue-bond)
+- API credentials configured for programmatic operations
+- Banking system integration ready for off-chain transaction recording
+
+**Time estimate:** 2-3 hours for initial setup; 20-30 minutes per transaction workflow
+
+## Scenario context
+
+We'll execute two main scenarios representing common cross-border treasury operations:
+
+### Scenario 1: Cross-border remittance settlement
+
+User A (Malaysia) wants to send funds to User B (Singapore). The flow:
+
+1. User A deposits MYR to GM Malaysia Entity's bank account
+2. GM Malaysia Entity issues EUR stablecoin to User A (EUR as proxy for MYR)
+3. Atomic swap burns User A's EUR, mints SGD to User B at market FX rate
+4. User B withdraws SGD from GM Singapore Entity to their bank account
+
+**Off-chain:** Official FX transaction recorded between GM Malaysia and GM Singapore entities.
+
+### Scenario 2: Cross-border bond investment with coupon distribution
+
+User B (Singapore) invests in a Malaysian bond denominated in EUR, receiving coupon payments in their local currency (SGD):
+
+1. GM Malaysia Entity issues bond tokens
+2. User B swaps SGD stablecoin for bond tokens with GM Malaysia
+3. At coupon date, User B receives EUR stablecoin as interest
+4. Automatic swap converts EUR coupon to SGD for User B
+
+**Off-chain:** FX transactions recorded for both investment and coupon distribution.
+
+## Setup phase
+
+<Steps>
+
+<Step>
+
+## Step 1: Create stablecoin currencies
+
+Create two stablecoins representing different currencies for the settlement scenarios. We'll use EUR and SGD, noting that MYR can be added when available.
+
+### Via UI
+
+Navigate to **Asset Management** &gt; **Stablecoins** &gt; **Create New Stablecoin**.
+
+For **EUR Stablecoin**:
+
+- Token name: `Platform EUR Stablecoin`
+- Symbol: `PEUR`
+- Decimals: `6` (cent precision)
+- Peg currency: `EUR`
+- Peg ratio: `1.00` (1:1)
+- Collateralization: `100%` minimum
+- Minting: Permissioned, enabled
+- Redemption: Enabled, T+1 settlement
+
+For **SGD Stablecoin**:
+
+- Token name: `Platform SGD Stablecoin`
+- Symbol: `PSGD`
+- Decimals: `6`
+- Peg currency: `SGD`
+- Peg ratio: `1.00`
+- Collateralization: `100%` minimum
+- Minting: Permissioned, enabled
+- Redemption: Enabled, T+1 settlement
+
+Assign `SUPPLY_MANAGEMENT_ROLE` to your treasury operations wallet for both tokens.
+
+![Stablecoin configuration](/images/screenshots/placeholder.svg) _Stablecoin
+creation showing EUR and SGD configurations with peg settings and mint
+permissions_
+
+### Via API
+
+```typescript
+import { orpc } from '@/orpc/orpc-client';
+
+// Create EUR stablecoin
+const peurStablecoin = await orpc.stablecoin.create.mutate({
+  input: {
+    name: 'Platform EUR Stablecoin',
+    symbol: 'PEUR',
+    decimals: 6,
+    pegCurrency: 'EUR',
+    pegRatio: '1.00',
+    collateralizationRatio: 100,
+    mintingPermissioned: true,
+    mintingEnabled: true,
+    redemptionEnabled: true,
+    redemptionSettlement: 'T+1',
+    treasuryWallet: process.env.TREASURY_WALLET_ADDRESS,
+  },
+});
+
+console.log('PEUR deployed:', peurStablecoin.contractAddress);
+
+// Create SGD stablecoin
+const psgdStablecoin = await orpc.stablecoin.create.mutate({
+  input: {
+    name: 'Platform SGD Stablecoin',
+    symbol: 'PSGD',
+    decimals: 6,
+    pegCurrency: 'SGD',
+    pegRatio: '1.00',
+    collateralizationRatio: 100,
+    mintingPermissioned: true,
+    mintingEnabled: true,
+    redemptionEnabled: true,
+    redemptionSettlement: 'T+1',
+    treasuryWallet: process.env.TREASURY_WALLET_ADDRESS,
+  },
+});
+
+console.log('PSGD deployed:', psgdStablecoin.contractAddress);
+```
+
+**Check the stablecoin metrics panel** in observability dashboards to verify deployment success and initial configuration.
+
+</Step>
+
+<Step>
+
+## Step 2: Create user accounts and entity wallets
+
+Set up the actors in our settlement scenarios: two individual users and two corporate entity wallets.
+
+### Via UI
+
+Navigate to **Identity** &gt; **Investors** &gt; **Add Investor** for each user.
+
+**User A (Malaysia customer):**
+
+- Legal name: `Alice Tan`
+- Email: `alice.tan@example.com`
+- Country: `Malaysia`
+- KYC level: `Enhanced`
+- Wallet: Auto-generated or import existing
+
+**User B (Singapore customer):**
+
+- Legal name: `Bob Lee`
+- Email: `bob.lee@example.com`
+- Country: `Singapore`
+- KYC level: `Enhanced`
+- Wallet: Auto-generated or import existing
+
+Verify both users receive OnchainID verification with jurisdiction claims.
+
+For entity wallets, navigate to **Platform Settings** &gt; **Wallets** &gt; **Add Entity Wallet**:
+
+- **GM Malaysia Entity:** Treasury wallet for Malaysian operations
+- **GM Singapore Entity:** Treasury wallet for Singapore operations
+
+Assign appropriate roles (`ASSET_MANAGER_ROLE`, `SUPPLY_MANAGEMENT_ROLE`) to entity wallets.
+
+![Investor management](/images/screenshots/placeholder.svg) _User accounts
+showing OnchainID verification status and assigned wallets for User A, User B,
+and entity wallets_
+
+### Via API
+
+```typescript
+// Create User A
+const userA = await orpc.investor.create.mutate({
+  input: {
+    legalName: 'Alice Tan',
+    email: 'alice.tan@example.com',
+    country: 'MY',
+    kycLevel: 'ENHANCED',
+    jurisdiction: 'MY',
+  },
+});
+
+console.log('User A created:', userA.walletAddress);
+
+// Create User B
+const userB = await orpc.investor.create.mutate({
+  input: {
+    legalName: 'Bob Lee',
+    email: 'bob.lee@example.com',
+    country: 'SG',
+    kycLevel: 'ENHANCED',
+    jurisdiction: 'SG',
+  },
+});
+
+console.log('User B created:', userB.walletAddress);
+
+// Create entity wallets
+const gmMalaysiaWallet = await orpc.wallet.createEntity.mutate({
+  input: {
+    entityName: 'GM Malaysia Entity',
+    entityType: 'CORPORATE_TREASURY',
+    jurisdiction: 'MY',
+    roles: ['ASSET_MANAGER', 'SUPPLY_MANAGEMENT'],
+  },
+});
+
+const gmSingaporeWallet = await orpc.wallet.createEntity.mutate({
+  input: {
+    entityName: 'GM Singapore Entity',
+    entityType: 'CORPORATE_TREASURY',
+    jurisdiction: 'SG',
+    roles: ['ASSET_MANAGER', 'SUPPLY_MANAGEMENT'],
+  },
+});
+
+console.log('GM Malaysia wallet:', gmMalaysiaWallet.address);
+console.log('GM Singapore wallet:', gmSingaporeWallet.address);
+```
+
+**Check the identity registry panel** in observability dashboards to verify all accounts have proper OnchainID claims and compliance status.
+
+</Step>
+
+<Step>
+
+## Step 3: Create bond asset for investment scenario
+
+Issue a bond token that User B will purchase in Scenario 2. This represents a Malaysian corporate bond denominated in EUR.
+
+### Via UI
+
+Navigate to **Asset Management** &gt; **Bonds** &gt; **Create New Bond**.
+
+**GM Malaysia Corporate Bond:**
+
+- Bond name: `GM Malaysia 5Y Corporate Bond`
+- Symbol: `GMMY5Y`
+- ISIN: `MYU000000001` (generate valid ISIN)
+- Denomination: `EUR`
+- Face value: `1000` EUR
+- Maturity date: 5 years from issue
+- Coupon rate: `4.5%` annual
+- Coupon frequency: `Quarterly`
+- Total issuance: `10000` bonds (10M EUR)
+- Issuer: GM Malaysia Entity wallet
+
+Configure coupon payment automation to distribute interest tokens to bondholders quarterly.
+
+![Bond configuration](/images/screenshots/placeholder.svg) _Bond creation
+showing denomination, coupon structure, and automated payment schedule_
+
+### Via API
+
+```typescript
+const gmBond = await orpc.bond.create.mutate({
+  input: {
+    name: 'GM Malaysia 5Y Corporate Bond',
+    symbol: 'GMMY5Y',
+    isin: 'MYU000000001',
+    denomination: 'EUR',
+    faceValue: '1000',
+    maturityDate: new Date(Date.now() + 5 * 365 * 24 * 60 * 60 * 1000).toISOString(),
+    couponRate: '4.5',
+    couponFrequency: 'QUARTERLY',
+    totalSupply: '10000',
+    issuerWallet: gmMalaysiaWallet.address,
+    couponPaymentAutomatic: true,
+    couponCurrency: 'EUR', // Will be converted via swap for SGD holders
+  },
+});
+
+console.log('Bond deployed:', gmBond.contractAddress);
+
+// Mint initial bond supply to GM Malaysia Entity
+await orpc.bond.mint.mutate({
+  input: {
+    bondAddress: gmBond.contractAddress,
+    recipientAddress: gmMalaysiaWallet.address,
+    amount: '10000',
+    narrative: 'Initial bond issuance to treasury',
+  },
+});
+```
+
+**Check the bond metrics panel** to verify issuance and coupon schedule configuration.
+
+</Step>
+
+</Steps>
+
+## Scenario 1: Cross-border remittance settlement
+
+This scenario simulates a customer remittance from Malaysia to Singapore using stablecoin intermediation.
+
+<Steps>
+
+<Step>
+
+## Step 1: Mint EUR stablecoin to User A (tokenize MYR deposit)
+
+User A deposits MYR to GM Malaysia Entity's bank account. Off-chain, the banking system records this deposit. On-chain, we tokenize this liability by minting EUR stablecoin (as MYR proxy).
+
+**Off-chain operation:**
+
+- User A wires MYR 5,000 to GM Malaysia Entity bank account
+- Banking system records deposit with reference code
+- Treasury confirms deposit cleared
+
+**On-chain operation:**
+
+### Via UI
+
+Navigate to **Stablecoins** &gt; **PEUR** &gt; **Mint Tokens**.
+
+- Recipient: User A's wallet address
+- Amount: `1000` PEUR (representing ~MYR 5,000 at current FX rate)
+- Collateral reference: Wire reference number from banking system
+- Narrative: `Tokenization of User A MYR deposit - Wire REF12345`
+
+Click **Mint** and confirm transaction.
+
+**Check the stablecoin supply metrics** to see increased PEUR circulation and User A's balance.
+
+### Via API
+
+```typescript
+// Mint PEUR to User A representing MYR deposit
+const mintTx = await orpc.stablecoin.mint.mutate({
+  input: {
+    tokenAddress: peurStablecoin.contractAddress,
+    recipientAddress: userA.walletAddress,
+    amount: '1000000000', // 1000 PEUR (6 decimals)
+    collateralReference: 'WIRE_REF12345',
+    narrative: 'Tokenization of User A MYR deposit',
+  },
+});
+
+console.log('PEUR minted to User A:', mintTx.transactionHash);
+
+// Listen for mint event
+await orpc.events.subscribe.mutate({
+  input: {
+    eventType: 'TokenMinted',
+    filters: {
+      tokenAddress: peurStablecoin.contractAddress,
+      recipient: userA.walletAddress,
+    },
+    callback: async (event) =&gt; {
+      console.log('Mint confirmed:', event);
+      // Trigger off-chain FX transaction recording
+      await recordFxTransaction({
+        fromEntity: 'User A',
+        toEntity: 'GM Malaysia Entity',
+        fromCurrency: 'MYR',
+        toCurrency: 'EUR_PROXY',
+        amount: 5000,
+        rate: 5.0,
+        reference: 'WIRE_REF12345',
+      });
+    },
+  },
+});
+```
+
+**Result:** User A now holds 1000 PEUR representing GM Malaysia Entity's liability.
+
+</Step>
+
+<Step>
+
+## Step 2: Create FX swap contract (EUR to SGD)
+
+Create an atomic swap that burns User A's EUR stablecoin and mints SGD stablecoin to User B at the agreed FX rate.
+
+**FX Rate Calculation:**
+
+- User A pays: 1000 EUR
+- Current EUR/SGD rate: 1.45
+- User B receives: 1450 SGD
+
+The swap contract coordinates the atomic exchange with XvP settlement verification.
+
+### Via UI
+
+Navigate to **Swaps** &gt; **Create FX Swap**.
+
+- Swap type: `Currency Exchange`
+- From token: `PEUR`
+- To token: `PSGD`
+- From address: User A wallet
+- To address: User B wallet
+- From amount: `1000` PEUR
+- To amount: `1450` PSGD (calculated at 1.45 FX rate)
+- Rate lock: 15 minutes
+- Settlement: Atomic (XvP coordinated)
+- Treasury validation: Required (GM Malaysia and GM Singapore must approve)
+
+The system generates a swap contract address. Both users must approve token spending before execution.
+
+![FX swap configuration](/images/screenshots/placeholder.svg) _Swap contract
+showing EUR to SGD exchange with rate, amounts, and XvP settlement coordination_
+
+### Via API
+
+```typescript
+// Create FX swap contract
+const fxSwap = await orpc.swap.createFxSwap.mutate({
+  input: {
+    fromToken: peurStablecoin.contractAddress,
+    toToken: psgdStablecoin.contractAddress,
+    fromAddress: userA.walletAddress,
+    toAddress: userB.walletAddress,
+    fromAmount: '1000000000', // 1000 PEUR
+    toAmount: '1450000000', // 1450 PSGD
+    fxRate: '1.45',
+    rateLockDuration: 900, // 15 minutes in seconds
+    requireTreasuryApproval: true,
+    approvers: [gmMalaysiaWallet.address, gmSingaporeWallet.address],
+    xvpEnabled: true, // Enable XvP coordination
+  },
+});
+
+console.log('FX swap contract created:', fxSwap.contractAddress);
+
+// User A approves PEUR spending
+await orpc.token.approve.mutate({
+  input: {
+    tokenAddress: peurStablecoin.contractAddress,
+    spenderAddress: fxSwap.contractAddress,
+    amount: '1000000000',
+    signer: userA.walletAddress,
+  },
+});
+
+// Treasury approvals from both entities
+await orpc.swap.approveTreasury.mutate({
+  input: {
+    swapAddress: fxSwap.contractAddress,
+    approver: gmMalaysiaWallet.address,
+    approved: true,
+  },
+});
+
+await orpc.swap.approveTreasury.mutate({
+  input: {
+    swapAddress: fxSwap.contractAddress,
+    approver: gmSingaporeWallet.address,
+    approved: true,
+  },
+});
+```
+
+**Check the swap queue panel** in observability dashboards to monitor swap approval status and pending executions.
+
+</Step>
+
+<Step>
+
+## Step 3: Execute atomic swap with XvP settlement
+
+Once approvals are complete, execute the swap. The contract atomically burns User A's EUR and mints SGD to User B.
+
+### Via UI
+
+Navigate to **Swaps** &gt; **Pending Swaps** &gt; Select the FX swap.
+
+Review swap details:
+
+- All approvals confirmed (User A, GM Malaysia, GM Singapore)
+- Rate lock still valid
+- Sufficient stablecoin supply for minting
+
+Click **Execute Swap**. The transaction:
+
+1. Burns 1000 PEUR from User A's wallet
+2. Mints 1450 PSGD to User B's wallet
+3. Records FX transaction hash on-chain
+4. Emits `SwapExecuted` event with details
+
+**Check the transaction monitoring dashboard** to verify atomic execution and settlement finality.
+
+### Via API
+
+```typescript
+// Execute the swap
+const executeTx = await orpc.swap.execute.mutate({
+  input: {
+    swapAddress: fxSwap.contractAddress,
+    executor: process.env.TREASURY_WALLET_ADDRESS,
+  },
+});
+
+console.log('Swap executed:', executeTx.transactionHash);
+
+// Listen for swap completion
+await orpc.events.subscribe.mutate({
+  input: {
+    eventType: 'SwapExecuted',
+    filters: {
+      swapAddress: fxSwap.contractAddress,
+    },
+    callback: async (event) =&gt; {
+      console.log('Swap completed:', event);
+
+      // Record off-chain FX transaction between entities
+      await recordFxTransaction({
+        fromEntity: 'GM Malaysia Entity',
+        toEntity: 'GM Singapore Entity',
+        fromCurrency: 'EUR',
+        toCurrency: 'SGD',
+        amount: 1000,
+        rate: 1.45,
+        reference: event.transactionHash,
+        swapType: 'CROSS_BORDER_REMITTANCE',
+      });
+
+      // Update User A and User B liability records
+      await updateLiabilityLedger({
+        gmMalaysia: {
+          liabilityTo: 'User A',
+          change: -1000,
+          currency: 'EUR',
+          reason: 'FX swap executed',
+        },
+        gmSingapore: {
+          liabilityTo: 'User B',
+          change: +1450,
+          currency: 'SGD',
+          reason: 'FX swap received',
+        },
+      });
+    },
+  },
+});
+
+// Verify balances after swap
+const userABalance = await orpc.token.balanceOf.query({
+  input: {
+    tokenAddress: peurStablecoin.contractAddress,
+    address: userA.walletAddress,
+  },
+});
+
+const userBBalance = await orpc.token.balanceOf.query({
+  input: {
+    tokenAddress: psgdStablecoin.contractAddress,
+    address: userB.walletAddress,
+  },
+});
+
+console.log('User A PEUR balance:', userABalance); // Should be 0
+console.log('User B PSGD balance:', userBBalance); // Should be 1450000000
+```
+
+**Off-chain impact:**
+
+- GM Malaysia Entity's liability to User A: Transferred to GM Singapore
+- GM Singapore Entity now owes User B 1450 SGD equivalent
+- Official FX transaction recorded: EUR 1000 ? SGD 1450 at rate 1.45
+- Banking system updates inter-entity account balances
+
+**Check the FX transaction log panel** to see recorded swap and rate applied.
+
+</Step>
+
+<Step>
+
+## Step 4: User B withdraws SGD (burn stablecoin)
+
+User B redeems SGD stablecoin for fiat, completing the cross-border settlement. Off-chain, GM Singapore Entity wires SGD to User B's bank account.
+
+### Via UI
+
+Navigate to **Account** &gt; **Redeem Tokens** (logged in as User B).
+
+- Token: `PSGD`
+- Amount: `1450` PSGD
+- Currency: `SGD`
+- Bank account: User B's verified banking details (must match KYC)
+- Settlement: T+1 (next business day wire)
+
+Submit redemption request. Treasury reviews and approves.
+
+Navigate to **Fiat Bridge** &gt; **Redemption Requests** (treasury view).
+
+- Review User B's request
+- Verify banking details match KYC
+- Approve redemption
+- Execute wire transfer via banking portal
+- Mark redemption as paid with wire confirmation
+
+**Check the redemption queue panel** to monitor processing status and settlement timing.
+
+### Via API
+
+```typescript
+// User B submits redemption request
+const redemption = await orpc.stablecoin.requestRedemption.mutate({
+  input: {
+    tokenAddress: psgdStablecoin.contractAddress,
+    amount: '1450000000', // 1450 PSGD
+    currency: 'SGD',
+    beneficiaryAccount: {
+      accountNumber: 'SG_ACCOUNT_456',
+      bankCode: 'DBS',
+      swiftBic: 'DBSSSGSG',
+      beneficiaryName: 'Bob Lee', // Must match KYC
+    },
+    requester: userB.walletAddress,
+  },
+});
+
+console.log('Redemption requested:', redemption.requestId);
+
+// Treasury approves redemption
+await orpc.stablecoin.approveRedemption.mutate({
+  input: {
+    requestId: redemption.requestId,
+    approver: gmSingaporeWallet.address,
+  },
+});
+
+// Burn tokens
+const burnTx = await orpc.stablecoin.burn.mutate({
+  input: {
+    tokenAddress: psgdStablecoin.contractAddress,
+    amount: '1450000000',
+    fromAddress: userB.walletAddress,
+    redemptionReference: redemption.requestId,
+  },
+});
+
+console.log('PSGD burned:', burnTx.transactionHash);
+
+// Execute wire transfer (off-chain via banking API)
+const wireTransfer = await executeBankWire({
+  fromAccount: 'GM_SINGAPORE_TREASURY',
+  toAccount: 'SG_ACCOUNT_456',
+  amount: 1450,
+  currency: 'SGD',
+  reference: redemption.requestId,
+  bankingSystem: 'SWIFT',
+});
+
+console.log('Wire executed:', wireTransfer.wireConfirmation);
+
+// Mark redemption complete
+await orpc.stablecoin.completeRedemption.mutate({
+  input: {
+    requestId: redemption.requestId,
+    wireConfirmation: wireTransfer.wireConfirmation,
+    executionDate: new Date().toISOString(),
+  },
+});
+
+// Listen for redemption completion
+await orpc.events.subscribe.mutate({
+  input: {
+    eventType: 'RedemptionCompleted',
+    filters: {
+      requestId: redemption.requestId,
+    },
+    callback: async (event) =&gt; {
+      console.log('Redemption completed:', event);
+
+      // Update liability records
+      await updateLiabilityLedger({
+        gmSingapore: {
+          liabilityTo: 'User B',
+          change: -1450,
+          currency: 'SGD',
+          reason: 'Stablecoin redeemed, fiat paid',
+        },
+      });
+
+      // Record settlement completion
+      await recordSettlementCompletion({
+        settlementId: fxSwap.contractAddress,
+        finalStatus: 'COMPLETED',
+        userAOutcome: 'MYR 5000 sent',
+        userBOutcome: 'SGD 1450 received',
+        fxRate: 1.45,
+        totalDuration: event.timestamp - mintTx.timestamp,
+      });
+    },
+  },
+});
+```
+
+**Result:** Cross-border settlement complete. User A's MYR deposit resulted in User B receiving SGD, with GM entities handling currency conversion and FX risk.
+
+**Check the settlement finality panel** in observability dashboards to verify end-to-end transaction completion and timing metrics.
+
+</Step>
+
+</Steps>
+
+## Scenario 2: Cross-border bond investment with coupon FX
+
+This scenario demonstrates User B (Singapore) investing in a Malaysian bond denominated in EUR, with coupon payments automatically converted to SGD.
+
+<Steps>
+
+<Step>
+
+## Step 1: Mint bond tokens to GM Malaysia Entity
+
+The bond issuer (GM Malaysia) holds the initial bond supply. We already minted 10,000 bonds in the setup phase. Verify inventory.
+
+### Via API
+
+```typescript
+// Verify GM Malaysia holds bond inventory
+const bondBalance = await orpc.token.balanceOf.query({
+  input: {
+    tokenAddress: gmBond.contractAddress,
+    address: gmMalaysiaWallet.address,
+  },
+});
+
+console.log('GM Malaysia bond inventory:', bondBalance);
+
+// Check bond details
+const bondInfo = await orpc.bond.getInfo.query({
+  input: {
+    bondAddress: gmBond.contractAddress,
+  },
+});
+
+console.log('Bond details:', bondInfo);
+console.log('Next coupon date:', bondInfo.nextCouponDate);
+console.log('Coupon amount per bond:', bondInfo.couponAmount);
+```
+
+**Check the bond inventory panel** to see available bonds for sale.
+
+</Step>
+
+<Step>
+
+## Step 2: Mint SGD stablecoin to User B (tokenize SGD deposit)
+
+User B deposits SGD to GM Singapore Entity's bank account to prepare for bond purchase.
+
+**Off-chain operation:**
+
+- User B wires SGD 1,450 to GM Singapore Entity
+- Banking system records deposit
+- Treasury confirms funds cleared
+
+**On-chain operation:**
+
+### Via API
+
+```typescript
+// Mint PSGD to User B representing SGD deposit
+const mintUserB = await orpc.stablecoin.mint.mutate({
+  input: {
+    tokenAddress: psgdStablecoin.contractAddress,
+    recipientAddress: userB.walletAddress,
+    amount: '1450000000', // 1450 PSGD
+    collateralReference: 'WIRE_REF67890',
+    narrative: 'Tokenization of User B SGD deposit for bond investment',
+  },
+});
+
+console.log('PSGD minted to User B:', mintUserB.transactionHash);
+
+// Record off-chain deposit
+await recordDepositTokenization({
+  user: 'User B',
+  entity: 'GM Singapore Entity',
+  currency: 'SGD',
+  amount: 1450,
+  stablecoinMinted: 1450,
+  reference: 'WIRE_REF67890',
+});
+```
+
+**Result:** User B holds 1450 PSGD ready for bond purchase.
+
+</Step>
+
+<Step>
+
+## Step 3: Create swap contract (SGD stablecoin for bond tokens)
+
+Create a swap where User B exchanges SGD stablecoin for bond tokens. The bond is denominated in EUR (face value 1000 EUR), so we calculate the SGD equivalent.
+
+**Pricing calculation:**
+
+- Bond face value: 1000 EUR
+- EUR/SGD rate: 1.45
+- Bond price in SGD: 1450 SGD
+- User B pays: 1450 PSGD
+- User B receives: 1 bond token (representing 1000 EUR face value)
+
+### Via API
+
+```typescript
+// Create bond purchase swap
+const bondSwap = await orpc.swap.createAssetSwap.mutate({
+  input: {
+    fromToken: psgdStablecoin.contractAddress,
+    toToken: gmBond.contractAddress,
+    fromAddress: userB.walletAddress,
+    toAddress: userB.walletAddress, // User B receives bonds
+    fromAmount: '1450000000', // 1450 PSGD
+    toAmount: '1000000000', // 1 bond (assuming 6 decimals)
+    assetPrice: '1450', // Price in PSGD
+    assetCurrency: 'SGD',
+    bondFaceValue: '1000',
+    bondDenomination: 'EUR',
+    requireTreasuryApproval: true,
+    approvers: [gmMalaysiaWallet.address, gmSingaporeWallet.address],
+    xvpEnabled: true,
+  },
+});
+
+console.log('Bond swap contract created:', bondSwap.contractAddress);
+
+// User B approves PSGD spending
+await orpc.token.approve.mutate({
+  input: {
+    tokenAddress: psgdStablecoin.contractAddress,
+    spenderAddress: bondSwap.contractAddress,
+    amount: '1450000000',
+    signer: userB.walletAddress,
+  },
+});
+
+// GM Malaysia approves bond transfer
+await orpc.token.approve.mutate({
+  input: {
+    tokenAddress: gmBond.contractAddress,
+    spenderAddress: bondSwap.contractAddress,
+    amount: '1000000000',
+    signer: gmMalaysiaWallet.address,
+  },
+});
+
+// Treasury approvals
+await orpc.swap.approveTreasury.mutate({
+  input: {
+    swapAddress: bondSwap.contractAddress,
+    approver: gmSingaporeWallet.address,
+    approved: true,
+  },
+});
+
+await orpc.swap.approveTreasury.mutate({
+  input: {
+    swapAddress: bondSwap.contractAddress,
+    approver: gmMalaysiaWallet.address,
+    approved: true,
+  },
+});
+```
+
+</Step>
+
+<Step>
+
+## Step 4: Execute bond purchase swap
+
+Execute the swap to transfer bond ownership from GM Malaysia to User B in exchange for SGD stablecoin.
+
+### Via API
+
+```typescript
+// Execute bond purchase swap
+const bondSwapTx = await orpc.swap.execute.mutate({
+  input: {
+    swapAddress: bondSwap.contractAddress,
+    executor: process.env.TREASURY_WALLET_ADDRESS,
+  },
+});
+
+console.log('Bond swap executed:', bondSwapTx.transactionHash);
+
+// Listen for swap completion
+await orpc.events.subscribe.mutate({
+  input: {
+    eventType: 'SwapExecuted',
+    filters: {
+      swapAddress: bondSwap.contractAddress,
+    },
+    callback: async (event) =&gt; {
+      console.log('Bond purchase completed:', event);
+
+      // Record off-chain FX transaction
+      await recordFxTransaction({
+        fromEntity: 'GM Singapore Entity',
+        toEntity: 'GM Malaysia Entity',
+        fromCurrency: 'SGD',
+        toCurrency: 'EUR',
+        amount: 1450,
+        rate: 0.6897, // SGD/EUR rate (inverse of 1.45)
+        reference: event.transactionHash,
+        swapType: 'CROSS_BORDER_BOND_PURCHASE',
+      });
+
+      // Update liability records
+      await updateLiabilityLedger({
+        gmSingapore: {
+          liabilityTo: 'User B',
+          change: -1450,
+          currency: 'SGD',
+          reason: 'SGD stablecoin used for bond purchase',
+        },
+        gmMalaysia: {
+          assetHolderChange: {
+            bondHolder: 'User B',
+            bonds: +1,
+            faceValue: 1000,
+            denomination: 'EUR',
+          },
+        },
+      });
+    },
+  },
+});
+
+// Verify User B now holds bond
+const userBBondBalance = await orpc.token.balanceOf.query({
+  input: {
+    tokenAddress: gmBond.contractAddress,
+    address: userB.walletAddress,
+  },
+});
+
+console.log('User B bond balance:', userBBondBalance); // Should be 1 bond
+```
+
+**Off-chain impact:**
+
+- GM Singapore Entity's liability to User B reduced by 1450 SGD
+- GM Malaysia Entity now owes User B EUR-denominated bond obligations
+- Official FX transaction: SGD 1450 ? EUR 1000 equivalent at rate 0.6897
+
+**Check the bond ownership panel** to see User B listed as bondholder with coupon entitlements.
+
+</Step>
+
+<Step>
+
+## Step 5: Simulate coupon payment with automatic FX conversion
+
+At the quarterly coupon date, User B should receive interest. Since the bond is denominated in EUR but User B prefers SGD, we automatically convert the coupon payment.
+
+**Coupon calculation:**
+
+- Bond face value: 1000 EUR
+- Annual coupon rate: 4.5%
+- Quarterly coupon: (1000 ? 4.5%) / 4 = 11.25 EUR
+- EUR/SGD rate: 1.45
+- Coupon in SGD: 11.25 ? 1.45 = 16.3125 SGD
+
+### Via API
+
+```typescript
+// Automated coupon distribution (triggered by bond contract on coupon date)
+// First, coupon mints EUR stablecoin to bondholders
+
+// Listen for coupon distribution event
+await orpc.events.subscribe.mutate({
+  input: {
+    eventType: 'CouponDistributed',
+    filters: {
+      bondAddress: gmBond.contractAddress,
+      recipient: userB.walletAddress,
+    },
+    callback: async (event) =&gt; {
+      console.log('Coupon distributed:', event);
+      console.log('User B received PEUR:', event.couponAmount); // 11.25 PEUR
+
+      // Automatically create FX swap to convert EUR coupon to SGD
+      const couponSwap = await orpc.swap.createFxSwap.mutate({
+        input: {
+          fromToken: peurStablecoin.contractAddress,
+          toToken: psgdStablecoin.contractAddress,
+          fromAddress: userB.walletAddress,
+          toAddress: userB.walletAddress,
+          fromAmount: event.couponAmount, // 11.25 PEUR
+          toAmount: (parseFloat(event.couponAmount) * 1.45).toString(), // 16.3125 PSGD
+          fxRate: '1.45',
+          rateLockDuration: 900,
+          requireTreasuryApproval: true,
+          approvers: [gmMalaysiaWallet.address, gmSingaporeWallet.address],
+          xvpEnabled: true,
+          swapPurpose: 'COUPON_FX_CONVERSION',
+        },
+      });
+
+      // User B auto-approves (can be configured as automatic)
+      await orpc.token.approve.mutate({
+        input: {
+          tokenAddress: peurStablecoin.contractAddress,
+          spenderAddress: couponSwap.contractAddress,
+          amount: event.couponAmount,
+          signer: userB.walletAddress,
+        },
+      });
+
+      // Treasury approvals
+      await orpc.swap.approveTreasury.mutate({
+        input: {
+          swapAddress: couponSwap.contractAddress,
+          approver: gmMalaysiaWallet.address,
+          approved: true,
+        },
+      });
+
+      await orpc.swap.approveTreasury.mutate({
+        input: {
+          swapAddress: couponSwap.contractAddress,
+          approver: gmSingaporeWallet.address,
+          approved: true,
+        },
+      });
+
+      // Execute coupon FX swap
+      const couponSwapTx = await orpc.swap.execute.mutate({
+        input: {
+          swapAddress: couponSwap.contractAddress,
+          executor: process.env.TREASURY_WALLET_ADDRESS,
+        },
+      });
+
+      console.log('Coupon FX swap executed:', couponSwapTx.transactionHash);
+
+      // Record off-chain FX transaction for coupon conversion
+      await recordFxTransaction({
+        fromEntity: 'GM Malaysia Entity',
+        toEntity: 'GM Singapore Entity',
+        fromCurrency: 'EUR',
+        toCurrency: 'SGD',
+        amount: parseFloat(event.couponAmount),
+        rate: 1.45,
+        reference: couponSwapTx.transactionHash,
+        swapType: 'COUPON_PAYMENT_FX',
+      });
+
+      // Update liability records
+      await updateLiabilityLedger({
+        gmMalaysia: {
+          liabilityTo: 'Bondholders',
+          change: -parseFloat(event.couponAmount),
+          currency: 'EUR',
+          reason: 'Coupon payment to User B',
+        },
+        gmSingapore: {
+          liabilityTo: 'User B',
+          change: +(parseFloat(event.couponAmount) * 1.45),
+          currency: 'SGD',
+          reason: 'Coupon FX conversion for User B',
+        },
+      });
+    },
+  },
+});
+
+// Verify User B received SGD stablecoin
+const finalBalance = await orpc.token.balanceOf.query({
+  input: {
+    tokenAddress: psgdStablecoin.contractAddress,
+    address: userB.walletAddress,
+  },
+});
+
+console.log('User B PSGD balance after coupon:', finalBalance);
+```
+
+**Result:** User B receives coupon payments in SGD stablecoin, even though the bond is denominated in EUR. The FX conversion is automatic and transparent.
+
+**Check the coupon payment log panel** to see distribution history and FX conversions applied.
+
+</Step>
+
+</Steps>
+
+## Monitoring cross-border operations with observability
+
+The observability stack provides comprehensive monitoring for cross-border FX operations across multiple dashboards.
+
+### FX transaction monitoring
+
+**Check the FX transaction log dashboard** to review:
+
+- All executed currency swaps with timestamps
+- FX rates applied at execution time
+- Transaction volumes by currency pair (EUR/SGD, SGD/EUR)
+- Average swap execution time (target: &lt;10 seconds for atomic settlement)
+- Failed swap rate and reasons
+
+Navigate to **Observability** &gt; **FX Operations** to access real-time metrics showing:
+
+- Daily FX volume by entity (GM Malaysia, GM Singapore)
+- Currency exposure by stablecoin (PEUR, PSGD outstanding)
+- Swap queue depth (pending approvals)
+- XvP coordination latency (when fully deployed)
+
+### Liability reconciliation
+
+**Check the treasury liability dashboard** to monitor:
+
+- Entity-level liability summary (GM Malaysia owes X EUR, GM Singapore owes Y SGD)
+- Per-user liability tracking (User A, User B positions)
+- Reserve backing ratios (stablecoin supply vs. bank deposits)
+- Inter-entity FX exposure (outstanding currency mismatches)
+
+Navigate to **Treasury** &gt; **Liability Reconciliation** to verify:
+
+- Total stablecoin supply matches recorded bank deposits
+- All executed swaps have corresponding off-chain FX transactions
+- Bond ownership matches coupon payment obligations
+- No orphaned liabilities (tokens issued without collateral backing)
+
+### Settlement finality metrics
+
+**Check the settlement dashboard** to track:
+
+- End-to-end settlement time (from mint to redemption)
+- Swap execution success rate (target: &gt;99.9%)
+- XvP coordination success (when deployed)
+- Treasury approval latency (average time for dual approval)
+- Wire transfer execution time (off-chain component)
+
+Set alert thresholds for:
+
+- Swap execution failures (alert if &gt;0.1%)
+- Treasury approval delays (alert if &gt;30 minutes)
+- Redemption queue depth (alert if &gt;50 pending)
+- Reserve ratio drops (alert if &lt;105%)
+
+### Audit trail for compliance
+
+**Check the compliance audit log** to export:
+
+- Complete transaction history for regulatory reporting
+- All FX rates applied with timestamps and sources
+- Treasury approval signatures for each swap
+- Banking wire confirmations linked to on-chain burns/mints
+- User identity verification status at transaction time
+
+This audit trail satisfies regulatory requirements for cross-border money transmission, AML screening, and KYC verification.
+
+## API event-driven automation
+
+For fully automated cross-border operations, implement event listeners that trigger off-chain banking operations in response to on-chain events.
+
+### Listening for on-chain events
+
+```typescript
+// Comprehensive event listener for cross-border automation
+class CrossBorderAutomation {
+  constructor(private orp: typeof orpc) {}
+
+  async initialize() {
+    // Listen for stablecoin mints (trigger FX recording)
+    await this.orpc.events.subscribe.mutate({
+      input: {
+        eventType: 'TokenMinted',
+        callback: this.handleStablecoinMint.bind(this),
+      },
+    });
+
+    // Listen for swap executions (trigger inter-entity FX)
+    await this.orpc.events.subscribe.mutate({
+      input: {
+        eventType: 'SwapExecuted',
+        callback: this.handleSwapExecution.bind(this),
+      },
+    });
+
+    // Listen for redemptions (trigger wire transfers)
+    await this.orpc.events.subscribe.mutate({
+      input: {
+        eventType: 'RedemptionRequested',
+        callback: this.handleRedemptionRequest.bind(this),
+      },
+    });
+
+    // Listen for coupon distributions (trigger FX swaps)
+    await this.orpc.events.subscribe.mutate({
+      input: {
+        eventType: 'CouponDistributed',
+        callback: this.handleCouponPayment.bind(this),
+      },
+    });
+  }
+
+  private async handleStablecoinMint(event: TokenMintedEvent) {
+    // Record off-chain deposit in core banking
+    await this.recordBankingDeposit({
+      user: event.recipient,
+      amount: event.amount,
+      currency: event.tokenCurrency,
+      reference: event.collateralReference,
+    });
+
+    // Update liability ledger
+    await this.updateLiability({
+      entity: event.issuerEntity,
+      user: event.recipient,
+      change: +event.amount,
+      currency: event.tokenCurrency,
+    });
+  }
+
+  private async handleSwapExecution(event: SwapExecutedEvent) {
+    // Record inter-entity FX transaction
+    await this.recordFxTransaction({
+      fromEntity: event.fromEntity,
+      toEntity: event.toEntity,
+      fromCurrency: event.fromCurrency,
+      toCurrency: event.toCurrency,
+      amount: event.fromAmount,
+      rate: event.fxRate,
+      reference: event.transactionHash,
+    });
+
+    // Update both entities' liability ledgers
+    await this.updateLiability({
+      entity: event.fromEntity,
+      user: event.fromAddress,
+      change: -event.fromAmount,
+      currency: event.fromCurrency,
+    });
+
+    await this.updateLiability({
+      entity: event.toEntity,
+      user: event.toAddress,
+      change: +event.toAmount,
+      currency: event.toCurrency,
+    });
+
+    // Notify users of swap completion
+    await this.notifyUsers({
+      fromUser: event.fromAddress,
+      toUser: event.toAddress,
+      transactionType: 'FX_SWAP',
+      details: event,
+    });
+  }
+
+  private async handleRedemptionRequest(event: RedemptionRequestedEvent) {
+    // Validate banking details against KYC
+    const kycMatch = await this.validateBankingDetails(
+      event.requester,
+      event.beneficiaryAccount
+    );
+
+    if (!kycMatch) {
+      await this.rejectRedemption(event.requestId, 'Banking details mismatch');
+      return;
+    }
+
+    // Auto-approve if within limits and compliance clear
+    if (event.amount &lt;= this.autoApprovalThreshold) {
+      await this.orpc.stablecoin.approveRedemption.mutate({
+        input: {
+          requestId: event.requestId,
+          approver: event.issuerEntity,
+        },
+      });
+
+      // Execute wire transfer via banking API
+      const wireConfirmation = await this.executeBankWire({
+        fromAccount: event.issuerEntity,
+        toAccount: event.beneficiaryAccount,
+        amount: event.amount,
+        currency: event.currency,
+        reference: event.requestId,
+      });
+
+      // Complete redemption on-chain
+      await this.orpc.stablecoin.completeRedemption.mutate({
+        input: {
+          requestId: event.requestId,
+          wireConfirmation: wireConfirmation,
+        },
+      });
+    }
+  }
+
+  private async handleCouponPayment(event: CouponDistributedEvent) {
+    // Check if recipient prefers different currency than bond denomination
+    const userPreference = await this.getUserCurrencyPreference(event.recipient);
+
+    if (userPreference &amp;&amp; userPreference !== event.couponCurrency) {
+      // Automatically create FX swap for coupon conversion
+      await this.createAutomaticCouponSwap({
+        recipient: event.recipient,
+        couponAmount: event.couponAmount,
+        fromCurrency: event.couponCurrency,
+        toCurrency: userPreference,
+      });
+    }
+  }
+
+  // Helper methods for banking integration
+  private async recordBankingDeposit(params: DepositParams) {
+    // Call core banking system API
+  }
+
+  private async recordFxTransaction(params: FxTransactionParams) {
+    // Call treasury management system API
+  }
+
+  private async executeBankWire(params: WireParams): Promise<string> {
+    // Call banking API for wire transfer
+    return 'WIRE_CONFIRMATION_XYZ';
+  }
+
+  private async updateLiability(params: LiabilityParams) {
+    // Update internal liability ledger
+  }
+
+  private async getUserCurrencyPreference(address: string): Promise<string | null> {
+    // Query user preferences
+    return 'SGD';
+  }
+}
+
+// Initialize automation
+const automation = new CrossBorderAutomation(orpc);
+await automation.initialize();
+
+console.log('Cross-border automation active, listening for events...');
+```
+
+This event-driven architecture ensures that on-chain settlements automatically trigger corresponding off-chain banking operations, maintaining consistency across the dual ledger system (blockchain + banking).
+
+## Best practices for cross-border FX operations
+
+### FX rate management
+
+- **Lock rates during swap creation** to prevent slippage. Standard lock duration: 15 minutes for customer-initiated swaps, 5 minutes for automated conversions.
+- **Use reliable FX rate oracles** with at least 3 data sources. Configure fallback oracles for redundancy.
+- **Set acceptable deviation limits** (e.g., ?0.5% from mid-market rate) to prevent execution at unfavorable rates.
+- **Monitor rate staleness** through observability dashboards. Alert if oracle data is &gt;60 seconds old.
+- **Record FX rates on-chain** as part of swap execution for immutable audit trail.
+
+### Treasury coordination
+
+- **Require dual approval** for all cross-border swaps exceeding configured thresholds (e.g., EUR 10,000 equivalent).
+- **Maintain sufficient stablecoin liquidity** at both entities to execute swaps without delays. Target: 20% buffer above average daily volume.
+- **Reconcile daily** between on-chain token supply and off-chain bank balances. Investigate any variance &gt;0.1%.
+- **Monitor inter-entity exposure** to prevent excessive one-directional flow. Set alerts for imbalances &gt;20% of total volume.
+- **Settle inter-entity positions periodically** (e.g., weekly) through official banking channels to rebalance.
+
+### Compliance and audit
+
+- **Verify KYC status** before every swap execution. User's OnchainID claims must be current (not expired).
+- **Screen for sanctions** at execution time, not just account creation. Compliance lists update frequently.
+- **Record banking wire references** on-chain during mint/burn operations for complete audit trail.
+- **Maintain swap logs** linking on-chain transactions to off-chain FX records for regulatory reporting.
+- **Generate monthly FX reports** showing total volume, average rates, entity exposure, and compliance metrics.
+
+### Operational discipline
+
+- **Set realistic settlement times** based on actual banking capabilities. Don't promise T+0 fiat settlement if bank wires take T+1.
+- **Monitor swap queue depth** through observability dashboards. Alert if pending approvals &gt;10 to prevent customer delays.
+- **Test failure scenarios** quarterly: What if swap reverts? What if wire fails? Ensure rollback procedures work.
+- **Document currency pairs** supported and minimum swap amounts. Publish clear limits to customers.
+- **Maintain emergency contacts** for both treasury entities to resolve cross-border issues 24/7.
+
+## Troubleshooting common issues
+
+### Swap execution fails with "Insufficient liquidity"
+
+**Symptom:** Swap transaction reverts during execution with error indicating insufficient stablecoin supply to mint receiving currency.
+
+**Diagnosis:**
+
+- Check stablecoin supply cap for receiving currency (e.g., PSGD may have reached maximum supply)
+- Verify treasury entity has `SUPPLY_MANAGEMENT_ROLE` permission
+- Check reserve backing ratio is above minimum threshold (typically 100%)
+
+**Resolution:**
+
+- Increase stablecoin supply cap via governance action if near maximum
+- Fund reserves to increase collateralization ratio above minimum
+- Verify role assignments through observability dashboard
+- Retry swap execution after resolving liquidity constraint
+
+**Check the stablecoin metrics panel** to see current supply vs. cap and reserve ratios.
+
+### Treasury approval timeout
+
+**Symptom:** Swap remains in pending state, awaiting treasury approval beyond expected timeframe.
+
+**Diagnosis:**
+
+- Verify both required treasury wallets (GM Malaysia, GM Singapore) received approval notifications
+- Check if approvers' wallets are online and have signing authority
+- Review approval transaction history for rejected attempts
+- Confirm swap hasn't exceeded rate lock duration (typically 15 minutes)
+
+**Resolution:**
+
+- Contact treasury operators to complete approval signatures
+- If rate lock expired, cancel swap and create new one with updated FX rate
+- Configure longer rate lock duration for swaps requiring extended approval cycles
+- Implement automated approval for swaps below threshold amount
+
+**Check the swap queue dashboard** to see pending approvals and time remaining on rate locks.
+
+### User balance mismatch after swap
+
+**Symptom:** User reports incorrect balance after swap execution. Expected balance doesn't match actual.
+
+**Diagnosis:**
+
+- Query actual on-chain balance via blockchain explorer
+- Review swap event logs to verify amounts burned and minted
+- Check for additional transactions (user may have transferred tokens)
+- Verify decimal precision calculations (6 decimals for stablecoins, 6 for bonds)
+
+**Resolution:**
+
+- If calculation error, issue corrective mint/burn with proper authorization and audit documentation
+- If user transaction confusion, provide transaction history showing all movements
+- Update UI to display more precise balance updates with transaction confirmations
+- Document incident for pattern analysis and system improvements
+
+**Check the transaction history panel** to see complete movement of tokens for the user address.
+
+### Off-chain FX transaction recording failure
+
+**Symptom:** On-chain swap executed successfully, but off-chain banking system did not record corresponding FX transaction.
+
+**Diagnosis:**
+
+- Review event listener logs for errors during `SwapExecuted` event processing
+- Check banking API connectivity and authentication status
+- Verify FX transaction data format matches banking system requirements
+- Confirm transaction reference (swap hash) is within acceptable format
+
+**Resolution:**
+
+- Manually record FX transaction in banking system using swap transaction hash as reference
+- Investigate event listener failure to prevent future occurrences
+- Implement retry logic for banking API calls with exponential backoff
+- Set up alerts for event processing failures visible in observability dashboards
+- Reconcile daily to catch any missed recordings before they accumulate
+
+**Check the integration health dashboard** to monitor banking API connection status and error rates.
+
+### Redemption wire transfer failure
+
+**Symptom:** Stablecoin burned successfully, but user did not receive fiat wire transfer.
+
+**Diagnosis:**
+
+- Verify wire was initiated in banking system
+- Check wire status (pending, failed, returned) with bank
+- Confirm beneficiary banking details match user's KYC records
+- Review bank error messages for specific failure reasons (invalid account, name mismatch, etc.)
+
+**Resolution:**
+
+- If wire failed, correct banking details with user and re-execute wire
+- Record failed wire attempt for audit purposes
+- If incorrect banking details provided, user must update via KYC re-verification
+- Implement additional validation before wire execution to catch errors earlier
+- Track returned wires separately until successfully re-executed
+
+**Check the wire transfer log** to see execution status and bank confirmations for all outbound transfers.
+
+## Next steps
+
+- **Configure XvP coordination layer** ? Once fully deployed, XvP will automate multi-entity settlement coordination, eliminating manual treasury approvals for standard swaps
+- **Expand currency pairs** ? Add MYR stablecoin when available, and additional currencies (USD, JPY, GBP) for broader cross-border coverage
+- **Implement automated FX hedging** ? Integrate with DeFi protocols or OTC desks to hedge inter-entity FX exposure automatically
+- **Set up bond marketplace** ? Create secondary market for bond trading with automatic coupon FX conversion for all bondholders
+- **Integrate real-time FX feeds** ? Connect to professional FX data providers (Bloomberg, Refinitiv) for institutional-grade rate accuracy
+- **Configure multi-entity treasury management** ? Expand to additional geographic entities for global settlement network
+- **Implement DvP settlement** ? Review [Fiat bridge guide](/docs/user-guides/operations/fiat-bridge) for atomic delivery-versus-payment mechanisms
+- **Monitor operations** ? Deep dive into [Observability monitoring](/docs/developer-guides/deployment-ops/observability-monitoring) for comprehensive FX operations dashboards
