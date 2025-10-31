@@ -93,8 +93,8 @@
         "loading": "Loading users..."
       },
       "actions": {
-        "changeRoles": "Change roles",
-        "addAdmin": "Add admin"
+        "addAdmin": "Add admin",
+        "changeRoles": "Change roles"
       }
     }
   },

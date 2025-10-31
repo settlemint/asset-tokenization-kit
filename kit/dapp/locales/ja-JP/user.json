@@ -93,6 +93,7 @@
         "loading": "ユーザーを読み込み中..."
       },
       "actions": {
+        "addAdmin": "管理者を追加",
         "changeRoles": "ロールを変更"
       }
     }
