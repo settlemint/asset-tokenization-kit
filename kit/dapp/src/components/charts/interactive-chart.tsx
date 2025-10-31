@@ -29,7 +29,6 @@ import {
   YAxis,
 } from "recharts";
 import { ChartEmptyState } from "./chart-empty-state";
-import { ChartInfo } from "./chart-info";
 
 export type InteractiveChartData = Record<string, string | number | Date>;
 
@@ -144,65 +143,71 @@ export function InteractiveChartComponent({
   return (
     <Card className={cn("h-full", className)}>
       <CardHeader>
-        <div className="flex sm:flex-row items-center gap-2 space-y-0">
-          <div className="flex flex-1 items-center gap-2">
-            <CardTitle>{title}</CardTitle>
-            {description && <ChartInfo description={description} />}
-          </div>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <CardTitle className="flex-1">{title}</CardTitle>
 
-          <div className="items-center gap-2 sm:flex hidden">
-            {/* Chart Type Toggle */}
-            {enableChartTypeToggle && (
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    setChartType("bar");
-                  }}
-                  className={cn("h-8 w-8", chartType === "bar" && "bg-muted")}
-                  aria-label="Bar chart"
-                  aria-pressed={chartType === "bar"}
-                >
-                  <BarChart3 className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    setChartType("area");
-                  }}
-                  className={cn("h-8 w-8", chartType === "area" && "bg-muted")}
-                  aria-label="Area chart"
-                  aria-pressed={chartType === "area"}
-                >
-                  <AreaChartIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-
-            {/* Timeframe Dropdown */}
-            <Select value={selectedRange} onValueChange={onRangeChange}>
-              <SelectTrigger
-                size="sm"
-                className="w-[140px] rounded-lg sm:ml-auto"
-                aria-label="Select timeframe"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                {statsRangePresets.map((preset) => (
-                  <SelectItem
-                    key={preset}
-                    value={preset}
-                    className="rounded-lg"
+            <div className="items-center gap-2 sm:flex hidden">
+              {/* Chart Type Toggle */}
+              {enableChartTypeToggle && (
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setChartType("bar");
+                    }}
+                    className={cn("h-8 w-8", chartType === "bar" && "bg-muted")}
+                    aria-label="Bar chart"
+                    aria-pressed={chartType === "bar"}
                   >
-                    {t(`timeframes.${preset}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                    <BarChart3 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setChartType("area");
+                    }}
+                    className={cn(
+                      "h-8 w-8",
+                      chartType === "area" && "bg-muted"
+                    )}
+                    aria-label="Area chart"
+                    aria-pressed={chartType === "area"}
+                  >
+                    <AreaChartIcon className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
+              {/* Timeframe Dropdown */}
+              <Select value={selectedRange} onValueChange={onRangeChange}>
+                <SelectTrigger
+                  size="sm"
+                  className="w-[140px] rounded-lg sm:ml-auto"
+                  aria-label="Select timeframe"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  {statsRangePresets.map((preset) => (
+                    <SelectItem
+                      key={preset}
+                      value={preset}
+                      className="rounded-lg"
+                    >
+                      {t(`timeframes.${preset}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+
+          {description && (
+            <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+          )}
         </div>
       </CardHeader>
 

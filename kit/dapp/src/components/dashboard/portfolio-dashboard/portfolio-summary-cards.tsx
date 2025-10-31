@@ -1,11 +1,9 @@
 import { StatCard } from "@/components/stats/widgets/stat-widget";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatValue } from "@/lib/utils/format-value/index";
 import { orpc } from "@/orpc/orpc-client";
 import type { FiatCurrency } from "@atk/zod/fiat-currency";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Briefcase, ShieldCheck, TrendingUp } from "lucide-react";
 import { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -29,7 +27,7 @@ function TotalValueCard() {
         type: "currency",
         currency: baseCurrency as FiatCurrency,
       })}
-      icon={TrendingUp}
+      description={t("portfolioDashboard.cards.totalValue.description")}
     />
   );
 }
@@ -52,7 +50,7 @@ function TotalAssetsCard() {
           <div>{portfolioData.totalTokenFactories}</div>
         </div>
       }
-      icon={Briefcase}
+      description={t("portfolioDashboard.cards.totalAssets.description")}
     />
   );
 }
@@ -73,13 +71,17 @@ function IdentityStatusCard() {
     <StatCard
       title={t("portfolioDashboard.cards.identityStatus.title")}
       value={
-        <Badge variant={isIdentityVerified ? "default" : "outline"}>
+        <div
+          className={
+            isIdentityVerified ? "text-success" : "text-muted-foreground"
+          }
+        >
           {isIdentityVerified
             ? t("portfolioDashboard.cards.identityStatus.verified")
             : t("portfolioDashboard.cards.identityStatus.pending")}
-        </Badge>
+        </div>
       }
-      icon={ShieldCheck}
+      description={t("portfolioDashboard.cards.identityStatus.description")}
     />
   );
 }

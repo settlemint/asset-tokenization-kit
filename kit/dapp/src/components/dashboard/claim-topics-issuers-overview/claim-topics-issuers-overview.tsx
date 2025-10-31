@@ -5,7 +5,6 @@ import { StatCard } from "@/components/stats/widgets/stat-widget";
 import { formatNumber } from "@/lib/utils/format-value/format-number";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { CheckCircle2, ShieldCheck, Tag } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function ClaimTopicsIssuersOverview() {
@@ -22,24 +21,6 @@ export function ClaimTopicsIssuersOverview() {
 
   const { data: issuersData } = useSuspenseQuery(
     orpc.system.stats.trustedIssuerStatsState.queryOptions()
-  );
-
-  const last7DaysClaimsStats = useSuspenseQuery(
-    orpc.system.stats.claimsStatsByPreset.queryOptions({
-      input: { preset: "trailing7Days" as const },
-    })
-  );
-
-  const last7DaysTopicSchemesStats = useSuspenseQuery(
-    orpc.system.stats.topicSchemesStatsByPreset.queryOptions({
-      input: { preset: "trailing7Days" as const },
-    })
-  );
-
-  const last7DaysIssuersStats = useSuspenseQuery(
-    orpc.system.stats.trustedIssuerStatsByPreset.queryOptions({
-      input: { preset: "trailing7Days" as const },
-    })
   );
 
   return (
@@ -62,14 +43,7 @@ export function ClaimTopicsIssuersOverview() {
             { type: "number" },
             locale
           )}
-          previousValue={
-            last7DaysClaimsStats.data.data.at(0)?.totalActiveClaims
-          }
-          currentValue={
-            last7DaysClaimsStats.data.data.at(-1)?.totalActiveClaims
-          }
-          period="fromLastWeek"
-          icon={ShieldCheck}
+          description={t("claimTopicsIssuersOverview.activeClaimsDescription")}
         />
 
         {/* Active Topic Schemes: Categories of identity attributes that can be verified
@@ -82,14 +56,7 @@ export function ClaimTopicsIssuersOverview() {
             { type: "number" },
             locale
           )}
-          previousValue={
-            last7DaysTopicSchemesStats.data.data.at(0)?.totalActiveTopicSchemes
-          }
-          currentValue={
-            last7DaysTopicSchemesStats.data.data.at(-1)?.totalActiveTopicSchemes
-          }
-          period="fromLastWeek"
-          icon={Tag}
+          description={t("claimTopicsIssuersOverview.activeTopicsDescription")}
         />
 
         {/* Active Trusted Issuers: Entities authorized to issue claims (e.g., KYC providers,
@@ -102,14 +69,7 @@ export function ClaimTopicsIssuersOverview() {
             { type: "number" },
             locale
           )}
-          previousValue={
-            last7DaysIssuersStats.data.data.at(0)?.totalActiveTrustedIssuers
-          }
-          currentValue={
-            last7DaysIssuersStats.data.data.at(-1)?.totalActiveTrustedIssuers
-          }
-          period="fromLastWeek"
-          icon={CheckCircle2}
+          description={t("claimTopicsIssuersOverview.activeIssuersDescription")}
         />
       </div>
       <ClaimTopicsCoverage />

@@ -65,8 +65,11 @@
     "title": "Identity Overview",
     "description": "Current system identity status and registrations",
     "totalIdentities": "Total Identities",
+    "totalIdentitiesDescription": "All identities created in the system",
     "activeRegistrations": "Active Registrations",
+    "activeRegistrationsDescription": "Currently active and verified user identities",
     "pendingRegistrations": "Pending Registrations",
+    "pendingRegistrationsDescription": "Identities awaiting verification",
     "chartTitle": "Active registrations",
     "chartDescription": "Daily trends of active identity registrations over the last 7 days",
     "emptyStateMessage": "No registrations yet",
@@ -76,8 +79,11 @@
     "title": "Claim Topics and Issuers Overview",
     "description": "Track active claims, topics, and trusted issuers",
     "totalActiveClaims": "Active claims",
+    "activeClaimsDescription": "Currently valid identity claims in the system",
     "totalActiveTopics": "Active topics",
-    "totalActiveIssuers": "Active issuers"
+    "activeTopicsDescription": "Categories of verifiable identity attributes",
+    "totalActiveIssuers": "Active issuers",
+    "activeIssuersDescription": "Trusted entities authorized to issue claims"
   },
   "claimTopicsCoverage": {
     "title": "Claim Topics Coverage",
@@ -165,17 +171,20 @@
   },
   "portfolioDashboard": {
     "welcome": "Welcome back, {{name}}",
-    "subtitle": "Track your portfolio and assets",
+    "subtitle": "Here's an overview of your portfolio and assets",
     "cards": {
       "totalValue": {
-        "title": "Total value"
+        "title": "Total value",
+        "description": "Combined value of all assets"
       },
       "totalAssets": {
         "title": "Total assets",
+        "description": "Total number of assets",
         "noAssets": "No assets"
       },
       "identityStatus": {
         "title": "Identity status",
+        "description": "Current verification status",
         "verified": "Verified",
         "pending": "Pending"
       }
