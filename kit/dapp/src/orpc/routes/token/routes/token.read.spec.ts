@@ -222,7 +222,7 @@ describe("Token read", () => {
         transfer: true,
         forcedTransfer: true,
         unpause: true,
-        updateCollateral: true,
+        updateCollateral: false,
         withdrawDenominationAsset: true,
         topUpDenominationAsset: true,
       },

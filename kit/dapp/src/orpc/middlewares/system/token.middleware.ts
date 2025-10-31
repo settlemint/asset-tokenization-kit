@@ -8,7 +8,10 @@ import {
   TokenReadResponseSchema,
   TokenSchema,
 } from "@/orpc/routes/token/routes/token.read.schema";
-import { TOKEN_PERMISSIONS } from "@/orpc/routes/token/token.permissions";
+import {
+  TOKEN_PERMISSIONS,
+  TOKEN_TRUSTED_ISSUER_REQUIREMENTS,
+} from "@/orpc/routes/token/token.permissions";
 import type { AccessControlRoles } from "@atk/zod/access-control-roles";
 import { isEthereumAddress } from "@atk/zod/ethereum-address";
 import { satisfiesRoleRequirement } from "@atk/zod/role-requirement";
@@ -19,7 +22,7 @@ const logger = createLogger();
 
 const READ_TOKEN_QUERY = theGraphGraphql(
   `
-  query ReadTokenQuery($id: ID!, $identityFactory: String!) {
+  query ReadTokenQuery($id: ID!, $identityFactory: String!, $userWallet: Bytes!) {
     token(id: $id) {
       id
       type
@@ -112,6 +115,12 @@ const READ_TOKEN_QUERY = theGraphGraphql(
         balancesCount
       }
     }
+    trustedIssuers(where: { account_: { id: $userWallet } }) {
+      id
+      claimTopics {
+        name
+      }
+    }
   }
   `,
   [AccessControlFragment]
@@ -164,6 +173,7 @@ export const tokenMiddleware = baseRouter.middleware<
     input: {
       id: tokenAddress,
       identityFactory: system.identityFactory.id,
+      userWallet: auth.user.wallet,
     },
     output: TokenReadResponseSchema,
   });
@@ -174,6 +184,12 @@ export const tokenMiddleware = baseRouter.middleware<
       message: `Token with address '${tokenAddress}' not found`,
     });
   }
+
+  const userTrustedIssuerTopics = result.trustedIssuers
+    ? result.trustedIssuers.flatMap((issuer) =>
+        issuer.claimTopics.map((topic) => topic.name)
+      )
+    : [];
 
   const identity = token.account?.identities?.[0];
   const identityAccount = identity?.account ?? undefined;
@@ -254,8 +270,24 @@ export const tokenMiddleware = baseRouter.middleware<
         // Update based on user roles using the flexible role requirement system
         Object.entries(TOKEN_PERMISSIONS).forEach(
           ([action, roleRequirement]) => {
+            const rolesSatisfied = satisfiesRoleRequirement(
+              userRoleList,
+              roleRequirement
+            );
+
+            const trustedTopics =
+              TOKEN_TRUSTED_ISSUER_REQUIREMENTS[
+                action as keyof typeof TOKEN_TRUSTED_ISSUER_REQUIREMENTS
+              ] ?? [];
+
+            const trustedIssuerSatisfied =
+              trustedTopics.length === 0 ||
+              trustedTopics.every((topic) =>
+                userTrustedIssuerTopics.includes(topic)
+              );
+
             initialActions[action as keyof typeof TOKEN_PERMISSIONS] =
-              satisfiesRoleRequirement(userRoleList, roleRequirement);
+              rolesSatisfied && trustedIssuerSatisfied;
           }
         );
 

@@ -287,6 +287,15 @@ export const RawTokenSchema = z.object({
     .describe("The stats of the token"),
 });
 
+const TrustedIssuerSchema = z.object({
+  id: ethereumAddress,
+  claimTopics: z.array(
+    z.object({
+      name: z.string(),
+    })
+  ),
+});
+
 /**
  * Schema for the transformed token data with totalSupply as Dnum
  * This is what the API returns after transformation
@@ -332,4 +341,5 @@ export const TokenReadResponseSchema = z.object({
       }),
     })
     .nullable(),
+  trustedIssuers: z.array(TrustedIssuerSchema),
 });
