@@ -179,8 +179,8 @@ function RouteComponent() {
         ) : null}
         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide">
-              {t("management.table.columns.wallet")}
+            <span className="text-sm font-medium text-muted-foreground">
+              {t("management.table.columns.wallet")}:
             </span>
             {walletAddress ? (
               <CopyToClipboard
@@ -196,8 +196,8 @@ function RouteComponent() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide">
-              {t("management.table.columns.identity")}
+            <span className="text-sm font-medium text-muted-foreground">
+              {t("management.table.columns.identity")}:
             </span>
             {identityAddress ? (
               <CopyToClipboard

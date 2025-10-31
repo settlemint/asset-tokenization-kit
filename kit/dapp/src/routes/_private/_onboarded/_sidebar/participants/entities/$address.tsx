@@ -194,8 +194,8 @@ function RouteComponent() {
         <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           {contractAddress ? (
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide">
-                {t("entities:entityTable.columns.address")}
+              <span className="text-sm font-medium text-muted-foreground">
+                {t("entities:entityTable.columns.address")}:
               </span>
               <CopyToClipboard
                 value={contractAddress}
@@ -208,8 +208,8 @@ function RouteComponent() {
             </div>
           ) : null}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide">
-              {t("entities:entityTable.columns.identityAddress")}
+            <span className="text-sm font-medium text-muted-foreground">
+              {t("entities:entityTable.columns.identityAddress")}:
             </span>
             <CopyToClipboard
               value={identityAddress}
