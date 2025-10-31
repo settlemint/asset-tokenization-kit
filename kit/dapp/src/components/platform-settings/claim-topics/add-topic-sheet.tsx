@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActionFormSheet } from "@/components/manage-dropdown/core/action-form-sheet";
 import { createActionFormStore } from "@/components/manage-dropdown/core/action-form-sheet.store";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAppForm } from "@/hooks/use-app-form";
 import { client, orpc } from "@/orpc/orpc-client";
 import {
@@ -41,8 +41,6 @@ export function AddTopicSheet({
     })
   );
 
-  const normalizeName = (value: string) =>
-    value.normalize("NFKC").trim().toLowerCase();
   const getExistingTopics = (): TopicScheme[] => {
     return (
       queryClient.getQueryData(orpc.system.claimTopics.topicList.queryKey()) ??
@@ -106,9 +104,8 @@ export function AddTopicSheet({
 
         const duplicateName = (() => {
           if (!sanitizedName) return false;
-          const normalizedInput = normalizeName(sanitizedName);
           return getExistingTopics().some(
-            (topic) => normalizeName(topic.name) === normalizedInput
+            (topic) => topic.name === sanitizedName
           );
         })();
 
@@ -170,9 +167,8 @@ export function AddTopicSheet({
                 walletVerification: verification,
               };
 
-              const normalizedInput = normalizeName(payload.name);
               const duplicate = getExistingTopics().some(
-                (topic) => normalizeName(topic.name) === normalizedInput
+                (topic) => topic.name === sanitizedName
               );
 
               if (duplicate) {
