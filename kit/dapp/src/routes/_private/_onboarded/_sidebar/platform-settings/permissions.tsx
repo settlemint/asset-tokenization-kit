@@ -31,7 +31,9 @@ export const Route = createFileRoute(
 function PermissionsPage() {
   const { t } = useTranslation(["navigation", "user"]);
   const [isChangeRolesOpen, setIsChangeRolesOpen] = useState(false);
-  const [presetAccount, setPresetAccount] = useState<EthereumAddress | undefined>();
+  const [presetAccount, setPresetAccount] = useState<
+    EthereumAddress | undefined
+  >();
 
   // Get current user data with roles
   const { data: user } = useSuspenseQuery(orpc.user.me.queryOptions());

@@ -37,7 +37,9 @@ const columnHelper = createStrictColumnHelper<User>();
  * Shows user information, registration status, and actions for each user with chunked loading
  */
 export const UsersPermissionsTable = withErrorBoundary(
-  function UsersPermissionsTable({ onOpenChangeRoles }: UsersPermissionsTableProps) {
+  function UsersPermissionsTable({
+    onOpenChangeRoles,
+  }: UsersPermissionsTableProps) {
     const { t } = useTranslation(["user", "common"]);
     const router = useRouter();
     const { data: system } = useSuspenseQuery(
