@@ -171,6 +171,7 @@ contract ATKIdentityRegistryImplementation is
     )
         public
         initializer // Ensures this function is called only once
+
     {
         __ATKSystemAccessManaged_init(accessManager);
         __ERC165_init_unchained();

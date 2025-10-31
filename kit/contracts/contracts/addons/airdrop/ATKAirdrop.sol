@@ -120,17 +120,23 @@ abstract contract ATKAirdrop is IATKAirdrop, Initializable, OwnableUpgradeable, 
         if (claimTracker_ == address(0)) revert InvalidClaimTrackerAddress();
 
         // Verify the token contract exists and implements IERC20 by attempting to call a view function
-        try IERC20(token_).totalSupply() returns (uint256) {
-            // Contract exists and implements IERC20
-        } catch {
+        try IERC20(token_).totalSupply() returns (
+            uint256
+        ) {
+        // Contract exists and implements IERC20
+        }
+        catch {
             revert InvalidTokenAddress();
         }
 
         // Verify the claim tracker contract exists and implements IATKClaimTracker by attempting to call a view
         // function
-        try IATKClaimTracker(claimTracker_).isClaimed(0, 0) returns (bool) {
-            // Contract exists and implements IATKClaimTracker
-        } catch {
+        try IATKClaimTracker(claimTracker_).isClaimed(0, 0) returns (
+            bool
+        ) {
+        // Contract exists and implements IATKClaimTracker
+        }
+        catch {
             revert InvalidClaimTrackerAddress();
         }
 

@@ -531,7 +531,14 @@ contract ATKTokenSale is
     /// @param currency The address of the payment currency
     /// @param paymentAmount The amount of payment currency
     /// @param tokenAmount The amount of tokens to be purchased
-    function _processPurchase(address buyer, address currency, uint256 paymentAmount, uint256 tokenAmount) internal {
+    function _processPurchase(
+        address buyer,
+        address currency,
+        uint256 paymentAmount,
+        uint256 tokenAmount
+    )
+        internal
+    {
         // Validate purchase amount
         if (tokenAmount < minPurchase) {
             revert PurchaseAmountTooLow();
@@ -585,12 +592,7 @@ contract ATKTokenSale is
     /// @notice Returns the calldata of the transaction, supporting ERC2771 meta-transactions
     /// @dev Required override for ERC2771ContextUpgradeable
     /// @return The calldata of the transaction
-    function _msgData()
-        internal
-        view
-        override(ContextUpgradeable, ERC2771ContextUpgradeable)
-        returns (bytes calldata)
-    {
+    function _msgData() internal view override(ContextUpgradeable, ERC2771ContextUpgradeable) returns (bytes calldata) {
         return ERC2771ContextUpgradeable._msgData();
     }
 }

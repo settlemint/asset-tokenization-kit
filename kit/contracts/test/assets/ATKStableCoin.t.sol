@@ -5,16 +5,18 @@ import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 
 import { IATKStableCoin } from "../../contracts/assets/stable-coin/IATKStableCoin.sol";
 import { IATKStableCoinFactory } from "../../contracts/assets/stable-coin/IATKStableCoinFactory.sol";
-import { ATKStableCoinFactoryImplementation } from
-    "../../contracts/assets/stable-coin/ATKStableCoinFactoryImplementation.sol";
+import {
+    ATKStableCoinFactoryImplementation
+} from "../../contracts/assets/stable-coin/ATKStableCoinFactoryImplementation.sol";
 import { ATKStableCoinImplementation } from "../../contracts/assets/stable-coin/ATKStableCoinImplementation.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
 import { ClaimUtils } from "../../test/utils/ClaimUtils.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
-import { SMARTComplianceModuleParamPair } from
-    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { ISMARTCollateral } from "../../contracts/smart/extensions/collateral/ISMARTCollateral.sol";
@@ -53,9 +55,8 @@ contract ATKStableCoinTest is AbstractATKAssetTest {
 
         vm.startPrank(platformAdmin);
         stableCoinFactory = IATKStableCoinFactory(
-            systemUtils.tokenFactoryRegistry().registerTokenFactory(
-                "StableCoin", address(stableCoinFactoryImpl), address(stableCoinImpl)
-            )
+            systemUtils.tokenFactoryRegistry()
+                .registerTokenFactory("StableCoin", address(stableCoinFactoryImpl), address(stableCoinImpl))
         );
         vm.stopPrank();
 

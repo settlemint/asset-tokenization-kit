@@ -80,7 +80,8 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
         virtual
         override
         onlyTokenOrCompliance(_token)
-    { /* Default: Do nothing. Override in child contracts if needed. */ }
+    {  /* Default: Do nothing. Override in child contracts if needed. */
+    }
 
     /// @inheritdoc ISMARTComplianceModule
     /// @notice This function is a hook called by the main `SMARTComplianceImplementation` contract *after* tokens have
@@ -102,7 +103,8 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
         virtual
         override
         onlyTokenOrCompliance(_token)
-    { /* Default: Do nothing. Override in child contracts if needed. */ }
+    {  /* Default: Do nothing. Override in child contracts if needed. */
+    }
 
     /// @inheritdoc ISMARTComplianceModule
     /// @notice This function is a hook called by the main `SMARTComplianceImplementation` contract *after* new tokens
@@ -124,7 +126,8 @@ abstract contract AbstractComplianceModule is ERC2771Context, ISMARTComplianceMo
         virtual
         override
         onlyTokenOrCompliance(_token)
-    { /* Default: Do nothing. Override in child contracts if needed. */ }
+    {  /* Default: Do nothing. Override in child contracts if needed. */
+    }
 
     // --- ERC165 Support ---
 

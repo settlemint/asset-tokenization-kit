@@ -4,8 +4,9 @@ pragma solidity ^0.8.28;
 import { AbstractATKAssetTest } from "./AbstractATKAssetTest.sol";
 import { MockedERC20Token } from "../utils/mocks/MockedERC20Token.sol";
 import { ISMARTYield } from "../../contracts/smart/extensions/yield/ISMARTYield.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IATKBond } from "../../contracts/assets/bond/IATKBond.sol";
 import { IATKBondFactory } from "../../contracts/assets/bond/IATKBondFactory.sol";
 import { ATKAssetRoles } from "../../contracts/assets/ATKAssetRoles.sol";
@@ -15,8 +16,9 @@ import { ISMART } from "../../contracts/smart/interface/ISMART.sol";
 import { TestConstants } from "../Constants.sol";
 import { ISMARTCapped } from "../../contracts/smart/extensions/capped/ISMARTCapped.sol";
 import { IATKFixedYieldScheduleFactory } from "../../contracts/addons/yield/IATKFixedYieldScheduleFactory.sol";
-import { ATKFixedYieldScheduleFactoryImplementation } from
-    "../../contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
+import {
+    ATKFixedYieldScheduleFactoryImplementation
+} from "../../contracts/addons/yield/ATKFixedYieldScheduleFactoryImplementation.sol";
 import { ATKFixedYieldScheduleUpgradeable } from "../../contracts/addons/yield/ATKFixedYieldScheduleUpgradeable.sol";
 import { ATKBondFactoryImplementation } from "../../contracts/assets/bond/ATKBondFactoryImplementation.sol";
 import { ATKBondImplementation } from "../../contracts/assets/bond/ATKBondImplementation.sol";
@@ -84,15 +86,16 @@ contract ATKBondTest is AbstractATKAssetTest {
         );
 
         fixedYieldScheduleFactory = IATKFixedYieldScheduleFactory(
-            systemUtils.systemAddonRegistry().registerSystemAddon(
-                "fixed-yield-schedule-factory",
-                address(fixedYieldScheduleFactoryImpl),
-                abi.encodeWithSelector(
-                    ATKFixedYieldScheduleFactoryImplementation.initialize.selector,
-                    address(systemUtils.systemAccessManager()),
-                    address(systemUtils.system())
+            systemUtils.systemAddonRegistry()
+                .registerSystemAddon(
+                    "fixed-yield-schedule-factory",
+                    address(fixedYieldScheduleFactoryImpl),
+                    abi.encodeWithSelector(
+                        ATKFixedYieldScheduleFactoryImplementation.initialize.selector,
+                        address(systemUtils.systemAccessManager()),
+                        address(systemUtils.system())
+                    )
                 )
-            )
         );
         vm.label(address(fixedYieldScheduleFactory), "Yield Schedule Factory");
 
@@ -146,9 +149,7 @@ contract ATKBondTest is AbstractATKAssetTest {
     {
         vm.startPrank(owner);
         IATKBond.BondInitParams memory bondParams = IATKBond.BondInitParams({
-            maturityDate: maturityDate_,
-            faceValue: faceValue_,
-            denominationAsset: denominationAsset_
+            maturityDate: maturityDate_, faceValue: faceValue_, denominationAsset: denominationAsset_
         });
         address bondAddress = bondFactory.createBond(
             name_, symbol_, decimals_, cap_, bondParams, initialModulePairs_, TestConstants.COUNTRY_CODE_US
@@ -214,9 +215,7 @@ contract ATKBondTest is AbstractATKAssetTest {
 
         vm.expectRevert(abi.encodeWithSelector(ISMART.InvalidDecimals.selector, 19));
         IATKBond.BondInitParams memory bondParams = IATKBond.BondInitParams({
-            maturityDate: maturityDate,
-            faceValue: faceValue,
-            denominationAsset: address(denominationAsset)
+            maturityDate: maturityDate, faceValue: faceValue, denominationAsset: address(denominationAsset)
         });
         bondFactory.createBond(
             "Test Bond 19",

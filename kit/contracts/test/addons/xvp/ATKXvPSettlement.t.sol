@@ -2,8 +2,9 @@
 pragma solidity ^0.8.28;
 
 import { AbstractATKAssetTest } from "../../assets/AbstractATKAssetTest.sol";
-import { ATKXvPSettlementFactoryImplementation } from
-    "../../../contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol";
+import {
+    ATKXvPSettlementFactoryImplementation
+} from "../../../contracts/addons/xvp/ATKXvPSettlementFactoryImplementation.sol";
 import { IATKXvPSettlementFactory } from "../../../contracts/addons/xvp/IATKXvPSettlementFactory.sol";
 import { IATKXvPSettlement } from "../../../contracts/addons/xvp/IATKXvPSettlement.sol";
 import { ERC20Mock } from "../../mocks/ERC20Mock.sol";
@@ -73,9 +74,8 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         // Create system addon for XvP settlement factory
         factory = IATKXvPSettlementFactory(
-            systemUtils.systemAddonRegistry().registerSystemAddon(
-                "xvp-settlement-factory", address(factoryImpl), encodedInitializationData
-            )
+            systemUtils.systemAddonRegistry()
+                .registerSystemAddon("xvp-settlement-factory", address(factoryImpl), encodedInitializationData)
         );
 
         // Grant DEPLOYER_ROLE to users who need to create settlements
@@ -1021,11 +1021,7 @@ contract XvPSettlementTest is AbstractATKAssetTest {
 
         IATKXvPSettlement.Flow[] memory flows = new IATKXvPSettlement.Flow[](1);
         flows[0] = IATKXvPSettlement.Flow({
-            asset: address(token),
-            from: alice,
-            to: bob,
-            amount: 100 * 10 ** 18,
-            externalChainId: uint64(block.chainid)
+            asset: address(token), from: alice, to: bob, amount: 100 * 10 ** 18, externalChainId: uint64(block.chainid)
         });
 
         vm.prank(alice);

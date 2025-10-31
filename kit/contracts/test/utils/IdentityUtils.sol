@@ -6,8 +6,9 @@ import { IIdentity } from "@onchainid/contracts/interface/IIdentity.sol";
 import { IClaimIssuer } from "@onchainid/contracts/interface/IClaimIssuer.sol";
 import { ISMARTIdentityRegistry } from "../../contracts/smart/interface/ISMARTIdentityRegistry.sol";
 import { IATKIdentityFactory } from "../../contracts/system/identity-factory/IATKIdentityFactory.sol";
-import { IATKTrustedIssuersRegistry } from
-    "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
+import {
+    IATKTrustedIssuersRegistry
+} from "../../contracts/system/trusted-issuers-registry/IATKTrustedIssuersRegistry.sol";
 
 contract IdentityUtils is Test {
     address internal _platformAdmin;

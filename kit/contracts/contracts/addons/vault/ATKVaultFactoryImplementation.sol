@@ -6,8 +6,9 @@ import { IATKVaultFactory } from "./IATKVaultFactory.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 // Implementations
-import { AbstractATKSystemAddonFactoryImplementation } from
-    "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
+import {
+    AbstractATKSystemAddonFactoryImplementation
+} from "../../system/addons/AbstractATKSystemAddonFactoryImplementation.sol";
 import { ATKVault } from "./ATKVault.sol";
 
 // Constants
@@ -127,12 +128,10 @@ contract ATKVaultFactoryImplementation is AbstractATKSystemAddonFactoryImplement
         // Set the onchainId on the vault
         ATKVault(payable(contractAddress)).setOnchainId(contractIdentity);
 
-        IAccessControl(contractAddress).renounceRole(
-            ATKVault(payable(contractAddress)).GOVERNANCE_ROLE(), address(this)
-        );
-        IAccessControl(contractAddress).renounceRole(
-            ATKVault(payable(contractAddress)).DEFAULT_ADMIN_ROLE(), address(this)
-        );
+        IAccessControl(contractAddress)
+            .renounceRole(ATKVault(payable(contractAddress)).GOVERNANCE_ROLE(), address(this));
+        IAccessControl(contractAddress)
+            .renounceRole(ATKVault(payable(contractAddress)).DEFAULT_ADMIN_ROLE(), address(this));
 
         // Emit an event to log the creation of the new vault.
         emit ATKVaultCreated(_msgSender(), contractAddress, contractIdentity);

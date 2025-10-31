@@ -5,8 +5,9 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SMARTToken } from "./SMARTToken.sol";
 import { ISMARTYield } from "../../../contracts/smart/extensions/yield/ISMARTYield.sol";
 import { ISMARTYieldSchedule } from "../../../contracts/smart/extensions/yield/schedules/ISMARTYieldSchedule.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 
 contract SMARTYieldToken is SMARTToken, ISMARTYield {
     uint256 private constant DEFAULT_YIELD_BASIS = 1; // Default basis for yield calculations (1:1)
@@ -52,7 +53,14 @@ contract SMARTYieldToken is SMARTToken, ISMARTYield {
         emit YieldScheduleSet(_msgSender(), schedule);
     }
 
-    function yieldBasisPerUnit(address /* holder */ ) external pure override returns (uint256) {
+    function yieldBasisPerUnit(
+        address /* holder */
+    )
+        external
+        pure
+        override
+        returns (uint256)
+    {
         return DEFAULT_YIELD_BASIS;
     }
 

@@ -9,8 +9,9 @@ import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.s
 import { ReentrancyGuard } from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 // Interface imports
-import { SMARTComplianceModuleParamPair } from
-    "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { IContractWithIdentity } from "../../../contracts/system/identity-factory/IContractWithIdentity.sol";
 import { ISMART } from "../../../contracts/smart/interface/ISMART.sol";
 import { _SMARTLogic } from "../../../contracts/smart/extensions/core/internal/_SMARTLogic.sol";
@@ -27,9 +28,12 @@ import { SMARTCustodian } from "../../../contracts/smart/extensions/custodian/SM
 import { SMARTRedeemable } from "../../../contracts/smart/extensions/redeemable/SMARTRedeemable.sol";
 import { ISMARTRedeemable } from "../../../contracts/smart/extensions/redeemable/ISMARTRedeemable.sol";
 import { SMARTCollateral } from "../../../contracts/smart/extensions/collateral/SMARTCollateral.sol";
-import { SMARTHistoricalBalances } from
-    "../../../contracts/smart/extensions/historical-balances/SMARTHistoricalBalances.sol";
-import { SMARTTokenAccessManaged } from "../../../contracts/smart/extensions/access-managed/SMARTTokenAccessManaged.sol";
+import {
+    SMARTHistoricalBalances
+} from "../../../contracts/smart/extensions/historical-balances/SMARTHistoricalBalances.sol";
+import {
+    SMARTTokenAccessManaged
+} from "../../../contracts/smart/extensions/access-managed/SMARTTokenAccessManaged.sol";
 import { SMARTCapped } from "../../../contracts/smart/extensions/capped/SMARTCapped.sol";
 
 /// @title SMARTToken
@@ -316,7 +320,14 @@ contract SMARTToken is
     /// @dev If an address is frozen, it cannot send or receive tokens. Only callable by an address with `FREEZER_ROLE`.
     /// @param userAddress The address to freeze or unfreeze.
     /// @param freeze `true` to freeze the address, `false` to unfreeze it.
-    function setAddressFrozen(address userAddress, bool freeze) external override onlyAccessManagerRole(FREEZER_ROLE) {
+    function setAddressFrozen(
+        address userAddress,
+        bool freeze
+    )
+        external
+        override
+        onlyAccessManagerRole(FREEZER_ROLE)
+    {
         _smart_setAddressFrozen(userAddress, freeze);
     }
 

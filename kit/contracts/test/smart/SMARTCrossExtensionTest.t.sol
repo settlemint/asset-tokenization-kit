@@ -9,8 +9,9 @@ import { IATKSystem } from "../../contracts/system/IATKSystem.sol";
 import { IAccessManager } from "@openzeppelin/contracts/access/manager/IAccessManager.sol";
 import { ISMARTTokenAccessManager } from "../../contracts/smart/extensions/access-managed/ISMARTTokenAccessManager.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
-import { SMARTComplianceModuleParamPair } from
-    "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
+import {
+    SMARTComplianceModuleParamPair
+} from "../../contracts/smart/interface/structs/SMARTComplianceModuleParamPair.sol";
 import { ISMARTPausable } from "../../contracts/smart/extensions/pausable/ISMARTPausable.sol";
 
 import { SystemUtils } from "../utils/SystemUtils.sol";

@@ -32,11 +32,13 @@ import { SMARTPausableUpgradeable } from "../../smart/extensions/pausable/SMARTP
 import { SMARTBurnableUpgradeable } from "../../smart/extensions/burnable/SMARTBurnableUpgradeable.sol";
 import { SMARTCustodianUpgradeable } from "../../smart/extensions/custodian/SMARTCustodianUpgradeable.sol";
 import { SMARTRedeemableUpgradeable } from "../../smart/extensions/redeemable/SMARTRedeemableUpgradeable.sol";
-import { SMARTHistoricalBalancesUpgradeable } from
-    "../../smart/extensions/historical-balances/SMARTHistoricalBalancesUpgradeable.sol";
+import {
+    SMARTHistoricalBalancesUpgradeable
+} from "../../smart/extensions/historical-balances/SMARTHistoricalBalancesUpgradeable.sol";
 import { SMARTYieldUpgradeable } from "../../smart/extensions/yield/SMARTYieldUpgradeable.sol";
-import { SMARTTokenAccessManagedUpgradeable } from
-    "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
+import {
+    SMARTTokenAccessManagedUpgradeable
+} from "../../smart/extensions/access-managed/SMARTTokenAccessManagedUpgradeable.sol";
 import { SMARTCappedUpgradeable } from "../../smart/extensions/capped/SMARTCappedUpgradeable.sol";
 /// @title ATKBondImplementation
 /// @author SettleMint
@@ -122,9 +124,12 @@ contract ATKBondImplementation is
         if (bondParams.denominationAsset == address(0)) revert InvalidDenominationAsset();
 
         // Verify the denomination asset contract exists by attempting to call a view function
-        try IERC20(bondParams.denominationAsset).totalSupply() returns (uint256) {
-            // Contract exists and implements IERC20
-        } catch {
+        try IERC20(bondParams.denominationAsset).totalSupply() returns (
+            uint256
+        ) {
+        // Contract exists and implements IERC20
+        }
+        catch {
             revert InvalidDenominationAsset();
         }
 
@@ -243,11 +248,7 @@ contract ATKBondImplementation is
     /// @notice Sets the compliance contract address
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param _compliance The address of the new compliance contract
-    function setCompliance(address _compliance)
-        external
-        override
-        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
-    {
+    function setCompliance(address _compliance) external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
         _smart_setCompliance(_compliance);
     }
 
@@ -558,11 +559,7 @@ contract ATKBondImplementation is
     /// @notice Sets the yield schedule contract for the bond
     /// @dev Only callable by addresses with GOVERNANCE_ROLE
     /// @param schedule The address of the yield schedule contract
-    function setYieldSchedule(address schedule)
-        external
-        override
-        onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE)
-    {
+    function setYieldSchedule(address schedule) external override onlyAccessManagerRole(ATKAssetRoles.GOVERNANCE_ROLE) {
         _smart_setYieldSchedule(schedule);
     }
 
@@ -570,7 +567,14 @@ contract ATKBondImplementation is
     /// @dev Returns the face value of the bond. The address parameter is unused in this implementation.
     /// @return The face value representing the yield basis per unit
     // solhint-disable-next-line use-natspec
-    function yieldBasisPerUnit(address /* holder */ ) external view override returns (uint256) {
+    function yieldBasisPerUnit(
+        address /* holder */
+    )
+        external
+        view
+        override
+        returns (uint256)
+    {
         return _faceValue;
     }
 

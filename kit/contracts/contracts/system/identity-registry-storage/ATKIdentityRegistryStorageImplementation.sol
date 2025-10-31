@@ -260,6 +260,7 @@ contract ATKIdentityRegistryStorageImplementation is
         override
         onlySystemRoles2(ATKSystemRoles.IDENTITY_REGISTRY_MODULE_ROLE, ATKPeopleRoles.SYSTEM_MANAGER_ROLE) // Ensures
             // only authorized contracts can modify storage.
+
     {
         if (_userAddress == address(0)) revert InvalidIdentityWalletAddress();
         if (address(_identity) == address(0)) revert InvalidIdentityAddress();

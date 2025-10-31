@@ -59,7 +59,6 @@ interface IATKBond is
     error InvalidRedemptionAmount();
     /// @notice Emitted when the bond reaches maturity and is closed
     /// @param timestamp The block timestamp when the bond matured
-
     event BondMatured(uint256 indexed timestamp);
 
     /// @notice Emitted when a bond is redeemed for denomination assets
