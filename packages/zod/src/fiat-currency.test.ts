@@ -95,6 +95,16 @@ describe("fiatCurrency", () => {
       expect(() => validator.parse("INR")).toThrow(); // Indian Rupee, not in supported list
       expect(() => validator.parse("RUB")).toThrow(); // Russian Ruble, not in supported list
     });
+
+    it("should reject MYR-like invalid variations", () => {
+      // Test edge cases for MYR to ensure robust validation
+      expect(() => validator.parse("myr")).toThrow(); // lowercase MYR
+      expect(() => validator.parse("MyR")).toThrow(); // mixed case MYR
+      expect(() => validator.parse("MYRR")).toThrow(); // typo - extra letter
+      expect(() => validator.parse("MRY")).toThrow(); // transposed letters (similar looking)
+      expect(() => validator.parse("MY1")).toThrow(); // invalid code with number
+      expect(() => validator.parse("MY")).toThrow(); // too short
+    });
   });
 
   describe("safeParse", () => {
