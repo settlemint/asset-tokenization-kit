@@ -48,7 +48,7 @@
     "addons": {
       "title": "Addons",
       "description": "Configure addon modules, integrations, and platform extensions.",
-      "notAuthorized": "You are not authorized to manage addons.\nYou do not have the addon manager role."
+      "notAuthorized": "You are not authorized to manage addons.\nYou do not have the system manager role."
     },
     "claimTopicsIssuers": {
       "title": "Claim Topics & Issuers",

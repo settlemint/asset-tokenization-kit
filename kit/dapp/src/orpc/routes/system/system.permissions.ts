@@ -54,13 +54,7 @@ export const SYSTEM_PERMISSIONS = {
   accountSearch: { any: [] }, // No roles required
   addonCreate: "systemManager",
   adminList: {
-    any: [
-      "admin",
-      "identityManager",
-      "systemManager",
-      "claimIssuer",
-      "systemModule",
-    ],
+    any: ["admin", "systemManager", "systemModule"],
   },
   claimCreate: { any: ["claimIssuer", "systemModule"] },
   claimList: { any: ["identityManager", "claimIssuer"] },
@@ -70,29 +64,13 @@ export const SYSTEM_PERMISSIONS = {
   grantRole: { any: ["admin"] },
   identityCreate: { any: ["identityManager"] },
   identityRegister: { any: ["identityManager"] },
-  identityRead: {
-    any: ["admin", "identityManager", "systemManager", "claimIssuer"],
-  },
-  identitySearch: {
-    any: ["admin", "identityManager", "systemManager", "claimIssuer"],
-  },
+  identityRead: { any: ["identityManager", "systemManager", "claimIssuer"] },
+  identitySearch: { any: ["identityManager", "systemManager", "claimIssuer"] },
   identityList: {
-    any: [
-      "admin",
-      "identityManager",
-      "systemManager",
-      "claimIssuer",
-      "systemModule",
-    ],
+    any: ["identityManager", "systemManager", "claimIssuer", "systemModule"],
   },
   entityList: {
-    any: [
-      "admin",
-      "identityManager",
-      "systemManager",
-      "claimIssuer",
-      "systemModule",
-    ],
+    any: ["identityManager", "systemManager", "claimIssuer", "systemModule"],
   },
   kycDelete: { any: ["identityManager", "claimIssuer"] },
   kycList: { any: ["identityManager", "claimIssuer"] },

@@ -40,7 +40,7 @@ export function NavParticipants() {
   const roles = system.userPermissions?.roles;
   const isAdmin = roles?.admin === true;
   const canManageParticipants = Boolean(
-    roles?.admin || roles?.identityManager || roles?.claimIssuer
+    roles?.identityManager || roles?.claimIssuer
   );
 
   // Show for admins or users with permission
