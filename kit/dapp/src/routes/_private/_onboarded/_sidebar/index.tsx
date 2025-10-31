@@ -14,12 +14,7 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
-import { AssetOverviewSection } from "@/components/dashboard/asset-overview/asset-overview-section";
-import { ClaimTopicsIssuersOverview } from "@/components/dashboard/claim-topics-issuers-overview/claim-topics-issuers-overview";
-import { IdentityMetrics } from "@/components/dashboard/identity-metrics/identity-metrics";
-import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
 import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";
-import { PortfolioDetails } from "@/components/dashboard/portfolio-details/portfolio-details";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
@@ -57,17 +52,16 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
  * React Suspense boundaries for loading states.
  */
 function Home() {
-  const { user, system } = Route.useLoaderData();
   return (
-    <div className="p-6 space-y-8">
-      <IdentityProgress user={user} />
-      {system.userIdentity?.registered && <PortfolioDetails />}
-      {system.userPermissions?.roles.tokenManager && <AssetOverviewSection />}
-      {system.userPermissions?.roles.identityManager && <IdentityMetrics />}
-      {system.userPermissions?.roles.claimPolicyManager && (
-        <ClaimTopicsIssuersOverview />
-      )}
-      <LatestEvents />
+    <div className="h-[calc(100vh-4rem)] overflow-hidden p-6">
+      <div className="grid h-full grid-cols-3 gap-6">
+        <div className="col-span-2">
+          {/* Other dashboard content goes here */}
+        </div>
+        <div className="col-span-1 flex min-h-0 flex-col">
+          <LatestEvents className="flex-1" />
+        </div>
+      </div>
     </div>
   );
 }
