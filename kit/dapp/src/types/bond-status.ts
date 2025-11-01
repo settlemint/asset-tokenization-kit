@@ -42,7 +42,7 @@ export interface BondFooterData {
 /**
  * Chart data item
  */
-export interface BondChartDataItem {
+export interface BondChartDataItem extends Record<string, string | number> {
   name: string;
   value: number;
   fill: string;

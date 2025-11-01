@@ -76,7 +76,9 @@ function createMockDocument(query: string): TadaDocumentNode<unknown, unknown> {
 
 describe("the-graph.middleware", () => {
   let mockContext: Record<string, unknown>;
-  let mockNext: ReturnType<typeof vi.fn>;
+  let mockNext: Mock<
+    (options: { context: Record<string, unknown> }) => unknown
+  >;
   let mockErrors: Record<string, ReturnType<typeof vi.fn>>;
 
   // Test browser environment mock

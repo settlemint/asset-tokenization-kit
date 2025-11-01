@@ -6,10 +6,11 @@ import {
   type Row,
   type RowModel,
   type Table,
+  type TableState,
 } from "@tanstack/react-table";
 import { render, type RenderOptions } from "@testing-library/react";
 import { type ComponentType, type ReactElement, type ReactNode } from "react";
-import { vi } from "vitest";
+import { vi, type Mock } from "vitest";
 import type { BulkAction } from "../../src/components/data-table/types/bulk-actions";
 
 // Make vi globally available for module-level mocking in test files
@@ -273,10 +274,9 @@ export function overrideTableState<TData = unknown>(
   mockTable: Table<TData>,
   stateOverrides: Partial<ReturnType<Table<TData>["getState"]>>
 ) {
-  const defaultState =
-    (mockTable.getState as ReturnType<typeof vi.fn>).mock.results[0]?.value ||
-    (mockTable.getState as ReturnType<typeof vi.fn>)();
-  (mockTable.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+  const getStateMock = mockTable.getState as Mock<() => TableState>;
+  const defaultState = getStateMock.mock.results[0]?.value || getStateMock();
+  getStateMock.mockReturnValue({
     ...defaultState,
     ...stateOverrides,
   });

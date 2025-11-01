@@ -111,7 +111,9 @@ function createTxHash(id: number): string {
 
 describe("portal.middleware", () => {
   let mockContext: Record<string, unknown>;
-  let mockNext: ReturnType<typeof vi.fn>;
+  let mockNext: Mock<
+    (options: { context: Record<string, unknown> }) => unknown
+  >;
   let mockErrors: Record<string, ReturnType<typeof vi.fn>>;
   let mockTheGraphClient: {
     query: ReturnType<typeof vi.fn>;
