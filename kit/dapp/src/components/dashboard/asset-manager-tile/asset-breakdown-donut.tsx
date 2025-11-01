@@ -33,8 +33,8 @@ export function AssetBreakdownDonut({
           data={data}
           dataKey="value"
           nameKey="assetType"
-          innerRadius={25}
-          outerRadius={38}
+          innerRadius={20}
+          outerRadius={35}
           strokeWidth={1}
         >
           {data.map((entry, index) => {
