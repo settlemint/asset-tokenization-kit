@@ -63,22 +63,28 @@ e2e → dapp (testing UI/API)
 
 **CRITICAL: For ANY code change, PR, task, or changeset, you MUST:**
 
-1. **Validate** existing documentation in `kit/dapp/content/docs/` against your changes
-2. **Update** affected documentation pages to reflect new behavior, APIs, or architecture
+1. **Validate** existing documentation in `kit/dapp/content/docs/` against your
+   changes
+2. **Update** affected documentation pages to reflect new behavior, APIs, or
+   architecture
 3. **Extend** documentation with new sections for new features or capabilities
 4. **Improve** clarity, accuracy, and completeness based on what you've learned
 
-**This is not optional. Documentation updates are REQUIRED as part of every task.**
+**This is not optional. Documentation updates are REQUIRED as part of every
+task.**
 
 **Process:**
+
 - After implementing code changes, identify impacted documentation pages
-- Update technical accuracy (API signatures, component props, contract interfaces)
+- Update technical accuracy (API signatures, component props, contract
+  interfaces)
 - Add examples demonstrating new functionality
 - Update architecture diagrams if structure changed
 - Ensure consistency with style guide in `kit/dapp/content/AGENTS.md`
 - Cross-reference related pages that should link to new content
 
 **Examples of documentation that must be updated:**
+
 - Smart contract changes → Update contract reference and architecture docs
 - API changes → Update API reference and developer guides
 - New features → Update user guides, use cases, and feature documentation
@@ -116,7 +122,7 @@ leverage build cache; minimize final image size with distroless/alpine bases
 - **TypeScript**: Strict mode enabled with `noImplicitAny`, `strictNullChecks`,
   `noUncheckedIndexedAccess`
 - **Module resolution**: `bundler` mode with ESM-first approach, path aliases
-  configured (@/*, @schemas/*, @test/*)
+  configured (@/_, @schemas/_, @test/\*)
 - **Formatting**: Prettier with 2-space indentation, trailing commas, single
   quotes for strings
 - **Linting**: ESLint with React/TypeScript rules, max warnings = 0, boundaries
@@ -203,3 +209,225 @@ leverage build cache; minimize final image size with distroless/alpine bases
 - UI components: Place in `kit/dapp/src/components/ui/`
 - API procedures: Extend routers in `kit/dapp/src/orpc/procedures/`
 - Database schemas: Modify `kit/dapp/src/lib/db/schemas/` and run migrations
+
+## TanStack Start & React Best Practices — Don't fetch or derive app state in useEffect
+
+### Core Rules
+
+1. **Fetch on navigation** via route loaders (SSR + streaming); optionally seed
+   via `queryClient.ensureQueryData`. \[1]
+2. **Do server work on the server** via TanStack Start server functions; after
+   mutations call `router.invalidate()` and/or
+   `queryClient.invalidateQueries()`. \[2]
+3. **Keep page/UI state in the URL** with typed search params (`validateSearch`,
+   `Route.useSearch`, `navigate`). \[3]
+4. **Reserve effects for real external effects only** (DOM, subscriptions,
+   analytics). Compute derived state during render; `useMemo` only if expensive.
+   \[4]\[6]
+5. **Hydration + Suspense**: Any update that suspends during hydration replaces
+   SSR content with fallbacks. Wrap sync updates that might suspend in
+   `startTransition` (direct import). Avoid rendering `isPending` during
+   hydration. `useSyncExternalStore` always triggers fallbacks during hydration.
+   \[10]
+6. **Data placement**:
+   - Server-synced domain data → TanStack DB collections (often powered by
+     TanStack Query via `queryCollectionOptions`, or a sync engine). Read with
+     live queries. \[11]\[12]\[14]
+   - Ephemeral UI/session (theme, modals, steppers, optimistic buffers) →
+     local-only/localStorage collection. \[16]\[14]
+   - Derived views → compute in render or via live queries. \[12]
+
+### If Your useEffect Did X → Use Y
+
+- Fetch on mount/param change → route loader (+ `ensureQueryData`). \[1]
+- Submit/mutate → server function → then
+  `router.invalidate()`/`qc.invalidateQueries()`. \[2]
+- Sync UI ↔ querystring → typed search params + `navigate`. \[3]
+- Derived state → compute during render (`useMemo` only if expensive). \[4]
+- Subscribe external stores → `useSyncExternalStore` (expect hydration
+  fallbacks). \[5]\[10]
+- DOM/listeners/widgets → small `useEffect`/`useLayoutEffect`. \[6]
+- Synced list + optimistic UI → DB query collection +
+  `onInsert`/`onUpdate`/`onDelete` or server fn + invalidate. \[11]\[13]
+- Realtime websocket/SSE patches → TanStack DB direct writes
+  (`writeInsert/update/delete/upsert/batch`). \[13]
+- Joins/aggregations → live queries. \[12]
+- Local-only prefs/cross-tab → localStorage collection (no effects). \[14]
+
+### Idioms (names only)
+
+- **Loader**: `queryClient.ensureQueryData(queryOptions({ queryKey, queryFn }))`
+  → read via `useSuspenseQuery` hydrated from loader. \[1]
+- **DB query collection**:
+  `createCollection(queryCollectionOptions({ queryKey, queryFn, queryClient, getKey }))`
+  → read via live query. \[11]\[12]
+- **Mutation (server-first)**: `createServerFn(...).handler(...)` → on success
+  `qc.invalidateQueries`, `router.invalidate`; supports
+  `<form action={serverFn.url}>`. \[2]
+- **DB persistence handlers**: `onInsert`/`onUpdate`/`onDelete` → return
+  `{ refetch?: boolean }`; pair with direct writes when skipping refetch. \[13]
+- **Search params as state**:
+  `validateSearch → Route.useSearch → navigate({ search })`. \[3]
+- **External store read**: `useSyncExternalStore(subscribe, getSnapshot)`. \[5]
+- **Hydration-safe**: `import { startTransition } from 'react'` for sync
+  updates; avoid `useTransition`/`isPending` during hydration. \[10]
+
+### Decision Checklist
+
+- Needed at render → loader (defer/stream). \[1]\[7]
+- User changed data → server fn → invalidate; or DB handlers/direct writes.
+  \[2]\[13]
+- Belongs in URL → typed search params. \[3]
+- Purely derived → render/live query. \[4]\[12]
+- External system only → effect. \[6]
+- Hydration sensitive → `startTransition` for sync updates; expect fallbacks
+  from external stores; avoid `isPending` during hydration. \[10]
+- SSR/SEO → loader-based fetching with streaming/deferred; dehydrate/hydrate
+  caches and DB snapshots. \[7]
+
+### React 19 Helpers
+
+- `useActionState` for form pending/error/result. \[8]
+- `use` to suspend on promises. \[9]
+
+### Hydration + Suspense Playbook \[10]
+
+- **Rule**: Sync updates that suspend during hydration → fallback replaces SSR.
+- **Quick fix**: Wrap updates with `startTransition` (direct import); re-wrap
+  after `await`.
+- **Avoid during hydration**: Using `useTransition` for the update, rendering
+  `isPending`, `useDeferredValue` unless the suspensey child is memoized, any
+  `useSyncExternalStore` mutation.
+- **Safe during hydration**: Setting same value with `useState`/`useReducer`,
+  `startTransition`-wrapped sync updates, `useDeferredValue` with `React.memo`
+  around the suspensey child.
+- **Compiler auto-memoization** may help; treat as optimization.
+
+### Selective SSR
+
+- Default `ssr: true` (change via `getRouter({ defaultSsr: false })`). SPA mode
+  disables all server loaders/SSR.
+- Per-route `ssr`: `true` | `'data-only'` | `false`.
+- Functional `ssr(props)`: runs only on server initial request; can return
+  `true` | `'data-only'` | `false` based on validated params/search.
+- Inheritance: child can only get less SSR (true → `'data-only'` or false;
+  `'data-only'` → false).
+- Fallback: first route with `ssr: false` or `'data-only'` renders
+  `pendingComponent` (or `defaultPendingComponent`) at least `minPendingMs` (or
+  `defaultPendingMinMs`).
+- Root: you can disable SSR of root route component; `shellComponent` is always
+  SSRed.
+
+**Docs map**: \[1] Router data loading, \[2] Server Functions, \[3] Search
+Params, \[4] You Might Not Need an Effect, \[5] useSyncExternalStore, \[6]
+Synchronizing with Effects, \[7] SSR, \[8] useActionState, \[9] use, \[10]
+Hydration + Suspense, \[11] TanStack DB Collections, \[12] Live Queries, \[13]
+DB Direct Writes, \[14] localStorage Collection.
+
+## TanStack Start & React Best Practices — Don't fetch or derive app state in useEffect
+
+### Core Rules
+
+1. **Fetch on navigation** via route loaders (SSR + streaming); optionally seed
+   via `queryClient.ensureQueryData`. \[1]
+2. **Do server work on the server** via TanStack Start server functions; after
+   mutations call `router.invalidate()` and/or
+   `queryClient.invalidateQueries()`. \[2]
+3. **Keep page/UI state in the URL** with typed search params (`validateSearch`,
+   `Route.useSearch`, `navigate`). \[3]
+4. **Reserve effects for real external effects only** (DOM, subscriptions,
+   analytics). Compute derived state during render; `useMemo` only if expensive.
+   \[4]\[6]
+5. **Hydration + Suspense**: Any update that suspends during hydration replaces
+   SSR content with fallbacks. Wrap sync updates that might suspend in
+   `startTransition` (direct import). Avoid rendering `isPending` during
+   hydration. `useSyncExternalStore` always triggers fallbacks during hydration.
+   \[10]
+6. **Data placement**:
+   - Server-synced domain data → TanStack DB collections (often powered by
+     TanStack Query via `queryCollectionOptions`, or a sync engine). Read with
+     live queries. \[11]\[12]\[14]
+   - Ephemeral UI/session (theme, modals, steppers, optimistic buffers) →
+     local-only/localStorage collection. \[16]\[14]
+   - Derived views → compute in render or via live queries. \[12]
+
+### If Your useEffect Did X → Use Y
+
+- Fetch on mount/param change → route loader (+ `ensureQueryData`). \[1]
+- Submit/mutate → server function → then
+  `router.invalidate()`/`qc.invalidateQueries()`. \[2]
+- Sync UI ↔ querystring → typed search params + `navigate`. \[3]
+- Derived state → compute during render (`useMemo` only if expensive). \[4]
+- Subscribe external stores → `useSyncExternalStore` (expect hydration
+  fallbacks). \[5]\[10]
+- DOM/listeners/widgets → small `useEffect`/`useLayoutEffect`. \[6]
+- Synced list + optimistic UI → DB query collection +
+  `onInsert`/`onUpdate`/`onDelete` or server fn + invalidate. \[11]\[13]
+- Realtime websocket/SSE patches → TanStack DB direct writes
+  (`writeInsert/update/delete/upsert/batch`). \[13]
+- Joins/aggregations → live queries. \[12]
+- Local-only prefs/cross-tab → localStorage collection (no effects). \[14]
+
+### Idioms (names only)
+
+- **Loader**: `queryClient.ensureQueryData(queryOptions({ queryKey, queryFn }))`
+  → read via `useSuspenseQuery` hydrated from loader. \[1]
+- **DB query collection**:
+  `createCollection(queryCollectionOptions({ queryKey, queryFn, queryClient, getKey }))`
+  → read via live query. \[11]\[12]
+- **Mutation (server-first)**: `createServerFn(...).handler(...)` → on success
+  `qc.invalidateQueries`, `router.invalidate`; supports
+  `<form action={serverFn.url}>`. \[2]
+- **DB persistence handlers**: `onInsert`/`onUpdate`/`onDelete` → return
+  `{ refetch?: boolean }`; pair with direct writes when skipping refetch. \[13]
+- **Search params as state**:
+  `validateSearch → Route.useSearch → navigate({ search })`. \[3]
+- **External store read**: `useSyncExternalStore(subscribe, getSnapshot)`. \[5]
+- **Hydration-safe**: `import { startTransition } from 'react'` for sync
+  updates; avoid `useTransition`/`isPending` during hydration. \[10]
+
+### Decision Checklist
+
+- Needed at render → loader (defer/stream). \[1]\[7]
+- User changed data → server fn → invalidate; or DB handlers/direct writes.
+  \[2]\[13]
+- Belongs in URL → typed search params. \[3]
+- Purely derived → render/live query. \[4]\[12]
+- External system only → effect. \[6]
+- Hydration sensitive → `startTransition` for sync updates; expect fallbacks
+  from external stores; avoid `isPending` during hydration. \[10]
+- SSR/SEO → loader-based fetching with streaming/deferred; dehydrate/hydrate
+  caches and DB snapshots. \[7]
+
+### React 19 Helpers
+
+- `useActionState` for form pending/error/result. \[8]
+- `use` to suspend on promises. \[9]
+
+### Hydration + Suspense Playbook \[10]
+
+- **Rule**: Sync updates that suspend during hydration → fallback replaces SSR.
+- **Quick fix**: Wrap updates with `startTransition` (direct import); re-wrap
+  after `await`.
+- **Avoid during hydration**: Using `useTransition` for the update, rendering
+  `isPending`, `useDeferredValue` unless the suspensey child is memoized, any
+  `useSyncExternalStore` mutation.
+- **Safe during hydration**: Setting same value with `useState`/`useReducer`,
+  `startTransition`-wrapped sync updates, `useDeferredValue` with `React.memo`
+  around the suspensey child.
+- **Compiler auto-memoization** may help; treat as optimization.
+
+### Selective SSR
+
+- Default `ssr: true` (change via `getRouter({ defaultSsr: false })`). SPA mode
+  disables all server loaders/SSR.
+- Per-route `ssr`: `true` | `'data-only'` | `false`.
+- Functional `ssr(props)`: runs only on server initial request; can return
+  `true` | `'data-only'` | `false` based on validated params/search.
+- Inheritance: child can only get less SSR (true → `'data-only'` or false;
+  `'data-only'` → false).
+- Fallback: first route with `ssr: false` or `'data-only'` renders
+  `pendingComponent` (or `defaultPendingComponent`) at least `minPendingMs` (or
+  `defaultPendingMinMs`).
+- Root: you can disable SSR of root route component; `shellComponent` is always
+  SSRed.
