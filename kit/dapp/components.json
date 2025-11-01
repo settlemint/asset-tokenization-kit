@@ -17,5 +17,14 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "iconLibrary": "lucide"
+  "iconLibrary": "lucide",
+  "registries": {
+    "@animate-ui": "https://animate-ui.com/r/{name}.json",
+    "@better-upload": "https://better-upload.com/r/{name}.json",
+    "@hooks": "https://shadcn-hooks.vercel.app/r/{name}.json",
+    "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json",
+    "@motion-primitives": "https://motion-primitives.com/c/registry.json",
+    "@shadcnblocks": "https://shadcnblocks.com/r/{name}.json",
+    "@svgl": "https://svgl.app/r/{name}.json"
+  }
 }
