@@ -37,7 +37,7 @@ export function PendingActionsBanner() {
 
   return (
     <WarningAlert
-      className="mb-4"
+      className="mb-6"
       title={t("pendingActionsBanner.title", { count: pendingCount })}
       description={t("pendingActionsBanner.description")}
       cta={
