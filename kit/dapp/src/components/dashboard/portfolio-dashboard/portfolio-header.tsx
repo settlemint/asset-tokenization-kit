@@ -128,7 +128,7 @@ function PortfolioHeaderContent() {
 
         {/* Right section: View Holdings button */}
         <Link to="/my-assets" className="w-full md:w-auto">
-          <Button size="lg" className="w-full md:w-auto" variant="default">
+          <Button size="lg" className="w-full md:w-auto" variant="outline">
             {t("portfolioDashboard.portfolioHeader.viewHoldings")}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

@@ -163,6 +163,29 @@
       "description": "ستظهر الرسوم البيانية والإحصائيات بمجرد تصميم أول أصل موحد لك"
     }
   },
+  "actionsCard": {
+    "title": "الإجراءات",
+    "subtitle": "تتبع العمليات المعلقة والمكتملة",
+    "badge": {
+      "pending": "{{count}} معلق",
+      "upToDate": "محدث"
+    },
+    "stats": {
+      "pending": "الإجراءات المعلقة",
+      "completed": "مكتمل (7 أيام)",
+      "noPending": "لا توجد إجراءات معلقة"
+    },
+    "cta": "عرض جميع الإجراءات"
+  },
+  "pendingActionsBanner": {
+    "title": "{{count}} إجراءات معلقة تتطلب انتباهك",
+    "description": "راجع وأكمل المهام المعلقة",
+    "cta": "عرض الكل"
+  },
+  "administration": {
+    "title": "الإدارة",
+    "subtitle": "إدارة عمليات المنصة والأصول"
+  },
   "portfolioDashboard": {
     "welcome": "مرحبًا بعودتك، {{name}}",
     "subtitle": "تتبع محفظتك وأصولك",

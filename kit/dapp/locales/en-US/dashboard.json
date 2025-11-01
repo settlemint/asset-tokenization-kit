@@ -169,6 +169,29 @@
       "description": "Charts and statistics will show once you design your first tokenized asset"
     }
   },
+  "actionsCard": {
+    "title": "Actions",
+    "subtitle": "Track pending and completed actions",
+    "badge": {
+      "pending": "{{count}} pending",
+      "upToDate": "Up to date"
+    },
+    "stats": {
+      "pending": "Pending actions",
+      "completed": "Completed (7d)",
+      "noPending": "All caught up"
+    },
+    "cta": "View All Actions"
+  },
+  "pendingActionsBanner": {
+    "title": "{{count}} pending actions require your attention",
+    "description": "Review and complete outstanding tasks",
+    "cta": "View All"
+  },
+  "administration": {
+    "title": "Administration",
+    "subtitle": "Manage platform operations and assets"
+  },
   "portfolioDashboard": {
     "welcome": "Welcome back, {{name}}",
     "subtitle": "Here's an overview of your portfolio and assets",

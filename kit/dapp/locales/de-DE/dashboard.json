@@ -163,6 +163,29 @@
       "description": "Diagramme und Statistiken zeigen sich, sobald Sie Ihr erstes tokenisiertes Asset gestalten"
     }
   },
+  "actionsCard": {
+    "title": "Aktionen",
+    "subtitle": "Verfolgen Sie ausstehende und abgeschlossene Vorgänge",
+    "badge": {
+      "pending": "{{count}} ausstehend",
+      "upToDate": "Auf dem neuesten Stand"
+    },
+    "stats": {
+      "pending": "Ausstehende Aktionen",
+      "completed": "Abgeschlossen (7T)",
+      "noPending": "Keine ausstehenden Aktionen"
+    },
+    "cta": "Alle Aktionen anzeigen"
+  },
+  "pendingActionsBanner": {
+    "title": "{{count}} ausstehende Aktionen erfordern Ihre Aufmerksamkeit",
+    "description": "Überprüfen und vervollständigen Sie ausstehende Aufgaben",
+    "cta": "Alle anzeigen"
+  },
+  "administration": {
+    "title": "Administration",
+    "subtitle": "Verwalten Sie Plattformoperationen und Vermögenswerte"
+  },
   "portfolioDashboard": {
     "welcome": "Willkommen zurück, {{name}}",
     "subtitle": "Verfolgen Sie Ihr Portfolio und Ihre Vermögenswerte",
