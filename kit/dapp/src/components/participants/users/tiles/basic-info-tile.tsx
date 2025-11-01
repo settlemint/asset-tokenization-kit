@@ -4,6 +4,8 @@ import {
   TileFooter,
   TileFooterAction,
   TileHeader,
+  TileHeaderContent,
+  TileIcon,
   TileTitle,
 } from "@/components/tile/tile";
 import { formatDate } from "@/lib/utils/date";
@@ -86,14 +88,10 @@ export function BasicInfoTile({ user }: BasicInfoTileProps) {
         }
       >
         <TileHeader>
-          <div className="flex items-center gap-3">
-            <span className="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
-              <UserRound className="size-5" aria-hidden="true" />
-            </span>
-            <div className="space-y-1">
-              <TileTitle>{t("user:details.basicInfo.title")}</TileTitle>
-            </div>
-          </div>
+          <TileIcon icon={UserRound} color="chart-3" />
+          <TileHeaderContent>
+            <TileTitle>{t("user:details.basicInfo.title")}</TileTitle>
+          </TileHeaderContent>
         </TileHeader>
         <TileContent className="gap-4">
           <dl className="space-y-3">

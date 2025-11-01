@@ -5,6 +5,9 @@ import {
   TileFooter,
   TileFooterAction,
   TileHeader,
+  TileHeaderContent,
+  TileIcon,
+  TileSubtitle,
   TileTitle,
 } from "@/components/tile/tile";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -45,18 +48,12 @@ export function IdentityClaimsTile({
 
   return (
     <Tile>
-      <TileHeader className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <span className="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
-            <Shield className="size-5" aria-hidden="true" />
-          </span>
-          <div className="space-y-1">
-            <TileTitle>{t("identities:claimsTile.title")}</TileTitle>
-            <p className="text-sm font-medium text-muted-foreground">
-              {t("identities:claimsTile.subtitle")}
-            </p>
-          </div>
-        </div>
+      <TileHeader>
+        <TileIcon icon={Shield} color="chart-1" />
+        <TileHeaderContent>
+          <TileTitle>{t("identities:claimsTile.title")}</TileTitle>
+          <TileSubtitle>{t("identities:claimsTile.subtitle")}</TileSubtitle>
+        </TileHeaderContent>
       </TileHeader>
       <TileContent className="gap-4">
         <div className="space-y-3">
