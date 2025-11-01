@@ -40,13 +40,12 @@ import {
 } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
-import { admin, apiKey, customSession } from "better-auth/plugins";
+import { admin, apiKey, customSession, openAPI } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { reactStartCookies } from "better-auth/react-start";
 import { eq } from "drizzle-orm/sql";
 import { zeroAddress } from "viem";
 import { db, migrateDatabase } from "../db";
-import { openAPI } from "better-auth/plugins";
 
 const options = {
   /**
@@ -302,6 +301,7 @@ const options = {
       defaultKeyLength: 16,
       defaultPrefix: "sm_atk_", // SettleMint Asset Tokenization Kit prefix
       enableMetadata: true,
+      enableSessionForAPIKeys: true,
       rateLimit: {
         enabled: true,
         timeWindow: 1000 * 60, // 1 minute
