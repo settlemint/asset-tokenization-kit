@@ -1,5 +1,4 @@
 import { AssetDesignerDialog } from "@/components/asset-designer/asset-designer-wizard/asset-designer-dialog";
-import { ASSET_COLORS } from "@/components/assets/asset-colors";
 import { PercentageChange } from "@/components/stats/percentage-change";
 import { StatList } from "@/components/stats/stat-list";
 import {
@@ -14,14 +13,12 @@ import {
   TileIcon,
   TileTitle,
 } from "@/components/tile/tile";
-import { type ChartConfig } from "@/components/ui/chart";
 import { DEFAULT_SETTINGS } from "@/lib/db/schemas/settings.constants";
 import { formatValue } from "@/lib/utils/format-value";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { toNumber } from "dnum";
 import { Briefcase, CheckCircle2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AssetBreakdownDonut } from "./asset-breakdown-donut";
 
@@ -56,33 +53,6 @@ export function AssetManagerTile() {
   const lastValue = valueHistory.data.at(-1)?.totalValueInBaseCurrency ?? 0;
 
   const hasPending = stats.pendingLaunchesCount > 0;
-
-  // Exclude zero-value types to prevent visual clutter in donut chart
-  const chartData = useMemo(() => {
-    return Object.entries(stats.valueBreakdown)
-      .map(([assetType, value]) => ({
-        assetType,
-        value: toNumber(value),
-      }))
-      .filter((item) => item.value > 0);
-  }, [stats.valueBreakdown]);
-
-  const chartConfig = {
-    bond: { label: t("assetManagerCard.chart.bond"), color: ASSET_COLORS.bond },
-    equity: {
-      label: t("assetManagerCard.chart.equity"),
-      color: ASSET_COLORS.equity,
-    },
-    fund: { label: t("assetManagerCard.chart.fund"), color: ASSET_COLORS.fund },
-    stablecoin: {
-      label: t("assetManagerCard.chart.stablecoin"),
-      color: ASSET_COLORS.stablecoin,
-    },
-    deposit: {
-      label: t("assetManagerCard.chart.deposit"),
-      color: ASSET_COLORS.deposit,
-    },
-  } satisfies ChartConfig;
 
   return (
     <>
@@ -143,7 +113,7 @@ export function AssetManagerTile() {
             </div>
 
             <div className="flex items-center justify-end">
-              <AssetBreakdownDonut data={chartData} config={chartConfig} />
+              <AssetBreakdownDonut data={stats} />
             </div>
           </div>
           <StatList
