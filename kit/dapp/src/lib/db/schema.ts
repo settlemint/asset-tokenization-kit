@@ -22,4 +22,5 @@
 export * from "./schemas/auth";
 export * from "./schemas/exchange-rates";
 export * from "./schemas/kyc";
+export * from "./schemas/contacts";
 export * from "./schemas/settings";

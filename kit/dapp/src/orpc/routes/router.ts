@@ -3,6 +3,7 @@ import accountRouter from "./account/account.router";
 import actionsRouter from "./actions/actions.router";
 import exchangeRatesRouter from "./exchange-rates/exchange-rates.router";
 import fixedYieldScheduleRouter from "./fixed-yield-schedule/fixed-yield-schedule.router";
+import contactsRouter from "./contacts/contacts.router";
 import settingsRouter from "./settings/settings.router";
 import systemRouter from "./system/system.router";
 import tokenRouter from "./token/token.router";
@@ -46,6 +47,13 @@ export const router = baseRouter.router({
    * @see {@link ./actions/actions.router} - Actions router implementation
    */
   actions: actionsRouter,
+
+  /**
+   * Contacts-related API procedures.
+   *
+   * Eagerly loaded module containing address book management operations.
+   */
+  contacts: contactsRouter,
 
   /**
    * Exchange rates API procedures.
