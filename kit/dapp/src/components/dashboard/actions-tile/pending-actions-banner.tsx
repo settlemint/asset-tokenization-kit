@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { WarningAlert } from "@/components/ui/warning-alert";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { AlertCircle } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
@@ -36,25 +36,14 @@ export function PendingActionsBanner() {
   }
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-lg border border-amber-900/30 bg-gradient-to-r from-amber-950/40 to-amber-950/20 p-4">
-      <div className="flex items-start gap-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10">
-          <AlertCircle className="size-5 text-amber-500" aria-hidden="true" />
-        </div>
-        <div className="flex flex-col gap-1">
-          <h3 className="text-base font-semibold text-foreground">
-            {t("pendingActionsBanner.title", { count: pendingCount })}
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            {t("pendingActionsBanner.description")}
-          </p>
-        </div>
-      </div>
-      <Button asChild variant="outline" className="shrink-0 border-amber-500/30 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 hover:text-amber-400">
-        <Link to="/actions">
-          {t("pendingActionsBanner.cta")}
-        </Link>
-      </Button>
-    </div>
+    <WarningAlert
+      title={t("pendingActionsBanner.title", { count: pendingCount })}
+      description={t("pendingActionsBanner.description")}
+      cta={
+        <Button asChild variant="outline">
+          <Link to="/actions">{t("pendingActionsBanner.cta")}</Link>
+        </Button>
+      }
+    />
   );
 }

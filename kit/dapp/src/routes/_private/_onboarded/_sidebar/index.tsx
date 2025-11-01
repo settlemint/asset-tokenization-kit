@@ -14,8 +14,8 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
-import { ActionsCard } from "@/components/dashboard/actions-card/actions-card";
-import { PendingActionsBanner } from "@/components/dashboard/actions-card/pending-actions-banner";
+import { ActionsTile } from "@/components/dashboard/actions-tile/actions-tile";
+import { PendingActionsBanner } from "@/components/dashboard/actions-tile/pending-actions-banner";
 import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -61,8 +61,8 @@ function Home() {
         <div className="grid flex-1 grid-cols-3 gap-6">
           <div className="col-span-2">
             <div className="grid grid-cols-2 gap-6">
-              <ActionsCard />
-              <ActionsCard />
+              <ActionsTile />
+              <ActionsTile />
             </div>
           </div>
           <div className="col-span-1 flex min-h-0 flex-col">

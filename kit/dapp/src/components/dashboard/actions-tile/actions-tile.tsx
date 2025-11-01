@@ -1,32 +1,32 @@
 import {
   Tile,
+  TileBadge,
   TileContent,
   TileFooter,
   TileFooterAction,
   TileHeader,
   TileHeaderContent,
-  TileSubtitle,
+  TileIcon,
   TileTitle,
 } from "@/components/tile/tile";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { subDays } from "date-fns";
-import { AlertCircle, CheckCircle2, ClipboardList } from "lucide-react";
+import { AlertCircle, CheckCircle2, ListTodo } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
- * Actions card for the dashboard showing pending and recently completed actions.
+ * Actions tile for the dashboard showing pending and recently completed actions.
  *
  * Displays:
- * - Badge in top-right showing pending count or "Up to date"
+ * - Badge showing pending count or "Up to date"
  * - Count of pending actions requiring user attention
  * - Count of actions completed in the last 7 days
  * - Link to full actions page
  */
-export function ActionsCard() {
+export function ActionsTile() {
   const { t } = useTranslation("dashboard");
 
   const { data: actions } = useSuspenseQuery(
@@ -56,38 +56,28 @@ export function ActionsCard() {
   const hasPending = stats.pendingCount > 0;
 
   return (
-    <Tile className="relative">
-      <Badge
-        variant={hasPending ? "default" : "secondary"}
-        className={cn(
-          "absolute right-6 top-6 gap-1.5",
-          !hasPending && "border-success/20 bg-success/10 text-success"
-        )}
-      >
-        {hasPending ? (
-          t("actionsCard.badge.pending", { count: stats.pendingCount })
-        ) : (
-          <>
-            <CheckCircle2 className="size-3" aria-hidden="true" />
-            {t("actionsCard.badge.upToDate")}
-          </>
-        )}
-      </Badge>
-
+    <Tile>
       <TileHeader>
-        <span
-          data-slot="tile-icon"
-          className={cn(
-            "flex size-10 shrink-0 items-center justify-center rounded-full",
-            "bg-warning/10"
-          )}
-        >
-          <ClipboardList className="size-5 text-warning" aria-hidden="true" />
-        </span>
+        <TileIcon icon={ListTodo} className="bg-warning/10 text-warning" />
         <TileHeaderContent>
           <TileTitle>{t("actionsCard.title")}</TileTitle>
-          <TileSubtitle>{t("actionsCard.subtitle")}</TileSubtitle>
         </TileHeaderContent>
+        <TileBadge
+          variant={hasPending ? "default" : "secondary"}
+          className={cn(
+            "gap-1.5",
+            !hasPending && "border-success/20 bg-success/10 text-success"
+          )}
+        >
+          {hasPending ? (
+            t("actionsCard.badge.pending", { count: stats.pendingCount })
+          ) : (
+            <>
+              <CheckCircle2 className="size-3" aria-hidden="true" />
+              {t("actionsCard.badge.upToDate")}
+            </>
+          )}
+        </TileBadge>
       </TileHeader>
 
       <TileContent>

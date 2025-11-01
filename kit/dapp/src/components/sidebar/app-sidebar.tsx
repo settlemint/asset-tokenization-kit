@@ -18,7 +18,7 @@ import {
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Activity, ClipboardList, HomeIcon } from "lucide-react";
+import { Activity, HomeIcon, ListTodo } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -83,7 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   aria-current={isActionsActive ? "page" : undefined}
                   className={isActionsActive ? "font-semibold" : undefined}
                 >
-                  <ClipboardList />
+                  <ListTodo />
                   <span>{t("actions")}</span>
                 </Link>
               </SidebarMenuButton>

@@ -124,7 +124,7 @@ export type TileIconColor =
 
 export interface TileIconProps {
   icon: LucideIcon;
-  color: TileIconColor;
+  color?: TileIconColor;
   className?: string;
 }
 
@@ -136,9 +136,13 @@ export function TileIcon({ icon: Icon, color, className }: TileIconProps) {
         "flex size-10 shrink-0 items-center justify-center rounded-full",
         className
       )}
-      style={{
-        backgroundColor: `var(--${color})`,
-      }}
+      style={
+        color
+          ? {
+              backgroundColor: `var(--${color})`,
+            }
+          : undefined
+      }
     >
       <Icon className="size-5" aria-hidden="true" />
     </span>

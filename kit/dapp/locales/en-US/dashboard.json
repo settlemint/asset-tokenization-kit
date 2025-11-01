@@ -175,7 +175,7 @@
       "completed": "Completed (7d)",
       "noPending": "No pending actions"
     },
-    "cta": "View all Actions"
+    "cta": "View All Actions"
   },
   "pendingActionsBanner": {
     "title": "{{count}} pending actions require your attention",
