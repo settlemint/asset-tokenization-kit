@@ -36,6 +36,11 @@ vi.mock("@/components/ui/command", () => ({
 
 // Mock lucide-react icons
 vi.mock("lucide-react", () => ({
+  CheckIcon: vi.fn(({ className }) => (
+    <span className={className} data-testid="check-icon">
+      ✓
+    </span>
+  )),
   Circle: vi.fn(({ className }) => (
     <span className={className} data-testid="circle-icon">
       ○

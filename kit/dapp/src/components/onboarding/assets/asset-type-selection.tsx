@@ -1,10 +1,7 @@
 import { FormStepLayout } from "@/components/form/multi-step/form-step-layout";
 import { useOnboardingNavigation } from "@/components/onboarding/use-onboarding-navigation";
 import { AssetTypeCard } from "@/components/platform-settings/asset-types/asset-type-card";
-import {
-  getAssetClassFromAssetType,
-  getDefaultExtensions,
-} from "@/components/platform-settings/asset-types/asset-types-constants";
+import { getAssetClassFromAssetType } from "@/components/platform-settings/asset-types/asset-types-constants";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -293,9 +290,7 @@ export function AssetTypeSelection() {
                                       >
                                         <AssetTypeCard
                                           assetType={assetType}
-                                          extensions={getDefaultExtensions(
-                                            assetType
-                                          )}
+                                          showExtensions={false}
                                           className="h-full"
                                         >
                                           {isDisabled ? (

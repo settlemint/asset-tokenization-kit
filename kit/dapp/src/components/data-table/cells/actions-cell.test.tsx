@@ -29,6 +29,7 @@ vi.mock("@settlemint/sdk-utils/logging", () => ({
 
 // Mock lucide-react
 vi.mock("lucide-react", () => ({
+  CheckIcon: () => <div data-testid="check-icon">✓</div>,
   MoreHorizontal: () => <div data-testid="more-horizontal-icon">⋯</div>,
 }));
 

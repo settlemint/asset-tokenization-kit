@@ -8,14 +8,16 @@ import { useTranslation } from "react-i18next";
 
 interface AssetTypeCardProps {
   assetType: (typeof TokenTypeEnum.options)[number];
-  extensions: AssetExtension[];
+  extensions?: AssetExtension[];
+  showExtensions?: boolean;
   children: ReactNode;
   className?: string;
 }
 
 export function AssetTypeCard({
   assetType,
-  extensions,
+  extensions = [],
+  showExtensions = true,
   children,
   className,
 }: AssetTypeCardProps): ReactElement {
@@ -41,7 +43,9 @@ export function AssetTypeCard({
             </p>
           </div>
         </div>
-        <AssetExtensionsList extensions={extensions} className="mt-3" />
+        {showExtensions ? (
+          <AssetExtensionsList extensions={extensions} className="mt-3" />
+        ) : null}
       </div>
       <div className="ml-4 flex items-start">{children}</div>
     </div>
