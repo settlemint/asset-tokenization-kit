@@ -188,13 +188,15 @@
     "title": "مدير الهوية",
     "description": "إدارة هويات المشاركين والتسجيلات",
     "badge": {
-      "pending": "{{count}} معلق",
+      "pendingVerificationSingular": "{{count}} في انتظار التحقق",
+      "pendingVerificationPlural": "{{count}} في انتظار التحقق",
       "allVerified": "تم التحقق من الجميع"
     },
     "stats": {
       "activeIdentities": "الهويات النشطة",
       "active": "{{count}} نشط",
-      "pending": "{{count}} معلق"
+      "pendingVerificationSingular": "{{count}} في انتظار التحقق",
+      "pendingVerificationPlural": "{{count}} في انتظار التحقق"
     },
     "cta": "عرض الهويات"
   },
@@ -202,13 +204,15 @@
     "title": "مدير الأصول",
     "description": "إدارة الأصول المرمزة ومراقبة الأداء",
     "badge": {
-      "pending": "{{count}} معلق",
+      "pendingLaunchesSingular": "{{count}} في انتظار الإطلاق",
+      "pendingLaunchesPlural": "{{count}} في انتظار الإطلاق",
       "allLaunched": "تم إطلاق الجميع"
     },
     "stats": {
       "aum": "AUM",
       "active": "{{count}} نشط",
-      "pending": "{{count}} معلق"
+      "pendingLaunchesSingular": "{{count}} في انتظار الإطلاق",
+      "pendingLaunchesPlural": "{{count}} في انتظار الإطلاق"
     },
     "chart": {
       "bond": "السندات",

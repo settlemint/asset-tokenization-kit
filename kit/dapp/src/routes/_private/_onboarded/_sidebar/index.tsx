@@ -66,7 +66,7 @@ function Home() {
   const isInvestor = !hasAdminPermissions;
 
   // Arrange tiles according to priority in which they should be displayed
-  const roleBasedTiles = [
+  const adminTiles = [
     ...(system?.userPermissions?.roles?.tokenManager ? [AssetManagerTile] : []),
     ...(system?.userPermissions?.roles?.identityManager
       ? [IdentityManagerTile]
@@ -78,7 +78,11 @@ function Home() {
   ];
 
   // Insert ActionsTile at the second position (index 1)
-  roleBasedTiles.splice(1, 0, ActionsTile);
+  const roleBasedTiles = [
+    ...adminTiles.slice(0, 1),
+    ActionsTile,
+    ...adminTiles.slice(1),
+  ];
 
   return (
     <div className="h-[calc(100vh-4rem)] p-4 md:p-6">
@@ -104,8 +108,8 @@ function Home() {
                   </SectionSubtitle>
                 </div>
                 <div className="mb-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {roleBasedTiles.map((Tile) => (
-                    <Tile key={Tile.name} />
+                  {roleBasedTiles.map((Tile, index) => (
+                    <Tile key={index} />
                   ))}
                 </div>
               </>

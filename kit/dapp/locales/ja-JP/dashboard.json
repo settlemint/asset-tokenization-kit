@@ -188,13 +188,15 @@
     "title": "アイデンティティマネージャー",
     "description": "参加者のアイデンティティと登録を管理",
     "badge": {
-      "pending": "{{count}}件保留中",
+      "pendingVerificationSingular": "{{count}}件の確認待ち",
+      "pendingVerificationPlural": "{{count}}件の確認待ち",
       "allVerified": "すべて確認済み"
     },
     "stats": {
       "activeIdentities": "アクティブなアイデンティティ",
       "active": "{{count}}件アクティブ",
-      "pending": "{{count}}件保留中"
+      "pendingVerificationSingular": "{{count}}件の確認待ち",
+      "pendingVerificationPlural": "{{count}}件の確認待ち"
     },
     "cta": "アイデンティティを表示"
   },
@@ -202,13 +204,15 @@
     "title": "アセットマネージャー",
     "description": "トークン化された資産を管理し、パフォーマンスを監視",
     "badge": {
-      "pending": "{{count}}件保留中",
+      "pendingLaunchesSingular": "{{count}}件の公開待ち",
+      "pendingLaunchesPlural": "{{count}}件の公開待ち",
       "allLaunched": "すべて公開済み"
     },
     "stats": {
       "aum": "AUM",
       "active": "{{count}}件アクティブ",
-      "pending": "{{count}}件保留中"
+      "pendingLaunchesSingular": "{{count}}件の公開待ち",
+      "pendingLaunchesPlural": "{{count}}件の公開待ち"
     },
     "chart": {
       "bond": "債券",

@@ -188,13 +188,15 @@
     "title": "Identity Manager",
     "description": "Teilnehmeridentitäten und Registrierungen verwalten",
     "badge": {
-      "pending": "{{count}} ausstehend",
+      "pendingVerificationSingular": "{{count}} ausstehende Verifizierung",
+      "pendingVerificationPlural": "{{count}} ausstehende Verifizierungen",
       "allVerified": "Alle verifiziert"
     },
     "stats": {
       "activeIdentities": "Aktive Identitäten",
       "active": "{{count}} aktiv",
-      "pending": "{{count}} ausstehend"
+      "pendingVerificationSingular": "{{count}} ausstehende Verifizierung",
+      "pendingVerificationPlural": "{{count}} ausstehende Verifizierungen"
     },
     "cta": "Identitäten anzeigen"
   },
@@ -202,13 +204,15 @@
     "title": "Asset Manager",
     "description": "Tokenisierte Vermögenswerte verwalten und Leistung überwachen",
     "badge": {
-      "pending": "{{count}} ausstehend",
+      "pendingLaunchesSingular": "{{count}} ausstehender Start",
+      "pendingLaunchesPlural": "{{count}} ausstehende Starts",
       "allLaunched": "Alle veröffentlicht"
     },
     "stats": {
       "aum": "AUM",
       "active": "{{count}} aktiv",
-      "pending": "{{count}} ausstehend"
+      "pendingLaunchesSingular": "{{count}} ausstehender Start",
+      "pendingLaunchesPlural": "{{count}} ausstehende Starts"
     },
     "chart": {
       "bond": "Anleihen",
