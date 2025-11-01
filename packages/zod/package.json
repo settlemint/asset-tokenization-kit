@@ -22,7 +22,7 @@
     "@tools/eslint-config": "workspace:*",
     "@tools/typescript-config": "workspace:*",
     "@types/bun": "latest",
-    "eslint": "9.38.0"
+    "eslint": "9.39.0"
   },
   "peerDependencies": {
     "typescript": "5.9.3"
