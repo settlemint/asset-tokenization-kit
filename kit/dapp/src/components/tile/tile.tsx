@@ -114,6 +114,19 @@ export function TileSubtitle({
   );
 }
 
+export function TileDescription({
+  className,
+  ...props
+}: ComponentPropsWithoutRef<"p">) {
+  return (
+    <p
+      data-slot="tile-description"
+      className={cn("text-sm text-muted-foreground", className)}
+      {...props}
+    />
+  );
+}
+
 export type TileIconColor =
   | "chart-1"
   | "chart-2"
@@ -303,6 +316,7 @@ export const tileComponents = {
   HeaderContent: TileHeaderContent,
   Title: TileTitle,
   Subtitle: TileSubtitle,
+  Description: TileDescription,
   Icon: TileIcon,
   Badge: TileBadge,
   Content: TileContent,
