@@ -9,7 +9,6 @@ import {
   TileIcon,
   TileTitle,
 } from "@/components/tile/tile";
-import { cn } from "@/lib/utils";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { subDays } from "date-fns";
@@ -63,11 +62,8 @@ export function ActionsTile() {
           <TileTitle>{t("actionsCard.title")}</TileTitle>
         </TileHeaderContent>
         <TileBadge
-          variant={hasPending ? "default" : "secondary"}
-          className={cn(
-            "gap-1.5",
-            !hasPending && "border-success/20 bg-success/10 text-success"
-          )}
+          variant={hasPending ? "warning" : "success"}
+          className="gap-1.5"
         >
           {hasPending ? (
             t("actionsCard.badge.pending", { count: stats.pendingCount })

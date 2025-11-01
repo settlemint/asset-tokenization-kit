@@ -156,13 +156,33 @@ export function TileIcon({ icon: Icon, color, className }: TileIconProps) {
   );
 }
 
-export type TileBadgeProps = ComponentPropsWithoutRef<typeof Badge>;
+export type TileBadgeProps = Omit<
+  ComponentPropsWithoutRef<typeof Badge>,
+  "variant"
+> & {
+  variant?:
+    | "default"
+    | "secondary"
+    | "destructive"
+    | "outline"
+    | "success"
+    | "warning";
+};
 
-export function TileBadge({ className, ...props }: TileBadgeProps) {
+export function TileBadge({ className, variant, ...props }: TileBadgeProps) {
+  const isSuccessVariant = variant === "success";
+  const isWarningVariant = variant === "warning";
+
   return (
     <Badge
       data-slot="tile-badge"
-      className={cn("shrink-0", className)}
+      variant={isSuccessVariant || isWarningVariant ? "default" : variant}
+      className={cn(
+        "shrink-0",
+        isSuccessVariant && "border-success/20 bg-success/10 text-success",
+        isWarningVariant && "border-warning/20 bg-warning/10 text-warning",
+        className
+      )}
       {...props}
     />
   );
