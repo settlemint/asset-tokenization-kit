@@ -16,6 +16,11 @@ const config = [
       "unicorn/prefer-string-raw": "off",
     },
   },
+  {
+    rules: {
+      "@typescript-eslint/unified-signatures": "off",
+    },
+  },
 ];
 
 export default config;
