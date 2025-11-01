@@ -16,6 +16,10 @@
 
 import { ActionsTile } from "@/components/dashboard/actions-tile/actions-tile";
 import { PendingActionsBanner } from "@/components/dashboard/actions-tile/pending-actions-banner";
+import { AssetManagerTile } from "@/components/dashboard/asset-manager-tile/asset-manager-tile";
+import { ClaimIssuerTile } from "@/components/dashboard/claim-issuer-tile/claim-issuer-tile";
+import { ClaimPolicyManagerTile } from "@/components/dashboard/claim-policy-manager-tile/claim-policy-manager-tile";
+import { IdentityManagerTile } from "@/components/dashboard/identity-manager-tile/identity-manager-tile";
 import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
 import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";
 import { PortfolioDashboard } from "@/components/dashboard/portfolio-dashboard/portfolio-dashboard";
@@ -61,6 +65,25 @@ function Home() {
   ).some(Boolean);
   const isInvestor = !hasAdminPermissions;
 
+  // Arrange tiles according to priority in which they should be displayed
+  const adminTiles = [
+    ...(system?.userPermissions?.roles?.tokenManager ? [AssetManagerTile] : []),
+    ...(system?.userPermissions?.roles?.identityManager
+      ? [IdentityManagerTile]
+      : []),
+    ...(system?.userPermissions?.roles?.claimPolicyManager
+      ? [ClaimPolicyManagerTile]
+      : []),
+    ...(system?.userPermissions?.roles?.claimIssuer ? [ClaimIssuerTile] : []),
+  ];
+
+  // Insert ActionsTile at the second position (index 1)
+  const roleBasedTiles = [
+    ...adminTiles.slice(0, 1),
+    ActionsTile,
+    ...adminTiles.slice(1),
+  ];
+
   return (
     <div className="h-[calc(100vh-4rem)] p-4 md:p-6">
       {isInvestor && <WelcomeHeader />}
@@ -85,8 +108,9 @@ function Home() {
                   </SectionSubtitle>
                 </div>
                 <div className="mb-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <ActionsTile />
-                  <div className="col-span-1"></div>
+                  {roleBasedTiles.map((Tile, index) => (
+                    <Tile key={index} />
+                  ))}
                 </div>
               </>
             ) : (

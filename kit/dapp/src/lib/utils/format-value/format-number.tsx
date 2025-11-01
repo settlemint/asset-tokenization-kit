@@ -21,8 +21,9 @@ export function formatNumber(
   locale: string
 ) {
   const { displayName } = options;
+
   // Check if value is a Dnum (big decimal) first
-  if (isDnum(value)) {
+  if (isDnum(value) && !options.compact) {
     // Format Dnum with locale-aware formatting
     const formatted = formatDnum(value, {
       locale,
@@ -33,7 +34,8 @@ export function formatNumber(
   }
 
   // Use safe number conversion to handle large values without precision loss
-  // This will return 0 for NaN values
+  // This will return 0 for NaN values. We need to convert Dnum to number first
+  // to enable compact formatting, since dnum's formatter doesn't support compact notation.
   const numberValue = safeToNumber(value);
 
   // Determine formatting based on column metadata
@@ -48,7 +50,8 @@ export function formatNumber(
 
   // Use compact notation for large numbers
   const useCompact =
-    displayName?.toLowerCase().includes("count") && numberValue > 9999;
+    options.compact ||
+    (displayName?.toLowerCase().includes("count") && numberValue > 9999);
 
   // Format with proper locale
   const formatted = new Intl.NumberFormat(locale, {

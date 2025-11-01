@@ -2,6 +2,7 @@ import {
   Tile,
   TileBadge,
   TileContent,
+  TileDescription,
   TileFooter,
   TileFooterAction,
   TileHeader,
@@ -77,6 +78,7 @@ export function ActionsTile() {
       </TileHeader>
 
       <TileContent>
+        <TileDescription>{t("actionsCard.description")}</TileDescription>
         <div className="grid grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
             <span className="text-sm text-muted-foreground">

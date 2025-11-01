@@ -83,7 +83,7 @@
     "totalActiveTopics": "Aktive Themen",
     "activeTopicsDescription": "Kategorien von verifizierbaren Identitätsattributen",
     "totalActiveIssuers": "Aktive Emittenten",
-    "activeIssuersDescription": "Vertrauenswürdige Einheiten, die befugt sind, Ansprüche auszustellen"
+    "activeIssuersDescription": "Vertrauenswürdige Entitäten, die berechtigt sind, Ansprüche auszustellen"
   },
   "claimTopicsCoverage": {
     "title": "Anspruchsthemen-Abdeckung",
@@ -172,6 +172,7 @@
   "actionsCard": {
     "title": "Aktionen",
     "subtitle": "Verfolgen Sie ausstehende und abgeschlossene Vorgänge",
+    "description": "Verfolgen Sie ausstehende und abgeschlossene Vorgänge",
     "badge": {
       "pending": "{{count}} ausstehend",
       "upToDate": "Auf dem neuesten Stand"
@@ -182,6 +183,76 @@
       "noPending": "Keine ausstehenden Aktionen"
     },
     "cta": "Alle Aktionen anzeigen"
+  },
+  "identityManagerCard": {
+    "title": "Identity Manager",
+    "description": "Teilnehmeridentitäten und Registrierungen verwalten",
+    "badge": {
+      "pendingVerificationSingular": "{{count}} ausstehende Verifizierung",
+      "pendingVerificationPlural": "{{count}} ausstehende Verifizierungen",
+      "allVerified": "Alle verifiziert"
+    },
+    "stats": {
+      "activeIdentities": "Aktive Identitäten",
+      "active": "{{count}} aktiv",
+      "pendingVerificationSingular": "{{count}} ausstehende Verifizierung",
+      "pendingVerificationPlural": "{{count}} ausstehende Verifizierungen"
+    },
+    "cta": "Identitäten anzeigen"
+  },
+  "assetManagerCard": {
+    "title": "Asset Manager",
+    "description": "Tokenisierte Vermögenswerte verwalten und Leistung überwachen",
+    "badge": {
+      "pendingLaunchesSingular": "{{count}} ausstehender Start",
+      "pendingLaunchesPlural": "{{count}} ausstehende Starts",
+      "allLaunched": "Alle veröffentlicht"
+    },
+    "stats": {
+      "aum": "AUM",
+      "active": "{{count}} aktiv",
+      "pendingLaunchesSingular": "{{count}} ausstehender Start",
+      "pendingLaunchesPlural": "{{count}} ausstehende Starts"
+    },
+    "chart": {
+      "bond": "Anleihen",
+      "equity": "Eigenkapital",
+      "fund": "Fonds",
+      "stablecoin": "Stablecoins",
+      "deposit": "Einlagen"
+    },
+    "cta": "+ Asset Designer"
+  },
+  "claimPolicyManagerCard": {
+    "title": "Anspruchsrichtlinien-Manager",
+    "description": "Überwachen Sie vertrauenswürdige Anspruchsaussteller und Richtlinienaktivitäten",
+    "badge": {
+      "recentAdditionsSingular": "{{count}} kürzliche Hinzufügung",
+      "recentAdditionsPlural": "{{count}} kürzliche Hinzufügungen",
+      "upToDate": "Auf dem neuesten Stand"
+    },
+    "stats": {
+      "activeIssuers": "Aktive Aussteller",
+      "addedSingular": "{{count}} hinzugefügt (7T)",
+      "addedPlural": "{{count}} hinzugefügt (7T)",
+      "removedSingular": "{{count}} entfernt (7T)",
+      "removedPlural": "{{count}} entfernt (7T)"
+    },
+    "cta": "Richtlinien verwalten"
+  },
+  "claimIssuerCard": {
+    "title": "Anspruchsaussteller",
+    "description": "Verfolgen und verwalten Sie ausgestellte Ansprüche unter bestimmten Themen",
+    "stats": {
+      "activeClaims": "Aktive Ansprüche",
+      "issued": "{{count}} ausgestellt (7T)",
+      "revoked": "{{count}} widerrufen (7T)"
+    },
+    "chart": {
+      "issued": "Ausgestellt",
+      "revoked": "Widerrufen"
+    },
+    "cta": "Ansprüche verwalten"
   },
   "pendingActionsBanner": {
     "title": "{{count}} ausstehende Aktionen erfordern Ihre Aufmerksamkeit",

@@ -27,15 +27,29 @@ export function FormatCurrency({ value, options }: FormatValueProps) {
         {new Intl.NumberFormat(locale, {
           style: "currency",
           currency: currency,
-          minimumFractionDigits: 2,
+          ...(options.compact
+            ? {
+                notation: "compact",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 1,
+              }
+            : { minimumFractionDigits: 2 }),
         }).format(currencyValue)}
       </div>
     );
   } catch {
     // If currency is not recognized, format as "value currency"
     const formatted = new Intl.NumberFormat(locale, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      ...(options.compact
+        ? {
+            notation: "compact",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 1,
+          }
+        : {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
     }).format(currencyValue);
 
     return (

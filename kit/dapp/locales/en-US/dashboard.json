@@ -172,6 +172,7 @@
   "actionsCard": {
     "title": "Actions",
     "subtitle": "Track pending and completed actions",
+    "description": "Track pending and completed actions",
     "badge": {
       "pending": "{{count}} pending",
       "upToDate": "Up to date"
@@ -182,6 +183,76 @@
       "noPending": "All caught up"
     },
     "cta": "View All Actions"
+  },
+  "identityManagerCard": {
+    "title": "Identity Manager",
+    "description": "Manage participant identities and registrations",
+    "badge": {
+      "pendingVerificationSingular": "{{count}} pending verification",
+      "pendingVerificationPlural": "{{count}} pending verifications",
+      "allVerified": "All verified"
+    },
+    "stats": {
+      "activeIdentities": "Active identities",
+      "active": "{{count}} active",
+      "pendingVerificationSingular": "{{count}} pending verification",
+      "pendingVerificationPlural": "{{count}} pending verifications"
+    },
+    "cta": "View Identities"
+  },
+  "assetManagerCard": {
+    "title": "Asset Manager",
+    "description": "Manage tokenized assets and monitor performance",
+    "badge": {
+      "pendingLaunchesSingular": "{{count}} pending launch",
+      "pendingLaunchesPlural": "{{count}} pending launches",
+      "allLaunched": "All launched"
+    },
+    "stats": {
+      "aum": "AUM",
+      "active": "{{count}} active",
+      "pendingLaunchesSingular": "{{count}} pending launch",
+      "pendingLaunchesPlural": "{{count}} pending launches"
+    },
+    "chart": {
+      "bond": "Bonds",
+      "equity": "Equity",
+      "fund": "Funds",
+      "stablecoin": "Stablecoins",
+      "deposit": "Deposits"
+    },
+    "cta": "+ Asset Designer"
+  },
+  "claimPolicyManagerCard": {
+    "title": "Claim Policy Manager",
+    "description": "Oversee trusted claim issuers and policy activity",
+    "badge": {
+      "recentAdditionsSingular": "{{count}} recent addition",
+      "recentAdditionsPlural": "{{count}} recent additions",
+      "upToDate": "Up to date"
+    },
+    "stats": {
+      "activeIssuers": "Active issuers",
+      "addedSingular": "{{count}} added (7d)",
+      "addedPlural": "{{count}} added (7d)",
+      "removedSingular": "{{count}} removed (7d)",
+      "removedPlural": "{{count}} removed (7d)"
+    },
+    "cta": "Manage Policies"
+  },
+  "claimIssuerCard": {
+    "title": "Claim Issuer",
+    "description": "Track and manage claims issued under specific topics",
+    "stats": {
+      "activeClaims": "Active claims",
+      "issued": "{{count}} issued (7d)",
+      "revoked": "{{count}} revoked (7d)"
+    },
+    "chart": {
+      "issued": "Issued",
+      "revoked": "Revoked"
+    },
+    "cta": "Manage Claims"
   },
   "pendingActionsBanner": {
     "title": "{{count}} pending actions require your attention",
