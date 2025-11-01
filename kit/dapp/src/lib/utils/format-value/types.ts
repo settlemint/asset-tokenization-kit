@@ -29,6 +29,8 @@ export interface FormatValueOptions {
   dateOptions?: FormatDateOptions;
   multiOptionOptions?: FormatMultiOptionOptions;
 
+  compact?: boolean;
+
   className?: string;
 }
 
