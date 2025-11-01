@@ -30,11 +30,32 @@ export function ClaimsActivityChart({ data }: ClaimsActivityChartProps) {
     },
   } satisfies ChartConfig;
 
-  const chartData = data.data.map((item) => ({
-    date: item.timestamp,
-    totalIssuedClaims: item.totalIssuedClaims,
-    totalRevokedClaims: item.totalRevokedClaims,
-  }));
+  // Convert cumulative totals to per-interval deltas for daily activity visualization
+  const chartData = data.data.map((item, index) => {
+    if (index === 0) {
+      return {
+        date: item.timestamp,
+        totalIssuedClaims: item.totalIssuedClaims,
+        totalRevokedClaims: item.totalRevokedClaims,
+      };
+    }
+    const previous = data.data[index - 1];
+    return {
+      date: item.timestamp,
+      totalIssuedClaims:
+        item.totalIssuedClaims - (previous?.totalIssuedClaims ?? 0),
+      totalRevokedClaims:
+        item.totalRevokedClaims - (previous?.totalRevokedClaims ?? 0),
+    };
+  });
+
+  const hasActivity = chartData.some(
+    (item) => item.totalIssuedClaims > 0 || item.totalRevokedClaims > 0
+  );
+
+  if (!hasActivity) {
+    return null;
+  }
 
   return (
     <ChartContainer
