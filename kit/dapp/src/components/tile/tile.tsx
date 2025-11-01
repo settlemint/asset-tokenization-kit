@@ -120,7 +120,9 @@ export type TileIconColor =
   | "chart-3"
   | "chart-4"
   | "chart-5"
-  | "chart-6";
+  | "chart-6"
+  | "warning"
+  | "success";
 
 export interface TileIconProps {
   icon: LucideIcon;
@@ -129,15 +131,19 @@ export interface TileIconProps {
 }
 
 export function TileIcon({ icon: Icon, color, className }: TileIconProps) {
+  const isSemanticColor = color === "warning" || color === "success";
+
   return (
     <span
       data-slot="tile-icon"
       className={cn(
         "flex size-10 shrink-0 items-center justify-center rounded-full",
+        isSemanticColor && color === "warning" && "bg-warning/10 text-warning",
+        isSemanticColor && color === "success" && "bg-success/10 text-success",
         className
       )}
       style={
-        color
+        color && !isSemanticColor
           ? {
               backgroundColor: `color-mix(in srgb, var(--${color}) 10%, transparent)`,
               color: `var(--${color})`,
