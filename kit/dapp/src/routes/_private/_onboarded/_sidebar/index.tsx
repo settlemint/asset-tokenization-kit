@@ -84,7 +84,7 @@ function Home() {
                     {t("administration.subtitle")}
                   </SectionSubtitle>
                 </div>
-                <div className="mb-4 grid grid-cols-2 gap-6">
+                <div className="mb-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <ActionsTile />
                   <div className="col-span-1"></div>
                 </div>
