@@ -179,7 +179,7 @@
     "stats": {
       "pending": "Pending actions",
       "completed": "Completed (7d)",
-      "noPending": "No pending actions"
+      "noPending": "All caught up"
     },
     "cta": "View All Actions"
   },
