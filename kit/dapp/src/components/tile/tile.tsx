@@ -139,7 +139,8 @@ export function TileIcon({ icon: Icon, color, className }: TileIconProps) {
       style={
         color
           ? {
-              backgroundColor: `var(--${color})`,
+              backgroundColor: `color-mix(in srgb, var(--${color}) 10%, transparent)`,
+              color: `var(--${color})`,
             }
           : undefined
       }

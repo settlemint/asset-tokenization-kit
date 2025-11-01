@@ -3,6 +3,9 @@ import {
   Tile,
   TileContent,
   TileHeader,
+  TileHeaderContent,
+  TileIcon,
+  TileSubtitle,
   TileTitle,
 } from "@/components/tile/tile";
 import { TokenStatusBadge } from "@/components/tokens/token-status-badge";
@@ -51,20 +54,14 @@ export function BasicInfoTile({ identity, token }: EntityBasicInfoTileProps) {
 
   return (
     <Tile>
-      <TileHeader className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <span className="flex size-9 items-center justify-center rounded-full bg-muted text-muted-foreground">
-            <Building2 className="size-5" aria-hidden="true" />
-          </span>
-          <div className="space-y-1">
-            <TileTitle>{t("entities:details.basicInfo.title")}</TileTitle>
-            {contractTypeLabel ? (
-              <p className="text-sm font-medium text-muted-foreground">
-                {contractTypeLabel}
-              </p>
-            ) : null}
-          </div>
-        </div>
+      <TileHeader>
+        <TileIcon icon={Building2} color="chart-3" />
+        <TileHeaderContent>
+          <TileTitle>{t("entities:details.basicInfo.title")}</TileTitle>
+          {contractTypeLabel ? (
+            <TileSubtitle>{contractTypeLabel}</TileSubtitle>
+          ) : null}
+        </TileHeaderContent>
       </TileHeader>
       <TileContent className="gap-4">
         <div className="space-y-1">

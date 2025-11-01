@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import { WarningAlert } from "@/components/ui/warning-alert";
 import { orpc } from "@/orpc/orpc-client";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "@tanstack/react-router";
 
 /**
  * Pending actions warning banner for the dashboard.
@@ -37,6 +37,7 @@ export function PendingActionsBanner() {
 
   return (
     <WarningAlert
+      className="mb-4"
       title={t("pendingActionsBanner.title", { count: pendingCount })}
       description={t("pendingActionsBanner.description")}
       cta={

@@ -182,6 +182,10 @@
     "description": "Überprüfen und vervollständigen Sie ausstehende Aufgaben",
     "cta": "Alle anzeigen"
   },
+  "administration": {
+    "title": "Administration",
+    "subtitle": "Verwalten Sie Plattformoperationen und Vermögenswerte"
+  },
   "portfolioDashboard": {
     "welcome": "Willkommen zurück, {{name}}",
     "subtitle": "Verfolgen Sie Ihr Portfolio und Ihre Vermögenswerte",

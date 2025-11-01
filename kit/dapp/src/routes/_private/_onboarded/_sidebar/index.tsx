@@ -14,13 +14,17 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
+import { ActionsTile } from "@/components/dashboard/actions-tile/actions-tile";
+import { PendingActionsBanner } from "@/components/dashboard/actions-tile/pending-actions-banner";
 import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
 import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";
 import { PortfolioDashboard } from "@/components/dashboard/portfolio-dashboard/portfolio-dashboard";
 import { PortfolioHeader } from "@/components/dashboard/portfolio-dashboard/portfolio-header";
+import { SectionSubtitle } from "@/components/dashboard/section-subtitle";
+import { SectionTitle } from "@/components/dashboard/section-title";
 import { WelcomeHeader } from "@/components/dashboard/welcome-header/welcome-header";
 import { createFileRoute } from "@tanstack/react-router";
-
+import { useTranslation } from "react-i18next";
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
   /**
    * Data loader that runs when navigating to this route.
@@ -49,6 +53,7 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
 });
 
 function Home() {
+  const { t } = useTranslation("dashboard");
   const { user, system } = Route.useLoaderData();
   const identityRegistered = !!system?.userIdentity?.registered;
   const hasAdminPermissions = Object.values(
@@ -61,6 +66,7 @@ function Home() {
       {isInvestor && <WelcomeHeader />}
       <div className="grid h-full grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="col-span-1 lg:col-span-2">
+          <PendingActionsBanner />
           {!identityRegistered && (
             <div className="col-span-1 flex min-h-0 flex-col mb-4 lg:mb-10">
               <IdentityProgress user={user} />
@@ -68,7 +74,21 @@ function Home() {
           )}
           {identityRegistered &&
             (hasAdminPermissions ? (
-              <PortfolioHeader />
+              <>
+                <PortfolioHeader />
+                <div className="mb-4 mt-8 space-y-2">
+                  <SectionTitle className="text-xl">
+                    {t("administration.title")}
+                  </SectionTitle>
+                  <SectionSubtitle>
+                    {t("administration.subtitle")}
+                  </SectionSubtitle>
+                </div>
+                <div className="mb-4 grid grid-cols-2 gap-6">
+                  <ActionsTile />
+                  <div className="col-span-1"></div>
+                </div>
+              </>
             ) : (
               <PortfolioDashboard />
             ))}

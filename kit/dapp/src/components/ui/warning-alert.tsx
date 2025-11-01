@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { TriangleAlert } from "lucide-react";
 import { memo, type ReactNode } from "react";
 
@@ -5,12 +6,18 @@ interface WarningAlertProps {
   title?: string;
   description: string;
   cta?: ReactNode;
+  className?: string;
 }
 
 export const WarningAlert = memo(
-  ({ title, description, cta }: WarningAlertProps) => {
+  ({ title, description, cta, className }: WarningAlertProps) => {
     return (
-      <div className="rounded-lg border border-sm-state-warning-background bg-sm-state-warning-background/50 p-4">
+      <div
+        className={cn(
+          "rounded-lg border border-sm-state-warning-background bg-sm-state-warning-background/50 p-4",
+          className
+        )}
+      >
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
             <TriangleAlert className="h-5 w-5 shrink-0 text-sm-state-warning" />

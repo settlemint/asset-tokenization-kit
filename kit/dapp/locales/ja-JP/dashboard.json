@@ -182,6 +182,10 @@
     "description": "未処理のタスクを確認して完了してください",
     "cta": "すべて表示"
   },
+  "administration": {
+    "title": "管理",
+    "subtitle": "プラットフォームの運用と資産を管理"
+  },
   "portfolioDashboard": {
     "welcome": "お帰りなさい、{{name}}",
     "subtitle": "ポートフォリオと資産を追跡",

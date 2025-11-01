@@ -188,6 +188,10 @@
     "description": "Review and complete outstanding tasks",
     "cta": "View All"
   },
+  "administration": {
+    "title": "Administration",
+    "subtitle": "Manage platform operations and assets"
+  },
   "portfolioDashboard": {
     "welcome": "Welcome back, {{name}}",
     "subtitle": "Here's an overview of your portfolio and assets",

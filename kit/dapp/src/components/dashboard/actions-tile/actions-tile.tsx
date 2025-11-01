@@ -58,7 +58,14 @@ export function ActionsTile() {
   return (
     <Tile>
       <TileHeader>
-        <TileIcon icon={ListTodo} className="bg-warning/10 text-warning" />
+        <TileIcon
+          icon={ListTodo}
+          className={cn(
+            hasPending
+              ? "bg-warning/10 text-warning"
+              : "bg-success/10 text-success"
+          )}
+        />
         <TileHeaderContent>
           <TileTitle>{t("actionsCard.title")}</TileTitle>
         </TileHeaderContent>

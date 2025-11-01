@@ -182,6 +182,10 @@
     "description": "راجع وأكمل المهام المعلقة",
     "cta": "عرض الكل"
   },
+  "administration": {
+    "title": "الإدارة",
+    "subtitle": "إدارة عمليات المنصة والأصول"
+  },
   "portfolioDashboard": {
     "welcome": "مرحبًا بعودتك، {{name}}",
     "subtitle": "تتبع محفظتك وأصولك",
