@@ -65,8 +65,11 @@
     "title": "Identity-Übersicht",
     "description": "Aktueller System-Identity-Status und Registrierungen",
     "totalIdentities": "Gesamtidentitäten",
+    "totalIdentitiesDescription": "Alle im System erstellten Identitäten",
     "activeRegistrations": "Aktive Registrierungen",
+    "activeRegistrationsDescription": "Derzeit aktive und verifizierte Benutzeridentitäten",
     "pendingRegistrations": "Ausstehende Registrierungen",
+    "pendingRegistrationsDescription": "Identitäten, die auf Verifizierung warten",
     "chartTitle": "Aktive Registrierungen",
     "chartDescription": "Tägliche Trends der aktiven Identity-Registrierungen in den letzten 7 Tagen",
     "emptyStateMessage": "Noch keine Registrierungen",
@@ -76,8 +79,11 @@
     "title": "Ansprüche, Themen und Emittenten Übersicht",
     "description": "Verfolgen Sie aktive Ansprüche, Themen und vertrauenswürdige Emittenten",
     "totalActiveClaims": "Aktive Ansprüche",
+    "activeClaimsDescription": "Derzeit gültige Identitätsansprüche im System",
     "totalActiveTopics": "Aktive Themen",
-    "totalActiveIssuers": "Aktive Emittenten"
+    "activeTopicsDescription": "Kategorien von verifizierbaren Identitätsattributen",
+    "totalActiveIssuers": "Aktive Emittenten",
+    "activeIssuersDescription": "Vertrauenswürdige Einheiten, die befugt sind, Ansprüche auszustellen"
   },
   "claimTopicsCoverage": {
     "title": "Anspruchsthemen-Abdeckung",

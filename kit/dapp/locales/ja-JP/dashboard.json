@@ -65,8 +65,11 @@
     "title": "アイデンティティ概要",
     "description": "現在のシステムアイデンティティのステータスと登録",
     "totalIdentities": "総アイデンティティ数",
+    "totalIdentitiesDescription": "システムで作成されたすべてのアイデンティティ",
     "activeRegistrations": "アクティブな登録",
+    "activeRegistrationsDescription": "現在アクティブで検証済みのユーザーアイデンティティ",
     "pendingRegistrations": "保留中の登録",
+    "pendingRegistrationsDescription": "検証を待機中のアイデンティティ",
     "chartTitle": "アクティブな登録",
     "chartDescription": "過去7日間のアクティブなアイデンティティ登録のデイリートレンド",
     "emptyStateMessage": "まだ登録はありません",
@@ -76,8 +79,11 @@
     "title": "クレーム、トピック、発行者の概要",
     "description": "アクティブなクレーム、トピック、信頼できる発行者を追跡",
     "totalActiveClaims": "アクティブなクレーム",
+    "activeClaimsDescription": "現在システムで有効なアイデンティティクレーム",
     "totalActiveTopics": "アクティブなトピック",
-    "totalActiveIssuers": "アクティブな発行者"
+    "activeTopicsDescription": "検証可能なアイデンティティ属性のカテゴリ",
+    "totalActiveIssuers": "アクティブな発行者",
+    "activeIssuersDescription": "クレームを発行する権限を持つ信頼できるエンティティ"
   },
   "claimTopicsCoverage": {
     "title": "クレームトピックのカバレッジ",

@@ -4,6 +4,11 @@ import type { StatsBondStatusOutput } from "@/orpc/routes/token/routes/stats/bon
 import type { ChartConfig } from "@/components/ui/chart";
 
 /**
+ * Translation function type for bond status
+ */
+export type BondStatusTFunction = TFunction<["stats", "tokens"]>;
+
+/**
  * Bond status enum representing the different lifecycle states
  */
 export type BondStatus = "issuing" | "active" | "matured";
@@ -35,14 +40,19 @@ export interface BondFooterData {
 }
 
 /**
+ * Chart data item
+ */
+export interface BondChartDataItem {
+  name: string;
+  value: number;
+  fill: string;
+}
+
+/**
  * Complete chart data ready for rendering
  */
 export interface BondChartData {
-  data: Array<{
-    name: string;
-    value: number;
-    fill: string;
-  }>;
+  data: BondChartDataItem[];
   config: ChartConfig;
   title: string;
   description: string;
@@ -67,8 +77,5 @@ export interface BondStatusStrategy {
   /**
    * Get display data for this bond state
    */
-  getDisplayData(
-    t: TFunction<readonly ["stats", "tokens"]>,
-    progress: number
-  ): BondDisplayData;
+  getDisplayData(t: BondStatusTFunction, progress: number): BondDisplayData;
 }
