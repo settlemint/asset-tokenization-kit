@@ -38,7 +38,7 @@ export function AssetBreakdownDonut({
           strokeWidth={1}
         >
           {data.map((entry, index) => {
-            const color = config[entry.assetType]?.color;
+            const color = config[entry.assetType]?.color ?? "hsl(var(--muted))";
             return (
               <Cell
                 key={`cell-${String(index)}`}
