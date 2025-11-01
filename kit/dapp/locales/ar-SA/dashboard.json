@@ -65,8 +65,11 @@
     "title": "نظرة عامة على الهوية",
     "description": "حالة الهوية الحالية في النظام والتسجيلات",
     "totalIdentities": "إجمالي الهويات",
+    "totalIdentitiesDescription": "جميع الهويات المنشأة في النظام",
     "activeRegistrations": "التسجيلات النشطة",
+    "activeRegistrationsDescription": "هويات المستخدمين النشطة والتي تم التحقق منها حاليًا",
     "pendingRegistrations": "التسجيلات المعلقة",
+    "pendingRegistrationsDescription": "الهويات في انتظار التحقق",
     "chartTitle": "التسجيلات النشطة",
     "chartDescription": "اتجاهات التسجيلات النشطة للهوية اليومية خلال الأيام السبعة الماضية",
     "emptyStateMessage": "لا توجد تسجيلات بعد",
@@ -76,8 +79,11 @@
     "title": "نظرة عامة على المطالبات والمواضيع والمصدرين",
     "description": "تتبع المطالبات النشطة والمواضيع والمصدرين الموثوقين",
     "totalActiveClaims": "المطالبات النشطة",
+    "activeClaimsDescription": "مطالبات الهوية الصالحة حاليًا في النظام",
     "totalActiveTopics": "المواضيع النشطة",
-    "totalActiveIssuers": "المصدرين النشطين"
+    "activeTopicsDescription": "فئات سمات الهوية القابلة للتحقق",
+    "totalActiveIssuers": "المصدرين النشطين",
+    "activeIssuersDescription": "الكيانات الموثوقة المخولة بإصدار المطالبات"
   },
   "claimTopicsCoverage": {
     "title": "تغطية موضوعات المطالبات",
@@ -166,6 +172,7 @@
   "actionsCard": {
     "title": "الإجراءات",
     "subtitle": "تتبع العمليات المعلقة والمكتملة",
+    "description": "تتبع العمليات المعلقة والمكتملة",
     "badge": {
       "pending": "{{count}} معلق",
       "upToDate": "محدث"
@@ -176,6 +183,72 @@
       "noPending": "لا توجد إجراءات معلقة"
     },
     "cta": "عرض جميع الإجراءات"
+  },
+  "identityManagerCard": {
+    "title": "مدير الهوية",
+    "description": "إدارة هويات المشاركين والتسجيلات",
+    "badge": {
+      "pending": "{{count}} معلق",
+      "allVerified": "تم التحقق من الجميع"
+    },
+    "stats": {
+      "activeIdentities": "الهويات النشطة",
+      "active": "{{count}} نشط",
+      "pending": "{{count}} معلق"
+    },
+    "cta": "عرض الهويات"
+  },
+  "assetManagerCard": {
+    "title": "مدير الأصول",
+    "description": "إدارة الأصول المرمزة ومراقبة الأداء",
+    "badge": {
+      "pending": "{{count}} معلق",
+      "allLaunched": "تم إطلاق الجميع"
+    },
+    "stats": {
+      "aum": "AUM",
+      "active": "{{count}} نشط",
+      "pending": "{{count}} معلق"
+    },
+    "chart": {
+      "bond": "السندات",
+      "equity": "الأسهم",
+      "fund": "الصناديق",
+      "stablecoin": "العملات المستقرة",
+      "deposit": "الودائع"
+    },
+    "cta": "+ مصمم الأصول"
+  },
+  "claimPolicyManagerCard": {
+    "title": "مدير سياسة المطالبات",
+    "description": "الإشراف على مصدري المطالبات الموثوقين ونشاط السياسة",
+    "badge": {
+      "recentAdditionsSingular": "{{count}} إضافة حديثة",
+      "recentAdditionsPlural": "{{count}} إضافات حديثة",
+      "upToDate": "محدث"
+    },
+    "stats": {
+      "activeIssuers": "المصدرون النشطون",
+      "addedSingular": "{{count}} مضاف (7 أيام)",
+      "addedPlural": "{{count}} مضافة (7 أيام)",
+      "removedSingular": "{{count}} محذوف (7 أيام)",
+      "removedPlural": "{{count}} محذوفة (7 أيام)"
+    },
+    "cta": "إدارة السياسات"
+  },
+  "claimIssuerCard": {
+    "title": "مصدر المطالبات",
+    "description": "تتبع وإدارة المطالبات الصادرة تحت مواضيع محددة",
+    "stats": {
+      "activeClaims": "المطالبات النشطة",
+      "issued": "{{count}} صادرة (7 أيام)",
+      "revoked": "{{count}} ملغاة (7 أيام)"
+    },
+    "chart": {
+      "issued": "صادرة",
+      "revoked": "ملغاة"
+    },
+    "cta": "إدارة المطالبات"
   },
   "pendingActionsBanner": {
     "title": "{{count}} إجراءات معلقة تتطلب انتباهك",

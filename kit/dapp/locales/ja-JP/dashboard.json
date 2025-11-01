@@ -65,8 +65,11 @@
     "title": "アイデンティティ概要",
     "description": "現在のシステムアイデンティティのステータスと登録",
     "totalIdentities": "総アイデンティティ数",
+    "totalIdentitiesDescription": "システムで作成されたすべてのアイデンティティ",
     "activeRegistrations": "アクティブな登録",
+    "activeRegistrationsDescription": "現在アクティブで検証済みのユーザーアイデンティティ",
     "pendingRegistrations": "保留中の登録",
+    "pendingRegistrationsDescription": "検証を待っているアイデンティティ",
     "chartTitle": "アクティブな登録",
     "chartDescription": "過去7日間のアクティブなアイデンティティ登録のデイリートレンド",
     "emptyStateMessage": "まだ登録はありません",
@@ -76,8 +79,11 @@
     "title": "クレーム、トピック、発行者の概要",
     "description": "アクティブなクレーム、トピック、信頼できる発行者を追跡",
     "totalActiveClaims": "アクティブなクレーム",
+    "activeClaimsDescription": "現在システムで有効なアイデンティティクレーム",
     "totalActiveTopics": "アクティブなトピック",
-    "totalActiveIssuers": "アクティブな発行者"
+    "activeTopicsDescription": "検証可能なアイデンティティ属性のカテゴリ",
+    "totalActiveIssuers": "アクティブな発行者",
+    "activeIssuersDescription": "クレームを発行する権限を持つ信頼できるエンティティ"
   },
   "claimTopicsCoverage": {
     "title": "クレームトピックのカバレッジ",
@@ -166,6 +172,7 @@
   "actionsCard": {
     "title": "アクション",
     "subtitle": "保留中および完了した操作を追跡",
+    "description": "保留中および完了した操作を追跡",
     "badge": {
       "pending": "{{count}}件保留中",
       "upToDate": "最新"
@@ -176,6 +183,72 @@
       "noPending": "保留中のアクションはありません"
     },
     "cta": "すべてのアクションを表示"
+  },
+  "identityManagerCard": {
+    "title": "アイデンティティマネージャー",
+    "description": "参加者のアイデンティティと登録を管理",
+    "badge": {
+      "pending": "{{count}}件保留中",
+      "allVerified": "すべて確認済み"
+    },
+    "stats": {
+      "activeIdentities": "アクティブなアイデンティティ",
+      "active": "{{count}}件アクティブ",
+      "pending": "{{count}}件保留中"
+    },
+    "cta": "アイデンティティを表示"
+  },
+  "assetManagerCard": {
+    "title": "アセットマネージャー",
+    "description": "トークン化された資産を管理し、パフォーマンスを監視",
+    "badge": {
+      "pending": "{{count}}件保留中",
+      "allLaunched": "すべて公開済み"
+    },
+    "stats": {
+      "aum": "AUM",
+      "active": "{{count}}件アクティブ",
+      "pending": "{{count}}件保留中"
+    },
+    "chart": {
+      "bond": "債券",
+      "equity": "株式",
+      "fund": "ファンド",
+      "stablecoin": "ステーブルコイン",
+      "deposit": "預金"
+    },
+    "cta": "+ アセットデザイナー"
+  },
+  "claimPolicyManagerCard": {
+    "title": "クレームポリシーマネージャー",
+    "description": "信頼できるクレーム発行者とポリシーのアクティビティを監視",
+    "badge": {
+      "recentAdditionsSingular": "{{count}}件の最近の追加",
+      "recentAdditionsPlural": "{{count}}件の最近の追加",
+      "upToDate": "最新"
+    },
+    "stats": {
+      "activeIssuers": "アクティブな発行者",
+      "addedSingular": "{{count}}件追加（7日間）",
+      "addedPlural": "{{count}}件追加（7日間）",
+      "removedSingular": "{{count}}件削除（7日間）",
+      "removedPlural": "{{count}}件削除（7日間）"
+    },
+    "cta": "ポリシーを管理"
+  },
+  "claimIssuerCard": {
+    "title": "クレーム発行者",
+    "description": "特定のトピックで発行されたクレームを追跡および管理",
+    "stats": {
+      "activeClaims": "アクティブなクレーム",
+      "issued": "{{count}}件発行済み（7日間）",
+      "revoked": "{{count}}件取り消し（7日間）"
+    },
+    "chart": {
+      "issued": "発行済み",
+      "revoked": "取り消し"
+    },
+    "cta": "クレームを管理"
   },
   "pendingActionsBanner": {
     "title": "{{count}}件の保留中のアクションが対応を必要としています",
