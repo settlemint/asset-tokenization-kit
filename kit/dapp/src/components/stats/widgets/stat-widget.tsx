@@ -1,110 +1,116 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { LucideIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
+/**
+ * Props for StatCard component
+ *
+ * Design rationale: Simplified from previous version that included trend indicators
+ * (percentage changes, icons) to focus on clarity and readability. The description
+ * prop provides context without visual clutter. The indicator prop was added to support
+ * displaying various supplementary information (percentage changes, icons, badges) in a
+ * consistent, accessible manner.
+ */
 interface StatCardProps {
+  /** Stat label displayed at the top (e.g., "Total value", "Active claims") */
   title: string;
+  /**
+   * Main metric value - accepts ReactNode to support formatted numbers, badges,
+   * or custom components (e.g., currency formatting, verification badges)
+   */
   value: React.ReactNode;
-  icon: LucideIcon;
+  /** Optional Tailwind classes for custom styling */
   className?: string;
-  /** Previous period value for trend calculation */
-  previousValue?: number;
-  /** Current period value for trend calculation */
-  currentValue?: number;
-  /** Translation key for period label */
-  period?: "fromLastWeek" | "fromLastMonth" | "fromLastYear";
+  /**
+   * Optional explanatory text shown below the value
+   *
+   * Why optional: Not all stats need explanation. Use for context like
+   * "Combined value of all assets" or "2 bonds, 1 deposit" to help users
+   * understand what the metric represents.
+   */
+  description?: React.ReactNode;
+  /**
+   * Optional indicator element displayed in top-right corner
+   *
+   * Why ReactNode for flexibility: Supports multiple use cases without coupling
+   * to specific component types. Common patterns include:
+   * - PercentageChange component for trend analysis
+   * - Icons for status indication (checkmark, warning, info)
+   * - Badges for categorical information (new, verified, pending)
+   * - Custom components for domain-specific indicators
+   *
+   * Placed in the top-right corner using flex layout to ensure graceful
+   * wrapping on smaller screens without overlapping the title.
+   */
+  indicator?: React.ReactNode;
 }
 
-// Calculate percentage change, returns null if previous is 0 or values are missing
-function calculatePercentageChange(
-  previous: number | undefined,
-  current: number | undefined
-): number | null {
-  if (previous === undefined || current === undefined || previous === 0) {
-    return null;
-  }
-  return Math.round(((current - previous) / previous) * 1000) / 10;
-}
-
-// Map change to theme colors: positive=success, negative=destructive, zero=muted
-function getTrendColor(change: number): string {
-  if (change > 0) return "text-success";
-  if (change < 0) return "text-destructive";
-  return "text-muted-foreground";
-}
-
-// Format percentage with sign: +23.5%, -12.8%, or 0%
-function formatPercentageChange(change: number): string {
-  if (change > 0) return `+${change}%`;
-  if (change < 0) return `-${Math.abs(change)}%`;
-  return "0%";
-}
-
-// Format absolute difference with sign: +250, -50, or 0
-function formatAbsoluteDifference(change: number | null): string | null {
-  if (change === null) return null;
-  const absoluteChange = Math.abs(change);
-  if (change > 0) return `+${absoluteChange}`;
-  if (change < 0) return `-${absoluteChange}`;
-  return "0";
-}
-
-// Stat card with optional trend indicators (percentage in header, absolute difference in footer)
+/**
+ * Stat card displaying a key metric with optional description and indicator
+ *
+ * Design philosophy: Minimalist presentation for dashboard KPIs. The indicator slot
+ * provides at-a-glance supplementary information (trends, status, badges) without
+ * cluttering the primary metric. Flex layout ensures responsive behavior when both
+ * title and indicator are present.
+ *
+ * Layout structure (vertical):
+ * 1. Header row (flex, wrappable):
+ *    - Title (left, muted, small) - identifies the metric
+ *    - Indicator (right, small, optional) - shows supplementary info (trend, status, icon)
+ * 2. Value (bold, large) - the primary focus
+ * 3. Description (muted, small, optional) - provides context
+ *
+ * Why use flex with wrap for the header:
+ * - Ensures title and indicator don't overlap or clip on narrow screens
+ * - Maintains visual hierarchy (title is primary, indicator is supplementary)
+ * - Gracefully handles long titles by wrapping indicator to next line
+ *
+ * Use cases:
+ * - Portfolio summary cards (total value with percentage change, asset count)
+ * - Identity metrics (total identities with status icon, active registrations)
+ * - Compliance overview (active claims with badge, topics, issuers)
+ *
+ * @example Percentage change indicator
+ * ```tsx
+ * <StatCard
+ *   title="Total value"
+ *   value={formatCurrency(portfolioValue)}
+ *   description="Combined value of all assets"
+ *   indicator={<PercentageChange previousValue={100} currentValue={125} period="trailing7Days" />}
+ * />
+ * ```
+ *
+ * @example Icon indicator
+ * ```tsx
+ * <StatCard
+ *   title="System status"
+ *   value="Operational"
+ *   indicator={<CheckCircle className="h-4 w-4 text-success" />}
+ * />
+ * ```
+ */
 export function StatCard({
   title,
   value,
-  icon: Icon,
   className,
-  previousValue,
-  currentValue,
-  period,
+  description,
+  indicator,
 }: StatCardProps) {
-  const { t } = useTranslation("stats");
-
-  const percentageChange = calculatePercentageChange(
-    previousValue,
-    currentValue
-  );
-  // Check !== undefined instead of truthy to handle zero values correctly
-  const change =
-    currentValue !== undefined && previousValue !== undefined
-      ? currentValue - previousValue
-      : null;
-  const absoluteDifference = formatAbsoluteDifference(change);
-
-  const periodText = period ? t(period) : "";
-
   return (
     <Card className={cn("", className)}>
-      <CardContent className="flex flex-col space-y-2">
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Icon className="h-4 w-4" />
-            {title}
-          </div>
-          {percentageChange !== null && (
-            <span
-              className={cn(
-                "font-medium tabular-nums",
-                getTrendColor(percentageChange)
-              )}
-            >
-              {formatPercentageChange(percentageChange)}
-            </span>
-          )}
+      {/* Vertical flex layout with consistent spacing between elements */}
+      <CardContent className="flex flex-col space-y-1.5 md:space-y-2">
+        {/* Header row: Title and optional indicator with flex wrap */}
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          {/* Title: Small, muted text to avoid competing with the value */}
+          <div className="text-sm text-muted-foreground">{title}</div>
+          {/* Indicator: Conditional rendering for percentage change, icons, or other supplementary content */}
+          {indicator && <div className="shrink-0">{indicator}</div>}
         </div>
-        <div className="text-2xl font-bold">{value}</div>
-        {/* Check !== null instead of truthy to show "0" when change is zero */}
-        {absoluteDifference !== null && (
-          <div
-            className={cn(
-              "text-sm tabular-nums",
-              getTrendColor(change as number)
-            )}
-          >
-            {absoluteDifference} {periodText}
-          </div>
+        {/* Value: Large, bold to draw immediate attention */}
+        <div className="text-xl md:text-2xl font-bold">{value}</div>
+        {/* Description: Conditional rendering to maintain clean layout when not needed */}
+        {description && (
+          <div className="text-sm text-muted-foreground">{description}</div>
         )}
       </CardContent>
     </Card>

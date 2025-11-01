@@ -182,6 +182,46 @@
     "description": "未処理のタスクを確認して完了してください",
     "cta": "すべて表示"
   },
+  "portfolioDashboard": {
+    "welcome": "お帰りなさい、{{name}}",
+    "subtitle": "ポートフォリオと資産を追跡",
+    "portfolioHeader": {
+      "title": "マイポートフォリオ",
+      "assetsCount_one": "{{count}}つの資産",
+      "assetsCount_other": "{{count}}つの資産",
+      "noAssets": "まだ資産がありません",
+      "viewHoldings": "資産を表示"
+    },
+    "cards": {
+      "totalValue": {
+        "title": "合計価値",
+        "description": "すべての資産の合計価値"
+      },
+      "totalAssets": {
+        "title": "総資産",
+        "description": "資産の総数",
+        "noAssets": "資産なし"
+      },
+      "identityStatus": {
+        "title": "身分確認ステータス",
+        "description": "現在の確認ステータス",
+        "verified": "確認済み",
+        "pending": "保留中"
+      }
+    },
+    "assetTypes": {
+      "bond_one": "債券",
+      "bond_other": "債券",
+      "deposit_one": "預金",
+      "deposit_other": "預金",
+      "equity_one": "株式",
+      "equity_other": "株式",
+      "fund_one": "ファンド",
+      "fund_other": "ファンド",
+      "stablecoin_one": "ステーブルコイン",
+      "stablecoin_other": "ステーブルコイン"
+    }
+  },
   "widgets": {
     "alerts": {
       "dismiss": "閉じる",

@@ -14,9 +14,11 @@
  * @see {@link https://tanstack.com/query/latest/docs/react/guides/suspense} - React Query suspense mode
  */
 
-import { ActionsTile } from "@/components/dashboard/actions-tile/actions-tile";
-import { PendingActionsBanner } from "@/components/dashboard/actions-tile/pending-actions-banner";
+import { IdentityProgress } from "@/components/dashboard/identity-progress/identity-progress";
 import { LatestEvents } from "@/components/dashboard/latest-events/latest-events";
+import { PortfolioDashboard } from "@/components/dashboard/portfolio-dashboard/portfolio-dashboard";
+import { PortfolioHeader } from "@/components/dashboard/portfolio-dashboard/portfolio-header";
+import { WelcomeHeader } from "@/components/dashboard/welcome-header/welcome-header";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
@@ -46,28 +48,33 @@ export const Route = createFileRoute("/_private/_onboarded/_sidebar/")({
   component: Home,
 });
 
-/**
- * Home page component for authenticated users.
- *
- * Displays a welcome message and system data fetched via ORPC.
- * Uses suspense mode for data fetching, which integrates with
- * React Suspense boundaries for loading states.
- */
 function Home() {
+  const { user, system } = Route.useLoaderData();
+  const identityRegistered = !!system?.userIdentity?.registered;
+  const hasAdminPermissions = Object.values(
+    system?.userPermissions?.roles ?? {}
+  ).some(Boolean);
+  const isInvestor = !hasAdminPermissions;
+
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-hidden p-6">
-      <div className="flex h-full flex-col gap-6">
-        <PendingActionsBanner />
-        <div className="grid flex-1 grid-cols-3 gap-6">
-          <div className="col-span-2">
-            <div className="grid grid-cols-2 gap-6">
-              <ActionsTile />
-              <ActionsTile />
+    <div className="h-[calc(100vh-4rem)] p-4 md:p-6">
+      {isInvestor && <WelcomeHeader />}
+      <div className="grid h-full grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="col-span-1 lg:col-span-2">
+          {!identityRegistered && (
+            <div className="col-span-1 flex min-h-0 flex-col mb-4 lg:mb-10">
+              <IdentityProgress user={user} />
             </div>
-          </div>
-          <div className="col-span-1 flex min-h-0 flex-col">
-            <LatestEvents className="flex-1" />
-          </div>
+          )}
+          {identityRegistered &&
+            (hasAdminPermissions ? (
+              <PortfolioHeader />
+            ) : (
+              <PortfolioDashboard />
+            ))}
+        </div>
+        <div className="col-span-1 flex min-h-0 flex-col mb-4 lg:mb-10">
+          <LatestEvents className="flex-1" />
         </div>
       </div>
     </div>

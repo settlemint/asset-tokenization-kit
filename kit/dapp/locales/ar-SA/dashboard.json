@@ -182,6 +182,46 @@
     "description": "راجع وأكمل المهام المعلقة",
     "cta": "عرض الكل"
   },
+  "portfolioDashboard": {
+    "welcome": "مرحبًا بعودتك، {{name}}",
+    "subtitle": "تتبع محفظتك وأصولك",
+    "portfolioHeader": {
+      "title": "محفظتي",
+      "assetsCount_one": "{{count}} أصل",
+      "assetsCount_other": "{{count}} أصول",
+      "noAssets": "لا توجد أصول بعد",
+      "viewHoldings": "عرض أصولك"
+    },
+    "cards": {
+      "totalValue": {
+        "title": "القيمة الإجمالية",
+        "description": "القيمة المجمعة لجميع الأصول"
+      },
+      "totalAssets": {
+        "title": "إجمالي الأصول",
+        "description": "العدد الإجمالي للأصول",
+        "noAssets": "لا توجد أصول"
+      },
+      "identityStatus": {
+        "title": "حالة الهوية",
+        "description": "حالة التحقق الحالية",
+        "verified": "تم التحقق",
+        "pending": "قيد الانتظار"
+      }
+    },
+    "assetTypes": {
+      "bond_one": "سند",
+      "bond_other": "سندات",
+      "deposit_one": "إيداع",
+      "deposit_other": "إيداعات",
+      "equity_one": "أسهم",
+      "equity_other": "أسهم",
+      "fund_one": "صندوق",
+      "fund_other": "صناديق",
+      "stablecoin_one": "عملة مستقرة",
+      "stablecoin_other": "عملات مستقرة"
+    }
+  },
   "widgets": {
     "alerts": {
       "dismiss": "تجاهل",
