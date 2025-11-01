@@ -35,6 +35,10 @@ import {
   statsTrustedIssuerStatsByRange,
 } from "@/orpc/routes/system/stats/routes/trusted-issuer-stats";
 import { statsTrustedIssuerStatsState } from "@/orpc/routes/system/stats/routes/trusted-issuer-stats-state";
+import {
+  statsSystemValueHistoryByPreset,
+  statsSystemValueHistoryByRange,
+} from "@/orpc/routes/system/stats/routes/system-value-history";
 import { statsValue } from "@/orpc/routes/system/stats/routes/value";
 
 const routes = {
@@ -61,6 +65,8 @@ const routes = {
   trustedIssuerStatsByRange: statsTrustedIssuerStatsByRange,
   trustedIssuerStatsByPreset: statsTrustedIssuerStatsByPreset,
   trustedIssuerStatsState: statsTrustedIssuerStatsState,
+  systemValueHistoryByRange: statsSystemValueHistoryByRange,
+  systemValueHistoryByPreset: statsSystemValueHistoryByPreset,
   value: statsValue,
 };
 

@@ -11,6 +11,7 @@ import {
   StatsPortfolioDetailsOutputSchema,
 } from "@/orpc/routes/system/stats/routes/portfolio-details.schema";
 import { StatsPortfolioOutputSchema } from "@/orpc/routes/system/stats/routes/portfolio.schema";
+import { StatsSystemValueHistoryOutputSchema } from "@/orpc/routes/system/stats/routes/system-value-history.schema";
 import { StatsTopicSchemesStatsOutputSchema } from "@/orpc/routes/system/stats/routes/topic-schemes-stats.schema";
 import { StatsTopicSchemesStatsStateOutputSchema } from "@/orpc/routes/system/stats/routes/topic-schemes-stats-state.schema";
 import { StatsTopicSchemeClaimsCoverageOutputSchema } from "@/orpc/routes/system/stats/routes/topic-scheme-claims-coverage.schema";
@@ -374,6 +375,38 @@ const statsTopicSchemeClaimsCoverage = baseContract
   })
   .output(StatsTopicSchemeClaimsCoverageOutputSchema);
 
+const statsSystemValueHistoryByRange = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/system-value-history/by-range",
+    description: "Retrieve total system value history over custom time range",
+    successDescription: "System value history retrieved successfully",
+    tags: ["system-stats"],
+  })
+  .input(
+    z.object({
+      interval: z.enum(["hour", "day"]),
+      from: z.date(),
+      to: z.date(),
+    })
+  )
+  .output(StatsSystemValueHistoryOutputSchema);
+
+const statsSystemValueHistoryByPreset = baseContract
+  .route({
+    method: "GET",
+    path: "/system/stats/system-value-history/by-preset/{preset}",
+    description: "Retrieve total system value history using preset range",
+    successDescription: "System value history retrieved successfully",
+    tags: ["system-stats"],
+  })
+  .input(
+    z.object({
+      preset: z.enum(["trailing24Hours", "trailing7Days"]),
+    })
+  )
+  .output(StatsSystemValueHistoryOutputSchema);
+
 export const statsContract = {
   assets: statsAssets,
   assetLifecycleByRange: statsAssetLifecycleByRange,
@@ -395,6 +428,8 @@ export const statsContract = {
   trustedIssuerStatsByRange: statsTrustedIssuerStatsByRange,
   trustedIssuerStatsByPreset: statsTrustedIssuerStatsByPreset,
   trustedIssuerStatsState: statsTrustedIssuerStatsState,
+  systemValueHistoryByRange: statsSystemValueHistoryByRange,
+  systemValueHistoryByPreset: statsSystemValueHistoryByPreset,
   value: statsValue,
   portfolioByRange: statsPortfolioByRange,
   portfolioByPreset: statsPortfolioByPreset,
